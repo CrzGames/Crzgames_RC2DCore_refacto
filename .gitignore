@@ -1,0 +1,13 @@
+.idea
+.vs
+.vscode
+.DS_Store
+/site/
+/dist/
+nul
+
+# librc2d android project
+**/local.properties
+**/.gradle/
+**/app/build/
+**/app/.cxx/

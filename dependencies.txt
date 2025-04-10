@@ -1,0 +1,8 @@
+# Format: library=repository:tag or library=repository:<commit_sha>
+
+SDL=https://github.com/libsdl-org/SDL.git:release-3.2.10
+SDL_image=https://github.com/libsdl-org/SDL_image.git:release-3.2.4
+SDL_ttf=https://github.com/libsdl-org/SDL_ttf.git:release-3.2.2
+#SDL_mixer=https://github.com/libsdl-org/SDL_mixer.git:release-3.2.0
+#OpenSSL_Apple=https://github.com/krzyzanowskim/OpenSSL.git:3.3.3001
+#OpenSSL_Official=https://github.com/openssl/openssl.git:openssl-3.5.0

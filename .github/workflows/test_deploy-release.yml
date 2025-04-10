@@ -1,0 +1,29 @@
+name: test_deploy-release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test_deploy-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.PAT }}
+
+      - name: Deploy PR (main) for new Release
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: simple
+          target-branch: main
+          config-file: 'release-please-config.json'
+          token: ${{ secrets.PAT }}
