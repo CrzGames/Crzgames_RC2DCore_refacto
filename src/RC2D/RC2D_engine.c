@@ -1,11 +1,8 @@
 #include <RC2D/RC2D_internal.h>
 
-// For OpenSSL
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
-
-// For SDL3_*
 #include <SDL3/SDL_image.h>
 #include <SDL3/SDL_ttf.h>
 //#include <SDL3/mixer.h>

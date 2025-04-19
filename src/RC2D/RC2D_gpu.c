@@ -5,11 +5,12 @@
 #include <SDL3/SDL_properties.h>
 
 void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo) {
-    RC2D_assert_release(gpuDevice != NULL, "gpuDevice ne doit pas être NULL dans rc2d_gpu_getInfo", RC2D_LOG_CRITICAL);
-    RC2D_assert_release(gpuInfo != NULL, "gpuInfo ne doit pas être NULL dans rc2d_gpu_getInfo", RC2D_LOG_CRITICAL);
+    RC2D_assert_release(gpuDevice != NULL, RC2D_LOG_CRITICAL, "GPU device is NULL.");
+    RC2D_assert_release(gpuInfo != NULL, RC2D_LOG_CRITICAL, "GPU info is NULL.");
 
     SDL_PropertiesID propsGPU = SDL_GetGPUDeviceProperties(gpuDevice);
-    RC2D_assert_release(propsGPU != 0, "SDL_GetGPUDeviceProperties a échoué dans rc2d_gpu_getInfo", RC2D_LOG_CRITICAL);
+
+    RC2D_assert_release(propsGPU != NULL, RC2D_LOG_CRITICAL, "Failed to get GPU properties.");
 
     gpuInfo->gpu_device_name = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_NAME_STRING);
     gpuInfo->gpu_device_driver_name = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING);

@@ -59,14 +59,14 @@ extern "C" {
  * \see RC2D_assert_paranoid
  */
 #if RC2D_ASSERT_LEVEL >= 1
-#define RC2D_assert_release(condition, message, logLevel) do { \
+#define RC2D_assert_release(condition, logLevel, format, ...) do { \
     if (!(condition)) { \
         SDL_assert_release((condition)); \
-        RC2D_log((logLevel), "%s | SDL_Error: %s", (message), SDL_GetError()); \
+        RC2D_log((logLevel), format, ##__VA_ARGS__); \
     } \
 } while (0)
 #else
-#define RC2D_assert_release(condition, message) SDL_disabled_assert(condition)
+#define RC2D_assert_release(condition, logLevel, format, ...) SDL_disabled_assert(condition)
 #endif
 
 /**
@@ -99,14 +99,14 @@ extern "C" {
  * \see RC2D_assert_paranoid
  */
 #if RC2D_ASSERT_LEVEL >= 2
-#define RC2D_assert(condition, message, logLevel) do { \
+#define RC2D_assert(condition, logLevel, format, ...) do { \
     if (!(condition)) { \
         SDL_assert((condition)); \
-        RC2D_log((logLevel), "%s | SDL_Error: %s", (message), SDL_GetError()); \
+        RC2D_log((logLevel), format, ##__VA_ARGS__); \
     } \
 } while (0)
 #else
-#define RC2D_assert(condition, message) SDL_disabled_assert(condition)
+#define RC2D_assert(condition, logLevel, format, ...) SDL_disabled_assert(condition)
 #endif
 
 /**
@@ -139,14 +139,14 @@ extern "C" {
  * \see RC2D_assert_release
  */
 #if RC2D_ASSERT_LEVEL >= 3
-#define RC2D_assert_paranoid(condition, message, logLevel) do { \
+#define RC2D_assert_paranoid(condition, logLevel, format, ...) do { \
     if (!(condition)) { \
         SDL_assert_paranoid((condition)); \
-        RC2D_log((logLevel), "%s | SDL_Error: %s", (message), SDL_GetError()); \
+        RC2D_log((logLevel), format, ##__VA_ARGS__); \
     } \
 } while (0)
 #else
-#define RC2D_assert_paranoid(condition, message) SDL_disabled_assert(condition)
+#define RC2D_assert_paranoid(condition, logLevel, format, ...) SDL_disabled_assert(condition)
 #endif
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
