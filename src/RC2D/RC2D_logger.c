@@ -1,6 +1,6 @@
 #include <RC2D/RC2D_logger.h>
 
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_log.h> // Required for : SDL_LogMessage, SDL_LogSetAllPriority, SDL_LogPriority
 
 /**
  * Définities le niveau de log par défaut à RC2D_LOG_DEBUG
