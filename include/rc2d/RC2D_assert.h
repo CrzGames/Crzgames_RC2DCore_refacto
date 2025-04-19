@@ -47,6 +47,12 @@ extern "C" {
  * cette variable sur « break » afin que votre débogueur prenne le contrôle dès le déclenchement de l'assertion, 
  * au lieu de risquer une mauvaise interaction avec l'interface utilisateur (blocage, etc.) dans l'application.
  * 
+ * Exemple d'utilisation :
+ * RC2D_assert_release(condition, RC2D_LOG_CRITICAL, "La propriété GPU est NULL !");
+ * 
+ * Exemple d'affichage :
+ * [critical:rc2d_gpu.c:42:rc2d_gpu_getInfo] La propriété GPU est NULL !
+ * 
  * \param condition La condition à vérifier.
  * \param message Le message d'erreur à afficher si la condition échoue.
  * \param {RC2D_LogLevel} logLevel Le niveau de log à utiliser pour afficher le message d'erreur.
@@ -87,6 +93,12 @@ extern "C" {
  * cette variable sur « break » afin que votre débogueur prenne le contrôle dès le déclenchement de l'assertion, 
  * au lieu de risquer une mauvaise interaction avec l'interface utilisateur (blocage, etc.) dans l'application.
  * 
+ * Exemple d'utilisation :
+ * RC2D_assert(condition, RC2D_LOG_CRITICAL, "La propriété GPU est NULL !");
+ * 
+ * Exemple d'affichage :
+ * [critical:rc2d_gpu.c:42:rc2d_gpu_getInfo] La propriété GPU est NULL !
+ * 
  * \param condition La condition à vérifier.
  * \param message Le message d'erreur à afficher si la condition échoue.
  * \param {RC2D_LogLevel} logLevel Le niveau de log à utiliser pour afficher le message d'erreur.
@@ -126,6 +138,12 @@ extern "C" {
  * mais que vous déboguez une assertion dans un thread d'arrière-plan, il peut être judicieux de définir 
  * cette variable sur « break » afin que votre débogueur prenne le contrôle dès le déclenchement de l'assertion, 
  * au lieu de risquer une mauvaise interaction avec l'interface utilisateur (blocage, etc.) dans l'application.
+ * 
+ * Exemple d'utilisation :
+ * RC2D_assert_paranoid(condition, RC2D_LOG_CRITICAL, "La propriété GPU est NULL !");
+ * 
+ * Exemple d'affichage :
+ * [critical:rc2d_gpu.c:42:rc2d_gpu_getInfo] La propriété GPU est NULL !
  * 
  * \param condition La condition à vérifier.
  * \param message Le message d'erreur à afficher si la condition échoue.
