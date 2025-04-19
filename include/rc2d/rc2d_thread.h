@@ -1,9 +1,10 @@
 #ifndef RC2D_THREAD_H
 #define RC2D_THREAD_H
 
-#include <SDL3/SDL.h> // Required for : SDL_Thread
+#include <SDL3/SDL_thread.h> // Required for : SDL_Thread
 #include <stdbool.h> // Required for : bool
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

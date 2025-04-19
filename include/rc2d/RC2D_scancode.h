@@ -2,8 +2,8 @@
 #define RC2D_SCANCODE_H
 
 #include <SDL3/SDL_scancode.h>
-#include <SDL3/SDL_stdinc.h>
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

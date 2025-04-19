@@ -4,6 +4,7 @@
 #include <spine/spine.h>
 #include <SDL3/SDL.h>
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

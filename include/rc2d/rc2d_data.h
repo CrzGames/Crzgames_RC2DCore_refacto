@@ -3,6 +3,7 @@
 
 #include <stddef.h> // Required for : size_t
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

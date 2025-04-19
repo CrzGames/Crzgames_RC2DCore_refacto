@@ -6,6 +6,7 @@
 
 #define MT_N 624 // Taille de la table de génération de nombres aléatoires de Mersenne Twister
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

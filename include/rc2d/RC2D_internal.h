@@ -9,7 +9,7 @@
  * Données internes accessibles à tous les modules de la lib
  */
 
-/* Set up for C function definitions, even when using C++ */
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

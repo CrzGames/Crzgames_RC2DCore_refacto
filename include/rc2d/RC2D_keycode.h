@@ -4,8 +4,8 @@
 #define RC2D_KEYCODE_H
 
 #include <SDL3/SDL_keycode.h>
-#include <SDL3/SDL_stdinc.h>
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif

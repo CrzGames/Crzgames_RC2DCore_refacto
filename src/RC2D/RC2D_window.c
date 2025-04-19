@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_window.h>
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_logger.h>
 
 static bool rc2d_is_current_fullscreen = false;
 static RC2D_FullscreenType rc2d_current_fullscreen_type = RC2D_FULLSCREEN_NONE;
