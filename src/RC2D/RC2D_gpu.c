@@ -22,12 +22,6 @@ void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo)
     gpuInfo->gpu_device_driver_version = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING);
     gpuInfo->gpu_device_driver_info = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING);
 
-    // Logs des informations sur le GPU
-    RC2D_log(RC2D_LOG_INFO, "GPU device name: %s", gpuInfo->gpu_device_name);
-    RC2D_log(RC2D_LOG_INFO, "GPU device driver name: %s", gpuInfo->gpu_device_driver_name);
-    RC2D_log(RC2D_LOG_INFO, "GPU device driver version: %s", gpuInfo->gpu_device_driver_version);
-    RC2D_log(RC2D_LOG_INFO, "GPU device driver info: %s", gpuInfo->gpu_device_driver_info);
-
     // Destruction des propriétés du GPU
     SDL_DestroyProperties(propsGPU);
 }
