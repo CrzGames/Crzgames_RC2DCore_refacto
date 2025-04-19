@@ -1,11 +1,12 @@
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_assert.h>
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
-#include <SDL3/SDL_image.h>
-#include <SDL3/SDL_ttf.h>
-//#include <SDL3/mixer.h>
+#include <SDL3_ttf/SDL_ttf.h>
+//#include <SDL3_mixer/SDL_mixer.h>
 
 SDL_GPUDevice* rc2d_gpu_device = NULL; 
 SDL_GPUViewport rc2d_gpu_viewport = {0};
@@ -64,13 +65,7 @@ rc2d_gpu_advanced_options.debugMode = true;
 rc2d_gpu_advanced_options.verbose = true;
 rc2d_gpu_advanced_options.preferLowPower = false;
 rc2d_gpu_advanced_options.driver = RC2D_GPU_DRIVER_DEFAULT;
-
 static RC2D_GPUFramesInFlight rc2d_gpu_frames_in_flight = RC2D_GPU_FRAMES_BALANCED;
-
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include "rc2d/rc2d_logger.h"
-#include "rc2d/rc2d_assert.h"
 
 /**
  * \brief Initialise la bibliothèque OpenSSL avec options de log.
@@ -87,7 +82,7 @@ static bool rc2d_init_openssl(void)
 {
     if (OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL) == 0)
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Échec de l'initialisation d'OpenSSL : %s", ERR_error_string(ERR_get_error(), NULL));
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Échec de l'initialisation d'OpenSSL : %s", ERR_error_string(ERR_get_error(), NULL));
         return false;
     }
     else 
@@ -241,7 +236,7 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
 {
     // Récupère la taille réelle de la fenêtre (pixels visibles, indépendamment du DPI)
     int window_width, window_height;
-    if (!SDL_GetWindowSize(rc2d_sdl_window, &window_width, &window_height)) 
+    if (!SDL_GetWindowSize(rc2d_window, &window_width, &window_height)) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to get window size: %s", SDL_GetError());
         return;
@@ -256,8 +251,8 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
     }
 
     // Gère le high DPI : pixel_density > 1.0 = écran Retina, etc.
-    float pixel_density = SDL_GetWindowPixelDensity(rc2d_sdl_window);
-    float display_scale = SDL_GetWindowDisplayScale(rc2d_sdl_window);
+    float pixel_density = SDL_GetWindowPixelDensity(rc2d_window);
+    float display_scale = SDL_GetWindowDisplayScale(rc2d_window);
 
     // Calcule la taille réelle (en pixels) de la zone sûre
     int effective_width = (int)(safe_area.w * pixel_density);
@@ -313,8 +308,8 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
     // Applique le viewport au GPU
     rc2d_gpu_viewport.x = viewport_x;
     rc2d_gpu_viewport.y = viewport_y;
-    rc2d_gpu_viewport.width = viewport_width;
-    rc2d_gpu_viewport.height = viewport_height;
+    rc2d_gpu_viewport.w = viewport_width;
+    rc2d_gpu_viewport.h = viewport_height;
     rc2d_gpu_viewport.min_depth = 0.0f;
     rc2d_gpu_viewport.max_depth = 1.0f;
 
@@ -451,7 +446,7 @@ void rc2d_deltatimeframerates_end(void)
 SDL_AppResult rc2d_processevent(void) 
 {
     // Quit program
-    if (rc2d_event.type == SDL_QUIT) 
+    if (rc2d_event.type == SDL_EVENT_QUIT)
     {
         return SDL_APP_SUCCESS;
     }
