@@ -1,5 +1,5 @@
+#include <RC2D/RC2D_collision.h>
 #include <criterion/criterion.h>
-#include "rc2d/rc2d_collision.h"
 
 Test(rc2d_collision, pointInAABB_inside) {
     RC2D_Point point = {5, 5};
