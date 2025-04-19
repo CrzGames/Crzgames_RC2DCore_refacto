@@ -1,12 +1,35 @@
 #include <RC2D/RC2D_logger.h>
 
-#include <SDL3/SDL_log.h> // Required for : SDL_LogMessage, SDL_LogSetAllPriority, SDL_LogPriority
+#include <SDL3/SDL_log.h>
 
 /**
  * Définities le niveau de log par défaut à RC2D_LOG_DEBUG
  * Cela peut être modifié par l'utilisateur via la fonction : rc2d_log_set_priority()
  */
 static RC2D_LogLevel currentLogLevel = RC2D_LOG_DEBUG;
+
+/**
+ * Convertit le niveau de log RC2D en chaîne de caractères.
+ *
+ * @param {RC2D_LogLevel} level - Le niveau de log à convertir.
+ * @return {const char*} - La chaîne de caractères représentant le niveau de log.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static const char* rc2d_log_level_to_string(RC2D_LogLevel level) 
+{
+    switch (level) 
+    {
+        case RC2D_LOG_DEBUG:    return "debug";
+        case RC2D_LOG_INFO:     return "info";
+        case RC2D_LOG_WARN:     return "warn";
+        case RC2D_LOG_ERROR:    return "error";
+        case RC2D_LOG_CRITICAL: return "critical";
+        default:                return "unknown";
+    }
+}
 
 void rc2d_log_set_priority(const RC2D_LogLevel logLevel) 
 {
@@ -62,13 +85,16 @@ void rc2d_log_internal(const RC2D_LogLevel logLevel, const char* file, int line,
         default:                sdlPriority = SDL_LOG_PRIORITY_INFO;     break;
     }
 
-    /**
-     * Prépare le message de log avec le nom du fichier, la ligne et la fonction appelante.
-     * Utilise snprintf pour éviter les débordements de tampon.
-     * Exemple de message : "[rc2d_gpu.c:42:rc2d_gpu_getInfo] La propriété GPU est NULL !"
-     */
+    // Convertit le niveau de log de RC2D en chaîne de caractères
+    const char* levelStr = rc2d_log_level_to_string(logLevel);
+
+    // Préparer le message de log
+    const char* filename = strrchr(file, '/');
+    if (!filename) filename = strrchr(file, '\\');
+    filename = filename ? filename + 1 : file;
+
     char prefix[256];
-    snprintf(prefix, sizeof(prefix), "[%s:%d:%s] ", file, line, function);
+    snprintf(prefix, sizeof(prefix), "[%s:%s:%d:%s] ", levelStr, filename, line, function);
 
     char message[1024];
     va_list args;

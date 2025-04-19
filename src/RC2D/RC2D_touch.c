@@ -1,7 +1,7 @@
 #include <RC2D/RC2D_touch.h>
 #include <RC2D/RC2D_graphics.h>
 
-#include <SDL.h> // Required for : SDL_FINGERDOWN, SDL_FINGERUP
+#include <SDL3/SDL_touch.h> // Required for : SDL_FINGERDOWN, SDL_FINGERMOTION, SDL_FINGERUP
 
 #include <stdlib.h> // Required for : malloc, free, realloc
 

@@ -1,7 +1,10 @@
 #include <RC2D/RC2D_system.h>
 #include <RC2D/RC2D_logger.h>
 
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_haptic.h>
+#include <SDL3/SDL_system.h>
+#include <SDL3/SDL_timer.h>
+
 
 /**
  * Fonction de rappel pour arrêter la vibration.
@@ -54,7 +57,7 @@ void rc2d_system_vibrate(const double seconds, const float strength)
     Uint32 milliseconds = (Uint32)(seconds * 1000);
 
     // Si la plateforme est iOS, ajuster la durée de vibration
-    #ifdef __IPHONEOS__
+    #ifdef RC2D_PLATFORM_IOS
         milliseconds = 500; // 0.5 seconde en millisecondes (durée fixe sur iOS)
     #endif
 

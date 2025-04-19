@@ -16,7 +16,7 @@ extern "C" {
  * RC2D_log(RC2D_LOG_INFO, "La propriété GPU est NULL !");
  *
  * Exemple d'affichage :
- * [rc2d_gpu.c:42:rc2d_gpu_getInfo] La propriété GPU est NULL !
+ * [info:rc2d_gpu.c:42:rc2d_gpu_getInfo] La propriété GPU est NULL !
  * 
  * \param {RC2D_LogLevel} level - Le niveau de priorité du message.
  * \param {const char*} format - Le format du message, suivant la syntaxe de printf.
