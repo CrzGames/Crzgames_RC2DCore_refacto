@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F628EEF9-AC3E-3AB3-BAD4-98A4893D47C4}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>rc2d</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">rc2d.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">rc2d</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">rc2d.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">rc2d</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">rc2d.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">rc2d</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">rc2d.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">rc2d</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\include\external;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\Crzgames_LibCpp_Windows\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_image\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\include-revision;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL\include;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto" "-BC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build" --check-stamp-file "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeRCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto" "-BC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build" --check-stamp-file "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeRCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto" "-BC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build" --check-stamp-file "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeRCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto" "-BC:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build" --check-stamp-file "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineCompilerSupport.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CheckCCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CrayClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\OrangeC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TIClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeDetermineLinkerId.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeRCCompiler.cmake;C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\3.31.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\aes\aes.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\lz4\lz4.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\monocypher\monocypher.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Animation.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\AnimationState.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\AnimationStateData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Array.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Atlas.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\AtlasAttachmentLoader.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Attachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\AttachmentLoader.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Bone.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\BoneData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\BoundingBoxAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\ClippingAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Color.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Debug.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Event.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\EventData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\IkConstraint.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\IkConstraintData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Json.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\MeshAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\PathAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\PathConstraint.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\PathConstraintData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\PointAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\RegionAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Sequence.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Skeleton.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\SkeletonBinary.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\SkeletonBounds.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\SkeletonClipping.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\SkeletonData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\SkeletonJson.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Skin.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Slot.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\SlotData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\TransformConstraint.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\TransformConstraintData.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\Triangulator.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\VertexAttachment.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\external\spine-c\extension.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_audio.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_collision.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_data.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_event.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_filesystem.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_graphics.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_joystick.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_keyboard.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_logger.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_math.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_mouse.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_rres.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_spine.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_system.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_thread.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_timer.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_touch.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_tweening.c" />
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\src\rc2d\rc2d_window.c" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\ZERO_CHECK.vcxproj">
+      <Project>{FEB5CC1F-AEF0-3AAF-98EB-50CFF22D18FC}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL\SDL3-static.vcxproj">
+      <Project>{97F1914E-0686-3C1D-9A85-8EE757C7A66B}</Project>
+      <Name>SDL3-static</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_image\SDL3_image-static.vcxproj">
+      <Project>{DF52A6EA-835E-324F-87D4-ABCE8BE5A731}</Project>
+      <Name>SDL3_image-static</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\SDL3_ttf-static.vcxproj">
+      <Project>{639332C6-A0DD-3B6A-85D5-0BBF914901EA}</Project>
+      <Name>SDL3_ttf-static</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

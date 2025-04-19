@@ -11,6 +11,22 @@ extern "C" {
 #endif
 
 /**
+ * Structure représentant une boîte englobante alignée sur les axes (AABB),
+ * utilisée pour les calculs de collision.
+ * @typedef {object} RC2D_AABB
+ * @property {number} x - La coordonnée x du coin supérieur gauche de la boîte.
+ * @property {number} y - La coordonnée y du coin supérieur gauche de la boîte.
+ * @property {number} w - La largeur de la boîte.
+ * @property {number} h - La hauteur de la boîte.
+ */
+typedef struct RC2D_AABB {
+	int x;
+	int y;
+	int w;
+	int h;
+} RC2D_AABB;
+
+/**
  * Enumération représentant les types d'arc.
  * @typedef {enum} RC2D_ArcType
  * @property {number} RC2D_ARC_OPEN - Arc ouvert.

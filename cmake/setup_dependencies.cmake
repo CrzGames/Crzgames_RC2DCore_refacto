@@ -1,5 +1,7 @@
 # Répertoire contenant les dépendances externes
 set(VENDORED_DIR "${CMAKE_SOURCE_DIR}/vendored")
+
+# Créer le répertoire s'il n'existe pas
 file(MAKE_DIRECTORY ${VENDORED_DIR})
 
 # Fichier contenant la liste des dépendances

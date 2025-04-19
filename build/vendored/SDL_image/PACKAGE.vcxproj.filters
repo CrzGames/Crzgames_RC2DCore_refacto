@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\CMakeFiles\cd25f68723145d78a98fc145c5f9d08a\PACKAGE_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{3A654AA2-CAD2-396D-AB19-14785206EBB4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

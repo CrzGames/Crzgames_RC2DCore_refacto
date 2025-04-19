@@ -1,10 +1,10 @@
 #ifndef RC2D_GRAPHICS_H
 #define RC2D_GRAPHICS_H
 
-#include "rc2d/rc2d_math.h" // Required for : RC2D_ArcType
+#include <RC2D/RC2D_math.h> // Required for : RC2D_ArcType
 
-#include <SDL.h>
-#include <SDL_ttf.h>
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include <stdbool.h> // Required for : bool
 

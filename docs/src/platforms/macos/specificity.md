@@ -1,8 +1,0 @@
-# macOS Specificity
-
-## Retina / High-DPI et tailles de fenêtre :
-Les tailles de fenêtre et de mode d'affichage dans SDL sont en « coordonnées d'écran » (ou « points », dans la terminologie d'Apple) plutôt qu'en pixels. Sur iOS, cela signifie qu'une fenêtre créée sur un iPhone 6 aura une taille en coordonnées d'écran de 375 x 667, plutôt qu'une taille en pixels de 750 x 1334. Toutes les applications iOS sont censées dimensionner leur contenu en fonction des coordonnées/points d'écran. plutôt que des pixels, car cela permet à macOS d'avoir des densités de pixels différentes (écrans Retina ou non Retina, etc.) sans que les applications s'en soucient trop. <br />
-
-IMPORTANT : Par défaut, SDL n'utilisera pas toute la densité de pixels de l'écran sur les appareils compatibles Retina/haute résolution. Utilisez l'indicateur SDL_WINDOW_ALLOW_HIGHDPI lors de la création de votre fenêtre pour activer la prise en charge haute résolution. <br />
-
-Lorsque la prise en charge des hautes résolutions est activée, SDL_GetWindowSize() et les tailles du mode d'affichage seront toujours en "coordonnées d'écran" plutôt qu'en pixels, mais la fenêtre aura une densité de pixels beaucoup plus grande lorsque l'appareil le prend en charge, et SDL_GL_GetDrawableSize() ou SDL_GetRendererOutputSize () (selon que l'OpenGL brut ou l'API SDL_Render est utilisé) peuvent être interrogées pour déterminer la taille en pixels du framebuffer d'écran pouvant être dessiné. <br />

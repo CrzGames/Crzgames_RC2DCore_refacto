@@ -1,7 +1,7 @@
 #ifndef RC2D_TIMER_H
 #define RC2D_TIMER_H
 
-#include <SDL.h> 
+#include <SDL3/SDL.h> // Required for : SDL_TimerID, SDL_TimerCallback, Uint32
 #include <stdbool.h> // Required for : bool
 
 #ifdef __cplusplus

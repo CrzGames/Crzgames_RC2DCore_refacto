@@ -10,10 +10,40 @@
 <br /><br /><br /><br />
 
 
-## ⚙️ Setup Environment
+## 📁 Project Structure
+
+```
+📦 Crzgames_RC2DCore
+├── 📁 android-project
+├── 📁 build-scripts
+├── 📁 cmake
+│   └── 📄 setup_dependencies.cmake
+├── 📁 docs
+├── 📁 include
+├── 📁 src
+├── 📁 vendored
+│   ├── 📁 Crzgames_LibCpp_Windows
+│   ├── 📁 Crzgames_LibCpp_Linux
+│   └── 📁 Crzgames_LibCpp_Android
+│   ├── 📁 SDL
+│   ├── 📁 SDL_image
+│   ├── 📁 SDL_ttf
+├── 📄 .gitignore
+├── 📄 CHANGELOG.md
+├── 📄 CMakeLists.txt
+├── 📄 dependencies.txt
+├── 📄 README.md
+├── 📄 release-please-config.json
+├── 📄 version.txt
+```
+
+<br /><br /><br /><br />
+
+
+## ⚙️ Setup Environment Development
 1. Clone the project repository and initialize all submodules using the following commands :
   ```bash
-  git clone --recurse-submodules git@github.com:corentin35000/Crzgames_RC2DCore.git
+  git clone git@github.com:CrzGames/Crzgames_RC2DCore.git
   ```
 2. (Optional) Download and Install Node.js >= 18.0.0 to run website documentation for GameEngine
 3. Steps by Platform :
@@ -60,18 +90,46 @@
   6. Download and Install cmake : brew install cmake 
   ```
   
+4. Avant toute compilation, exécute le script suivant :
+
+```bash
+cmake -P cmake/setup_dependencies.cmake
+```
+
+Ce script va :
+- Lire `dependencies.txt`
+- Cloner chaque dépôt dans `vendored/`
+- Faire un `git reset --hard` au SHA/tag fourni
+- Initialiser les sous-modules si présents
+
+### 📄 Exemple de fichier : `dependencies.txt`
+
+```txt
+# Format: library=repository:tag
+
+SDL=https://github.com/libsdl-org/SDL.git:release-3.2.10
+SDL_image=https://github.com/libsdl-org/SDL_image.git:release-3.2.4
+SDL_ttf=https://github.com/libsdl-org/SDL_ttf.git:release-3.2.2
+#SDL_mixer=https://github.com/libsdl-org/SDL_mixer.git:release-3.2.0
+Crzgames_LibCpp_Windows=https://github.com/CrzGames/Crzgames_LibCpp_Windows.git:1798df967f4f80c5d9eec7fc92167f7e7dc8b0f6
+Crzgames_LibCpp_Linux=https://github.com/CrzGames/Crzgames_LibCpp_Linux.git:393760fa85ee0c46ff5a5a3d894748ecafca4ff9
+Crzgames_LibCpp_Android=https://github.com/CrzGames/Crzgames_LibCpp_Android.git:4c157946ad8e67a4df8c9158b538a0f5d3fa821a
+#OpenSSL_Apple=https://github.com/krzyzanowskim/OpenSSL.git:3.3.3001
+#OpenSSL_Official=https://github.com/openssl/openssl.git:openssl-3.5.0
+```
+
 <br /><br /><br /><br />
 
 
 ## 🔄 Updating Dependencies
-1. Utilisez la commande pour mettre à jour les sous-module à sa dernière version disponible dans le dépôt distant. Cela téléchargera les dernières modifications du sous-module depuis son dépôt distant et les incorporera dans votre répertoire principal :
-   ```bash
-   git submodule update --remote
 
-   git add .
-   git commit -m "chore: updating dependencies"
-   git push
-   ```
+Pour mettre à jour une dépendance :
+1. Modifiez la référence dans `dependencies.txt`
+2. Réexécutez le script :
+
+```bash
+cmake -P cmake/setup_dependencies.cmake
+```
 
 <br /><br /><br /><br />
 

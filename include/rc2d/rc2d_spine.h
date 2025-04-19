@@ -2,7 +2,7 @@
 #define RC2D_SPINE_H
 
 #include <spine/spine.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #ifdef __cplusplus
 extern "C" {

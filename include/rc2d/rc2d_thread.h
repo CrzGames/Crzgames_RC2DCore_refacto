@@ -1,7 +1,7 @@
 #ifndef RC2D_THREAD_H
 #define RC2D_THREAD_H
 
-#include <SDL.h>
+#include <SDL3/SDL.h> // Required for : SDL_Thread
 #include <stdbool.h> // Required for : bool
 
 #ifdef __cplusplus

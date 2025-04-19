@@ -1,7 +1,7 @@
 #ifndef RC2D_MOUSE_H
 #define RC2D_MOUSE_H
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h> // Required for : bool
 
 #ifdef __cplusplus

@@ -1,9 +1,9 @@
 #ifndef RC2D_FILESYSTEM_H
 #define RC2D_FILESYSTEM_H
 
-#include "rc2d/rc2d_data.h" // Required for : RC2D_DataType
+#include <RC2D/RC2D_data.h> // Required for : RC2D_DataType
 
-#include <SDL.h> // Required for : Sint64
+#include <SDL3/SDL.h> // Required for : Sint64
 #include <stdbool.h> // Required for : bool
 
 #ifdef __cplusplus

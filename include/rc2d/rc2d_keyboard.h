@@ -1,7 +1,9 @@
 #ifndef RC2D_KEYBOARD_H
 #define RC2D_KEYBOARD_H
 
-#include "rc2d/rc2d_keycode_and_scancode.h" // Required for : RC2D_KeyCode, RC2D_Scancode
+#include <RC2D/RC2D_scancode.h>
+#include <rc2d/RC2D_keycode.h>
+
 #include <stdbool.h> // Required for : bool
 
 #ifdef __cplusplus

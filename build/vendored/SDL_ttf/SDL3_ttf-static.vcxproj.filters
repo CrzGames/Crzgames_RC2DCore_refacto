@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\src\SDL_hashtable.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\src\SDL_hashtable_ttf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\src\SDL_gpu_textengine.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\src\SDL_renderer_textengine.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\src\SDL_surface_textengine.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\src\SDL_ttf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\vendored\SDL_ttf\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\harfbuzz\harfbuzz.dir\$(Configuration)\harfbuzz.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\autofit.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftbase.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftbbox.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftbdf.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftbitmap.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftcid.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftfstype.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftgasp.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftglyph.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftgxval.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftinit.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftmm.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftotval.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftpatent.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftpfr.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftstroke.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftsynth.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\fttype1.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftwinfnt.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\bdf.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftbzip2.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftcache.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\cff.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\type1cid.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftgzip.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftlzw.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\pcf.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\pfr.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\psaux.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\pshinter.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\psnames.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\raster.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\sdf.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\sfnt.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\smooth.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\svg.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\truetype.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\type1.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\type42.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\winfnt.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftsystem.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftdebug.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\freetype\freetype.dir\$(Configuration)\ftver.res">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutosvg\plutosvg.dir\$(Configuration)\plutosvg.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-blend.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-canvas.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-font.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-matrix.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-paint.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-path.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-rasterize.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-surface.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-ft-math.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-ft-raster.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Corentin.recanzone\Desktop\Organization CrzGames\Crzgames_RC2DCore_refacto\build\vendored\SDL_ttf\external\plutovg\plutovg.dir\$(Configuration)\plutovg-ft-stroker.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Object Libraries">
+      <UniqueIdentifier>{4B8AB698-C814-35FB-BD56-F35A3C8B3645}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1708BB60-A442-3577-BC57-6AB630BF61F3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

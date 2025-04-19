@@ -1,0 +1,1719 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      The system is: Windows - 10.0.19045 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+      La g├®n├®ration a d├®marr├® 10/04/2025 21:57:03.
+      
+      Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\3.31.0\\CompilerIdC\\CompilerIdC.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+      PrepareForBuild:
+        Cr├®ation du r├®pertoire "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Cr├®ation du r├®pertoire "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Cr├®ation de "Debug\\CompilerIdC.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+        Mise ├á jour de l'horodatage "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\3.31.0\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Suppression du fichier "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Mise ├á jour de l'horodatage "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\3.31.0\\CompilerIdC\\CompilerIdC.vcxproj" termin├®e (cibles par d├®faut).
+      
+      La g├®n├®ration a r├®ussi.
+          0 Avertissement(s)
+          0 Erreur(s)
+      
+      Temps ├®coul├® 00:00:00.78
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/3.31.0/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-jqtvyo"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-jqtvyo"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-jqtvyo'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_4fafc.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:04.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jqtvyo\\cmTC_4fafc.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_4fafc.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jqtvyo\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_4fafc.dir\\Debug\\cmTC_4fafc.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_4fafc.dir\\Debug\\cmTC_4fafc.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_4fafc.dir\\Debug\\cmTC_4fafc.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4fafc.dir\\Debug\\\\" /Fd"cmTC_4fafc.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4fafc.dir\\Debug\\\\" /Fd"cmTC_4fafc.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+          CMakeCCompilerABI.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jqtvyo\\Debug\\cmTC_4fafc.exe" /INCREMENTAL /ILK:"cmTC_4fafc.dir\\Debug\\cmTC_4fafc.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-jqtvyo/Debug/cmTC_4fafc.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-jqtvyo/Debug/cmTC_4fafc.lib" /MACHINE:X64  /machine:x64 cmTC_4fafc.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_4fafc.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jqtvyo\\Debug\\cmTC_4fafc.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_4fafc.dir\\Debug\\cmTC_4fafc.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_4fafc.dir\\Debug\\cmTC_4fafc.tlog\\cmTC_4fafc.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jqtvyo\\cmTC_4fafc.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.51
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'C': C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Running the C compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.43.34809.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "vendored/SDL/cmake/sdlcpu.cmake:93 (try_compile)"
+      - "vendored/SDL/CMakeLists.txt:81 (SDL_DetectTargetCPUArchitectures)"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/vendored/SDL/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/vendored/SDL/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "SDL_CPU_CHECK_ALL"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/vendored/SDL/CMakeFiles/CMakeTmp/SDL_detect_arch/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_9cff7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:05.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\cmTC_9cff7.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_9cff7.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_9cff7.dir\\Debug\\cmTC_9cff7.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_9cff7.dir\\Debug\\cmTC_9cff7.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_9cff7.dir\\Debug\\cmTC_9cff7.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_9cff7.dir\\Debug\\\\" /Fd"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\Debug\\cmTC_9cff7.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_9cff7.dir\\Debug\\\\" /Fd"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\Debug\\cmTC_9cff7.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch.c"
+          SDL_detect_arch.c
+        Lib:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\Lib.exe /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\Debug\\cmTC_9cff7.lib" /NOLOGO /MACHINE:X64  /machine:x64 cmTC_9cff7.dir\\Debug\\SDL_detect_arch.obj
+          cmTC_9cff7.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\Debug\\cmTC_9cff7.lib
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_9cff7.dir\\Debug\\cmTC_9cff7.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_9cff7.dir\\Debug\\cmTC_9cff7.tlog\\cmTC_9cff7.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\vendored\\SDL\\CMakeFiles\\CMakeTmp\\SDL_detect_arch\\CMakeFiles\\CMakeTmp\\cmTC_9cff7.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.43
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:653 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_MMX"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-yecemn"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-yecemn"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_MMX"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-yecemn'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_b2808.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:06.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_b2808.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_b2808.dir\\Debug\\cmTC_b2808.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_b2808.dir\\Debug\\cmTC_b2808.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_b2808.dir\\Debug\\cmTC_b2808.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_MMX /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b2808.dir\\Debug\\\\" /Fd"cmTC_b2808.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_MMX /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b2808.dir\\Debug\\\\" /Fd"cmTC_b2808.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\src.c"
+          src.c
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\src.c(5,27): warning C4013: '_mm_add_pi32' undefined; assuming extern returning int [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj]
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\src.c(5,25): error C2440: '=': cannot convert from 'int' to '__m64' [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj" (cible par d├®faut) (1) ->
+        (ClCompile cible) -> 
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\src.c(5,27): warning C4013: '_mm_add_pi32' undefined; assuming extern returning int [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj]
+        
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj" (cible par d├®faut) (1) ->
+        (ClCompile cible) -> 
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\src.c(5,25): error C2440: '=': cannot convert from 'int' to '__m64' [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-yecemn\\cmTC_b2808.vcxproj]
+        
+            1 Avertissement(s)
+            1 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.30
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:674 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_SSE"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-c651nw"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-c651nw"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_SSE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-c651nw'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_5cb2e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:06.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\cmTC_5cb2e.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_5cb2e.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_5cb2e.dir\\Debug\\cmTC_5cb2e.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_5cb2e.dir\\Debug\\cmTC_5cb2e.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_5cb2e.dir\\Debug\\cmTC_5cb2e.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_5cb2e.dir\\Debug\\\\" /Fd"cmTC_5cb2e.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_5cb2e.dir\\Debug\\\\" /Fd"cmTC_5cb2e.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\Debug\\cmTC_5cb2e.exe" /INCREMENTAL /ILK:"cmTC_5cb2e.dir\\Debug\\cmTC_5cb2e.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-c651nw/Debug/cmTC_5cb2e.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-c651nw/Debug/cmTC_5cb2e.lib" /MACHINE:X64  /machine:x64 cmTC_5cb2e.dir\\Debug\\src.obj
+          cmTC_5cb2e.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\Debug\\cmTC_5cb2e.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_5cb2e.dir\\Debug\\cmTC_5cb2e.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_5cb2e.dir\\Debug\\cmTC_5cb2e.tlog\\cmTC_5cb2e.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-c651nw\\cmTC_5cb2e.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.54
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:695 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_SSE2"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-4r7cj6"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-4r7cj6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_SSE2"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-4r7cj6'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_a690b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:07.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\cmTC_a690b.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_a690b.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_a690b.dir\\Debug\\cmTC_a690b.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_a690b.dir\\Debug\\cmTC_a690b.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_a690b.dir\\Debug\\cmTC_a690b.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE2 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_a690b.dir\\Debug\\\\" /Fd"cmTC_a690b.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE2 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_a690b.dir\\Debug\\\\" /Fd"cmTC_a690b.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\Debug\\cmTC_a690b.exe" /INCREMENTAL /ILK:"cmTC_a690b.dir\\Debug\\cmTC_a690b.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-4r7cj6/Debug/cmTC_a690b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-4r7cj6/Debug/cmTC_a690b.lib" /MACHINE:X64  /machine:x64 cmTC_a690b.dir\\Debug\\src.obj
+          cmTC_a690b.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\Debug\\cmTC_a690b.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_a690b.dir\\Debug\\cmTC_a690b.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_a690b.dir\\Debug\\cmTC_a690b.tlog\\cmTC_a690b.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-4r7cj6\\cmTC_a690b.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.55
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:716 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_SSE3"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fwj0hq"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fwj0hq"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_SSE3"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fwj0hq'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_98322.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:07.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\cmTC_98322.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_98322.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_98322.dir\\Debug\\cmTC_98322.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_98322.dir\\Debug\\cmTC_98322.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_98322.dir\\Debug\\cmTC_98322.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE3 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_98322.dir\\Debug\\\\" /Fd"cmTC_98322.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE3 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_98322.dir\\Debug\\\\" /Fd"cmTC_98322.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\Debug\\cmTC_98322.exe" /INCREMENTAL /ILK:"cmTC_98322.dir\\Debug\\cmTC_98322.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fwj0hq/Debug/cmTC_98322.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fwj0hq/Debug/cmTC_98322.lib" /MACHINE:X64  /machine:x64 cmTC_98322.dir\\Debug\\src.obj
+          cmTC_98322.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\Debug\\cmTC_98322.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_98322.dir\\Debug\\cmTC_98322.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_98322.dir\\Debug\\cmTC_98322.tlog\\cmTC_98322.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fwj0hq\\cmTC_98322.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.57
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:737 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_SSE4_1"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-k3qt9w"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-k3qt9w"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_SSE4_1"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-k3qt9w'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_9d2a6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:08.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\cmTC_9d2a6.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_9d2a6.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_9d2a6.dir\\Debug\\cmTC_9d2a6.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_9d2a6.dir\\Debug\\cmTC_9d2a6.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_9d2a6.dir\\Debug\\cmTC_9d2a6.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE4_1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_9d2a6.dir\\Debug\\\\" /Fd"cmTC_9d2a6.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE4_1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_9d2a6.dir\\Debug\\\\" /Fd"cmTC_9d2a6.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\Debug\\cmTC_9d2a6.exe" /INCREMENTAL /ILK:"cmTC_9d2a6.dir\\Debug\\cmTC_9d2a6.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-k3qt9w/Debug/cmTC_9d2a6.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-k3qt9w/Debug/cmTC_9d2a6.lib" /MACHINE:X64  /machine:x64 cmTC_9d2a6.dir\\Debug\\src.obj
+          cmTC_9d2a6.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\Debug\\cmTC_9d2a6.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_9d2a6.dir\\Debug\\cmTC_9d2a6.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_9d2a6.dir\\Debug\\cmTC_9d2a6.tlog\\cmTC_9d2a6.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k3qt9w\\cmTC_9d2a6.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.54
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:758 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_SSE4_2"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-826kv4"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-826kv4"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_SSE4_2"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-826kv4'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_3abf4.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:09.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\cmTC_3abf4.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_3abf4.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_3abf4.dir\\Debug\\cmTC_3abf4.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_3abf4.dir\\Debug\\cmTC_3abf4.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_3abf4.dir\\Debug\\cmTC_3abf4.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE4_2 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_3abf4.dir\\Debug\\\\" /Fd"cmTC_3abf4.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_SSE4_2 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_3abf4.dir\\Debug\\\\" /Fd"cmTC_3abf4.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\src.c"
+          src.c
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\src.c(4,29): warning C4245: 'initializing': conversion from 'int' to 'unsigned int', signed/unsigned mismatch [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\cmTC_3abf4.vcxproj]
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\Debug\\cmTC_3abf4.exe" /INCREMENTAL /ILK:"cmTC_3abf4.dir\\Debug\\cmTC_3abf4.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-826kv4/Debug/cmTC_3abf4.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-826kv4/Debug/cmTC_3abf4.lib" /MACHINE:X64  /machine:x64 cmTC_3abf4.dir\\Debug\\src.obj
+          cmTC_3abf4.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\Debug\\cmTC_3abf4.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_3abf4.dir\\Debug\\cmTC_3abf4.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_3abf4.dir\\Debug\\cmTC_3abf4.tlog\\cmTC_3abf4.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\cmTC_3abf4.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\cmTC_3abf4.vcxproj" (cible par d├®faut) (1) ->
+        (ClCompile cible) -> 
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\src.c(4,29): warning C4245: 'initializing': conversion from 'int' to 'unsigned int', signed/unsigned mismatch [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-826kv4\\cmTC_3abf4.vcxproj]
+        
+            1 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.58
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:781 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_AVX"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-cnearv"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-cnearv"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_AVX"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-cnearv'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_23ddb.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:10.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\cmTC_23ddb.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_23ddb.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_23ddb.dir\\Debug\\cmTC_23ddb.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_23ddb.dir\\Debug\\cmTC_23ddb.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_23ddb.dir\\Debug\\cmTC_23ddb.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_AVX /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_23ddb.dir\\Debug\\\\" /Fd"cmTC_23ddb.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_AVX /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_23ddb.dir\\Debug\\\\" /Fd"cmTC_23ddb.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\Debug\\cmTC_23ddb.exe" /INCREMENTAL /ILK:"cmTC_23ddb.dir\\Debug\\cmTC_23ddb.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-cnearv/Debug/cmTC_23ddb.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-cnearv/Debug/cmTC_23ddb.lib" /MACHINE:X64  /machine:x64 cmTC_23ddb.dir\\Debug\\src.obj
+          cmTC_23ddb.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\Debug\\cmTC_23ddb.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_23ddb.dir\\Debug\\cmTC_23ddb.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_23ddb.dir\\Debug\\cmTC_23ddb.tlog\\cmTC_23ddb.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cnearv\\cmTC_23ddb.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.60
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:802 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_AVX2"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2cabnz"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2cabnz"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_AVX2"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2cabnz'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_b28e0.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:10.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\cmTC_b28e0.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_b28e0.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_b28e0.dir\\Debug\\cmTC_b28e0.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_b28e0.dir\\Debug\\cmTC_b28e0.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_b28e0.dir\\Debug\\cmTC_b28e0.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_AVX2 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b28e0.dir\\Debug\\\\" /Fd"cmTC_b28e0.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_AVX2 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b28e0.dir\\Debug\\\\" /Fd"cmTC_b28e0.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\Debug\\cmTC_b28e0.exe" /INCREMENTAL /ILK:"cmTC_b28e0.dir\\Debug\\cmTC_b28e0.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2cabnz/Debug/cmTC_b28e0.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2cabnz/Debug/cmTC_b28e0.lib" /MACHINE:X64  /machine:x64 cmTC_b28e0.dir\\Debug\\src.obj
+          cmTC_b28e0.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\Debug\\cmTC_b28e0.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_b28e0.dir\\Debug\\cmTC_b28e0.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_b28e0.dir\\Debug\\cmTC_b28e0.tlog\\cmTC_b28e0.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2cabnz\\cmTC_b28e0.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.51
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:823 (check_c_source_compiles)"
+    checks:
+      - "Performing Test COMPILER_SUPPORTS_AVX512F"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-6o0th1"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-6o0th1"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "COMPILER_SUPPORTS_AVX512F"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-6o0th1'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_140ec.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:11.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\cmTC_140ec.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_140ec.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_140ec.dir\\Debug\\cmTC_140ec.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_140ec.dir\\Debug\\cmTC_140ec.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_140ec.dir\\Debug\\cmTC_140ec.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_AVX512F /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_140ec.dir\\Debug\\\\" /Fd"cmTC_140ec.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D COMPILER_SUPPORTS_AVX512F /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_140ec.dir\\Debug\\\\" /Fd"cmTC_140ec.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\Debug\\cmTC_140ec.exe" /INCREMENTAL /ILK:"cmTC_140ec.dir\\Debug\\cmTC_140ec.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-6o0th1/Debug/cmTC_140ec.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-6o0th1/Debug/cmTC_140ec.lib" /MACHINE:X64  /machine:x64 cmTC_140ec.dir\\Debug\\src.obj
+          cmTC_140ec.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\Debug\\cmTC_140ec.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_140ec.dir\\Debug\\cmTC_140ec.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_140ec.dir\\Debug\\cmTC_140ec.tlog\\cmTC_140ec.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6o0th1\\cmTC_140ec.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.53
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "vendored/SDL/CMakeLists.txt:966 (check_include_file)"
+    checks:
+      - "Looking for malloc.h"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-zcitty"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-zcitty"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "HAVE_MALLOC_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-zcitty'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_910d1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:12.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\cmTC_910d1.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_910d1.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_910d1.dir\\Debug\\cmTC_910d1.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_910d1.dir\\Debug\\cmTC_910d1.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_910d1.dir\\Debug\\cmTC_910d1.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_910d1.dir\\Debug\\\\" /Fd"cmTC_910d1.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\CheckIncludeFile.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_910d1.dir\\Debug\\\\" /Fd"cmTC_910d1.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\CheckIncludeFile.c"
+          CheckIncludeFile.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\Debug\\cmTC_910d1.exe" /INCREMENTAL /ILK:"cmTC_910d1.dir\\Debug\\cmTC_910d1.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-zcitty/Debug/cmTC_910d1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-zcitty/Debug/cmTC_910d1.lib" /MACHINE:X64  /machine:x64 cmTC_910d1.dir\\Debug\\CheckIncludeFile.obj
+          cmTC_910d1.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\Debug\\cmTC_910d1.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_910d1.dir\\Debug\\cmTC_910d1.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_910d1.dir\\Debug\\cmTC_910d1.tlog\\cmTC_910d1.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zcitty\\cmTC_910d1.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.52
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckSymbolExists.cmake:163 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckSymbolExists.cmake:68 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "vendored/SDL/CMakeLists.txt:1047 (check_symbol_exists)"
+    checks:
+      - "Looking for _copysign"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n4so80"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n4so80"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "LIBC_HAS__COPYSIGN"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n4so80'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_ecd5c.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:12.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\cmTC_ecd5c.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_ecd5c.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_ecd5c.dir\\Debug\\cmTC_ecd5c.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_ecd5c.dir\\Debug\\cmTC_ecd5c.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_ecd5c.dir\\Debug\\cmTC_ecd5c.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_ecd5c.dir\\Debug\\\\" /Fd"cmTC_ecd5c.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\CheckSymbolExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_ecd5c.dir\\Debug\\\\" /Fd"cmTC_ecd5c.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\CheckSymbolExists.c"
+          CheckSymbolExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\Debug\\cmTC_ecd5c.exe" /INCREMENTAL /ILK:"cmTC_ecd5c.dir\\Debug\\cmTC_ecd5c.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n4so80/Debug/cmTC_ecd5c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n4so80/Debug/cmTC_ecd5c.lib" /MACHINE:X64  /machine:x64 cmTC_ecd5c.dir\\Debug\\CheckSymbolExists.obj
+          cmTC_ecd5c.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\Debug\\cmTC_ecd5c.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_ecd5c.dir\\Debug\\cmTC_ecd5c.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_ecd5c.dir\\Debug\\cmTC_ecd5c.tlog\\cmTC_ecd5c.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n4so80\\cmTC_ecd5c.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.59
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckSymbolExists.cmake:163 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckSymbolExists.cmake:68 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "vendored/SDL/CMakeLists.txt:1047 (check_symbol_exists)"
+    checks:
+      - "Looking for _fseeki64"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-vh1wfq"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-vh1wfq"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "LIBC_HAS__FSEEKI64"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-vh1wfq'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_a637d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:13.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\cmTC_a637d.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_a637d.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_a637d.dir\\Debug\\cmTC_a637d.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_a637d.dir\\Debug\\cmTC_a637d.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_a637d.dir\\Debug\\cmTC_a637d.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_a637d.dir\\Debug\\\\" /Fd"cmTC_a637d.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\CheckSymbolExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_a637d.dir\\Debug\\\\" /Fd"cmTC_a637d.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\CheckSymbolExists.c"
+          CheckSymbolExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\Debug\\cmTC_a637d.exe" /INCREMENTAL /ILK:"cmTC_a637d.dir\\Debug\\cmTC_a637d.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-vh1wfq/Debug/cmTC_a637d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-vh1wfq/Debug/cmTC_a637d.lib" /MACHINE:X64  /machine:x64 cmTC_a637d.dir\\Debug\\CheckSymbolExists.obj
+          cmTC_a637d.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\Debug\\cmTC_a637d.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_a637d.dir\\Debug\\cmTC_a637d.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_a637d.dir\\Debug\\cmTC_a637d.tlog\\cmTC_a637d.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-vh1wfq\\cmTC_a637d.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.61
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:1968 (check_c_source_compiles)"
+    checks:
+      - "Performing Test HAVE_GAMEINPUT_H"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-mjsnhl"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-mjsnhl"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "HAVE_GAMEINPUT_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-mjsnhl'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_86d27.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:14.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\cmTC_86d27.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_86d27.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_86d27.dir\\Debug\\cmTC_86d27.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_86d27.dir\\Debug\\cmTC_86d27.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_86d27.dir\\Debug\\cmTC_86d27.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D HAVE_GAMEINPUT_H /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_86d27.dir\\Debug\\\\" /Fd"cmTC_86d27.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D HAVE_GAMEINPUT_H /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_86d27.dir\\Debug\\\\" /Fd"cmTC_86d27.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\Debug\\cmTC_86d27.exe" /INCREMENTAL /ILK:"cmTC_86d27.dir\\Debug\\cmTC_86d27.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-mjsnhl/Debug/cmTC_86d27.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-mjsnhl/Debug/cmTC_86d27.lib" /MACHINE:X64  /machine:x64 cmTC_86d27.dir\\Debug\\src.obj
+          cmTC_86d27.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\Debug\\cmTC_86d27.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_86d27.dir\\Debug\\cmTC_86d27.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_86d27.dir\\Debug\\cmTC_86d27.tlog\\cmTC_86d27.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mjsnhl\\cmTC_86d27.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.68
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "vendored/SDL/CMakeLists.txt:1974 (check_include_file)"
+    checks:
+      - "Looking for dxgi1_6.h"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-tidtp6"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-tidtp6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "HAVE_DXGI1_6_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-tidtp6'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_b97a4.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:15.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\cmTC_b97a4.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_b97a4.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_b97a4.dir\\Debug\\cmTC_b97a4.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_b97a4.dir\\Debug\\cmTC_b97a4.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_b97a4.dir\\Debug\\cmTC_b97a4.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b97a4.dir\\Debug\\\\" /Fd"cmTC_b97a4.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\CheckIncludeFile.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b97a4.dir\\Debug\\\\" /Fd"cmTC_b97a4.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\CheckIncludeFile.c"
+          CheckIncludeFile.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\Debug\\cmTC_b97a4.exe" /INCREMENTAL /ILK:"cmTC_b97a4.dir\\Debug\\cmTC_b97a4.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-tidtp6/Debug/cmTC_b97a4.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-tidtp6/Debug/cmTC_b97a4.lib" /MACHINE:X64  /machine:x64 cmTC_b97a4.dir\\Debug\\CheckIncludeFile.obj
+          cmTC_b97a4.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\Debug\\cmTC_b97a4.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_b97a4.dir\\Debug\\cmTC_b97a4.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_b97a4.dir\\Debug\\cmTC_b97a4.tlog\\cmTC_b97a4.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-tidtp6\\cmTC_b97a4.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.71
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "vendored/SDL/CMakeLists.txt:1981 (check_c_source_compiles)"
+    checks:
+      - "Performing Test HAVE_MFAPI_H"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-y6etf4"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-y6etf4"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od "
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL/cmake"
+    buildResult:
+      variable: "HAVE_MFAPI_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-y6etf4'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_bb418.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:16.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\cmTC_bb418.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_bb418.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_bb418.dir\\Debug\\cmTC_bb418.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_bb418.dir\\Debug\\cmTC_bb418.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_bb418.dir\\Debug\\cmTC_bb418.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D HAVE_MFAPI_H /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_bb418.dir\\Debug\\\\" /Fd"cmTC_bb418.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _GNU_SOURCE=1 /D HAVE_MFAPI_H /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_bb418.dir\\Debug\\\\" /Fd"cmTC_bb418.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\src.c"
+          src.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\Debug\\cmTC_bb418.exe" /INCREMENTAL /ILK:"cmTC_bb418.dir\\Debug\\cmTC_bb418.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-y6etf4/Debug/cmTC_bb418.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-y6etf4/Debug/cmTC_bb418.lib" /MACHINE:X64  /machine:x64 cmTC_bb418.dir\\Debug\\src.obj
+          cmTC_bb418.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\Debug\\cmTC_bb418.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_bb418.dir\\Debug\\cmTC_bb418.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_bb418.dir\\Debug\\cmTC_bb418.tlog\\cmTC_bb418.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-y6etf4\\cmTC_bb418.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.77
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+      La g├®n├®ration a d├®marr├® 10/04/2025 21:57:17.
+      
+      Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\3.31.0\\CompilerIdCXX\\CompilerIdCXX.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+      PrepareForBuild:
+        Cr├®ation du r├®pertoire "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Cr├®ation du r├®pertoire "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Cr├®ation de "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+        Mise ├á jour de l'horodatage "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\3.31.0\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Suppression du fichier "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Mise ├á jour de l'horodatage "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\3.31.0\\CompilerIdCXX\\CompilerIdCXX.vcxproj" termin├®e (cibles par d├®faut).
+      
+      La g├®n├®ration a r├®ussi.
+          0 Avertissement(s)
+          0 Erreur(s)
+      
+      Temps ├®coul├® 00:00:00.60
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/3.31.0/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fgfsqn"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fgfsqn"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fgfsqn'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_0b3b9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:18.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fgfsqn\\cmTC_0b3b9.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_0b3b9.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fgfsqn\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_0b3b9.dir\\Debug\\cmTC_0b3b9.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_0b3b9.dir\\Debug\\cmTC_0b3b9.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_0b3b9.dir\\Debug\\cmTC_0b3b9.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0b3b9.dir\\Debug\\\\" /Fd"cmTC_0b3b9.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0b3b9.dir\\Debug\\\\" /Fd"cmTC_0b3b9.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fgfsqn\\Debug\\cmTC_0b3b9.exe" /INCREMENTAL /ILK:"cmTC_0b3b9.dir\\Debug\\cmTC_0b3b9.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fgfsqn/Debug/cmTC_0b3b9.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-fgfsqn/Debug/cmTC_0b3b9.lib" /MACHINE:X64  /machine:x64 cmTC_0b3b9.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_0b3b9.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fgfsqn\\Debug\\cmTC_0b3b9.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_0b3b9.dir\\Debug\\cmTC_0b3b9.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_0b3b9.dir\\Debug\\cmTC_0b3b9.tlog\\cmTC_0b3b9.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fgfsqn\\cmTC_0b3b9.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.52
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.43.34809.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:88 (check_function_exists)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:97 (check_funcs)"
+    checks:
+      - "Looking for atexit"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-xwu4g1"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-xwu4g1"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_ATEXIT"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-xwu4g1'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_4bf98.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:21.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\cmTC_4bf98.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_4bf98.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_4bf98.dir\\Debug\\cmTC_4bf98.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_4bf98.dir\\Debug\\cmTC_4bf98.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_4bf98.dir\\Debug\\cmTC_4bf98.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=atexit /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_4bf98.dir\\Debug\\\\" /Fd"cmTC_4bf98.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=atexit /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_4bf98.dir\\Debug\\\\" /Fd"cmTC_4bf98.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\Debug\\cmTC_4bf98.exe" /INCREMENTAL /ILK:"cmTC_4bf98.dir\\Debug\\cmTC_4bf98.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-xwu4g1/Debug/cmTC_4bf98.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-xwu4g1/Debug/cmTC_4bf98.lib" /MACHINE:X64  /machine:x64 cmTC_4bf98.dir\\Debug\\CheckFunctionExists.obj
+          cmTC_4bf98.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\Debug\\cmTC_4bf98.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_4bf98.dir\\Debug\\cmTC_4bf98.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_4bf98.dir\\Debug\\cmTC_4bf98.tlog\\cmTC_4bf98.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-xwu4g1\\cmTC_4bf98.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.54
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:88 (check_function_exists)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:97 (check_funcs)"
+    checks:
+      - "Looking for mprotect"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2rbulc"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2rbulc"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_MPROTECT"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2rbulc'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_e65cf.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:22.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_e65cf.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_e65cf.dir\\Debug\\cmTC_e65cf.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_e65cf.dir\\Debug\\cmTC_e65cf.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_e65cf.dir\\Debug\\cmTC_e65cf.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=mprotect /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_e65cf.dir\\Debug\\\\" /Fd"cmTC_e65cf.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=mprotect /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_e65cf.dir\\Debug\\\\" /Fd"cmTC_e65cf.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\Debug\\cmTC_e65cf.exe" /INCREMENTAL /ILK:"cmTC_e65cf.dir\\Debug\\cmTC_e65cf.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2rbulc/Debug/cmTC_e65cf.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-2rbulc/Debug/cmTC_e65cf.lib" /MACHINE:X64  /machine:x64 cmTC_e65cf.dir\\Debug\\CheckFunctionExists.obj
+        CheckFunctionExists.obj : error LNK2019: unresolved external symbol mprotect referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj]
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\Debug\\cmTC_e65cf.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj" (cible par d├®faut) (1) ->
+        (Link cible) -> 
+          CheckFunctionExists.obj : error LNK2019: unresolved external symbol mprotect referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj]
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\Debug\\cmTC_e65cf.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-2rbulc\\cmTC_e65cf.vcxproj]
+        
+            0 Avertissement(s)
+            2 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.49
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:88 (check_function_exists)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:97 (check_funcs)"
+    checks:
+      - "Looking for sysconf"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-z8yspg"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-z8yspg"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_SYSCONF"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-z8yspg'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_d7bf6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:22.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_d7bf6.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_d7bf6.dir\\Debug\\cmTC_d7bf6.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_d7bf6.dir\\Debug\\cmTC_d7bf6.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_d7bf6.dir\\Debug\\cmTC_d7bf6.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=sysconf /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_d7bf6.dir\\Debug\\\\" /Fd"cmTC_d7bf6.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=sysconf /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_d7bf6.dir\\Debug\\\\" /Fd"cmTC_d7bf6.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\Debug\\cmTC_d7bf6.exe" /INCREMENTAL /ILK:"cmTC_d7bf6.dir\\Debug\\cmTC_d7bf6.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-z8yspg/Debug/cmTC_d7bf6.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-z8yspg/Debug/cmTC_d7bf6.lib" /MACHINE:X64  /machine:x64 cmTC_d7bf6.dir\\Debug\\CheckFunctionExists.obj
+        CheckFunctionExists.obj : error LNK2019: unresolved external symbol sysconf referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj]
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\Debug\\cmTC_d7bf6.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj" (cible par d├®faut) (1) ->
+        (Link cible) -> 
+          CheckFunctionExists.obj : error LNK2019: unresolved external symbol sysconf referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj]
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\Debug\\cmTC_d7bf6.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-z8yspg\\cmTC_d7bf6.vcxproj]
+        
+            0 Avertissement(s)
+            2 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.51
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:88 (check_function_exists)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:97 (check_funcs)"
+    checks:
+      - "Looking for getpagesize"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-dapmwe"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-dapmwe"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_GETPAGESIZE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-dapmwe'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_790a3.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:23.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_790a3.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_790a3.dir\\Debug\\cmTC_790a3.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_790a3.dir\\Debug\\cmTC_790a3.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_790a3.dir\\Debug\\cmTC_790a3.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=getpagesize /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_790a3.dir\\Debug\\\\" /Fd"cmTC_790a3.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=getpagesize /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_790a3.dir\\Debug\\\\" /Fd"cmTC_790a3.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\Debug\\cmTC_790a3.exe" /INCREMENTAL /ILK:"cmTC_790a3.dir\\Debug\\cmTC_790a3.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-dapmwe/Debug/cmTC_790a3.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-dapmwe/Debug/cmTC_790a3.lib" /MACHINE:X64  /machine:x64 cmTC_790a3.dir\\Debug\\CheckFunctionExists.obj
+        CheckFunctionExists.obj : error LNK2019: unresolved external symbol getpagesize referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj]
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\Debug\\cmTC_790a3.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj" (cible par d├®faut) (1) ->
+        (Link cible) -> 
+          CheckFunctionExists.obj : error LNK2019: unresolved external symbol getpagesize referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj]
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\Debug\\cmTC_790a3.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-dapmwe\\cmTC_790a3.vcxproj]
+        
+            0 Avertissement(s)
+            2 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.50
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:88 (check_function_exists)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:97 (check_funcs)"
+    checks:
+      - "Looking for mmap"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-x7fmwc"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-x7fmwc"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_MMAP"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-x7fmwc'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_bd142.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:24.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_bd142.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_bd142.dir\\Debug\\cmTC_bd142.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_bd142.dir\\Debug\\cmTC_bd142.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_bd142.dir\\Debug\\cmTC_bd142.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=mmap /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_bd142.dir\\Debug\\\\" /Fd"cmTC_bd142.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=mmap /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_bd142.dir\\Debug\\\\" /Fd"cmTC_bd142.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\Debug\\cmTC_bd142.exe" /INCREMENTAL /ILK:"cmTC_bd142.dir\\Debug\\cmTC_bd142.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-x7fmwc/Debug/cmTC_bd142.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-x7fmwc/Debug/cmTC_bd142.lib" /MACHINE:X64  /machine:x64 cmTC_bd142.dir\\Debug\\CheckFunctionExists.obj
+        CheckFunctionExists.obj : error LNK2019: unresolved external symbol mmap referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj]
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\Debug\\cmTC_bd142.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj" (cible par d├®faut) (1) ->
+        (Link cible) -> 
+          CheckFunctionExists.obj : error LNK2019: unresolved external symbol mmap referenced in function main [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj]
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\Debug\\cmTC_bd142.exe : fatal error LNK1120: 1 unresolved externals [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-x7fmwc\\cmTC_bd142.vcxproj]
+        
+            0 Avertissement(s)
+            2 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.51
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:88 (check_function_exists)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:97 (check_funcs)"
+    checks:
+      - "Looking for isatty"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-huzr78"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-huzr78"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_ISATTY"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-huzr78'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_438e7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:24.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\cmTC_438e7.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_438e7.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_438e7.dir\\Debug\\cmTC_438e7.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_438e7.dir\\Debug\\cmTC_438e7.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_438e7.dir\\Debug\\cmTC_438e7.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=isatty /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_438e7.dir\\Debug\\\\" /Fd"cmTC_438e7.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=isatty /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_438e7.dir\\Debug\\\\" /Fd"cmTC_438e7.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\Debug\\cmTC_438e7.exe" /INCREMENTAL /ILK:"cmTC_438e7.dir\\Debug\\cmTC_438e7.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-huzr78/Debug/cmTC_438e7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-huzr78/Debug/cmTC_438e7.lib" /MACHINE:X64  /machine:x64 cmTC_438e7.dir\\Debug\\CheckFunctionExists.obj
+          cmTC_438e7.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\Debug\\cmTC_438e7.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_438e7.dir\\Debug\\cmTC_438e7.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_438e7.dir\\Debug\\cmTC_438e7.tlog\\cmTC_438e7.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-huzr78\\cmTC_438e7.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.55
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:98 (check_include_file)"
+    checks:
+      - "Looking for unistd.h"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-afq3rd"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-afq3rd"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_UNISTD_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-afq3rd'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_53195.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:25.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\cmTC_53195.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_53195.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_53195.dir\\Debug\\cmTC_53195.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_53195.dir\\Debug\\cmTC_53195.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_53195.dir\\Debug\\cmTC_53195.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_53195.dir\\Debug\\\\" /Fd"cmTC_53195.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\CheckIncludeFile.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_53195.dir\\Debug\\\\" /Fd"cmTC_53195.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\CheckIncludeFile.c"
+          CheckIncludeFile.c
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\CheckIncludeFile.c(1,10): error C1083: Cannot open include file: 'unistd.h': No such file or directory [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\cmTC_53195.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\cmTC_53195.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\cmTC_53195.vcxproj" (cible par d├®faut) (1) ->
+        (ClCompile cible) -> 
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\CheckIncludeFile.c(1,10): error C1083: Cannot open include file: 'unistd.h': No such file or directory [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-afq3rd\\cmTC_53195.vcxproj]
+        
+            0 Avertissement(s)
+            1 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.30
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:102 (check_include_file)"
+    checks:
+      - "Looking for sys/mman.h"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-krq1xz"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-krq1xz"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_SYS_MMAN_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-krq1xz'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_bc120.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:26.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\cmTC_bc120.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_bc120.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_bc120.dir\\Debug\\cmTC_bc120.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_bc120.dir\\Debug\\cmTC_bc120.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_bc120.dir\\Debug\\cmTC_bc120.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_bc120.dir\\Debug\\\\" /Fd"cmTC_bc120.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\CheckIncludeFile.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_bc120.dir\\Debug\\\\" /Fd"cmTC_bc120.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\CheckIncludeFile.c"
+          CheckIncludeFile.c
+        C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\CheckIncludeFile.c(1,10): error C1083: Cannot open include file: 'sys/mman.h': No such file or directory [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\cmTC_bc120.vcxproj]
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\cmTC_bc120.vcxproj" termin├®e (cibles par d├®faut) -- ├ëCHEC.
+        
+        ├ëCHEC de la build.
+        
+        "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\cmTC_bc120.vcxproj" (cible par d├®faut) (1) ->
+        (ClCompile cible) -> 
+          C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\CheckIncludeFile.c(1,10): error C1083: Cannot open include file: 'sys/mman.h': No such file or directory [C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-krq1xz\\cmTC_bc120.vcxproj]
+        
+            0 Avertissement(s)
+            1 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.29
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake:99 (try_compile)"
+      - "vendored/SDL_ttf/external/harfbuzz/CMakeLists.txt:106 (check_include_file)"
+    checks:
+      - "Looking for stdbool.h"
+    directories:
+      source: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n29yxf"
+      binary: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n29yxf"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /W4 /permissive- /wd4100"
+      CMAKE_C_FLAGS_DEBUG: "/Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/vendored/SDL_ttf/cmake"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_STDBOOL_H"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n29yxf'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_b3be8.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Version MSBuild 17.13.19+0d9f5a35a pour .NET Framework
+        La g├®n├®ration a d├®marr├® 10/04/2025 21:57:26.
+        
+        Projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\cmTC_b3be8.vcxproj" sur le n┼ôud 1 (cibles par d├®faut).
+        PrepareForBuild:
+          Cr├®ation du r├®pertoire "cmTC_b3be8.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Cr├®ation du r├®pertoire "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\Debug\\".
+          Cr├®ation du r├®pertoire "cmTC_b3be8.dir\\Debug\\cmTC_b3be8.tlog\\".
+        InitializeBuildStatus:
+          Cr├®ation de "cmTC_b3be8.dir\\Debug\\cmTC_b3be8.tlog\\unsuccessfulbuild", car "AlwaysCreate" a ├®t├® sp├®cifi├®.
+          Mise ├á jour de l'horodatage "cmTC_b3be8.dir\\Debug\\cmTC_b3be8.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\CL.exe /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b3be8.dir\\Debug\\\\" /Fd"cmTC_b3be8.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\CheckIncludeFile.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34809 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"cmTC_b3be8.dir\\Debug\\\\" /Fd"cmTC_b3be8.dir\\Debug\\vc143.pdb" /external:W4 /Gd /TC /wd4100 /errorReport:queue "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\CheckIncludeFile.c"
+          CheckIncludeFile.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.43.34808\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\Debug\\cmTC_b3be8.exe" /INCREMENTAL /ILK:"cmTC_b3be8.dir\\Debug\\cmTC_b3be8.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n29yxf/Debug/cmTC_b3be8.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Corentin.recanzone/Desktop/Organization CrzGames/Crzgames_RC2DCore_refacto/build/CMakeFiles/CMakeScratch/TryCompile-n29yxf/Debug/cmTC_b3be8.lib" /MACHINE:X64  /machine:x64 cmTC_b3be8.dir\\Debug\\CheckIncludeFile.obj
+          cmTC_b3be8.vcxproj -> C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\Debug\\cmTC_b3be8.exe
+        FinalizeBuildStatus:
+          Suppression du fichier "cmTC_b3be8.dir\\Debug\\cmTC_b3be8.tlog\\unsuccessfulbuild".
+          Mise ├á jour de l'horodatage "cmTC_b3be8.dir\\Debug\\cmTC_b3be8.tlog\\cmTC_b3be8.lastbuildstate".
+        G├®n├®ration du projet "C:\\Users\\Corentin.recanzone\\Desktop\\Organization CrzGames\\Crzgames_RC2DCore_refacto\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n29yxf\\cmTC_b3be8.vcxproj" termin├®e (cibles par d├®faut).
+        
+        La g├®n├®ration a r├®ussi.
+            0 Avertissement(s)
+            0 Erreur(s)
+        
+        Temps ├®coul├® 00:00:00.54
+        
+      exitCode: 0
+...
