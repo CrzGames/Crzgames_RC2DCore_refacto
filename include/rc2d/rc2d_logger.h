@@ -1,7 +1,7 @@
 #ifndef RC2D_LOGGER_H
 #define RC2D_LOGGER_H
 
-#include <SDL3/SDL_assert.h> // Required for : SDL_FILE, SDL_LINE, SDL_FUNCTION
+#include <RC2D/RC2D_assert.h>
 #include <stdarg.h> // Required for : ... (va_list, va_start, va_end, vsnprintf)
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
@@ -27,7 +27,7 @@ extern "C" {
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  */
 #define RC2D_log(level, format, ...) \
-    rc2d_log_internal((level), SDL_FILE, SDL_LINE, SDL_FUNCTION, (format), ##__VA_ARGS__)
+    rc2d_log((level), SDL_FILE, SDL_LINE, SDL_FUNCTION, (format), ##__VA_ARGS__)
 
 /**
  * \brief Cette enum est utilisée pour définir le niveau de priorité des messages de log.
@@ -60,6 +60,17 @@ typedef enum RC2D_LogLevel {
      */
     RC2D_LOG_CRITICAL   
 } RC2D_LogLevel;
+
+/**
+ * \brief Récupère le niveau de priorité actuel pour les logs RC2D.
+ *
+ * \return Le niveau de priorité courant.
+ *
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+RC2D_LogLevel rc2d_log_get_priority(void);
 
 /**
  * \brief Définit le niveau de priorité des messages de log.

@@ -1,15 +1,6 @@
 #ifndef RC2D_ASSERT_H
 #define RC2D_ASSERT_H
 
-#include <RC2D/RC2D_logger.h>
-
-#include <SDL3/SDL_assert.h>
-
-/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * \brief Cette valeur change en fonction des options du compilateur et d'autres définitions du préprocesseur.
  *
@@ -25,7 +16,23 @@ extern "C" {
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  */
 #ifndef RC2D_ASSERT_LEVEL
-#define RC2D_ASSERT_LEVEL 2
+    #define RC2D_ASSERT_LEVEL 3
+#endif
+
+/**
+ * Synchronise avec SDL_ASSERT_LEVEL *avant* l'include de : SDL_assert.h
+ */
+#ifndef SDL_ASSERT_LEVEL
+    #define SDL_ASSERT_LEVEL RC2D_ASSERT_LEVEL
+#endif
+
+#include <RC2D/RC2D_logger.h>
+
+#include <SDL3/SDL_assert.h>
+
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /**

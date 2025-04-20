@@ -31,6 +31,11 @@ static const char* rc2d_log_level_to_string(RC2D_LogLevel level)
     }
 }
 
+RC2D_LogLevel rc2d_log_get_priority(void)
+{
+    return currentLogLevel;
+}
+
 void rc2d_log_set_priority(const RC2D_LogLevel logLevel) 
 {
     // Enregistre le niveau de log actuel
@@ -65,7 +70,7 @@ void rc2d_log_set_priority(const RC2D_LogLevel logLevel)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_log_internal(const RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...)
+void rc2d_log(const RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...)
 {
     /**
      * Vérifie si le niveau de log est inférieur au niveau actuel

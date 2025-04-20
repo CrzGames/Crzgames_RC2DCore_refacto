@@ -1410,7 +1410,7 @@ bool rc2d_configure(const RC2D_Config* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARNING, "No RC2D_AppInfo provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_AppInfo provided. Using default values.");
     }
 
     // Set les callbacks pour la librairie RC2D
@@ -1420,7 +1420,7 @@ bool rc2d_configure(const RC2D_Config* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARNING, "No RC2D_Callbacks provided. Some events may not be handled.");
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_Callbacks provided. Some events may not be handled.");
     }
 
     // Set frame in flight
@@ -1453,7 +1453,7 @@ bool rc2d_configure(const RC2D_Config* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARNING, "Invalid window size width provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid window size width provided. Using default values.");
     }
 
     if (config->windowHeight > 0)
@@ -1462,7 +1462,7 @@ bool rc2d_configure(const RC2D_Config* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARNING, "Invalid window size height provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid window size height provided. Using default values.");
     }
 
     // Set logical size
@@ -1472,7 +1472,7 @@ bool rc2d_configure(const RC2D_Config* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARNING, "Invalid logical size width provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid logical size width provided. Using default values.");
     }
 
     if (config->logicalHeight > 0)
@@ -1481,7 +1481,7 @@ bool rc2d_configure(const RC2D_Config* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARNING, "Invalid logical size height provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid logical size height provided. Using default values.");
     }
     
     // Set presentation mode : RC2D_PRESENTATION_PIXELART ou RC2D_PRESENTATION_CLASSIC
