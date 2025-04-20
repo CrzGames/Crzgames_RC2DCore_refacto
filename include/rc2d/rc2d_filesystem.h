@@ -3,7 +3,8 @@
 
 #include <RC2D/RC2D_data.h> // Required for : RC2D_DataType
 
-#include <SDL3/SDL.h> // Required for : Sint64
+#include <SDL3/SDL_stdinc.h> // Required for : Sint64
+
 #include <stdbool.h> // Required for : bool
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */

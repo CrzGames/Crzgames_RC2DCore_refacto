@@ -1,7 +1,8 @@
 #ifndef RC2D_JOYSTICK_H
 #define RC2D_JOYSTICK_H
 
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_gamepad.h>
+#include <SDL3/SDL_joystick.h>
 
 #include <stdbool.h> // Required for : bool
 
