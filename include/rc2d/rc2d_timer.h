@@ -37,7 +37,9 @@ typedef struct RC2D_Timer {
      * 
      * La fonction doit suivre le prototype `SDL_NSTimerCallback`, prendre trois paramètres :
      * `(void *userdata, SDL_TimerID timerID, Uint64 interval)` et retourner un `Uint64`.
-     * Elle est appelée depuis un thread distinct : attention aux accès concurrents aux données partagées.
+     * 
+     * Si la fonction retourne `0`, le minuteur est annulé et supprimé.
+     * Si elle retourne une valeur différente de `0`, le minuteur continue à s'exécuter avec le nouvel intervalle spécifié.
      */
 	SDL_NSTimerCallback callback_func;
 
@@ -45,8 +47,6 @@ typedef struct RC2D_Timer {
      * \brief Paramètre utilisateur transmis au callback.
      * 
      * Ce pointeur permet de passer des données personnalisées au callback.
-     * Il peut pointer vers n'importe quelle structure ou contexte nécessaire 
-	 * à l’exécution de la logique de temporisation.
      */
 	void* userdata;           
 } RC2D_Timer;
