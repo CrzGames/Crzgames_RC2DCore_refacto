@@ -30,11 +30,6 @@
 
 #include <SDL3/SDL_assert.h>
 
-/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * \brief Assertion de RC2D de niveau 1 (RC2D_assert_release).
  * 
@@ -172,11 +167,6 @@ extern "C" {
 } while (0)
 #else
 #define RC2D_assert_paranoid(condition, logLevel, format, ...) SDL_disabled_assert(condition)
-#endif
-
-/* Termine les définitions de fonctions C lors de l'utilisation de C++ */
-#ifdef __cplusplus
-}
 #endif
 
 #endif // RC2D_ASSERT_H
