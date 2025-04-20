@@ -14,7 +14,7 @@ SDL_GPUPresentMode rc2d_gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
 SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
 
 RC2D_AppInfo rc2d_app_info = {0};
-rc2d_app_info.name = "RC2D";
+rc2d_app_info.name = "RC2D Engine";
 rc2d_app_info.version = "1.0.0";
 rc2d_app_info.identifier = "com.rc2d.app";
 
@@ -451,6 +451,29 @@ SDL_AppResult rc2d_processevent(void)
         return SDL_APP_SUCCESS;
     }
 
+    // La préférence de la langue local à changé
+    else if (rc2d_event.type == SDL_EVENT_LOCALE_CHANGED)
+    {
+        if (rc2d_callbacks_engine.rc2d_localechanged != NULL) 
+        {
+            rc2d_callbacks_engine.rc2d_localechanged();
+        }
+    }
+
+    else if (rc2d_event.type == SDL_EVENT_DISPLAY_ORIENTATION) 
+    {
+        if (rc2d_callbacks_engine.rc2d_displayorientation != NULL) 
+        {
+            rc2d_callbacks_engine.rc2d_displayorientation(rc2d_event.display.orientation);
+        }
+    }
+
+    else if (rc2d_event.type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
+    {
+        // Met à jour le viewport GPU et le render scale
+        rc2d_calculate_renderscale_and_gpuviewport();
+    }
+
     // Window HDR State changed
     else if (rc2d_event.type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
     {
@@ -573,11 +596,6 @@ SDL_AppResult rc2d_processevent(void)
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_calculate_renderscale_and_gpuviewport();
-
-        if (rc2d_callbacks_engine.rc2d_windowpixelsizechanged != NULL) 
-        {
-            rc2d_callbacks_engine.rc2d_windowpixelsizechanged(rc2d_event.window.data1, rc2d_event.window.data2);
-        }   
     }
 
     // Window display scale changed
@@ -588,11 +606,6 @@ SDL_AppResult rc2d_processevent(void)
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_calculate_renderscale_and_gpuviewport();
-
-        if (rc2d_callbacks_engine.rc2d_windowdisplayscalechanged != NULL) 
-        {
-            rc2d_callbacks_engine.rc2d_windowdisplayscalechanged();
-        }
     }
 
     // Window resized
@@ -625,14 +638,17 @@ SDL_AppResult rc2d_processevent(void)
     else if (rc2d_event.window.event == SDL_EVENT_WINDOW_DISPLAY_CHANGED) 
     {
         /**
-         * Quand la fenêtre est déplacée sur un autre moniteur, 
-         * on met à jour les FPS en fonction du moniteur actuel.
+         * Quand la fenêtre change de moniteur,
+         * on met à jour la largeur et la hauteur de la fenêtre
+         * on met à jour les FPS en fonction du moniteur actuel
+         * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_update_fps_based_on_monitor();
+        rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowsizedchanged != NULL) 
+        if (rc2d_callbacks_engine.rc2d_windowdisplaychanged != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowsizedchanged(rc2d_event.window.data1, rc2d_event.window.data2);
+            rc2d_callbacks_engine.rc2d_windowdisplaychanged(rc2d_event.window.data1, rc2d_event.window.data2);
         }
     }
 
@@ -1033,7 +1049,7 @@ static bool rc2d_engine(void)
      * Doit être appelé avant tout code pour initialiser les asserts 
      * et les utiliser dès le début de l'application.
      */
-    RC2D_InitAssert()
+    RC2D_InitAssert();
 
     /**
      * Set les informations de l'application
@@ -1074,31 +1090,15 @@ static bool rc2d_engine(void)
     }
 
 	/**
-     * Check si il y a au moins un adpateur video connectee a l ordinateur.
-	 * Un adaptateur est en realite un port video auquel peut etre connecte un moniteur.
-     */
-    int num_displays;
-	if (SDL_GetDisplays(&num_displays) == NULL)
-	{
-		RC2D_log(RC2D_LOG_CRITICAL, "Error getting displays: %s \n", SDL_GetError());
-		return false;
-	}
-    if (num_displays == NULL)
-    {
-        RC2D_log(RC2D_LOG_CRITICAL, "No video port connected : %s \n", SDL_GetError());
-        return false;
-    }
-
-	/**
      * SDL3
      * Créer la fenêtre principale de l'application
      */
 	SDL_PropertiesID window_props = SDL_CreateProperties();
-    SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, rc2d_app_info.name ? rc2d_app_info.name : "RC2D Engine");
+    SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, rc2d_app_info.name);
     SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, rc2d_window_width);
     SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, rc2d_window_height);
-    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, SDL_TRUE);
-    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, SDL_TRUE);
+    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
+    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
     SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
     SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
 
@@ -1106,7 +1106,7 @@ static bool rc2d_engine(void)
      * Cache la fenêtre tant que le rendu GPU n'est pas prêt..etc pour éviter des artefacts visuels.
      * On l'affichera plus tard juste avant le début de la boucle de jeu.
      */
-    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, SDL_TRUE);
+    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
 
     rc2d_window = SDL_CreateWindowWithProperties(window_props);
     SDL_DestroyProperties(window_props);
@@ -1309,13 +1309,6 @@ static bool rc2d_engine(void)
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to set GPU frames in flight: %s", SDL_GetError());
     }
-    
-    /**
-     * Printer les backends GPU disponibles sur la plateforme 
-     * qui est en cours d'utilisation
-     */
-    const char *driver = SDL_GetGPUDriver(rc2d_gpu_device);
-    RC2D_log(RC2D_LOG_INFO, "GPU backend: %s", driver ? driver : "unknown");
 
     /**
      * Calcul initial du viewport GPU et de l'échelle de rendu pour l'ensemble de l'application.

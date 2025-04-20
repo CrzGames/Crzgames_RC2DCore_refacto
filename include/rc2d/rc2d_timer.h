@@ -24,7 +24,7 @@ typedef struct RC2D_Timer {
 	SDL_TimerID id;
 	
     /**
-     * \brief Intervalle entre deux exécutions du callback, en nanosecondes.
+     * \brief Intervalle entre deux exécutions de la callback, en nanosecondes.
      * 
      * Cette valeur détermine la fréquence à laquelle la fonction `callback_func` est appelée.
      * Exemple : `1000000000` = 1 seconde.
@@ -44,7 +44,8 @@ typedef struct RC2D_Timer {
      * \brief Paramètre utilisateur transmis au callback.
      * 
      * Ce pointeur permet de passer des données personnalisées au callback.
-     * Il peut pointer vers n'importe quelle structure ou contexte nécessaire à l’exécution de la logique de temporisation.
+     * Il peut pointer vers n'importe quelle structure ou contexte nécessaire 
+	 * à l’exécution de la logique de temporisation.
      */
 	void* userdata;           
 } RC2D_Timer;
