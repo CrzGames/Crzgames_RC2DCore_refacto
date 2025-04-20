@@ -75,6 +75,18 @@ extern RC2D_Callbacks rc2d_callbacks_engine;
  */
 void RC2D_InitAssert(void);
 
+/**
+ * \brief Initialise le timer de haute précision utilisé pour mesurer le temps écoulé. 
+ * 
+ * Cette fonction est appelée automatiquement lors de l'initialisation du système de timer de RC2D 
+ * et ne doit généralement pas être appelée directement.
+ * 
+ * \threadsafety Il est possible d'appeler cette fonction en toute sécurité à partir de n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_timer_init(void);
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 }

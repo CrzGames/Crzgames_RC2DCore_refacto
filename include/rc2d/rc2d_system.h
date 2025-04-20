@@ -78,7 +78,7 @@ void rc2d_system_setClipboardText(const char* text);
 /**
  * \brief Libère la mémoire allouée par SDL_GetClipboardText().
  * 
- * @param {char*} text - Le texte à libérer.
+ * \param {char*} text - Le texte à libérer.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -90,7 +90,7 @@ void rc2d_system_freeClipboardText(char* text);
  * \brief Ouvre une URL dans le navigateur web par défaut de l'utilisateur 
  * ou dans une autre application externe appropriée.
  * 
- * @param {const char*} url - L'URL à ouvrir.
+ * \param {const char*} url - L'URL à ouvrir.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -120,8 +120,6 @@ int rc2d_system_getNumLogicalCPUCores(void);
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 int rc2d_system_getRAM(void);
-
-void rc2d_system_vibrate(const double seconds, const float strength);
 
 /**
  * \brief Demander si l'appareil actuel est une tablette.
@@ -159,6 +157,9 @@ bool rc2d_system_isTV(void);
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 RC2D_Sandbox rc2d_system_getSandbox(void);
+
+// TODO: A revoir
+void rc2d_system_vibrate(const double seconds, const float strength);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
