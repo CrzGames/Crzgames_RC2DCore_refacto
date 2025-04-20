@@ -2,6 +2,7 @@
 #define RC2D_LOGGER_H
 
 #include <RC2D/RC2D_assert.h>
+
 #include <stdarg.h> // Required for : ... (va_list, va_start, va_end, vsnprintf)
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
