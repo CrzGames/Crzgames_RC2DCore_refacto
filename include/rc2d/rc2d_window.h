@@ -43,7 +43,7 @@ typedef struct RC2D_DisplayMode {
 typedef Uint32 RC2D_DisplayID;
 
 /**
- * Enumération représentant les orientations d'affichage.
+ * \brief Enum représentant les orientations d'affichage.
  *
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
@@ -77,7 +77,7 @@ typedef enum RC2D_DisplayOrientation {
 } RC2D_DisplayOrientation;
 
 /**
- * Structure représentant les informations sur le mode plein écran.
+ * \brief Structure représentant les informations sur le mode plein écran.
  *
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
@@ -94,7 +94,7 @@ typedef struct RC2D_FullscreenInfo {
 } RC2D_FullscreenInfo;
 
 /**
- * Enumération représentant les types de mode plein écran.
+ * \brief Enum représentant les types de mode plein écran.
  *
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
@@ -132,6 +132,8 @@ typedef enum RC2D_FullscreenType {
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getTitle
  */
 void rc2d_window_setTitle(const char *title);
 
@@ -149,27 +151,32 @@ void rc2d_window_setTitle(const char *title);
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getFullscreen
  */
 void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType type, const syncWindow bool);
 
 /**
  * \brief Active ou désactive la synchronisation verticale (VSync).
  *
- * \details La synchronisation verticale permet de synchroniser le taux de 
- * rafraîchissement de l'affichage du moniteur, avec le taux de rafraîchissement 
- * de la fenêtre pour réduire le déchirement de l'image.
+ * La synchronisation verticale permet de synchroniser le taux de rafraîchissement 
+ * de l'affichage du moniteur, avec le taux de rafraîchissement de la fenêtre pour 
+ * réduire le déchirement de l'image.
  *
  * \param {bool} vsync - true pour activer la synchronisation verticale, false pour la désactiver.
  * 
+ * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getVSync
  */
 void rc2d_window_setVSync(const bool vsync);
 
 /**
  * \brief Définit la taille de la fenêtre de l'application.
  * 
- * \details Cette fonction ajuste la taille de la fenêtre à la largeur
- * et à la hauteur spécifiées.
+ * Cette fonction ajuste la taille de la fenêtre à la largeur et à la hauteur spécifiées.
  *
  * \param {int} width - La nouvelle largeur de la fenêtre en pixels.
  * \param {int} height - La nouvelle hauteur de la fenêtre en pixels.
@@ -177,6 +184,9 @@ void rc2d_window_setVSync(const bool vsync);
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getWidth
+ * \see rc2d_window_getHeight
  */
 void rc2d_window_setSize(const int width, const int height);
 
@@ -186,12 +196,14 @@ void rc2d_window_setSize(const int width, const int height);
  * \details La position de la fenêtre est dans l'espace de coordonnées 
  * du moniteur contenant la fenêtre.
  * 
- * @param {int} x - La coordonnée x de la position de la fenêtre.
- * @param {int} y - La coordonnée y de la position de la fenêtre.
+ * \param {int} x - La coordonnée x de la position de la fenêtre.
+ * \param {int} y - La coordonnée y de la position de la fenêtre.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getPosition
  */
 void rc2d_window_setPosition(const int x, const int y);
 
@@ -209,94 +221,114 @@ void rc2d_window_setPosition(const int x, const int y);
 int rc2d_window_getDisplayCount(void);
 
 /**
- * Récupère le nom du moniteur spécifié.
+ * \brief Récupère le nom du moniteur spécifié.
  *
- * @param {int} displayID - L'ID du moniteur à récupérer.
- * @return {const char *} - Le nom du moniteur.
+ * \param {int} displayID - L'ID du moniteur à récupérer.
+ * \return {const char *} - Le nom du moniteur.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getDisplayCount
+ * \see rc2d_window_getDisplayForWindow
  */
 const char *rc2d_window_getDisplayName(int displayID);
 
 /**
- * Récupère l'orientation actuelle du moniteur principal qui contient la fenêtre.
+ * \brief Récupère l'orientation actuelle du moniteur principal qui contient la fenêtre.
  *
- * @return {RC2D_DisplayOrientation} - L'orientation actuelle du moniteur principal
+ * \return {RC2D_DisplayOrientation} - L'orientation actuelle du moniteur principal
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getDisplayCount
+ * \see rc2d_window_getDisplayName
+ * \see rc2d_window_getDisplayForWindow
  */
 RC2D_DisplayOrientation rc2d_window_getDisplayOrientation(void);
 
 /**
- * Récupère le titre de la fenêtre.
+ * \brief Récupère le titre de la fenêtre.
  *
- * @return {const char *} - Le titre de la fenêtre.
+ * \return {const char *} - Le titre de la fenêtre.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_setTitle
  */
 const char *rc2d_window_getTitle(void);
 
 /**
- * Récupère la valeur actuelle de VSync.
+ * \brief Permet de savoir si la synchronisation verticale (VSync) est activée.
  *
- * @return {bool} - true si VSync est activé, sinon false.
+ * \return {bool} - true si VSync est activé, sinon false.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_setVSync
  */
 bool rc2d_window_getVSync(void);
 
 /**
- * Récupère la position de la fenêtre à l'écran.
+ * \brief Récupère la position de la fenêtre à l'écran.
  *
- * @param {int *} x - La coordonnée x de la position de la fenêtre.
- * @param {int *} y - La coordonnée y de la position de la fenêtre.
+ * \param {int *} x - La coordonnée x de la position de la fenêtre.
+ * \param {int *} y - La coordonnée y de la position de la fenêtre.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_setPosition
  */
 void rc2d_window_getPosition(int *x, int *y);
 
 /**
- * Récupère si la fenêtre est en mode plein écran.
+ * \brief Permet de savoir si la fenêtre est en mode plein écran.
  *
- * @return true si la fenêtre est en mode plein écran, sinon false.
+ * \return {RC2D_FullscreenInfo} - Informations sur le mode plein écran de la fenêtre.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_setFullscreen
  */
 RC2D_FullscreenInfo rc2d_window_getFullscreen(void);
 
 /**
- * Récupère la hauteur actuelle de la fenêtre de l'application.
+ * \brief Récupère la hauteur actuelle de la fenêtre de l'application.
  *
- * @return {int} - La hauteur de la fenêtre en pixels.
+ * \return {int} - La hauteur de la fenêtre en pixels.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getWidth
+ * \see rc2d_window_getSize
  */
 int rc2d_window_getHeight(void);
 
 /**
- * Récupère la largeur actuelle de la fenêtre de l'application.
+ * \brief Récupère la largeur actuelle de la fenêtre de l'application.
  *
- * @return {int} - La largeur de la fenêtre en pixels.
+ * \return {int} - La largeur de la fenêtre en pixels.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_getHeight
+ * \see rc2d_window_getSize
  */
 int rc2d_window_getWidth(void);
 
 /**
- * Restaure la fenêtre à sa taille et position d'origine 
- * si elle était minimisée ou maximisée.
+ * \brief Restaure la fenêtre à sa taille et position d'origine si elle était minimisée ou maximisée.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
@@ -305,69 +337,81 @@ int rc2d_window_getWidth(void);
 void rc2d_window_restore(void);
 
 /**
- * Vérifie si la fenêtre est minimisée.
+ * \brief Vérifie si la fenêtre est minimisée.
  *
- * @return true si la fenêtre est minimisée, sinon false.
+ * \return {bool} - true si la fenêtre est minimisée, sinon false.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_isMinimized
  */
 bool rc2d_window_isMaximized(void);
 
 /**
- * Vérifie si la fenêtre est maximisée.
+ * \brief Vérifie si la fenêtre est maximisée.
  *
- * @return true si la fenêtre est maximisée, sinon false.
+ * \return {bool} - true si la fenêtre est maximisée, sinon false.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_isMaximized
  */
 bool rc2d_window_isMinimized(void);
 
 /**
- * Vérifie si la fenêtre du jeu est visible.
+ * \brief Vérifie si la fenêtre du jeu est visible.
  *
- * @return true si la fenêtre est visible, sinon false.
+ * \return {bool} - true si la fenêtre est visible, sinon false.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 bool rc2d_window_isVisible(void);
 
 /**
- * Maximise la fenêtre.
+ * \brief Maximise la fenêtre.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_isMaximized
  */
 void rc2d_window_maximize(void);
 
 /**
- * Minimise la fenêtre.
+ * \brief Minimise la fenêtre.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_isMinimized
  */
 void rc2d_window_minimize(void);
 
 /**
- * Vérifie si la fenêtre du jeu a le focus du clavier.
+ * \brief Vérifie si la fenêtre du jeu a le focus du clavier.
  *
- * @return true si la fenêtre a le focus du clavier, sinon false.
+ * \return {bool} - true si la fenêtre a le focus du clavier, sinon false.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_hasMouseFocus
  */
 bool rc2d_window_hasKeyboardFocus(void);
 
 /**
- * Vérifie si la fenêtre du jeu a le focus de la souris.
+ * \brief Vérifie si la fenêtre du jeu a le focus de la souris.
  *
- * @return true si la fenêtre a le focus de la souris, sinon false.
+ * \return {bool} - true si la fenêtre a le focus de la souris, sinon false.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_hasKeyboardFocus
  */
 bool rc2d_window_hasMouseFocus(void);
 
@@ -398,17 +442,16 @@ float rc2d_window_getPixelDensity(void);
 /**
  * \brief Récupère la taille logique de la fenêtre (en coordonnées natives, pas en pixels réels).
  *
- * \details
  * Cette fonction renvoie la largeur et la hauteur actuelles de la fenêtre en unités logiques,
  * c’est-à-dire sans prendre en compte la densité de pixels ou l’échelle de rendu.
  *
  * Sur les écrans haute densité (HiDPI, Retina...), cette taille est souvent plus petite
  * que la taille réelle en pixels, car l’utilisateur attend une interface plus lisible.
  *
- * \param width - Pointeur vers un entier où sera stockée la largeur de la fenêtre (en unités logiques).
- * \param height - Pointeur vers un entier où sera stockée la hauteur de la fenêtre (en unités logiques).
- *
  * \note Les pointeurs peuvent être NULL si la valeur n’est pas désirée.
+ * 
+ * \param {int *} width - Pointeur vers un entier où sera stockée la largeur de la fenêtre (en unités logiques).
+ * \param {int *} height - Pointeur vers un entier où sera stockée la hauteur de la fenêtre (en unités logiques).
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  *
@@ -421,16 +464,15 @@ void rc2d_window_getSize(int *width, int *height);
 /**
  * \brief Récupère la taille réelle de la fenêtre en pixels physiques (HiDPI).
  *
- * \details
  * Cette fonction renvoie la taille de la surface de rendu réelle utilisée par le GPU.
  * Elle est utile pour adapter manuellement ton rendu à la densité de pixels, surtout
  * sur des écrans Retina ou HiDPI. Par exemple, une fenêtre de 800x600 avec un facteur
  * de pixel density de 2.0 donnera une taille physique de 1600x1200.
  *
- * \param width - Pointeur vers un entier où sera stockée la largeur physique (en pixels).
- * \param height - Pointeur vers un entier où sera stockée la hauteur physique (en pixels).
- *
  * \note Les pointeurs peuvent être NULL si la valeur n’est pas désirée.
+ * 
+ * \param {int *} width - Pointeur vers un entier où sera stockée la largeur physique (en pixels).
+ * \param {int *} height - Pointeur vers un entier où sera stockée la hauteur physique (en pixels).
  *
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
@@ -446,18 +488,17 @@ void rc2d_window_getSizeInPixels(int *width, int *height);
 /**
  * \brief Récupère le facteur de mise à l’échelle d’affichage appliqué à la fenêtre.
  *
- * \details
  * Cette valeur représente l’échelle d’affichage de l’OS (souvent définie par l’utilisateur)
  * pour améliorer la lisibilité des interfaces sur les écrans à haute densité.
  *
  * Par exemple :
- * - Windows avec 200% de mise à l’échelle, 
- * - macOS Retina avec le flag High Pixel Density
+ * - Windows avec 200% de mise à l’échelle.
+ * - macOS Retina avec le flag High Pixel Density.
  * Cette fonction retournera 2.0.
  *
  * Cela permet d’ajuster la taille logique des éléments de l’UI sans sacrifier la qualité visuelle.
  *
- * \return Le facteur de mise à l’échelle (ex: 1.0f, 2.0f, etc.). Retourne 0.0f par défaut si échec.
+ * \return {float} - Le facteur de mise à l’échelle (ex: 1.0f, 2.0f, etc.). Retourne 0.0f par défaut si échec.
  *
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
@@ -473,7 +514,6 @@ float rc2d_window_getDisplayScale(void);
 /**
  * \brief Récupère le facteur de mise à l’échelle du contenu de la fenêtre.
  *
- * \details
  * Cette valeur est le produit de rc2d_window_getPixelDensity() et rc2d_window_getDisplayScale().
  * Le calcul est fait ainsi : pixel_density * display_scale.
  *
@@ -484,7 +524,7 @@ float rc2d_window_getDisplayScale(void);
  * - macOS Retina avec pixelDensity = 2.0 et displayScale = 1.0 → contentScale = 2.0
  * - Windows 4K avec 200% de mise à l’échelle → displayScale = 2.0, pixelDensity = 1.0 → contentScale = 2.0
  *
- * \return Le facteur total d’échelle du contenu. Retourne 0.0f si erreur.
+ * \return {float} - Le facteur de mise à l’échelle du contenu (ex: 1.0f, 2.0f, etc.). Retourne 0.0f par défaut si échec.
  *
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
@@ -500,7 +540,6 @@ float rc2d_window_getContentScale(void);
 /**
  * @brief Récupère la zone sûre (safe area) de la fenêtre actuelle.
  * 
- * @details
  * Cette fonction permet d'obtenir la région de la fenêtre qui est garantie d'être visible à l'utilisateur,
  * c'est-à-dire non obstruée par des éléments système comme :
  * - l'encoche (notch) d’un iPhone ou d’un appareil Android moderne,
@@ -512,15 +551,15 @@ float rc2d_window_getContentScale(void);
  * 
  * Sur les plateformes où cette information n’est pas disponible, la zone retournée couvrira l’intégralité
  * de la fenêtre.
- *  * 
+ * 
+ * \note Tous les pointeurs peuvent être NULL si la valeur n’est pas souhaitée.
+ *
  * \param {int*} x - Pointeur vers une variable où sera stockée la position X du coin supérieur gauche de la zone sûre.
  * \param {int*} y - Pointeur vers une variable où sera stockée la position Y du coin supérieur gauche de la zone sûre.
  * \param {int*} w - Pointeur vers une variable où sera stockée la largeur de la zone sûre.
  * \param {int*} h - Pointeur vers une variable où sera stockée la hauteur de la zone sûre.
  * 
- * \note Tous les pointeurs peuvent être NULL si la valeur n’est pas souhaitée.
- * 
- * \since This function is available since RC2D 1.0.0.
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_window_getWidth
  * \see rc2d_window_getHeight
@@ -530,12 +569,11 @@ void rc2d_window_getSafeArea(int *x, int *y, int *w, int *h);
 /**
  * \brief Définit si la fenêtre peut être redimensionnée par l'utilisateur.
  *
- * \details
  * Cette fonction permet d'autoriser ou d'interdire le redimensionnement de la fenêtre par l'utilisateur. 
  * Sur les plateformes qui supportent cette fonctionnalité, cela affecte l'apparence de la bordure de la fenêtre
  * et permet à l'utilisateur de changer sa taille manuellement avec la souris ou le doigt.
  *
- * Cela peut être utile pour des applications dont la taille d'affichage doit être figée, comme certains jeux ou kiosques.
+ * Cela peut être utile pour des applications dont la taille d'affichage doit être figée, comme certains jeux.
  *
  * \param {bool} resizable - true pour autoriser le redimensionnement, false pour le désactiver.
  *
@@ -548,7 +586,6 @@ void rc2d_window_setResizable(bool resizable);
 /**
  * \brief Indique si la fenêtre actuelle est redimensionnable.
  *
- * \details
  * Retourne true si l'utilisateur peut redimensionner la fenêtre à l'aide de la souris ou du doigt.
  * Cela reflète l'état défini précédemment par `rc2d_window_setResizable` ou lors de la création de la fenêtre.
  *
@@ -563,7 +600,6 @@ bool rc2d_window_isResizable(void);
 /**
  * \brief Définit si la fenêtre doit rester toujours au-dessus des autres fenêtres.
  *
- * \details
  * Lorsque activé, la fenêtre restera visible au-dessus des autres fenêtres, même si elle n'a pas le focus.
  * Cela est utile pour les fenêtres flottantes, HUDs, ou des overlays persistants.
  *
@@ -576,7 +612,6 @@ void rc2d_window_setAlwaysOnTop(bool enable);
 /**
  * \brief Active ou désactive la capture de la souris pour la fenêtre actuelle.
  *
- * \details
  * Lorsque la capture de souris est activée (`true`), tous les événements de souris
  * sont redirigés vers la fenêtre, même si le curseur sort visuellement de ses limites.
  *
@@ -598,7 +633,6 @@ void rc2d_window_setMouseGrabbed(bool grabbed);
 /**
  * \brief Vérifie si la fenêtre actuelle a capturé la souris.
  *
- * \details
  * Retourne `true` si la souris est actuellement capturée par la fenêtre, 
  * c’est-à-dire que les événements de souris ne sortent pas de la fenêtre même si le curseur le fait.
  *
@@ -616,7 +650,6 @@ bool rc2d_window_isMouseGrabbed(void);
 /**
  * \brief Active ou désactive la capture du clavier pour la fenêtre actuelle.
  *
- * \details
  * Cela permet d’assigner tous les événements clavier à la fenêtre même si celle-ci n’a pas le focus système.
  * C’est utile dans les contextes spécifiques comme les applications en kiosque, les émulateurs ou le multifenêtrage.
  *
@@ -631,7 +664,6 @@ void rc2d_window_setKeyboardGrabbed(bool grabbed);
 /**
  * \brief Vérifie si la fenêtre actuelle a capturé le clavier.
  *
- * \details
  * Retourne `true` si la fenêtre a capturé l'entrée clavier,
  * indépendamment du focus système.
  *
@@ -646,7 +678,6 @@ bool rc2d_window_isKeyboardGrabbed(void);
 /**
  * \brief Vérifie si la souris est capturée par la fenêtre actuelle.
  *
- * \details
  * Cette fonction indique si la fenêtre actuelle a activé le mode de capture de la souris,
  * c’est-à-dire que tous les événements de souris sont redirigés vers la fenêtre,
  * même si le curseur sort de ses limites.
@@ -658,13 +689,14 @@ bool rc2d_window_isKeyboardGrabbed(void);
  * \return {bool} - true si la souris est capturée, false sinon.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_setMouseCaptured
  */
 bool rc2d_window_isMouseCaptured(void);
 
 /**
  * \brief Active ou désactive la capture de la souris.
  *
- * \details
  * Lorsqu’elle est activée, tous les événements de souris sont dirigés vers la fenêtre,
  * même si le curseur sort de ses limites. Cela est utile pour les FPS ou les éditeurs 3D.
  * 
@@ -675,39 +707,42 @@ bool rc2d_window_isMouseCaptured(void);
  * \param {bool} capture - true pour activer la capture, false pour la désactiver.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_isMouseCaptured
  */
 void rc2d_window_setMouseCaptured(bool capture);
 
 /**
  * \brief Vérifie si la fenêtre utilise le mode relatif de la souris.
  *
- * \details
  * En mode relatif, les mouvements de la souris sont rapportés sous forme de décalages
  * depuis la dernière position, et le curseur est masqué.
  *
  * \return {bool} - true si le mode relatif est activé, false sinon.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_setMouseRelativeMode
  */
 bool rc2d_window_isMouseInRelativeMode(void);
 
 /**
  * \brief Active ou désactive le mode relatif de la souris.
  *
- * \details
  * Ce mode est utilisé pour obtenir des mouvements de souris relatifs sans limite d’écran,
  * utile notamment pour les jeux à la première personne.
  *
  * \param {bool} enabled - true pour activer, false pour désactiver.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_window_isMouseInRelativeMode
  */
 void rc2d_window_setMouseRelativeMode(bool enabled);
 
 /**
  * \brief Vérifie si la fenêtre est actuellement masquée derrière d’autres fenêtres (occlusion).
  *
- * \details
  * Une fenêtre est considérée comme *occluded* si elle est entièrement couverte
  * par d’autres fenêtres ou n’est pas visible à l’écran, bien qu’elle soit techniquement ouverte.
  *
@@ -726,7 +761,6 @@ bool rc2d_window_isOccluded(void);
 /**
  * \brief Vérifie si la fenêtre ne peut pas recevoir le focus.
  *
- * \details
  * Cela peut être utilisé pour créer des fenêtres non interactives, comme certains overlays ou HUD.
  *
  * \return {bool} - true si la fenêtre est non-focusable, false sinon.
@@ -738,7 +772,6 @@ bool rc2d_window_isNotFocusable(void);
 /**
  * \brief Récupère l'ID de l'affichage contenant la fenêtre actuelle.
  *
- * \details
  * Cette fonction retourne l'identifiant de l'affichage sur lequel la fenêtre est actuellement affichée.
  * Cela peut être utile pour déterminer sur quel écran l'application est exécutée, surtout dans un environnement multi-écran.
  *
