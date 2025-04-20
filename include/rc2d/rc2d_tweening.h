@@ -84,6 +84,8 @@ Standard tweening functions:
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} Le facteur d'interpolation calculé pour la décroissance.
  *
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 double rc2d_tweening_decay(const double x);
@@ -94,6 +96,8 @@ double rc2d_tweening_decay(const double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un effet de saut parabolique.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 double rc2d_tweening_parabolicJump(const double x);
@@ -103,6 +107,8 @@ double rc2d_tweening_parabolicJump(const double x);
  *
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un démarrage en douceur.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -117,6 +123,8 @@ double rc2d_tweening_smoothStart(const double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un arrêt en douceur.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_tweening_smoothStart
@@ -129,6 +137,8 @@ double rc2d_tweening_smoothStop(const double x);
  *
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un démarrage et un arrêt en douceur.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -143,6 +153,8 @@ double rc2d_tweening_smoothStep(const double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un effet de dépassement au démarrage.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_tweening_easeOutOvershoot
@@ -156,6 +168,8 @@ double rc2d_tweening_easeInOvershoot(const double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un effet de dépassement à la fin.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_tweening_easeInOvershoot
@@ -168,6 +182,8 @@ double rc2d_tweening_easeOutOvershoot(double x);
  *
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur interpolée avec un effet de dépassement au démarrage et à la fin.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -183,6 +199,8 @@ double rc2d_tweening_easeInOutOvershoot(double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur d'interpolation calculée, simulant un comportement de type ressort au début de l'animation.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_tweening_easeOutSpring
@@ -196,6 +214,8 @@ double rc2d_tweening_easeInSpring(const double x);
  *
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur d'interpolation calculée, simulant un comportement de type ressort à la fin de l'animation.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -212,6 +232,8 @@ double rc2d_tweening_easeOutSpring(const double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur d'interpolation calculée, simulant un comportement de type ressort sur toute la durée de l'animation.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_tweening_easeInSpring
@@ -225,6 +247,8 @@ double rc2d_tweening_easeInOutSpring(const double x);
  *
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur d'interpolation calculée pour l'accélération.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -240,6 +264,8 @@ double rc2d_tweening_easeInCos(const double x);
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur d'interpolation calculée pour la décélération.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_tweening_easeInCos
@@ -248,11 +274,13 @@ double rc2d_tweening_easeInCos(const double x);
 double rc2d_tweening_easeOutCos(const double x);
 
 /**
- * Combine les effets d'accélération et de décélération cosinusiques, pour une transition en douceur du début à la fin.
+ * \brief Combine les effets d'accélération et de décélération cosinusiques, pour une transition en douceur du début à la fin.
  * La progression démarre et se termine lentement, avec une accélération plus rapide au milieu.
  *
  * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
  * \return {double} La valeur d'interpolation calculée pour l'accélération et la décélération.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -262,242 +290,453 @@ double rc2d_tweening_easeOutCos(const double x);
 double rc2d_tweening_easeInOutCos(const double x);
 
 /**
- * Applique une fonction d'accélération sinusoidale à l'entrée x, où l'accélération augmente au début.
+ * \brief Applique une fonction d'accélération sinusoidale à l'entrée x, où l'accélération augmente au début.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour l'accélération sinusoidale.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutSine
+ * \see rc2d_tweening_easeInOutSine
  */
 double rc2d_tweening_easeInSine(const double x);
 
 /**
- * Applique une fonction de décélération sinusoidale à l'entrée x, où la décélération se produit à la fin.
+ * \brief Applique une fonction de décélération sinusoidale à l'entrée x, où la décélération se produit à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour la décélération sinusoidale.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInSine
+ * \see rc2d_tweening_easeInOutSine
  */
 double rc2d_tweening_easeOutSine(const double x);
 
 /**
- * Combine les fonctions d'accélération et de décélération sinusoidales, accélérant au début et décélérant à la fin.
+ * \brief Applique les fonctions d'accélération et de décélération sinusoidales, accélérant au début et décélérant à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération et de la décélération.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour l'accélération et la décélération sinusoidales.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInSine
+ * \see rc2d_tweening_easeOutSine
  */
 double rc2d_tweening_easeInOutSine(const double x);
 
 /**
- * Combine les fonctions d'accélération et de décélération cubiques, accélérant au début et décélérant à la fin.
+ * \brief Applique les fonctions d'accélération et de décélération cubiques, accélérant au début et décélérant à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des fonctions cubiques.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour l'accélération et la décélération cubiques.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInCubic
+ * \see rc2d_tweening_easeOutCubic
  */
 double rc2d_tweening_easeInCubic(const double x);
 
 /**
- * Applique une fonction de décélération cubique à l'entrée x, où la décélération est plus marquée à la fin.
+ * \brief Applique une fonction de décélération cubique à l'entrée x, où la décélération est plus marquée à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération cubique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour la décélération cubique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInCubic
+ * \see rc2d_tweening_easeInOutCubic
  */
 double rc2d_tweening_easeOutCubic(const double x);
 
 /**
- * Applique une fonction d'accélération cubique à l'entrée x, où l'accélération augmente plus rapidement.
+ * \brief Applique une fonction d'accélération cubique à l'entrée x, où l'accélération augmente plus rapidement.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération cubique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour l'accélération cubique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInCubic
+ * \see rc2d_tweening_easeOutCubic
  */
 double rc2d_tweening_easeInOutCubic(const double x);
 
 /**
- * Applique une fonction d'accélération élastique à l'entrée x, simulant une élasticité au début de l'animation.
+ * \brief Applique une fonction d'accélération élastique à l'entrée x, simulant une élasticité au début de l'animation.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération élastique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour l'accélération élastique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutElastic
+ * \see rc2d_tweening_easeInOutElastic
  */
 double rc2d_tweening_easeInElastic(const double x);
 
 /**
- * Applique une fonction de décélération élastique à l'entrée x, simulant une fin d'animation élastique et rebondissante.
+ * \brief Applique une fonction de décélération élastique à l'entrée x, simulant une fin d'animation élastique et rebondissante.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération élastique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour la décélération élastique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInElastic
+ * \see rc2d_tweening_easeInOutElastic
  */
 double rc2d_tweening_easeOutElastic(const double x);
 
 /**
- * Combine les fonctions d'accélération et de décélération élastiques, offrant une transition élastique du début à la fin.
+ * \brief Applique les fonctions d'accélération et de décélération élastiques, offrant une transition élastique du début à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des fonctions élastiques.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur d'interpolation calculée pour l'accélération et la décélération élastiques.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInElastic
+ * \see rc2d_tweening_easeOutElastic
  */
 double rc2d_tweening_easeInOutElastic(const double x);
 
 /**
- * Applique une accélération quadratique à l'entrée x, créant un effet d'accélération douce au début.
+ * \brief Applique une accélération quadratique à l'entrée x, créant un effet d'accélération douce au début.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération quadratique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération quadratique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutQuad
+ * \see rc2d_tweening_easeInOutQuad
  */
 double rc2d_tweening_easeInQuad(const double x);
 
 /**
- * Applique une décélération quadratique à l'entrée x, créant un effet de décélération douce vers la fin.
+ * \brief Applique une décélération quadratique à l'entrée x, créant un effet de décélération douce vers la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération quadratique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération quadratique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInQuad
+ * \see rc2d_tweening_easeInOutQuad
  */
 double rc2d_tweening_easeOutQuad(const double x);
 
 /**
- * Combine les effets d'accélération et de décélération quadratiques, pour un mouvement doux au début et à la fin.
+ * \brief Applique les effets d'accélération et de décélération quadratiques, pour un mouvement doux au début et à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des effets combinés.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInQuad
+ * \see rc2d_tweening_easeOutQuad
  */
 double rc2d_tweening_easeInOutQuad(const double x);
 
 /**
- * Applique une accélération quartique à l'entrée x, offrant un effet d'accélération plus marqué qu'avec une fonction cubique.
+ * \brief Applique une accélération quartique à l'entrée x, offrant un effet d'accélération plus marqué qu'avec une fonction cubique.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération quartique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération quartique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutQuart
+ * \see rc2d_tweening_easeInOutQuart
  */
 double rc2d_tweening_easeInQuart(const double x);
 
 /**
- * Applique une décélération quartique à l'entrée x, offrant un effet de décélération plus intense vers la fin.
+ * \brief Applique une décélération quartique à l'entrée x, offrant un effet de décélération plus intense vers la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération quartique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération quartique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInQuart
+ * \see rc2d_tweening_easeInOutQuart
  */
 double rc2d_tweening_easeOutQuart(const double x);
 
 /**
- * Combine les effets d'accélération et de décélération quartiques, pour un mouvement très dynamique au début et à la fin.
+ * \brief Applique les effets d'accélération et de décélération quartiques, pour un mouvement très dynamique au début et à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des effets combinés.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInQuart
+ * \see rc2d_tweening_easeOutQuart
  */
 double rc2d_tweening_easeInOutQuart(const double x);
 
 /**
- * Applique une fonction d'accélération quintique à l'entrée x, où l'accélération augmente de manière encore plus marquée.
+ * \brief Applique une fonction d'accélération quintique à l'entrée x, où l'accélération augmente de manière encore plus marquée.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération quintique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération quintique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutQuint
+ * \see rc2d_tweening_easeInOutQuint
  */
 double rc2d_tweening_easeInQuint(const double x);
 
 /**
- * Applique une fonction de décélération quintique à l'entrée x, offrant une décélération très marquée à la fin.
+ * \brief Applique une fonction de décélération quintique à l'entrée x, offrant une décélération très marquée à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération quintique.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération quintique.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInQuint
+ * \see rc2d_tweening_easeInOutQuint
  */
 double rc2d_tweening_easeOutQuint(const double x);
 
 /**
- * Combine les fonctions d'accélération et de décélération quintiques, pour une transition très dynamique de début à fin.
+ * \brief Applique les fonctions d'accélération et de décélération quintiques, pour une transition très dynamique de début à fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des fonctions quintiques.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInQuint
+ * \see rc2d_tweening_easeOutQuint
  */
 double rc2d_tweening_easeInOutQuint(const double x);
 
 /**
- * Applique une fonction d'accélération circulaire à l'entrée x, débutant lentement et accélérant en suivant une courbe circulaire.
+ * \brief Applique une fonction d'accélération circulaire à l'entrée x, débutant lentement et accélérant en suivant une courbe circulaire.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération circulaire.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération circulaire.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutCirc
+ * \see rc2d_tweening_easeInOutCirc
  */
 double rc2d_tweening_easeInCirc(const double x);
 
 /**
- * Applique une fonction de décélération circulaire à l'entrée x, décélérant suivant une courbe circulaire vers la fin.
+ * \brief Applique une fonction de décélération circulaire à l'entrée x, décélérant suivant une courbe circulaire vers la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération circulaire.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération circulaire.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInCirc
+ * \see rc2d_tweening_easeInOutCirc
  */
 double rc2d_tweening_easeOutCirc(const double x);
 
 /**
- * Combine les fonctions d'accélération et de décélération circulaires, offrant une transition douce et arrondie du début à la fin.
+ * \brief Applique les fonctions d'accélération et de décélération circulaires, offrant une transition douce et 
+ * arrondie du début à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des fonctions circulaires.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInCirc
+ * \see rc2d_tweening_easeOutCirc
  */
 double rc2d_tweening_easeInOutCirc(const double x);
 
 /**
- * Applique une accélération exponentielle à l'entrée x, offrant un démarrage lent suivi d'une accélération rapide.
+ * \brief Applique une accélération exponentielle à l'entrée x, offrant un démarrage lent suivi d'une accélération rapide.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération exponentielle.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération exponentielle.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutExpo
+ * \see rc2d_tweening_easeInOutExpo
  */
 double rc2d_tweening_easeInExpo(const double x);
 
 /**
- * Applique une décélération exponentielle à l'entrée x, permettant un ralentissement rapide vers la fin.
+ * \brief Applique une décélération exponentielle à l'entrée x, permettant un ralentissement rapide vers la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération exponentielle.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération exponentielle.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInExpo
+ * \see rc2d_tweening_easeInOutExpo
  */
 double rc2d_tweening_easeOutExpo(const double x);
 
 /**
- * Combine les effets d'accélération et de décélération exponentielles, pour une transition rapide au milieu.
+ * \brief Applique les effets d'accélération et de décélération exponentielles, pour une transition rapide au milieu.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des effets combinés.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInExpo
+ * \see rc2d_tweening_easeOutExpo
  */
 double rc2d_tweening_easeInOutExpo(const double x);
 
 /**
- * Applique une accélération "back" à l'entrée x, offrant un léger recul au début pour un effet dynamique.
+ * \brief Applique une accélération "back" à l'entrée x, offrant un léger recul au début pour un effet dynamique.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération "back".
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération "back".
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutBack
+ * \see rc2d_tweening_easeInOutBack
  */
 double rc2d_tweening_easeInBack(const double x);
 
 /**
- * Applique une décélération "back" à l'entrée x, créant un effet de rebondissement vers la fin.
+ * \brief Applique une décélération "back" à l'entrée x, créant un effet de rebondissement vers la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération "back".
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération "back".
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInBack
+ * \see rc2d_tweening_easeInOutBack
  */
 double rc2d_tweening_easeOutBack(const double x);
 
 /**
- * Combine les effets d'accélération et de décélération "back", pour un mouvement dynamique au début et à la fin.
+ * \brief Applique les effets d'accélération et de décélération "back", pour un mouvement dynamique au début et à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des effets combinés.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInBack
+ * \see rc2d_tweening_easeOutBack
  */
 double rc2d_tweening_easeInOutBack(const double x);
 
 /**
- * Applique une fonction d'accélération "bounce" à l'entrée x, simulant un effet de rebondissement au début.
+ * \brief Applique une fonction d'accélération "bounce" à l'entrée x, simulant un effet de rebondissement au début.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de l'accélération "bounce".
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de l'accélération "bounce".
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeOutBounce
+ * \see rc2d_tweening_easeInOutBounce
  */
 double rc2d_tweening_easeInBounce(const double x);
 
 /**
- * Applique une fonction de décélération "bounce" à l'entrée x, simulant un effet de rebondissement vers la fin.
+ * \brief Applique une fonction de décélération "bounce" à l'entrée x, simulant un effet de rebondissement vers la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application de la décélération "bounce".
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application de la décélération "bounce".
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInBounce
+ * \see rc2d_tweening_easeInOutBounce
  */
 double rc2d_tweening_easeOutBounce(double x);
 
 /**
- * Combine les fonctions d'accélération et de décélération "bounce", pour un effet de rebondissement du début à la fin.
+ * \brief Applique les fonctions d'accélération et de décélération "bounce", pour un effet de rebondissement du début à la fin.
  *
- * @param x La valeur d'entrée, typiquement dans l'intervalle [0, 1].
- * @return La valeur après application des fonctions de rebondissement.
+ * \param {double} x - La valeur d'entrée, typiquement dans l'intervalle [0, 1], représentant la progression de l'animation.
+ * \return {double} La valeur après application des effets combinés.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_tweening_easeInBounce
+ * \see rc2d_tweening_easeOutBounce
  */
 double rc2d_tweening_easeInOutBounce(const double x);
 

@@ -25,7 +25,7 @@ extern "C" {
  *
  * \since Ce type de données est disponible depuis RC2D 1.0.0.
  */
-typedef enum RC2D_KeyCode
+typedef enum RC2D_Keycode
 {
     RC2D_UNKNOWN = SDLK_UNKNOWN,
 
@@ -292,7 +292,7 @@ typedef enum RC2D_KeyCode
     RC2D_RMETA = SDLK_RMETA,
     RC2D_LHYPER = SDLK_LHYPER,
     RC2D_RHYPER = SDLK_RHYPER
-} RC2D_KeyCode;
+} RC2D_Keycode;
 
 /**
  * Modificateurs de clé valides (éventuellement combinés par OU).

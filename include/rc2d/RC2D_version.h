@@ -4,6 +4,8 @@
 /**
  * \brief Version majeure de la bibliothèque RC2D.
  * 
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
+ * 
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  * 
  * \see RC2D_VERSION_MINOR
@@ -14,6 +16,8 @@
 /**
  * \brief Version mineure de la bibliothèque RC2D.
  * 
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
+ *
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  * 
  * \see RC2D_VERSION_MAJOR
@@ -24,6 +28,8 @@
 /**
  * \brief Version de correction de la bibliothèque RC2D.
  * 
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
+ *
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  * 
  * \see RC2D_VERSION_MAJOR

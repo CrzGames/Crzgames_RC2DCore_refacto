@@ -11,7 +11,7 @@
  * 
  * \note Par défaut, cette valeur est définie sur 3, mais vous pouvez la modifier en fonction de vos besoins.
  * 
- * \threadsafety Il est possible d'appeler cette macro en toute sécurité à partir de n'importe quel thread.
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
  * 
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  */
@@ -59,7 +59,7 @@
  * \param message Le message d'erreur à afficher si la condition échoue.
  * \param {RC2D_LogLevel} logLevel Le niveau de log à utiliser pour afficher le message d'erreur.
  * 
- * \threadsafety Il est possible d'appeler cette macro en toute sécurité à partir de n'importe quel thread.
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
  * 
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  * 
@@ -105,7 +105,7 @@
  * \param message Le message d'erreur à afficher si la condition échoue.
  * \param {RC2D_LogLevel} logLevel Le niveau de log à utiliser pour afficher le message d'erreur.
  * 
- * \threadsafety Il est possible d'appeler cette macro en toute sécurité à partir de n'importe quel thread.
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
  * 
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  * 
@@ -151,7 +151,7 @@
  * \param message Le message d'erreur à afficher si la condition échoue.
  * \param {RC2D_LogLevel} logLevel Le niveau de log à utiliser pour afficher le message d'erreur.
  * 
- * \threadsafety Il est possible d'appeler cette macro en toute sécurité à partir de n'importe quel thread.
+ * \threadsafety Il est possible d'appeler cette macro de préprocesseur en toute sécurité à partir de n'importe quel thread.
  * 
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  * 

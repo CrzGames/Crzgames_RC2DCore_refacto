@@ -196,9 +196,11 @@ void rc2d_window_setSize(const int width, const int height);
 void rc2d_window_setPosition(const int x, const int y);
 
 /**
- * Récupère le nombre de moniteurs connectés.
+ * TODO: A REVOIR
+ * 
+ * \brief Récupère le nombre de moniteurs connectés.
  *
- * @return {int} - Le nombre de moniteurs connectés.
+ * \return {int} - Le nombre de moniteurs connectés.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
