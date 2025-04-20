@@ -9,7 +9,7 @@
  * 2 : Paramètres de Debug : RC2D_assert et RC2DL_assert_release activés.
  * 3 : Paramètres Paranoid : RC2D_assert, RC2D_assert_release et RC2D_assert_paranoid activés.
  * 
- * \note Par défaut, cette valeur est définie sur 2, mais vous pouvez la modifier en fonction de vos besoins.
+ * \note Par défaut, cette valeur est définie sur 3, mais vous pouvez la modifier en fonction de vos besoins.
  * 
  * \threadsafety Il est possible d'appeler cette macro en toute sécurité à partir de n'importe quel thread.
  * 
