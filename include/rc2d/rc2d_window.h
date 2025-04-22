@@ -3,6 +3,8 @@
 
 #include <RC2D/RC2D_pixels.h>
 
+#include <SDL3/SDL_video.h>
+
 #include <stdbool.h> // Required for : bool
 #include <stdint.h> // Required for : uint32_t
 
@@ -10,6 +12,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Il s'agit d'un identifiant unique pour un écran pendant la durée de sa connexion au système, 
+ * qui n'est jamais réutilisé pendant la durée de vie de l'application.
+ *
+ * Si l'écran est déconnecté puis reconnecté, il recevra un nouvel identifiant.
+ *
+ * La valeur 0 est un identifiant non valide.
+ *
+ * \since Ce type de données est disponible depuis RC2D 1.0.0.
+ */
+typedef SDL_DisplayID RC2D_DisplayID;
 
 /**
  * \brief TODO
@@ -29,18 +43,6 @@ typedef struct RC2D_DisplayMode {
     int refresh_rate_numerator;
     int refresh_rate_denominator;
 } RC2D_DisplayMode;
-
-/**
- * Il s'agit d'un identifiant unique pour un écran pendant la durée de sa connexion au système, 
- * qui n'est jamais réutilisé pendant la durée de vie de l'application.
- *
- * Si l'écran est déconnecté puis reconnecté, il recevra un nouvel identifiant.
- *
- * La valeur 0 est un identifiant non valide.
- *
- * \since Ce type de données est disponible depuis RC2D 1.0.0.
- */
-typedef Uint32 RC2D_DisplayID;
 
 /**
  * \brief Enum représentant les orientations d'affichage.
@@ -77,23 +79,6 @@ typedef enum RC2D_DisplayOrientation {
 } RC2D_DisplayOrientation;
 
 /**
- * \brief Structure représentant les informations sur le mode plein écran.
- *
- * \since Cette structure est disponible depuis RC2D 1.0.0.
- */
-typedef struct RC2D_FullscreenInfo {
-    /**
-     * Indique si la fenêtre est en mode plein écran ou non.
-     */
-    bool is_fullscreen;
-
-    /**
-     * Indique si la fenêtre est en mode plein écran exclusif ou non.
-     */
-    RC2D_FullscreenType type;
-} RC2D_FullscreenInfo;
-
-/**
  * \brief Enum représentant les types de mode plein écran.
  *
  * \since Cette enum est disponible depuis RC2D 1.0.0.
@@ -125,6 +110,23 @@ typedef enum RC2D_FullscreenType {
 } RC2D_FullscreenType;
 
 /**
+ * \brief Structure représentant les informations sur le mode plein écran.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_FullscreenInfo {
+    /**
+     * Indique si la fenêtre est en mode plein écran ou non.
+     */
+    bool is_fullscreen;
+
+    /**
+     * Indique si la fenêtre est en mode plein écran exclusif ou non.
+     */
+    RC2D_FullscreenType type;
+} RC2D_FullscreenInfo;
+
+/**
  * \brief Définit le titre de la fenêtre de l'application.
  *
  * \param {const char *} title - Le titre de la fenêtre.
@@ -154,7 +156,7 @@ void rc2d_window_setTitle(const char *title);
  * 
  * \see rc2d_window_getFullscreen
  */
-void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType type, const syncWindow bool);
+void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType type, const bool syncWindow);
 
 /**
  * \brief Active ou désactive la synchronisation verticale (VSync).

@@ -6,7 +6,7 @@
 static bool rc2d_is_current_fullscreen = false;
 static RC2D_FullscreenType rc2d_current_fullscreen_type = RC2D_FULLSCREEN_NONE;
 
-static bool rc2d_window_hasFlag(Uint32 flag)
+static bool rc2d_window_hasFlag(Uint64 flag)
 {
     // Vérifie si la fenêtre est valide
     if (rc2d_engine_state.window == NULL)
@@ -40,13 +40,13 @@ void rc2d_window_setTitle(const char *title)
     }
 
     // Définit le titre de la fenêtre
-	(!SDL_SetWindowTitle(rc2d_engine_state.window, title))
+	if (!SDL_SetWindowTitle(rc2d_engine_state.window, title))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir le titre de la fenêtre : %s\n", SDL_GetError());
     }
 }
 
-void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType type, const syncWindow bool)
+void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType type, const bool syncWindow)
 {
     // Vérifie si la fenêtre est valide
     if (rc2d_engine_state.window == NULL)
@@ -241,14 +241,15 @@ int rc2d_window_getHeight(void)
     if (rc2d_engine_state.window == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour récupérer la hauteur.\n");
-        return;
+        return -1;
     }
 
     // Récupère la hauteur de la fenêtre
 	int height;
-	(!SDL_GetWindowSize(rc2d_engine_state.window, NULL, &height))
+	if (!SDL_GetWindowSize(rc2d_engine_state.window, NULL, &height))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer la hauteur de la fenêtre : %s\n", SDL_GetError());
+        return -1;
     }
 
     // Renvoie la hauteur de la fenêtre
@@ -261,14 +262,15 @@ int rc2d_window_getWidth(void)
     if (rc2d_engine_state.window == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour récupérer la largeur.\n");
-        return;
+        return -1;
     }
 
     // Récupère la largeur de la fenêtre
 	int width;
-	(!SDL_GetWindowSize(rc2d_engine_state.window, &width, NULL))
+	if (!SDL_GetWindowSize(rc2d_engine_state.window, &width, NULL))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer la largeur de la fenêtre : %s\n", SDL_GetError());
+        return -1;
     }
 
     // Renvoie la largeur de la fenêtre
@@ -292,7 +294,7 @@ void rc2d_window_setSize(const int width, const int height)
     }
 
     // Définit la taille de la fenêtre
-	(!SDL_SetWindowSize(rc2d_engine_state.window, width, height))
+	if (!SDL_SetWindowSize(rc2d_engine_state.window, width, height))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir la taille de la fenêtre : %s\n", SDL_GetError());
     }
@@ -301,8 +303,9 @@ void rc2d_window_setSize(const int width, const int height)
 int rc2d_window_getDisplayCount(void) 
 {
     // Utilise SDL_GetDisplays pour obtenir le nombre de moniteurs connectés
-    int numDisplays = SDL_GetDisplays();
-    if (numDisplays == NULL)
+    int numDisplays = 0;
+    SDL_DisplayID *displays = SDL_GetDisplays(&numDisplays);
+    if (displays == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer le nombre de moniteurs connectés : %s dans rc2d_window_getDisplayCount().\n", SDL_GetError());
         return 0;
@@ -484,7 +487,7 @@ void rc2d_window_minimize(void)
         return;
     }
 
-    (!SDL_MinimizeWindow(rc2d_engine_state.window))
+    if (!SDL_MinimizeWindow(rc2d_engine_state.window))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de minimiser la fenêtre : %s\n", SDL_GetError());
     }
@@ -502,7 +505,7 @@ void rc2d_window_maximize(void)
         return;
     }
 
-    (!SDL_MaximizeWindow(rc2d_engine_state.window))
+    if (!SDL_MaximizeWindow(rc2d_engine_state.window))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de maximiser la fenêtre : %s\n", SDL_GetError());
     }
@@ -545,7 +548,7 @@ void rc2d_window_restore(void)
      * Restaure la fenêtre à sa taille et position d'origine 
      * si elle était minimisée ou maximisée.
      */
-    (!SDL_RestoreWindow(rc2d_engine_state.window))
+    if (!SDL_RestoreWindow(rc2d_engine_state.window))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de restaurer la fenêtre : %s\n", SDL_GetError());
     }
@@ -598,7 +601,7 @@ void rc2d_window_getSizeInPixels(int *width, int *height)
     }
 
     // Récupère la taille de la fenêtre en pixels physiques (HiDPI)
-    (!SDL_GetWindowSizeInPixels(rc2d_engine_state.window, width, height))
+    if (!SDL_GetWindowSizeInPixels(rc2d_engine_state.window, width, height))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer la taille en pixels de la fenêtre : %s", SDL_GetError());
     }
@@ -675,7 +678,7 @@ void rc2d_window_setResizable(bool resizable)
     }
 
     // Set la redimensionnabilité de la fenêtre
-    (!SDL_SetWindowResizable(rc2d_engine_state.window, resizable))
+    if (!SDL_SetWindowResizable(rc2d_engine_state.window, resizable))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir la redimensionnabilité de la fenêtre : %s\n", SDL_GetError());
     }
@@ -703,7 +706,7 @@ void rc2d_window_setAlwaysOnTop(bool enable)
     }
 
     // Définit l'état always-on-top de la fenêtre
-    (!SDL_SetWindowAlwaysOnTop(rc2d_engine_state.window, enable))
+    if (!SDL_SetWindowAlwaysOnTop(rc2d_engine_state.window, enable))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir l'état always-on-top de la fenêtre : %s\n", SDL_GetError());
     }
@@ -719,7 +722,7 @@ void rc2d_window_setMouseGrabbed(bool grabbed)
     }
 
     // Définit la capture de souris de la fenêtre
-    (!SDL_SetWindowMouseGrab(rc2d_engine_state.window, grabbed))
+    if (!SDL_SetWindowMouseGrab(rc2d_engine_state.window, grabbed))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir la capture de souris : %s\n", SDL_GetError());
     }
@@ -748,7 +751,7 @@ void rc2d_window_setKeyboardGrabbed(bool grabbed)
     }
 
     // Définit la capture du clavier de la fenêtre
-    (!SDL_SetWindowKeyboardGrab(rc2d_engine_state.window, grabbed))
+    if (!SDL_SetWindowKeyboardGrab(rc2d_engine_state.window, grabbed))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir la capture du clavier : %s\n", SDL_GetError());
     }
@@ -789,7 +792,7 @@ bool rc2d_window_isMouseCaptured(void)
 void rc2d_window_setMouseCaptured(bool capture)
 {
     // Active ou désactive la capture de la souris pour la fenêtre
-    (!SDL_CaptureMouse(capture))
+    if (!SDL_CaptureMouse(capture))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir la capture de la souris : %s\n", SDL_GetError());
     }
@@ -811,7 +814,7 @@ void rc2d_window_setMouseRelativeMode(bool enabled)
     }
 
     // Définit le mode relatif de la souris de la fenêtre
-    (!SDL_SetWindowRelativeMouseMode(rc2d_engine_state.window, enabled))
+    if (!SDL_SetWindowRelativeMouseMode(rc2d_engine_state.window, enabled))
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de définir le mode relatif de la souris : %s\n", SDL_GetError());
     }
