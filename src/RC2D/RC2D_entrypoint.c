@@ -12,42 +12,26 @@
  */
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) 
 {
-    // Met à NULL le pointeur d'état de l'application
+    /**
+     * Met à NULL le pointeur d'état de l'application.
+     */
     *appstate = NULL;
 
     /**
-     * Récupérer la configuration de l'application RC2D, dont le 
-     * prototype est défini dans le fichier RC2D.h
-     * 
      * La définition de la fonction rc2d_setup doit être définie par l'utilisateur.
      */
     const RC2D_Config* config = rc2d_setup();
-    if (config == NULL)
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to get configuration from rc2d_setup");
 
-        /**
-         * SDL_APP_FAILURE : Cela vas appeler SDL_AppQuit et terminer 
-         * le processus avec un code de sortie signalant une erreur 
-         * à la plateforme.
-         */
-        return SDL_APP_FAILURE;
-    }
+    /**
+     * Si la configuration est NULL, alors on utilise la configuration par défaut de RC2D.
+     */
+    rc2d_configure(config);
 
-    // Set the config to the engine
-    (!rc2d_configure(config))
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to configure rc2d engine");
-
-        /**
-         * SDL_APP_FAILURE : Cela vas appeler SDL_AppQuit et terminer 
-         * le processus avec un code de sortie signalant une erreur 
-         * à la plateforme.
-         */
-        return SDL_APP_FAILURE;
-    }
-
-    // Initliaze le framework RC2D
+    /**
+     * Initialise le moteur RC2D.
+     * 
+     * Si l'initialisation échoue, on retourne SDL_APP_FAILURE.
+     */
 	if(!rc2d_init())
     {
         /**
@@ -99,7 +83,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
 SDL_AppResult SDL_AppIterate(void *appstate) 
 {
     /**
-     * Si le jeu n'est pas en cours d'exécution, on sort de la boucle principale.
+     * Si le jeu n'est plus en cours d'exécution, on sort de la boucle principale.
      * 
      * Si elle renvoie SDL_APP_SUCCESS, l'application appelle SDL_AppQuit et 
      * termine avec un code de sortie signalant la réussite à la plateforme.

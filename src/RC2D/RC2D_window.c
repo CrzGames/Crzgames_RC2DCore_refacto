@@ -1,6 +1,7 @@
 #include <RC2D/RC2D_window.h>
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_math.h>
 
 static bool rc2d_is_current_fullscreen = false;
 static RC2D_FullscreenType rc2d_current_fullscreen_type = RC2D_FULLSCREEN_NONE;
@@ -414,29 +415,6 @@ bool rc2d_window_getVSync(void)
     return rc2d_gpu_present_mode != SDL_GPU_PRESENTMODE_IMMEDIATE;
 }
 
-void rc2d_window_getPosition(int *x, int *y) 
-{
-    // Vérifie si la fenêtre est valide
-    if (rc2d_window == NULL)
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour récupérer la position.\n");
-        return;
-    }
-
-    // Vérifie si les pointeurs sont valides (non NULL)
-    if (x == NULL || y == NULL) 
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Les paramètres de rc2d_window_getPosition() ne peuvent pas être NULL.\n");
-        return;
-    }
-
-    // Récupère la position de la fenêtre
-    (!SDL_GetWindowPosition(rc2d_window, x, y))
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer la position de la fenêtre : %s\n", SDL_GetError());
-    }
-}
-
 RC2D_FullscreenInfo rc2d_window_getFullscreen(void)
 {
     RC2D_FullscreenInfo fullscreenInfo = {0};
@@ -573,57 +551,20 @@ void rc2d_window_restore(void)
     }
 }
 
-void rc2d_window_setPosition(const int x, const int y) 
-{
-    // Vérifie si la fenêtre est valide
-    if (rc2d_window == NULL)
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour définir la position.");
-        return;
-    }
-
-    // Récupère l'index du moniteur qui contient la fenêtre
-	SDL_DisplayID displayID = SDL_GetDisplayForWindow(rc2d_window);
-    if (displayID == 0)
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer l'index du moniteur de la fenêtre : %s\n", SDL_GetError());
-        return;
-    }
-
-    // Récupère les limites de l'affichage
-    SDL_Rect displayBounds;
-    if (!SDL_GetDisplayBounds(displayID, &displayBounds)) 
-	{
-        RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer les limites de l'affichage %d : %s\n", displayID, SDL_GetError());
-        return;
-    }
-
-    // Vérifie si la position spécifiée est valide par rapport aux limites de l'affichage
-    if (x < displayBounds.x || x > displayBounds.x + displayBounds.w ||
-        y < displayBounds.y || y > displayBounds.y + displayBounds.h) 
-	{
-        RC2D_log(RC2D_LOG_ERROR, "La position spécifiée est en dehors des limites de l'affichage %d\n", displayIndex);
-        return;
-    }
-
-    // Définit la position de la fenêtre
-    SDL_SetWindowPosition(rc2d_window, x, y);
-}
-
 float rc2d_window_getPixelDensity(void)
 {
     // Vérifie si la fenêtre est valide
     if (rc2d_window == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour obtenir le facteur DPI.\n");
-        return 1.0f;
+        return 0.0f;
     }
 
     // Récupère la densité de pixels (dpi) de la fenêtre
     float pixelDensity = SDL_GetWindowPixelDensity(rc2d_window);
     if (pixelDensity == 0.0f)
     {
-        RC2D_log(RC2D_LOG_ERROR, "Échec de récupération de la densité de pixels de la fenêtre. Utilisation de 1.0f par défaut.\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_ERROR, "Échec de récupération de la densité de pixels de la fenêtre.\n", SDL_GetError());
         return 0.0f;
     }
 
@@ -680,6 +621,7 @@ float rc2d_window_getDisplayScale(void)
         return 0.0f;
     }
 
+    // Renvoie le facteur d'échelle
     return scale;
 }
 
@@ -691,40 +633,36 @@ float rc2d_window_getContentScale(void)
     return pixel_density * display_scale;
 }
 
-void rc2d_window_getSafeArea(int *x, int *y, int *w, int *h)
+void rc2d_window_getSafeArea(RC2D_Rect *rect)
 {
     // Vérifie si la fenêtre est valide
     if (rc2d_window == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour obtenir la zone sûre (safe area).\n");
+        return;
+    }
 
-        if (x) *x = 0;
-        if (y) *y = 0;
-        if (w) *w = 0;
-        if (h) *h = 0;
-
+    // Vérifie si le rectangle est valide (non NULL)
+    if (rect == NULL)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Pointeur 'rect' invalide passé à rc2d_window_getSafeArea.\n");
         return;
     }
 
     // Récupère la zone sûre (safe area) de la fenêtre
-    SDL_Rect safeArea;
-    if (!SDL_GetWindowSafeArea(rc2d_window, &safeArea))
+    SDL_Rect rectSDL;
+    if (!SDL_GetWindowSafeArea(rc2d_window, &rectSDL))
     {
-        RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer la safe area.\n");
-
-        if (x) *x = 0;
-        if (y) *y = 0;
-        if (w) *w = 0;
-        if (h) *h = 0;
-
+        RC2D_log(RC2D_LOG_ERROR, "Impossible de récupérer la safe area : %s\n", SDL_GetError());
         return;
     }
-
-    // Vérifie si les pointeurs sont valides (non NULL) et attribue les valeurs
-    if (x) *x = safeArea.x;
-    if (y) *y = safeArea.y;
-    if (w) *w = safeArea.w;
-    if (h) *h = safeArea.h;
+    else
+    {
+        rect->x = rectSDL.x;
+        rect->y = rectSDL.y;
+        rect->width = rectSDL.w;
+        rect->height = rectSDL.h;
+    }
 }
 
 void rc2d_window_setResizable(bool resizable) 

@@ -30,9 +30,9 @@ bool rc2d_collision_pointInAABB(const RC2D_Point point, const RC2D_AABB box)
 {
     // Vérifier si le point est à l'intérieur de la boîte englobante
     if (point.x >= box.x
-        && point.x < box.x + box.w
+        && point.x < box.x + box.width
         && point.y >= box.y
-        && point.y < box.y + box.h)
+        && point.y < box.y + box.height)
         return true;
 
     // Si le point n'est pas dans la boîte, retourner false
@@ -55,10 +55,10 @@ bool rc2d_collision_pointInCircle(const RC2D_Point point, const RC2D_Circle circ
 bool rc2d_collision_betweenTwoAABB(const RC2D_AABB box1, const RC2D_AABB box2)
 {
     // Vérifier si les boîtes englobantes se chevauchent
-    if ((box2.x >= box1.x + box1.w)      // trop a droite
-        || (box2.x + box2.w <= box1.x) // trop a gauche
-        || (box2.y >= box1.y + box1.h) // trop en bas
-        || (box2.y + box2.h <= box1.y))  // trop en haut
+    if ((box2.x >= box1.x + box1.width)      // trop a droite
+        || (box2.x + box2.width <= box1.x) // trop a gauche
+        || (box2.y >= box1.y + box1.height) // trop en bas
+        || (box2.y + box2.height <= box1.y))  // trop en haut
         return false;
 
     // Si les boîtes se chevauchent, retourner true
@@ -80,8 +80,8 @@ bool rc2d_collision_betweenTwoCircle(const RC2D_Circle circle1, const RC2D_Circl
 bool rc2d_collision_betweenAABBCircle(const RC2D_AABB box, const RC2D_Circle circle) 
 {
     // Trouver le point le plus proche sur la boîte AABB au centre du cercle
-    int closestX = (circle.x < box.x) ? box.x : (circle.x > box.x + box.w) ? box.x + box.w : circle.x;
-    int closestY = (circle.y < box.y) ? box.y : (circle.y > box.y + box.h) ? box.y + box.h : circle.y;
+    int closestX = (circle.x < box.x) ? box.x : (circle.x > box.x + box.width) ? box.x + box.width : circle.x;
+    int closestY = (circle.y < box.y) ? box.y : (circle.y > box.y + box.height) ? box.y + box.height : circle.y;
 
     // Calculer la distance entre ce point et le centre du cercle
     int distanceX = circle.x - closestX;
@@ -434,7 +434,7 @@ bool rc2d_collision_raycastAABB(const RC2D_Ray ray, const RC2D_AABB box, RC2D_Po
 
     // Calculer les paramètres d'intersection le long de l'axe x
     double tminX = (box.x - ray.origin.x) / ray.direction.x;
-    double tmaxX = (box.x + box.w - ray.origin.x) / ray.direction.x;
+    double tmaxX = (box.x + box.width - ray.origin.x) / ray.direction.x;
 
     // Trier les paramètres d'intersection pour s'assurer que tminX est le plus petit
     if (tminX > tmaxX) 
@@ -446,7 +446,7 @@ bool rc2d_collision_raycastAABB(const RC2D_Ray ray, const RC2D_AABB box, RC2D_Po
 
     // Calculer les paramètres d'intersection le long de l'axe y
     double tminY = (box.y - ray.origin.y) / ray.direction.y;
-    double tmaxY = (box.y + box.h - ray.origin.y) / ray.direction.y;
+    double tmaxY = (box.y + box.height - ray.origin.y) / ray.direction.y;
 
     // Trier les paramètres d'intersection pour s'assurer que tminY est le plus petit
     if (tminY > tmaxY) 

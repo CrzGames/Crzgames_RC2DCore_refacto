@@ -95,7 +95,7 @@ static void rc2d_draw_letterbox_zones(void)
 
     // Parcours des zones de letterbox calculées
     for (int i = 0; i < rc2d_letterbox_count; ++i) {
-        SDL_Rect area = rc2d_letterbox_areas[i];
+        RC2D_Rect area = rc2d_letterbox_areas[i];
 
         if (rc2d_letterbox_textures.mode == RC2D_LETTERBOX_UNIFORM) {
             if (rc2d_letterbox_textures.uniform != NULL) {

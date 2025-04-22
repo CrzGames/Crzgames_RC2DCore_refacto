@@ -2,11 +2,14 @@
 #define RC2D_INTERNAL_H
 
 #include <RC2D/RC2D_engine.h>
+#include <RC2D/RC2D_math.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_init.h>
 
 /**
- * PRIVATE
+ * IMPORTANT : 
  * Module interne de la bibliothèque RC2D.
- * Données internes accessibles à tous les modules de la lib
+ * Pour ne pas exposer certaines fonctions et variables à l'utilisateur final.
  */
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
@@ -26,7 +29,7 @@ extern SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition;
 extern SDL_Event rc2d_event;
 
 /**
- * @brief Variables de la boucle de jeu.
+ * \brief Variables de la boucle de jeu.
  * 
  * Ces variables sont utilisées pour gérer le taux de rafraîchissement, 
  * le temps écoulé entre les frames, 
@@ -38,12 +41,12 @@ extern bool rc2d_game_is_running;
 extern Uint64 rc2d_last_frame_time;
 
 /**
- * @brief Cela concerne le letterbox/pillarbox interne pour le rendu.
+ * \brief Cela concerne le letterbox/pillarbox interne pour le rendu.
  * Les textures de letterbox sont utilisées pour remplir les zones de letterbox/pillarbox
  * Le nombre de zones de letterbox/pillarbox est utilisé pour déterminer combien de zones sont présentes.
  */
 extern RC2D_LetterboxTextures rc2d_letterbox_textures;
-extern SDL_Rect rc2d_letterbox_areas[4];
+extern RC2D_Rect rc2d_letterbox_areas[4];
 extern int rc2d_letterbox_count;
 
 /**
@@ -72,7 +75,7 @@ extern RC2D_Callbacks rc2d_callbacks_engine;
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void RC2D_InitAssert(void);
+void rc2d_assert_init(void);
 
 /**
  * \brief Initialise le timer de haute précision utilisé pour mesurer le temps écoulé. 

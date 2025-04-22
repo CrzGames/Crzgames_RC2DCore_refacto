@@ -23,9 +23,15 @@ extern "C" {
 typedef struct RC2D_AABB {
 	int x;
 	int y;
-	int w;
-	int h;
+	int width;
+	int height;
 } RC2D_AABB;
+
+/**
+ * Alias pour la structure RC2D_AABB, utilisée pour représenter un rectangle.
+ * @typedef {RC2D_AABB} RC2D_Rect
+ */
+typedef struct RC2D_AABB RC2D_Rect;
 
 /**
  * Enumération représentant les types d'arc.

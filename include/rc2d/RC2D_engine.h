@@ -56,7 +56,7 @@ typedef enum RC2D_LetterboxMode {
 } RC2D_LetterboxMode;
 
 /**
- * \brief Textures de remplissage pour les marges du letterbox.
+ * \brief Textures de remplissage pour les marges du letterbox/pillarbox.
  * 
  * Cette structure permet de définir le comportement visuel des marges 
  * (haut, bas, gauche, droite) en cas de mise à l’échelle logique avec letterboxing.
@@ -75,12 +75,12 @@ typedef struct RC2D_LetterboxTextures {
     RC2D_LetterboxMode mode;
 
     /**
-     * Texture unique utilisée sur tous les côtés en mode `RC2D_LETTERBOX_UNIFORM`.
+     * Texture unique utilisée sur tous les côtés (mode `RC2D_LETTERBOX_UNIFORM`).
      */
     RC2D_GPUTexture* uniform;
 
     /**
-     * Texture spécifique pour chaque côtés (mode `RC2D_LETTERBOX_PER_SIDE` uniquement).
+     * Texture spécifique pour chaque côtés (mode `RC2D_LETTERBOX_PER_SIDE`).
      */
     RC2D_GPUTexture* top;
     RC2D_GPUTexture* bottom;
@@ -88,13 +88,13 @@ typedef struct RC2D_LetterboxTextures {
     RC2D_GPUTexture* right;
 
     /**
-     * Texture géante utilisée en arrière-plan total dans le mode `RC2D_LETTERBOX_BACKGROUND_FULL`.
+     * Texture géante utilisée en arrière-plan total (mode `RC2D_LETTERBOX_BACKGROUND_FULL`).
      */
     RC2D_GPUTexture* background;
 } RC2D_LetterboxTextures;
 
 /**
- * Définit comment le contenu du jeu est affiché à l'écran.
+ * \brief Définit comment le contenu du jeu est affiché à l'écran.
  * 
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
@@ -113,7 +113,7 @@ typedef enum RC2D_PresentationMode {
 } RC2D_PresentationMode;
 
 /**
- * Informations sur l'application.
+ * \brief Informations sur l'application.
  * 
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
@@ -247,67 +247,79 @@ typedef struct RC2D_Callbacks {
 typedef struct RC2D_Config {
     /**
      * Callbacks utilisateur pour gérer les événements.
+     * Par défaut : NULL.
      */
     RC2D_Callbacks* callbacks;
 
     /**
      * Largeur initiale de la fenêtre (pixels). 
-     * Par défaut, 800.
+     * Par défaut : 800.
      */
     int windowWidth;
 
     /**
      * Hauteur initiale de la fenêtre (pixels). 
-     * Par défaut, 600.
+     * Par défaut : 600.
      */
     int windowHeight;
 
     /**
      * Largeur logique (par exemple, 1920 pour CLASSIC, 640 pour PIXELART). 
-     * Par défaut, 1920.
+     * Par défaut : 1920.
      */
     int logicalWidth;
 
     /**
      * Hauteur logique (par exemple, 1080 pour CLASSIC, 360 pour PIXELART). 
-     * Par défaut, 1080.
+     * Par défaut : 1080.
      */
     int logicalHeight;
 
     /**
      * Mode de présentation (PIXELART ou CLASSIC).
-     * Par défaut, CLASSIC.
+     * Par défaut : CLASSIC.
      */
     RC2D_PresentationMode presentationMode;
 
     /**
      * Textures pour les bordures décoratives (letterbox/pillarbox).
+     * Par défaut : NULL.
      */
     RC2D_LetterboxTextures* letterboxTextures;
 
     /**
-     * Informations sur l'application (nom, version, identifiant..etc).
+     * Informations sur l'application (nom, version, identifier).
+     * Par défaut :
+     * - name : "RC2D Game"
+     * - version : "1.0.0"
+     * - identifier : "com.example.rc2dgame"
      */
     RC2D_AppInfo* appInfo;
 
     /**
      * Nombre d'images autorisées en vol sur le GPU (1, 2 ou 3).
-     * Par défaut, RC2D_GPU_FRAMES_BALANCED (2).
+     * Par défaut : RC2D_GPU_FRAMES_BALANCED (2).
      */
     RC2D_GPUFramesInFlight gpuFramesInFlight;
 
     /**
      * Options avancées pour la création du contexte GPU.
+     * Par défaut :
+     * - debugMode : true
+     * - verbose : true
+     * - preferLowPower : false
+     * - driver : RC2D_GPU_DRIVER_DEFAULT
      */
     RC2D_GPUAdvancedOptions* gpuOptions;
 } RC2D_Config;
 
 /**
- * \brief Fonction utilisateur à implémenter pour fournir la configuration
- * de l'application.
- * 
- * \return {RC2D_Config*} Pointeur vers la configuration de l'application.
- *  
+ * \brief Cette fonction DOIT être définie par l'utilisateur, si elle est absente, l'éditeur de liens renverra une erreur.
+ *
+ * \note Si vous souhaitez utiliser la configuration par défaut de RC2D, vous pouvez retourner NULL.
+ *
+ * \return {RC2D_Config*} Un pointeur vers la configuration personnalisée, ou NULL pour utiliser la config par défaut.
+ *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 const RC2D_Config* rc2d_setup(void);

@@ -11,7 +11,7 @@
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static SDL_AssertState RC2D_AssertionHandler(const SDL_AssertData *data, void *userdata) 
+static SDL_AssertState rc2d_assert_assertionHandler(const SDL_AssertData *data, void *userdata) 
 {
     /**
      * Vérifie si la variable d'environnement RC2D_ASSERT est définie.     * 
@@ -47,7 +47,7 @@ static SDL_AssertState RC2D_AssertionHandler(const SDL_AssertData *data, void *u
     return SDL_GetDefaultAssertionHandler()(data, userdata);
 }
 
-void RC2D_InitAssert(void) 
+void rc2d_assert_init(void) 
 {
-    SDL_SetAssertionHandler(RC2D_AssertionHandler, NULL);
+    SDL_SetAssertionHandler(rc2d_assert_assertionHandler, NULL);
 }

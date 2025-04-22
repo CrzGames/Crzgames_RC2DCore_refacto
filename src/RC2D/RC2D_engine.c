@@ -1,6 +1,8 @@
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_logger.h>
 #include <RC2D/RC2D_assert.h>
+#include <RC2D/RC2D_window.h>
+#include <RC2D/RC2D_math.h>
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
@@ -13,9 +15,9 @@ SDL_GPUPresentMode rc2d_gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
 SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
 
 RC2D_AppInfo rc2d_app_info = {0};
-rc2d_app_info.name = "RC2D Engine";
+rc2d_app_info.name = "RC2D Game";
 rc2d_app_info.version = "1.0.0";
-rc2d_app_info.identifier = "com.rc2d.app";
+rc2d_app_info.identifier = "com.example.rc2dgame";
 
 bool rc2d_game_is_running = true;
 double rc2d_delta_time = 0.0;
@@ -228,40 +230,38 @@ static void rc2d_cleanup_sdl(void)
 }
 
 /**
- * @brief Calcule le viewport GPU et les zones de letterbox/pillerbox selon le mode de présentation (PIXELART ou CLASSIC).
+ * \brief Calcule l'échelle de rendu et le viewport GPU.
  *
- * Cette fonction s'assure que le jeu s'affiche correctement selon le ratio logique défini par le développeur,
- * que ce soit en mode PIXELART (mise à l’échelle entière) ou CLASSIC (mise à l’échelle fluide).
- * Elle applique aussi une lettrebox si besoin et renvoie les zones à remplir (bords noirs ou texture).
+ * Cette fonction calcule l'échelle de rendu interne et le viewport GPU en fonction de la taille de la fenêtre,
+ * de la zone sûre, du DPI et du mode de présentation.
+ * Elle doit être appelée après la création de la fenêtre et avant le rendu.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 static void rc2d_calculate_renderscale_and_gpuviewport(void) 
 {
     // Récupère la taille réelle de la fenêtre (pixels visibles, indépendamment du DPI)
     int window_width, window_height;
-    if (!SDL_GetWindowSize(rc2d_window, &window_width, &window_height)) 
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to get window size: %s", SDL_GetError());
-        return;
-    }
+    rc2d_window_getSize(&window_width, &window_height);
 
     // Récupère la zone sûre : certaines plateformes (TV, téléphones à encoche..etc) ont des zones à éviter
-    SDL_Rect safe_area;
-    if (!SDL_GetWindowSafeArea(rc2d_window, &safe_area)) 
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to get window safe area: %s", SDL_GetError());
-        return;
-    }
+    RC2D_Rect safe_area;
+    rc2d_window_getSafeArea(&safe_area);
 
     // Gère le high DPI : pixel_density > 1.0 = écran Retina, etc.
-    float pixel_density = SDL_GetWindowPixelDensity(rc2d_window);
-    float display_scale = SDL_GetWindowDisplayScale(rc2d_window);
+    float pixel_density = rc2d_window_getPixelDensity();
+
+    // Récupère l'échelle d'affichage de la fenêtre (ex: 1.0 pour 100%, 2.0 pour 200%)
+    float display_scale = rc2d_window_getDisplayScale();
 
     // Calcule la taille réelle (en pixels) de la zone sûre
-    int effective_width = (int)(safe_area.w * pixel_density);
-    int effective_height = (int)(safe_area.h * pixel_density);
+    int effective_width = (int)(safe_area.width * pixel_density);
+    int effective_height = (int)(safe_area.height * pixel_density);
 
     // Initialisation des variables de viewport
     float viewport_x, viewport_y, viewport_width, viewport_height;
+
+    // Initialisation de l'échelle de rendu
     float scale;
 
     // --- Mode Pixel Art ---
@@ -271,14 +271,13 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
 
         // Si l’échelle est trop petite, on la fixe à 1 pour éviter les problèmes d’affichage
         if (int_scale < 1) int_scale = 1;
+        scale = (float)int_scale;
 
         // Calcul de la taille du viewport
-        scale = (float)int_scale;
         viewport_width = rc2d_logical_width * scale;
         viewport_height = rc2d_logical_height * scale;
-
+    }
     // --- Mode Classique ---
-    } 
     else 
     {
         float logical_aspect = (float)rc2d_logical_width / rc2d_logical_height;
@@ -304,24 +303,24 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
     viewport_height /= pixel_density;
 
     // Centre le viewport dans la zone sûre
-    viewport_x = safe_area.x + (safe_area.w - viewport_width) / 2.0f;
-    viewport_y = safe_area.y + (safe_area.h - viewport_height) / 2.0f;
+    viewport_x = safe_area.x + (safe_area.width - viewport_width) / 2.0f;
+    viewport_y = safe_area.y + (safe_area.height - viewport_height) / 2.0f;
 
     // Applique le viewport au GPU
-    SDL_GPUViewport* rc2d_gpu_viewport = {0};
-    rc2d_gpu_viewport->x = viewport_x;
-    rc2d_gpu_viewport->y = viewport_y;
-    rc2d_gpu_viewport->w = viewport_width;
-    rc2d_gpu_viewport->h = viewport_height;
-    rc2d_gpu_viewport->min_depth = 0.0f;
-    rc2d_gpu_viewport->max_depth = 1.0f;
-    // TODO: SDL_SetGPUViewport()
+    SDL_GPUViewport rc2d_gpu_viewport = {0};
+    rc2d_gpu_viewport.x = viewport_x;
+    rc2d_gpu_viewport.y = viewport_y;
+    rc2d_gpu_viewport.w = viewport_width;
+    rc2d_gpu_viewport.h = viewport_height;
+    rc2d_gpu_viewport.min_depth = 0.0f;
+    rc2d_gpu_viewport.max_depth = 1.0f;
+    // TODO: add SDL_SetGPUViewport()
 
     // Applique l’échelle de rendu interne
     rc2d_render_scale = scale * display_scale;
 
     // Calcule les zones de letterbox si le viewport ne remplit pas la zone sûre
-    if (viewport_width < safe_area.w || viewport_height < safe_area.h) 
+    if (viewport_width < safe_area.width || viewport_height < safe_area.height) 
     {
         // Barres verticales noir (gauche/droite)
         if (viewport_x > safe_area.x) 
@@ -329,15 +328,15 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
             // Barre gauche
             rc2d_letterbox_areas[rc2d_letterbox_count].x = safe_area.x;
             rc2d_letterbox_areas[rc2d_letterbox_count].y = safe_area.y;
-            rc2d_letterbox_areas[rc2d_letterbox_count].w = viewport_x - safe_area.x;
-            rc2d_letterbox_areas[rc2d_letterbox_count].h = safe_area.h;
+            rc2d_letterbox_areas[rc2d_letterbox_count].width = viewport_x - safe_area.x;
+            rc2d_letterbox_areas[rc2d_letterbox_count].height = safe_area.height;
             rc2d_letterbox_count++;
 
             // Barre droite
             rc2d_letterbox_areas[rc2d_letterbox_count].x = viewport_x + viewport_width;
             rc2d_letterbox_areas[rc2d_letterbox_count].y = safe_area.y;
-            rc2d_letterbox_areas[rc2d_letterbox_count].w = safe_area.x + safe_area.w - (viewport_x + viewport_width);
-            rc2d_letterbox_areas[rc2d_letterbox_count].h = safe_area.h;
+            rc2d_letterbox_areas[rc2d_letterbox_count].width = safe_area.x + safe_area.width - (viewport_x + viewport_width);
+            rc2d_letterbox_areas[rc2d_letterbox_count].height = safe_area.height;
             rc2d_letterbox_count++;
         }
 
@@ -347,24 +346,27 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
             // Barre haute
             rc2d_letterbox_areas[rc2d_letterbox_count].x = safe_area.x;
             rc2d_letterbox_areas[rc2d_letterbox_count].y = safe_area.y;
-            rc2d_letterbox_areas[rc2d_letterbox_count].w = safe_area.w;
-            rc2d_letterbox_areas[rc2d_letterbox_count].h = viewport_y - safe_area.y;
+            rc2d_letterbox_areas[rc2d_letterbox_count].width = safe_area.width;
+            rc2d_letterbox_areas[rc2d_letterbox_count].height = viewport_y - safe_area.y;
             rc2d_letterbox_count++;
 
             // Barre basse
             rc2d_letterbox_areas[rc2d_letterbox_count].x = safe_area.x;
             rc2d_letterbox_areas[rc2d_letterbox_count].y = viewport_y + viewport_height;
-            rc2d_letterbox_areas[rc2d_letterbox_count].w = safe_area.w;
-            rc2d_letterbox_areas[rc2d_letterbox_count].h = safe_area.y + safe_area.h - (viewport_y + viewport_height);
+            rc2d_letterbox_areas[rc2d_letterbox_count].width = safe_area.width;
+            rc2d_letterbox_areas[rc2d_letterbox_count].height = safe_area.y + safe_area.height - (viewport_y + viewport_height);
             rc2d_letterbox_count++;
         }
     }
 }
 
 /**
- * @brief Met à jour le FPS en fonction du moniteur actuel.
+ * \brief Met à jour le FPS en fonction du moniteur.
+ *
+ * Cette fonction met à jour le FPS en fonction du taux de rafraîchissement du moniteur associé à la fenêtre.
+ * Elle doit être appelée après la création de la fenêtre et avant le rendu.
  * 
- * Récupère le moniteur actuel associé à la fenêtre window et met à jour la variable rc2d_fps
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 static void rc2d_update_fps_based_on_monitor(void) 
 {
@@ -400,9 +402,11 @@ static void rc2d_update_fps_based_on_monitor(void)
 }
 
 /**
- * @brief Démarre le calcul du delta time et des frame rates.
+ * \brief Démarre le calcul du delta time et des frame rates.
  * 
  * Capture le temps au début de la frame actuelle.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 void rc2d_deltatimeframerates_start(void)
 {
@@ -417,11 +421,15 @@ void rc2d_deltatimeframerates_start(void)
 }
 
 /**
- * @brief Termine le calcul du delta time et des frame rates.
+ * \brief Termine le calcul du delta time et des frame rates.
  * 
  * Capture le temps à la fin de la frame actuelle et ajuste le délai pour atteindre le FPS cible.
- * Cette fonction est utilisée uniquement si le mode de présentation SDL_GPU_PRESENTMODE_IMMEDIATE de la swapchain GPU est utiliser.
+ * Cette fonction est utilisée uniquement si le mode de présentation SDL_GPU_PRESENTMODE_IMMEDIATE 
+ * de la swapchain GPU est utiliser.
+ * 
  * Puisque SDL_GPU_PRESENTMODE_VSYNC et SDL_GPU_PRESENTMODE_MAILBOX gèrent déjà ce délai automatiquement.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 void rc2d_deltatimeframerates_end(void)
 {
@@ -1054,10 +1062,10 @@ static bool rc2d_engine(void)
      * Doit être appelé avant tout code pour initialiser les asserts 
      * et les utiliser dès le début de l'application.
      */
-    RC2D_InitAssert();
+    rc2d_assert_init();
 
     /**
-     * Set les informations de l'application
+     * Set les informations de l'application.
      * Dois toujours etre fait avant d'initialiser SDL3
      */
     SDL_SetAppMetadata(rc2d_app_info.name, rc2d_app_info.version, rc2d_app_info.identifier);
@@ -1394,15 +1402,24 @@ void rc2d_quit(void)
 	rc2d_cleanup_sdl();
 }
 
-bool rc2d_configure(const RC2D_Config* config)
+void rc2d_configure(const RC2D_Config* config)
 {
+    /**
+     * Vérifie si le pointeur de configuration du framework RC2D est valide.
+     * 
+     * Si le pointeur est NULL, on ne peut pas continuer.
+     */
     if (config == NULL)
     {
-        RC2D_log(RC2D_LOG_ERROR, "RC2D_Config pointer is NULL.");
-        return false;
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_Config provided. Using default values.");
     }
 
-    // Set les informations de l'application
+    /**
+     * Vérifie si la structure concernant les informations de l'application est valide.
+     * 
+     * Si les informations de l'application sont NULL, on peut continuer,
+     * puisque les valeurs par défaut seront utilisées.
+     */
     if (config->appInfo != NULL)
     {
         rc2d_app_info = *(config->appInfo);
@@ -1412,7 +1429,15 @@ bool rc2d_configure(const RC2D_Config* config)
         RC2D_log(RC2D_LOG_WARN, "No RC2D_AppInfo provided. Using default values.");
     }
 
-    // Set les callbacks pour la librairie RC2D
+    /**
+     * Vérifie si la structure concernant les callbacks est valide.
+     * 
+     * On peut aussi choisir de ne pas les utiliser, mais dans ce cas,
+     * on ne pourrait pas utiliser les callbacks de la librairie RC2D, 
+     * comme dessiner, charger, etc.
+     * 
+     * Donc cela serait simplement une fenetre SDL3 noir sans rien d'autre.
+     */
     if (config->callbacks != NULL)
     {
         rc2d_set_callbacks(config->callbacks);
@@ -1422,7 +1447,12 @@ bool rc2d_configure(const RC2D_Config* config)
         RC2D_log(RC2D_LOG_WARN, "No RC2D_Callbacks provided. Some events may not be handled.");
     }
 
-    // Set frame in flight
+    /**
+     * Vérifie si la propriété concernant l'enumération du nombre
+     * d'images en vol pour le GPU est valide.
+     * 
+     * Sinon on utilise la valeur par défaut de 2 images en vol (RC2D_GPU_FRAMES_BALANCED).
+     */
     if (config->gpuFramesInFlight != RC2D_GPU_FRAMES_LOW_LATENCY &&
         config->gpuFramesInFlight != RC2D_GPU_FRAMES_BALANCED &&
         config->gpuFramesInFlight != RC2D_GPU_FRAMES_HIGH_THROUGHPUT)
@@ -1432,7 +1462,6 @@ bool rc2d_configure(const RC2D_Config* config)
     else
     {
         RC2D_log(RC2D_LOG_ERROR, "Invalid RC2D_GPUFramesInFlight value.");
-        return false;
     }
 
     // Set GPU advanced options
@@ -1488,7 +1517,6 @@ bool rc2d_configure(const RC2D_Config* config)
         config->presentationMode != RC2D_PRESENTATION_CLASSIC)
     {
         RC2D_log(RC2D_LOG_ERROR, "Invalid RC2D_PresentationMode: %d", config->presentationMode);
-        return false;
     }
     rc2d_presentation_mode = config->presentationMode;
 
@@ -1501,6 +1529,4 @@ bool rc2d_configure(const RC2D_Config* config)
     {
         RC2D_log(RC2D_LOG_INFO, "No letterbox textures provided. Default black bars will be used.");
     }
-
-    return true;
 }

@@ -230,7 +230,7 @@ typedef struct RC2D_GPUAdvancedOptions {
     /**
      * Permet de forcer un backend graphique spécifique (Vulkan, Metal ou Direct3D12).
      * 
-     * \note RC2D_GPU_DRIVER_DEFAULT par défaut, ce qui laisse SDL choisir automatiquement.
+     * \note RC2D_GPU_DRIVER_DEFAULT par défaut dans RC2D, ce qui laisse SDL choisir automatiquement.
      */
     RC2D_GPUDriver driver;
 } RC2D_GPUAdvancedOptions;
