@@ -2,6 +2,7 @@
 #include <RC2D/RC2D_graphics.h>
 
 #include <SDL3/SDL_touch.h> // Required for : SDL_FINGERDOWN, SDL_FINGERMOTION, SDL_FINGERUP
+#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free
 
 #include <stdlib.h> // Required for : malloc, free, realloc
 
@@ -34,25 +35,25 @@ void rc2d_touch_freeTouchState(void)
     {
         if (touchState->numTouches > 0)
         {
-            free(touchState->touches);
+            SDL_free((touchState->touches);
         }
 
         if (touchState->pressures != NULL)
         {
-            free(touchState->pressures);
+            SDL_free((touchState->pressures);
         }
 
         if (touchState->x != NULL)
         {
-            free(touchState->x);
+            SDL_free((touchState->x);
         }
 
         if (touchState->y != NULL)
         {
-            free(touchState->y);
+            SDL_free((touchState->y);
         }
 
-        free(touchState);
+        SDL_free((touchState);
     }
 }
 
@@ -144,7 +145,7 @@ void rc2d_touch_freeTouches(int* touches)
 {
     if (touches != NULL) 
     {
-        free(touches);
+        SDL_free((touches);
     }
 }
 

@@ -1,6 +1,8 @@
 #include <RC2D/RC2D_filesystem.h>
 #include <RC2D/RC2D_logger.h>
 
+#include <SDL3/SDL_stdinc.h>
+
 static char* prefPath = NULL;
 static char* basePath = NULL;
 
@@ -229,7 +231,7 @@ RC2D_FileSystemResult rc2d_filesystem_read(const char* pathFile, unsigned char**
     if (nbItemsRead != fileSize) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de lire le contenu complet du fichier : %s, Erreur SDL : %s dans rc2d_filesystem_read\n", pathFile, SDL_GetError());
-        free(*data);
+        SDL_free(*data);
         
         int result = SDL_RWclose(rw);
         if (result < 0)
@@ -270,7 +272,7 @@ void rc2d_filesystem_free(unsigned char* data)
 {
     if (data != NULL) 
     {
-        free(data);
+        SDL_free(data);
         data = NULL;
     }
 }

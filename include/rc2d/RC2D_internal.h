@@ -3,6 +3,7 @@
 
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_math.h>
+
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 
@@ -17,53 +18,119 @@
 extern "C" {
 #endif
 
-// Fenetre SDL3 
-extern SDL_Window* rc2d_window;
+/**
+ * \brief Structure regroupant l'état global du moteur RC2D.
+ *
+ * Cette structure encapsule toutes les variables nécessaires pour gérer l'état du moteur,
+ * y compris la configuration, les ressources SDL, et les paramètres d'exécution.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_EngineState {
+    // Pointeur vers la configuration utilisateur
+    RC2D_EngineConfig* config;
 
-// Dispositif GPU SDL3 pour le rendu matériel
-extern SDL_GPUDevice* rc2d_gpu_device;
-extern SDL_GPUPresentMode rc2d_gpu_present_mode;
-extern SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition;
+    // SDL : Window, Event
+    SDL_Window* window;
 
-// Événement SDL3 pour capturer les entrées, changements de fenêtre..etc.
-extern SDL_Event rc2d_event;
+    // SDL : GPU
+    SDL_GPUDevice* gpu_device;
+    SDL_GPUPresentMode gpu_present_mode;
+    SDL_GPUSwapchainComposition gpu_swapchain_composition;
+
+    // RC2D : État d'exécution
+    int fps;
+    double delta_time;
+    bool game_is_running;
+    Uint64 last_frame_time;
+
+    // RC2D : Echelle de rendu
+    float render_scale;
+
+    // RC2D : Letterbox / Pillarbox
+    RC2D_LetterboxTextures letterbox_textures;
+    RC2D_Rect letterbox_areas[4];
+    int letterbox_count;
+} RC2D_EngineState;
 
 /**
- * \brief Variables de la boucle de jeu.
+ * \brief Instance globale du moteur RC2D.
+ *
+ * Cette instance contient toutes les informations nécessaires pour gérer l'état
+ * et le comportement du moteur RC2D tout au long de l'exécution de l'application.
+ *
+ * \since Cette variable est disponible depuis RC2D 1.0.0.
+ */
+extern RC2D_EngineState rc2d_engine_state;
+
+/**
+ * \brief Initialise le moteur RC2D.
  * 
- * Ces variables sont utilisées pour gérer le taux de rafraîchissement, 
- * le temps écoulé entre les frames, 
- * et l'état de la boucle de jeu.
+ * Cette fonction initialise les bibliothèques nécessaires, crée la fenêtre et le GPU, 
+ * et configure les paramètres de l'application.
+ * 
+ * \return true si l'engine a été initialisé avec succès, false sinon.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-extern int rc2d_fps;
-extern double rc2d_delta_time;
-extern bool rc2d_game_is_running;
-extern Uint64 rc2d_last_frame_time;
+int rc2d_engine_init(void);
 
 /**
- * \brief Cela concerne le letterbox/pillarbox interne pour le rendu.
- * Les textures de letterbox sont utilisées pour remplir les zones de letterbox/pillarbox
- * Le nombre de zones de letterbox/pillarbox est utilisé pour déterminer combien de zones sont présentes.
+ * \brief Libère les ressources allouées par le moteur RC2D.
+ * 
+ * Cette fonction doit être appelée avant de quitter l'application pour éviter les fuites de mémoire.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-extern RC2D_LetterboxTextures rc2d_letterbox_textures;
-extern RC2D_Rect rc2d_letterbox_areas[4];
-extern int rc2d_letterbox_count;
+void rc2d_engine_quit(void);
 
 /**
- * @brief Échelle de rendu interne
+ * \brief Traite les événements SDL3.
+ *
+ * Cette fonction traite les événements SDL3 et appelle les callbacks appropriés.
+ * 
+ * \param {SDL_Event*} event - Pointeur vers l'événement SDL à traiter.
+ * \return {SDL_AppResult} - Le résultat du traitement des événements.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-extern float rc2d_render_scale;
+SDL_AppResult rc2d_engine_processevent(SDL_Event *event);
 
 /**
- * @brief 
+ * \brief Démarre le calcul du delta time et des frame rates.
+ * 
+ * Capture le temps au début de la frame actuelle.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-int rc2d_init(void);
-void rc2d_quit(void);
-SDL_AppResult rc2d_processevent(void);
-void rc2d_deltatimeframerates_start(void);
-void rc2d_deltatimeframerates_end(void);
-bool rc2d_configure(const RC2D_Config* config);
-extern RC2D_Callbacks rc2d_callbacks_engine;
+void rc2d_engine_deltatimeframerates_start(void);
+
+/**
+ * \brief Termine le calcul du delta time et des frame rates.
+ * 
+ * Capture le temps à la fin de la frame actuelle et ajuste le délai pour atteindre le FPS cible.
+ * Cette fonction est utilisée uniquement si le mode de présentation SDL_GPU_PRESENTMODE_IMMEDIATE 
+ * de la swapchain GPU est utiliser.
+ * 
+ * Puisque SDL_GPU_PRESENTMODE_VSYNC et SDL_GPU_PRESENTMODE_MAILBOX gèrent déjà ce délai automatiquement.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_engine_deltatimeframerates_end(void);
+
+/**
+ * \brief Configure le moteur RC2D avec les paramètres spécifiés.
+ * 
+ * Cette fonction configure le moteur RC2D en utilisant la structure de configuration fournie.
+ * Elle doit être appelée avant d'initialiser le moteur. 
+ * 
+ * \note si config == NULL, la configuration par défaut sera utilisée.
+ * 
+ * \param {RC2D_Config*} config - Pointeur vers la structure de configuration à utiliser.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_engine_configure(const RC2D_EngineConfig* config);
 
 /**
  * \brief Initialisation de l'assertion RC2D.

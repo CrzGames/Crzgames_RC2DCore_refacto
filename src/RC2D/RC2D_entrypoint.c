@@ -20,19 +20,22 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
     /**
      * La définition de la fonction rc2d_setup doit être définie par l'utilisateur.
      */
-    const RC2D_Config* config = rc2d_setup();
+    const RC2D_EngineConfig* config = rc2d_engine_setup();
 
     /**
      * Si la configuration est NULL, alors on utilise la configuration par défaut de RC2D.
      */
-    rc2d_configure(config);
+    if (config != NULL) 
+    {
+        rc2d_engine_configure(config);
+    }
 
     /**
      * Initialise le moteur RC2D.
      * 
      * Si l'initialisation échoue, on retourne SDL_APP_FAILURE.
      */
-	if(!rc2d_init())
+	if(!rc2d_engine_init())
     {
         /**
          * SDL_APP_FAILURE : Cela vas appeler SDL_AppQuit et terminer 
@@ -46,9 +49,11 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
      * La premiere callback de la boucle de jeu est rc2d_load, qui est appelée avant le début de la boucle de jeu.
      * Cela peut être utilisé pour initialiser des ressources, charger des données, etc.
      */
-    if (rc2d_callbacks_engine.rc2d_load != NULL) 
+    if (rc2d_engine_state.config != NULL && 
+        rc2d_engine_state.config->callbacks != NULL && 
+        rc2d_engine_state.config->callbacks->rc2d_load != NULL) 
     {
-        rc2d_callbacks_engine.rc2d_load();
+        rc2d_engine_state.config->callbacks->rc2d_load();
     }
 
     /**
@@ -57,14 +62,14 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
      * 2. Demandez que la fenêtre soit surélevée au-dessus des autres fenêtres 
      *    et obtenez le focus d'entrée.
      */
-    SDL_ShowWindow(rc2d_window);
-    SDL_RaiseWindow(rc2d_window);
+    SDL_ShowWindow(rc2d_engine_state.window);
+    SDL_RaiseWindow(rc2d_engine_state.window);
 
     /**
      * Pour rc2d_last_frame_time, nous ne voulons pas que le deltatime de la 
      * premiere image inclue le temps pris par rc2d_load (donc ont le fait ici)
      */
-    rc2d_last_frame_time = SDL_GetPerformanceCounter();
+    rc2d_engine_state.last_frame_time = SDL_GetPerformanceCounter();
 
     /**
      * SDL_APP_CONTINUE : Cela vas appeler la fonction SDL_AppIterate 
@@ -88,17 +93,37 @@ SDL_AppResult SDL_AppIterate(void *appstate)
      * Si elle renvoie SDL_APP_SUCCESS, l'application appelle SDL_AppQuit et 
      * termine avec un code de sortie signalant la réussite à la plateforme.
      */
-    if (!rc2d_game_is_running) 
+    if (!rc2d_engine_state.game_is_running) 
     {
         return SDL_APP_SUCCESS;
     }
 
-    rc2d_deltatimeframerates_start();
-    if (rc2d_callbacks_engine.rc2d_update != NULL) rc2d_callbacks_engine.rc2d_update(rc2d_delta_time);
+    /**
+     * Ordre de la boucle principale de l'application :
+     * 
+     * 1. Calculer le delta time et les frame rates.
+     * 2. Appeler la fonction de mise à jour du jeu.
+     * 3. Effacer l'écran.
+     * 4. Appeler la fonction de dessin du jeu.
+     * 5. Présenter le rendu à l'écran.
+     * 6. Terminer le calcul du delta time et des frame rates.
+     */
+    rc2d_engine_deltatimeframerates_start();
+    if (rc2d_engine_state.config != NULL && 
+        rc2d_engine_state.config->callbacks != NULL && 
+        rc2d_engine_state.config->callbacks->rc2d_update != NULL) 
+    {
+        rc2d_engine_state.config->callbacks->rc2d_update(rc2d_engine_state.delta_time);
+    }
     rc2d_graphics_clear();
-    if (rc2d_callbacks_engine.rc2d_draw != NULL) rc2d_callbacks_engine.rc2d_draw();
+    if (rc2d_engine_state.config != NULL && 
+        rc2d_engine_state.config->callbacks != NULL && 
+        rc2d_engine_state.config->callbacks->rc2d_draw != NULL) 
+    {
+        rc2d_engine_state.config->callbacks->rc2d_draw();
+    }
     rc2d_graphics_present();
-    rc2d_deltatimeframerates_end();
+    rc2d_engine_deltatimeframerates_end();
 
     /**
      * SDL_APP_CONTINUE : La boucle principale de l'application continue.
@@ -113,8 +138,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
  */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) 
 {
-    rc2d_event = *event;
-    return rc2d_processevent();
+    return rc2d_engine_processevent(event);
 }
 
 /**
@@ -128,16 +152,18 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
      * Cela peut être utilisé pour libérer des ressources ou effectuer d'autres tâches de nettoyage 
      * avant la fermeture du programme.
      */
-    if (rc2d_callbacks_engine.rc2d_unload != NULL)
+    if (rc2d_engine_state.config != NULL && 
+        rc2d_engine_state.config->callbacks != NULL && 
+        rc2d_engine_state.config->callbacks->rc2d_unload != NULL)
     {
-        rc2d_callbacks_engine.rc2d_unload();
+        rc2d_engine_state.config->callbacks->rc2d_unload();
     }
 
     /**
      * Libére les ressources notamment celles des librairies externes de RC2D 
      * et des modules interne à RC2D.
      */
-    rc2d_quit();
+    rc2d_engine_quit();
 
     /**
      * Si le résultat est SDL_APP_FAILURE, cela signifie que l'application a échoué 

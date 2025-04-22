@@ -233,7 +233,7 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_windowclosed)(void);
     void (*rc2d_windowtakefocus)(void);
     void (*rc2d_windowhittest)(void);
-} RC2D_Callbacks;
+} RC2D_EngineCallbacks;
 
 /**
  * \brief Configuration de l'application RC2D.
@@ -244,12 +244,12 @@ typedef struct RC2D_Callbacks {
  * 
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
-typedef struct RC2D_Config {
+typedef struct RC2D_EngineConfig {
     /**
      * Callbacks utilisateur pour gérer les événements.
      * Par défaut : NULL.
      */
-    RC2D_Callbacks* callbacks;
+    RC2D_EngineCallbacks* callbacks;
 
     /**
      * Largeur initiale de la fenêtre (pixels). 
@@ -311,7 +311,7 @@ typedef struct RC2D_Config {
      * - driver : RC2D_GPU_DRIVER_DEFAULT
      */
     RC2D_GPUAdvancedOptions* gpuOptions;
-} RC2D_Config;
+} RC2D_EngineConfig;
 
 /**
  * \brief Cette fonction DOIT être définie par l'utilisateur, si elle est absente, l'éditeur de liens renverra une erreur.
@@ -322,7 +322,19 @@ typedef struct RC2D_Config {
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-const RC2D_Config* rc2d_setup(void);
+const RC2D_EngineConfig* rc2d_engine_setup(void);
+
+/**
+ * \brief Renvoie une configuration RC2D_EngineConfig avec toutes les valeurs par défaut.
+ * 
+ * Cette fonction peut être utilisée par les utilisateurs qui souhaitent démarrer
+ * avec une configuration standard avant de personnaliser certains champs.
+ *
+ * \return {RC2D_EngineConfig*} - Structure de configuration avec les valeurs par défaut.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

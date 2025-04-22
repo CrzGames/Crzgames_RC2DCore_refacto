@@ -551,20 +551,15 @@ float rc2d_window_getContentScale(void);
  * 
  * Sur les plateformes où cette information n’est pas disponible, la zone retournée couvrira l’intégralité
  * de la fenêtre.
- * 
- * \note Tous les pointeurs peuvent être NULL si la valeur n’est pas souhaitée.
  *
- * \param {int*} x - Pointeur vers une variable où sera stockée la position X du coin supérieur gauche de la zone sûre.
- * \param {int*} y - Pointeur vers une variable où sera stockée la position Y du coin supérieur gauche de la zone sûre.
- * \param {int*} w - Pointeur vers une variable où sera stockée la largeur de la zone sûre.
- * \param {int*} h - Pointeur vers une variable où sera stockée la hauteur de la zone sûre.
+ * \param {RC2D_Rect *} rect - Pointeur vers un rectangle où sera stockée la zone sûre.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_window_getWidth
  * \see rc2d_window_getHeight
  */
-void rc2d_window_getSafeArea(int *x, int *y, int *w, int *h);
+void rc2d_window_getSafeArea(RC2D_Rect *rect);
 
 /**
  * \brief Définit si la fenêtre peut être redimensionnée par l'utilisateur.

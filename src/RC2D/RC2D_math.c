@@ -1,6 +1,8 @@
 #include <RC2D/RC2D_math.h>
 #include <RC2D/RC2D_logger.h>
 
+#include <SDL3/SDL_stdinc.h> // Require for : SDL_malloc, SDL_free
+
 #include <math.h>   // Require for : sqrt(), log, M_PI
 #include <stdarg.h> // Require for : va_list, va_start, va_arg, va_end
 #include <stdlib.h> // Require for : rand() and srand()
@@ -218,7 +220,7 @@ void rc2d_math_freeRandomGenerator(RC2D_RandomGenerator* randomGenerator)
 {
     if (randomGenerator != NULL) 
     {
-        free(randomGenerator); // Libérer la mémoire allouée pour le randomGenerator
+        SDL_free((randomGenerator); // Libérer la mémoire allouée pour le randomGenerator
         randomGenerator = NULL; // Eviter les pointeurs fantomes
     }
 }
@@ -522,10 +524,10 @@ void rc2d_math_free_BezierCurve(RC2D_BezierCurve* curve)
     {
         if (curve->points != NULL) 
         {
-            free(curve->points); // Libérer le tableau de points
+            SDL_free((curve->points); // Libérer le tableau de points
         }
 
-        free(curve);            // Libérer la courbe elle-même
+        SDL_free((curve);            // Libérer la courbe elle-même
         curve = NULL;           // Eviter les pointeurs fantomes
     }
 }
@@ -559,7 +561,7 @@ static RC2D_Point deCasteljau(RC2D_Point* points, int count, double t)
     }
 
     RC2D_Point result = tempPoints[0];
-    free(tempPoints);
+    SDL_free((tempPoints);
 
     return result;
 }
@@ -734,7 +736,7 @@ void rc2d_math_removeControlPoint_BezierCurve(RC2D_BezierCurve* curve, int index
     }
     
     // Libérer l'ancien tableau de points de contrôle et mettre à jour la courbe
-    free(curve->points);
+    SDL_free((curve->points);
 
     curve->points = newPoints;
     curve->count -= 1;
@@ -795,7 +797,7 @@ void rc2d_math_insertControlPoint_BezierCurve(RC2D_BezierCurve* curve, double x,
     }
     
     // Libérer l'ancien tableau de points et mettre à jour la courbe
-    free(curve->points);
+    SDL_free((curve->points);
 
     curve->points = newPoints;
     curve->count += 1; // Augmenter le nombre de points de contrôle
@@ -851,8 +853,8 @@ RC2D_BezierCurve* rc2d_math_getSegment_BezierCurve(RC2D_BezierCurve* curve, doub
         segmentCurve->points[i] = newPointsStart[i];
     }
 
-    free(newPointsStart);
-    free(newPointsEnd);
+    SDL_free((newPointsStart);
+    SDL_free((newPointsEnd);
 
     return segmentCurve;
 }

@@ -4,6 +4,10 @@
 
 #include <SDL3/SDL_properties.h>
 
+SDL_GPUDevice* rc2d_gpu_device = NULL; 
+SDL_GPUPresentMode rc2d_gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
+SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
+
 void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo) 
 {
     // Vérification des paramètres d'entrée

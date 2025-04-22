@@ -1,6 +1,8 @@
 #include <RC2D/RC2D_joystick.h>
 #include <RC2D/RC2D_logger.h>
 
+#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free
+
 #define RC2D_JOYSTICK_AXIS_MIN -32768
 #define RC2D_JOYSTICK_AXIS_MAX 32767
 
@@ -487,10 +489,10 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
             // Libérer la mémoire allouée précédemment
             for (int j = 0; j < i; ++j) 
 			{
-                free(joysticks[j]);
+                SDL_free((joysticks[j]);
             }
 			
-            free(joysticks);
+            SDL_free((joysticks);
 
             return NULL;
         }
@@ -500,8 +502,8 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
         {
             RC2D_log(RC2D_LOG_ERROR, "SDL_JoystickOpen error in rc2d_joystick_getJoysticks : %s", SDL_GetError());
 
-            free(joysticks[i]);
-            free(joysticks);
+            SDL_free((joysticks[i]);
+            SDL_free((joysticks);
 
             return NULL;
         }
@@ -512,8 +514,8 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
             RC2D_log(RC2D_LOG_ERROR, "SDL_JoystickInstanceID error in rc2d_joystick_getJoysticks : %s", SDL_GetError());
 
             SDL_JoystickClose(joysticks[i]->sdlJoystick);
-            free(joysticks[i]);
-            free(joysticks);
+            SDL_free((joysticks[i]);
+            SDL_free((joysticks);
 
             return NULL;
         }
@@ -545,9 +547,9 @@ void rc2d_joystick_freeJoysticks(RC2D_Joystick** joysticks, int count)
                 SDL_JoystickClose(joysticks[i]->sdlJoystick);
             }
 
-            free(joysticks[i]);
+            SDL_free((joysticks[i]);
         }
     }
 
-    free(joysticks);
+    SDL_free((joysticks);
 }

@@ -3,6 +3,7 @@
 #include <RC2D/RC2D_internal.h>
 
 #include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free
 
 bool rc2d_window_showMessageBox(const char *title, const char *message, const char *buttonlist[], uint32_t numButtons, uint32_t *pressedButton, RC2D_MessageBoxType type, bool attachToWindow) 
 {
@@ -65,7 +66,7 @@ bool rc2d_window_showMessageBox(const char *title, const char *message, const ch
     }
 
     // Libère la mémoire allouée pour le tableau de boutons
-    free(buttons);
+    SDL_free((buttons);
 
     return true;
 }

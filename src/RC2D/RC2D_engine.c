@@ -10,66 +10,72 @@
 #include <SDL3_ttf/SDL_ttf.h>
 //#include <SDL3_mixer/SDL_mixer.h>
 
-SDL_GPUDevice* rc2d_gpu_device = NULL; 
-SDL_GPUPresentMode rc2d_gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
-SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
+RC2D_EngineState rc2d_engine_state = {0};
 
-RC2D_AppInfo rc2d_app_info = {0};
-rc2d_app_info.name = "RC2D Game";
-rc2d_app_info.version = "1.0.0";
-rc2d_app_info.identifier = "com.example.rc2dgame";
+RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
+{
+    static RC2D_AppInfo default_app_info = {
+        .name = "RC2D Game",
+        .version = "1.0.0",
+        .identifier = "com.example.rc2dgame"
+    };
 
-bool rc2d_game_is_running = true;
-double rc2d_delta_time = 0.0;
-double rc2d_fps = 60.0;
-Uint64 rc2d_last_frame_time = 0;
+    static RC2D_GPUAdvancedOptions default_gpu_options = {
+        .debugMode = true,
+        .verbose = true,
+        .preferLowPower = false,
+        .driver = RC2D_GPU_DRIVER_DEFAULT
+    };
 
-SDL_Event rc2d_event;
+    static RC2D_EngineConfig default_config = {
+        .callbacks = NULL,
+        .windowWidth = 800,
+        .windowHeight = 600,
+        .logicalWidth = 1920,
+        .logicalHeight = 1080,
+        .presentationMode = RC2D_PRESENTATION_CLASSIC,
+        .letterboxTextures = NULL,
+        .appInfo = &default_app_info,
+        .gpuFramesInFlight = RC2D_GPU_FRAMES_BALANCED,
+        .gpuOptions = &default_gpu_options
+    };
 
-float rc2d_render_scale = 1.0f;
-
-RC2D_LetterboxTextures rc2d_letterbox_textures = {0};
-rc2d_letterbox_textures.mode = RC2D_LETTERBOX_NONE;
-SDL_Rect rc2d_letterbox_areas[4] = {0};
-int rc2d_letterbox_count = 0;
-
-SDL_Window* rc2d_window = NULL;
-
-RC2D_Callbacks rc2d_callbacks_engine = {0};
-
-/**
- * Utiliser en interne simplement lors de l'initialisation du framework RC2D.
- * 
- * Si l'utilisateur lors de rc2d_setup() ne spécifie pas de taille de fenêtre, 
- * on utilise la taille par défaut de 800x600.
- */
-static int rc2d_window_width = 800;
-static int rc2d_window_height = 600;
+    return &default_config;
+}
 
 /**
- * Utiliser en interne simplement lors de l'initialisation du framework RC2D.
- * 
- * - Si l'utilisateur lors de rc2d_setup() ne spécifie pas de taille logique,
- * on utilise la taille par défaut de 1920x1080.
- * 
- * - Egalement utilisé pour calculer le ratio d'aspect de la fenêtre, pour la
- * fonction : rc2d_calculate_renderscale_and_gpuviewport()
+ * \brief Initialise les valeurs par défaut de l'état global du moteur RC2D.
+ *
+ * Cette fonction configure les valeurs par défaut pour toutes les variables de la structure RC2D_EngineState.
+ * Elle est appelée avant toute autre opération pour garantir que l'état du moteur est correctement initialisé.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static int rc2d_logical_width = 1920;
-static int rc2d_logical_height = 1080;
+static void rc2d_engine_stateInit(void) {
+    // Configuration de l'application (mettre toutes les valeurs par défaut)
+    rc2d_engine_state.config = rc2d_engine_getDefaultConfig();
 
-// Mode de présentation du rendu par défaut.
-static RC2D_PresentationMode rc2d_presentation_mode = RC2D_PRESENTATION_CLASSIC;
+    // SDL : Fenêtre et événements
+    rc2d_engine_state.window = NULL;
+    // rc2d_engine_state.rc2d_event est déjà zéro-initialisé
 
-/**
- * 
- */
-static RC2D_GPUAdvancedOptions rc2d_gpu_advanced_options = {0};
-rc2d_gpu_advanced_options.debugMode = true;
-rc2d_gpu_advanced_options.verbose = true;
-rc2d_gpu_advanced_options.preferLowPower = false;
-rc2d_gpu_advanced_options.driver = RC2D_GPU_DRIVER_DEFAULT;
-static RC2D_GPUFramesInFlight rc2d_gpu_frames_in_flight = RC2D_GPU_FRAMES_BALANCED;
+    // SDL GPU
+    rc2d_engine_state.gpu_device = NULL;
+    rc2d_engine_state.gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
+    rc2d_engine_state.gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
+
+    // État d'exécution de la boucle de jeu
+    rc2d_engine_state.fps = 60;
+    rc2d_engine_state.delta_time = 0.0;
+    rc2d_engine_state.game_is_running = true;
+    rc2d_engine_state.last_frame_time = 0;
+
+    // Paramètres de rendu
+    rc2d_engine_state.render_scale = 1.0f;
+    rc2d_engine_state.letterbox_textures.mode = RC2D_LETTERBOX_NONE;
+    // rc2d_engine_state.rc2d_letterbox_areas : est déjà zéro-initialisé
+    rc2d_engine_state.letterbox_count = 0;
+}
 
 /**
  * \brief Initialise la bibliothèque OpenSSL avec options de log.
@@ -82,7 +88,7 @@ static RC2D_GPUFramesInFlight rc2d_gpu_frames_in_flight = RC2D_GPU_FRAMES_BALANC
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static bool rc2d_init_openssl(void) 
+static bool rc2d_engine_init_openssl(void) 
 {
     if (OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL) == 0)
     {
@@ -104,7 +110,7 @@ static bool rc2d_init_openssl(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_cleanup_openssl(void)
+static void rc2d_engine_cleanup_openssl(void)
 {
     ERR_free_strings();
     EVP_cleanup();
@@ -121,7 +127,7 @@ static void rc2d_cleanup_openssl(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static bool rc2d_init_sdlttf(void) 
+static bool rc2d_engine_init_sdlttf(void) 
 {
     if (!TTF_Init()) 
     {
@@ -143,7 +149,7 @@ static bool rc2d_init_sdlttf(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_cleanup_sdlttf(void)
+static void rc2d_engine_cleanup_sdlttf(void)
 {
     TTF_Quit();
     RC2D_log(RC2D_LOG_INFO, "SDL3_ttf cleaned up successfully.\n");
@@ -159,7 +165,7 @@ static void rc2d_cleanup_sdlttf(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static bool rc2d_init_sdlmixer(void) 
+static bool rc2d_engine_init_sdlmixer(void) 
 {
     /*int audioFlags = MIX_INIT_OGG | MIX_INIT_MP3; // MIX_INIT_OGG for Nintendo Switch and other platforms
     if (Mix_Init(audioFlags) == -1) {
@@ -183,7 +189,7 @@ static bool rc2d_init_sdlmixer(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_cleanup_sdlmixer(void)
+static void rc2d_engine_cleanup_sdlmixer(void)
 {
     // FIXEME : En attente de la mise en œuvre de SDL3_mixer
     /*Mix_CloseAudio();
@@ -201,7 +207,7 @@ static void rc2d_cleanup_sdlmixer(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static bool rc2d_init_sdl(void) 
+static bool rc2d_engine_init_sdl(void) 
 {
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_SENSOR | SDL_INIT_CAMERA) != 0)
 	{
@@ -223,7 +229,7 @@ static bool rc2d_init_sdl(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_cleanup_sdl(void)
+static void rc2d_engine_cleanup_sdl(void)
 {
     SDL_Quit();
     RC2D_log(RC2D_LOG_INFO, "SDL3 cleaned up successfully.\n");
@@ -238,7 +244,7 @@ static void rc2d_cleanup_sdl(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_calculate_renderscale_and_gpuviewport(void) 
+static void rc2d_engine_calculate_renderscale_and_gpuviewport(void) 
 {
     // Récupère la taille réelle de la fenêtre (pixels visibles, indépendamment du DPI)
     int window_width, window_height;
@@ -265,36 +271,36 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
     float scale;
 
     // --- Mode Pixel Art ---
-    if (rc2d_presentation_mode == RC2D_PRESENTATION_PIXELART) {
+    if (rc2d_engine_state.config->presentationMode == RC2D_PRESENTATION_PIXELART) {
         // Calcul de mise à l’échelle entière
-        int int_scale = SDL_min(effective_width / rc2d_logical_width, effective_height / rc2d_logical_height);
+        int int_scale = SDL_min(effective_width / rc2d_engine_state.config->logicalWidth, effective_height / rc2d_engine_state.config->logicalHeight);
 
         // Si l’échelle est trop petite, on la fixe à 1 pour éviter les problèmes d’affichage
         if (int_scale < 1) int_scale = 1;
         scale = (float)int_scale;
 
         // Calcul de la taille du viewport
-        viewport_width = rc2d_logical_width * scale;
-        viewport_height = rc2d_logical_height * scale;
+        viewport_width = rc2d_engine_state.config->logicalWidth * scale;
+        viewport_height = rc2d_engine_state.config->logicalHeight * scale;
     }
     // --- Mode Classique ---
     else 
     {
-        float logical_aspect = (float)rc2d_logical_width / rc2d_logical_height;
+        float logical_aspect = (float)rc2d_engine_state.config->logicalWidth / rc2d_engine_state.config->logicalHeight;
         float window_aspect = (float)effective_width / effective_height;
 
         // On adapte la largeur ou la hauteur selon le ratio d’aspect (16:9, 4:3, etc.)
         if (window_aspect > logical_aspect) 
         {
-            scale = (float)effective_height / rc2d_logical_height;
-            viewport_width = rc2d_logical_width * scale;
+            scale = (float)effective_height / rc2d_engine_state.config->logicalHeight;
+            viewport_width = rc2d_engine_state.config->logicalWidth * scale;
             viewport_height = effective_height;
         } 
         else 
         {
-            scale = (float)effective_width / rc2d_logical_width;
+            scale = (float)effective_width / rc2d_engine_state.config->logicalWidth;
             viewport_width = effective_width;
-            viewport_height = rc2d_logical_height * scale;
+            viewport_height = rc2d_engine_state.config->logicalHeight * scale;
         }
     }
 
@@ -317,7 +323,7 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
     // TODO: add SDL_SetGPUViewport()
 
     // Applique l’échelle de rendu interne
-    rc2d_render_scale = scale * display_scale;
+    rc2d_engine_state.render_scale = scale * display_scale;
 
     // Calcule les zones de letterbox si le viewport ne remplit pas la zone sûre
     if (viewport_width < safe_area.width || viewport_height < safe_area.height) 
@@ -326,36 +332,36 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
         if (viewport_x > safe_area.x) 
         {
             // Barre gauche
-            rc2d_letterbox_areas[rc2d_letterbox_count].x = safe_area.x;
-            rc2d_letterbox_areas[rc2d_letterbox_count].y = safe_area.y;
-            rc2d_letterbox_areas[rc2d_letterbox_count].width = viewport_x - safe_area.x;
-            rc2d_letterbox_areas[rc2d_letterbox_count].height = safe_area.height;
-            rc2d_letterbox_count++;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = safe_area.x;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = safe_area.y;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = viewport_x - safe_area.x;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = safe_area.height;
+            rc2d_engine_state.letterbox_count++;
 
             // Barre droite
-            rc2d_letterbox_areas[rc2d_letterbox_count].x = viewport_x + viewport_width;
-            rc2d_letterbox_areas[rc2d_letterbox_count].y = safe_area.y;
-            rc2d_letterbox_areas[rc2d_letterbox_count].width = safe_area.x + safe_area.width - (viewport_x + viewport_width);
-            rc2d_letterbox_areas[rc2d_letterbox_count].height = safe_area.height;
-            rc2d_letterbox_count++;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = viewport_x + viewport_width;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = safe_area.y;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = safe_area.x + safe_area.width - (viewport_x + viewport_width);
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = safe_area.height;
+            rc2d_engine_state.letterbox_count++;
         }
 
         // Barres horizontales noir (haut/bas)
         if (viewport_y > safe_area.y) 
         {
             // Barre haute
-            rc2d_letterbox_areas[rc2d_letterbox_count].x = safe_area.x;
-            rc2d_letterbox_areas[rc2d_letterbox_count].y = safe_area.y;
-            rc2d_letterbox_areas[rc2d_letterbox_count].width = safe_area.width;
-            rc2d_letterbox_areas[rc2d_letterbox_count].height = viewport_y - safe_area.y;
-            rc2d_letterbox_count++;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = safe_area.x;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = safe_area.y;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = safe_area.width;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = viewport_y - safe_area.y;
+            rc2d_engine_state.letterbox_count++;
 
             // Barre basse
-            rc2d_letterbox_areas[rc2d_letterbox_count].x = safe_area.x;
-            rc2d_letterbox_areas[rc2d_letterbox_count].y = viewport_y + viewport_height;
-            rc2d_letterbox_areas[rc2d_letterbox_count].width = safe_area.width;
-            rc2d_letterbox_areas[rc2d_letterbox_count].height = safe_area.y + safe_area.height - (viewport_y + viewport_height);
-            rc2d_letterbox_count++;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = safe_area.x;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = viewport_y + viewport_height;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = safe_area.width;
+            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = safe_area.y + safe_area.height - (viewport_y + viewport_height);
+            rc2d_engine_state.letterbox_count++;
         }
     }
 }
@@ -368,10 +374,10 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_update_fps_based_on_monitor(void) 
+static void rc2d_engine_update_fps_based_on_monitor(void) 
 {
     // Récupére le moniteur associé a la fenetre.
-    SDL_DisplayID displayID = SDL_GetDisplayForWindow(rc2d_window);
+    SDL_DisplayID displayID = SDL_GetDisplayForWindow(rc2d_engine_state.window);
     if (displayID == 0) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Could not get display index for window: %s", SDL_GetError());
@@ -389,60 +395,42 @@ static void rc2d_update_fps_based_on_monitor(void)
     // Met à jour les FPS selon le taux de rafraîchissement du moniteur.
     if (currentDisplayMode->refresh_rate_numerator > 0 && currentDisplayMode->refresh_rate_denominator > 0) 
     {
-        rc2d_fps = (double)currentDisplayMode->refresh_rate_numerator / currentDisplayMode->refresh_rate_denominator;
+        rc2d_engine_state.fps = (double)currentDisplayMode->refresh_rate_numerator / currentDisplayMode->refresh_rate_denominator;
     } 
     else if (currentDisplayMode->refresh_rate > 0.0f) 
     {
-        rc2d_fps = (double)currentDisplayMode->refresh_rate;
+        rc2d_engine_state.fps = (double)currentDisplayMode->refresh_rate;
     } 
     else 
     {
-        rc2d_fps = 60.0; // fallback
+        rc2d_engine_state.fps = 60.0; // fallback
     }
 }
 
-/**
- * \brief Démarre le calcul du delta time et des frame rates.
- * 
- * Capture le temps au début de la frame actuelle.
- * 
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
-void rc2d_deltatimeframerates_start(void)
+void rc2d_engine_deltatimeframerates_start(void)
 {
     // Capture le temps au debut de la frame actuelle
     Uint64 now = SDL_GetPerformanceCounter();
 
     // Calcule le delta time depuis la derniere frame
-    rc2d_delta_time = (double)(now - rc2d_last_frame_time) / (double)SDL_GetPerformanceFrequency();
+    rc2d_engine_state.delta_time = (double)(now - rc2d_engine_state.last_frame_time) / (double)SDL_GetPerformanceFrequency();
     
     // Met a jour 'lastFrameTime' pour la prochaine utilisation
-    rc2d_last_frame_time = now;
+    rc2d_engine_state.last_frame_time = now;
 }
 
-/**
- * \brief Termine le calcul du delta time et des frame rates.
- * 
- * Capture le temps à la fin de la frame actuelle et ajuste le délai pour atteindre le FPS cible.
- * Cette fonction est utilisée uniquement si le mode de présentation SDL_GPU_PRESENTMODE_IMMEDIATE 
- * de la swapchain GPU est utiliser.
- * 
- * Puisque SDL_GPU_PRESENTMODE_VSYNC et SDL_GPU_PRESENTMODE_MAILBOX gèrent déjà ce délai automatiquement.
- * 
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
-void rc2d_deltatimeframerates_end(void)
+void rc2d_engine_deltatimeframerates_end(void)
 {
-    if (rc2d_gpu_present_mode == SDL_GPU_PRESENTMODE_IMMEDIATE)
+    if (rc2d_engine_state.gpu_present_mode == SDL_GPU_PRESENTMODE_IMMEDIATE)
     {
         // Capture le temps a la fin de la frame actuelle
         Uint64 frameEnd = SDL_GetPerformanceCounter();
 
         // Calcule le temps de la frame actuelle en millisecondes
-        double frameTimeMs = (double)(frameEnd - rc2d_last_frame_time) * 1000.0 / (double)SDL_GetPerformanceFrequency();
+        double frameTimeMs = (double)(frameEnd - rc2d_engine_state.last_frame_time) * 1000.0 / (double)SDL_GetPerformanceFrequency();
 
         // Attendre le temps necessaire pour atteindre le FPS cible
-        double targetFrameMs = 1000.0 / rc2d_fps;
+        double targetFrameMs = 1000.0 / rc2d_engine_state.fps;
         if (frameTimeMs < targetFrameMs) 
         {
             Uint64 delayNs = (Uint64)((targetFrameMs - frameTimeMs) * 1e6);
@@ -451,21 +439,16 @@ void rc2d_deltatimeframerates_end(void)
     }
 }
 
-/**
- * @brief Traite les événements de la boucle de jeu.
- * 
- * Gère les événements SDL, y compris les entrées utilisateur, les mouvements de fenêtre..etc
- */
-SDL_AppResult rc2d_processevent(void) 
+SDL_AppResult rc2d_engine_processevent(SDL_Event *event) 
 {
     // Quit program
-    if (rc2d_event.type == SDL_EVENT_QUIT)
+    if (event.type == SDL_EVENT_QUIT)
     {
         return SDL_APP_SUCCESS;
     }
 
     // La préférence de la langue local à changé
-    else if (rc2d_event.type == SDL_EVENT_LOCALE_CHANGED)
+    else if (event.type == SDL_EVENT_LOCALE_CHANGED)
     {
         if (rc2d_callbacks_engine.rc2d_localechanged != NULL) 
         {
@@ -473,22 +456,22 @@ SDL_AppResult rc2d_processevent(void)
         }
     }
 
-    else if (rc2d_event.type == SDL_EVENT_DISPLAY_ORIENTATION) 
+    else if (event.type == SDL_EVENT_DISPLAY_ORIENTATION) 
     {
         if (rc2d_callbacks_engine.rc2d_displayorientation != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_displayorientation(rc2d_event.display.orientation);
+            rc2d_callbacks_engine.rc2d_displayorientation(event.display.orientation);
         }
     }
 
-    else if (rc2d_event.type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
+    else if (event.type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
     {
         // Met à jour le viewport GPU et le render scale
         rc2d_calculate_renderscale_and_gpuviewport();
     }
 
     // Window HDR State changed
-    else if (rc2d_event.type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
+    else if (event.type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
     {
         // Re-vérifie le meilleur swapchain disponible
         SDL_GPUSwapchainComposition compositions[] = {
@@ -514,49 +497,49 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Touch moved
-    else if (rc2d_event.type == SDL_EVENT_FINGER_MOTION) 
+    else if (event.type == SDL_EVENT_FINGER_MOTION) 
     {
         if (rc2d_callbacks_engine.rc2d_touchmoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_touchmoved(rc2d_event.tfinger.touchId, rc2d_event.tfinger.fingerId,
-                                            rc2d_event.tfinger.x, rc2d_event.tfinger.y,
-                                            rc2d_event.tfinger.dx, rc2d_event.tfinger.dy);
+            rc2d_callbacks_engine.rc2d_touchmoved(event.tfinger.touchId, event.tfinger.fingerId,
+                                            event.tfinger.x, event.tfinger.y,
+                                            event.tfinger.dx, event.tfinger.dy);
         }
 
         // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(rc2d_event.tfinger.fingerId, SDL_EVENT_FINGER_MOTION, rc2d_event.tfinger.pressure, rc2d_event.tfinger.x, rc2d_event.tfinger.y);
+        rc2d_touch_updateState(event.tfinger.fingerId, SDL_EVENT_FINGER_MOTION, event.tfinger.pressure, event.tfinger.x, event.tfinger.y);
     }
 
     // Touch pressed
-    else if (rc2d_event.type == SDL_EVENT_FINGER_DOWN) 
+    else if (event.type == SDL_EVENT_FINGER_DOWN) 
     {
         if (rc2d_callbacks_engine.rc2d_touchpressed != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_touchpressed(rc2d_event.tfinger.touchId, rc2d_event.tfinger.fingerId,
-                                            rc2d_event.tfinger.x, rc2d_event.tfinger.y,
-                                            rc2d_event.tfinger.pressure);
+            rc2d_callbacks_engine.rc2d_touchpressed(event.tfinger.touchId, event.tfinger.fingerId,
+                                            event.tfinger.x, event.tfinger.y,
+                                            event.tfinger.pressure);
         }
 
         // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(rc2d_event.tfinger.fingerId, SDL_EVENT_FINGER_DOWN, rc2d_event.tfinger.pressure, rc2d_event.tfinger.x, rc2d_event.tfinger.y);
+        rc2d_touch_updateState(event.tfinger.fingerId, SDL_EVENT_FINGER_DOWN, event.tfinger.pressure, event.tfinger.x, event.tfinger.y);
     }
 
     // Touch released
-    else if (rc2d_event.type == SDL_EVENT_FINGER_UP) 
+    else if (event.type == SDL_EVENT_FINGER_UP) 
     {
         if (rc2d_callbacks_engine.rc2d_touchreleased != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_touchreleased(rc2d_event.tfinger.touchId, rc2d_event.tfinger.fingerId,
-                                                rc2d_event.tfinger.x, rc2d_event.tfinger.y,
-                                                rc2d_event.tfinger.pressure);
+            rc2d_callbacks_engine.rc2d_touchreleased(event.tfinger.touchId, event.tfinger.fingerId,
+                                                event.tfinger.x, event.tfinger.y,
+                                                event.tfinger.pressure);
         }
 
         // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(rc2d_event.tfinger.fingerId, SDL_EVENT_FINGER_UP, 0.0f, 0.0f, 0.0f);
+        rc2d_touch_updateState(event.tfinger.fingerId, SDL_EVENT_FINGER_UP, 0.0f, 0.0f, 0.0f);
     }
 
     // Window safe area changed
-    else if (rc2d_event.type == SDL_EVENT_WINDOW_SAFE_AREA_CHANGED) 
+    else if (event.type == SDL_EVENT_WINDOW_SAFE_AREA_CHANGED) 
     {
         /**
          * Quand la zone de sécurité de la fenêtre change,
@@ -566,7 +549,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window enter fullscreen
-    else if (rc2d_event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) 
+    else if (event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) 
     {
         /**
          * Quand la fenêtre entre en mode plein écran, 
@@ -584,7 +567,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window leave fullscreen
-    else if (rc2d_event.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) 
+    else if (event.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) 
     {
         /**
          * Quand la fenêtre quitter le mode plein écran, 
@@ -602,7 +585,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window pixel size changed
-    else if (rc2d_event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) 
+    else if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) 
     {
         /**
          * En cas de changement de tailel de pixels de la fenêtre (ex: changement de DPI), 
@@ -612,7 +595,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window display scale changed
-    else if (rc2d_event.type == SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED) 
+    else if (event.type == SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED) 
     {
         /** 
          * En cas de changement d'échelle d'affichage de la fenêtre, 
@@ -622,7 +605,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window resized
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_RESIZED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_RESIZED) 
     {
         /** 
          * En cas de changement de la taille de la fenêtre,
@@ -633,22 +616,22 @@ SDL_AppResult rc2d_processevent(void)
 
         if (rc2d_callbacks_engine.rc2d_windowresized != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowresized(rc2d_event.window.data1, rc2d_event.window.data2);
+            rc2d_callbacks_engine.rc2d_windowresized(event.window.data1, event.window.data2);
         }
     }
 
     // Window moved
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_MOVED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_MOVED) 
     {
         if (rc2d_callbacks_engine.rc2d_windowmoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowmoved(rc2d_event.window.data1, rc2d_event.window.data2);
+            rc2d_callbacks_engine.rc2d_windowmoved(event.window.data1, event.window.data2);
 
         }
     }
 
     // Window display changed
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_DISPLAY_CHANGED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_DISPLAY_CHANGED) 
     {
         /**
          * Quand la fenêtre change de moniteur,
@@ -661,12 +644,12 @@ SDL_AppResult rc2d_processevent(void)
 
         if (rc2d_callbacks_engine.rc2d_windowdisplaychanged != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowdisplaychanged(rc2d_event.window.data1, rc2d_event.window.data2);
+            rc2d_callbacks_engine.rc2d_windowdisplaychanged(event.window.data1, event.window.data2);
         }
     }
 
     // Window exposed
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_EXPOSED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_EXPOSED) 
     {
         if (rc2d_callbacks_engine.rc2d_windowexposed != NULL) 
         {
@@ -675,7 +658,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window minimized
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_MINIMIZED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_MINIMIZED) 
     {
         if (rc2d_callbacks_engine.rc2d_windowminimized != NULL) 
         {
@@ -684,7 +667,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window maximized
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_MAXIMIZED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_MAXIMIZED) 
     {
         /** 
          * En cas de changement de la taille de la fenêtre,
@@ -700,7 +683,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window restored
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_RESTORED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_RESTORED) 
     {
         /** 
          * La fenêtre a été restaurée après avoir été minimisée ou maximisée à son état normal.
@@ -716,7 +699,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Mouse entered window
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_MOUSE_ENTER) 
+    else if (event.window.event == SDL_EVENT_WINDOW_MOUSE_ENTER) 
     {
         if (rc2d_callbacks_engine.rc2d_mouseenteredwindow != NULL) 
         {
@@ -725,7 +708,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Mouse leave window
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_MOUSE_LEAVE) 
+    else if (event.window.event == SDL_EVENT_WINDOW_MOUSE_LEAVE) 
     {
         if (rc2d_callbacks_engine.rc2d_mouseleavewindow != NULL) 
         {
@@ -734,7 +717,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Keyboard focus gained
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_FOCUS_GAINED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_FOCUS_GAINED) 
     {
         if (rc2d_callbacks_engine.rc2d_keyboardfocusgained != NULL) 
         {
@@ -743,7 +726,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Keyboard focus lost
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_FOCUS_LOST) 
+    else if (event.window.event == SDL_EVENT_WINDOW_FOCUS_LOST) 
     {
         if (rc2d_callbacks_engine.rc2d_keyboardfocuslost != NULL) 
         {
@@ -752,7 +735,7 @@ SDL_AppResult rc2d_processevent(void)
     }
 
     // Window closed
-    else if (rc2d_event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED) 
+    else if (event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED) 
     {
         if (rc2d_callbacks_engine.rc2d_windowclosed != NULL)
         {
@@ -763,85 +746,85 @@ SDL_AppResult rc2d_processevent(void)
     }
     
     // Mouse Moved
-    else if (rc2d_event.type == SDL_EVENT_MOUSE_MOTION) 
+    else if (event.type == SDL_EVENT_MOUSE_MOTION) 
     {
         if (rc2d_callbacks_engine.rc2d_mousemoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_mousemoved(rc2d_event.motion.x, rc2d_event.motion.y);
+            rc2d_callbacks_engine.rc2d_mousemoved(event.motion.x, event.motion.y);
         }
     }
 
     // Mouse Wheel
-    else if (rc2d_event.type == SDL_EVENT_MOUSE_WHEEL) 
+    else if (event.type == SDL_EVENT_MOUSE_WHEEL) 
     {
         if (rc2d_callbacks_engine.rc2d_wheelmoved != NULL) 
         {
             const char* stateScroll = "";
 
-            if (rc2d_event.wheel.y > 0) stateScroll = "up"; // scroll up
-            else if (rc2d_event.wheel.y < 0) stateScroll = "down"; // scroll down
-            else if (rc2d_event.wheel.x > 0) stateScroll = "right"; // scroll right
-            else if (rc2d_event.wheel.x < 0) stateScroll = "left"; // scroll left
+            if (event.wheel.y > 0) stateScroll = "up"; // scroll up
+            else if (event.wheel.y < 0) stateScroll = "down"; // scroll down
+            else if (event.wheel.x > 0) stateScroll = "right"; // scroll right
+            else if (event.wheel.x < 0) stateScroll = "left"; // scroll left
 
             rc2d_callbacks_engine.rc2d_wheelmoved(stateScroll);
         }
     }
 
     // Mouse pressed
-    else if (rc2d_event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) 
+    else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) 
     {
         if (rc2d_callbacks_engine.rc2d_mousepressed != NULL) 
         {
             const char* button = "";
 
-            if (rc2d_event.button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
-            else if (rc2d_event.button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
-            else if (rc2d_event.button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
+            if (event.button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
+            else if (event.button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
+            else if (event.button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
 
-            rc2d_callbacks_engine.rc2d_mousepressed(rc2d_event.button.x, rc2d_event.button.y, button, rc2d_event.button.clicks);
+            rc2d_callbacks_engine.rc2d_mousepressed(event.button.x, event.button.y, button, event.button.clicks);
         }
     }
 
     // Mouse released
-    else if (rc2d_event.type == SDL_EVENT_MOUSE_BUTTON_UP) 
+    else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) 
     {
         if (rc2d_callbacks_engine.rc2d_mousereleased != NULL) 
         {
             const char* button = "";
 
-            if (rc2d_event.button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
-            else if (rc2d_event.button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
-            else if (rc2d_event.button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
+            if (event.button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
+            else if (event.button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
+            else if (event.button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
 
-            rc2d_callbacks_engine.rc2d_mousereleased(rc2d_event.button.x, rc2d_event.button.y, button, rc2d_event.button.clicks);
+            rc2d_callbacks_engine.rc2d_mousereleased(event.button.x, event.button.y, button, event.button.clicks);
         }
     }
 
     // Keyboard pressed
-    else if (rc2d_event.type == SDL_EVENT_KEY_DOWN)
+    else if (event.type == SDL_EVENT_KEY_DOWN)
     {
         if (rc2d_callbacks_engine.rc2d_keypressed != NULL) 
         {
-            const char* keyCurrent = SDL_GetKeyName(rc2d_event.key.keysym.sym);
+            const char* keyCurrent = SDL_GetKeyName(event.key.keysym.sym);
 
-            bool keyRepeat = rc2d_event.key.repeat != 0;
+            bool keyRepeat = event.key.repeat != 0;
 
             rc2d_callbacks_engine.rc2d_keypressed(keyCurrent, keyRepeat);
         }
     }
 
     // Keyboard released
-    else if (rc2d_event.type == SDL_EVENT_KEY_UP)
+    else if (event.type == SDL_EVENT_KEY_UP)
     {
         if (rc2d_callbacks_engine.rc2d_keyreleased != NULL) 
         {
-            const char* keyCurrent = SDL_GetKeyName(rc2d_event.key.keysym.sym);
+            const char* keyCurrent = SDL_GetKeyName(event.key.keysym.sym);
             rc2d_callbacks_engine.rc2d_keyreleased(keyCurrent);
         }
     }
 
     // Gamepad axis moved
-    else if (rc2d_event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION) 
+    else if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION) 
     {
         if (rc2d_callbacks_engine.rc2d_gamepadaxis != NULL) 
         {
@@ -850,31 +833,31 @@ SDL_AppResult rc2d_processevent(void)
             ce qui est généralement plus utile pour la logique de jeu, car cela indique la direction et l'intensité de l'entrée de manière cohérente, 
             indépendamment de la plateforme ou du contrôleur spécifique.
             */
-            float valueNormalized = rc2d_event.caxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
-            rc2d_callbacks_engine.rc2d_gamepadaxis(rc2d_event.caxis.which, rc2d_event.caxis.axis, valueNormalized);
+            float valueNormalized = event.caxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
+            rc2d_callbacks_engine.rc2d_gamepadaxis(event.caxis.which, event.caxis.axis, valueNormalized);
         }
     }
 
     // Gamepad Pressed
-    else if (rc2d_event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) 
+    else if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) 
     {
         if (rc2d_callbacks_engine.rc2d_gamepadpressed != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_gamepadpressed(rc2d_event.cbutton.which, rc2d_event.cbutton.button);
+            rc2d_callbacks_engine.rc2d_gamepadpressed(event.cbutton.which, event.cbutton.button);
         }
     }
 
     // Gamepad Released
-    else if (rc2d_event.type == SDL_EVENT_GAMEPAD_BUTTON_UP) 
+    else if (event.type == SDL_EVENT_GAMEPAD_BUTTON_UP) 
     {
         if (rc2d_callbacks_engine.rc2d_gamepadreleased != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_gamepadreleased(rc2d_event.cbutton.which, rc2d_event.cbutton.button);
+            rc2d_callbacks_engine.rc2d_gamepadreleased(event.cbutton.which, event.cbutton.button);
         }
     }
 
     // Joystick axis moved
-    else if (rc2d_event.type == SDL_EVENT_JOYSTICK_AXIS_MOTION) 
+    else if (event.type == SDL_EVENT_JOYSTICK_AXIS_MOTION) 
     {
         if (rc2d_callbacks_engine.rc2d_joystickaxis != NULL) 
         {
@@ -883,95 +866,95 @@ SDL_AppResult rc2d_processevent(void)
             ce qui est généralement plus utile pour la logique de jeu, car cela indique la direction et l'intensité de l'entrée de manière cohérente, 
             indépendamment de la plateforme ou du contrôleur spécifique.
             */
-            float valueNormalized = rc2d_event.jaxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
-            rc2d_callbacks_engine.rc2d_joystickaxis(rc2d_event.jaxis.which, rc2d_event.jaxis.axis, valueNormalized);
+            float valueNormalized = event.jaxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
+            rc2d_callbacks_engine.rc2d_joystickaxis(event.jaxis.which, event.jaxis.axis, valueNormalized);
         }
     }
 
     // Joystick Pressed
-    else if (rc2d_event.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) 
+    else if (event.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) 
     {
         if (rc2d_callbacks_engine.rc2d_joystickpressed != NULL)
         {
-            rc2d_callbacks_engine.rc2d_joystickpressed(rc2d_event.jbutton.which, rc2d_event.jbutton.button);
+            rc2d_callbacks_engine.rc2d_joystickpressed(event.jbutton.which, event.jbutton.button);
         }
     }
 
     // Joystick Released
-    else if (rc2d_event.type == SDL_EVENT_JOYSTICK_BUTTON_UP)
+    else if (event.type == SDL_EVENT_JOYSTICK_BUTTON_UP)
         {
         if (rc2d_callbacks_engine.rc2d_joystickreleased != NULL)
         {
-            rc2d_callbacks_engine.rc2d_joystickreleased(rc2d_event.jbutton.which, rc2d_event.jbutton.button);
+            rc2d_callbacks_engine.rc2d_joystickreleased(event.jbutton.which, event.jbutton.button);
         }
     }
 
     // Joystick added
-    else if (rc2d_event.type == SDL_EVENT_JOYSTICK_ADDED) 
+    else if (event.type == SDL_EVENT_JOYSTICK_ADDED) 
     {
         if (rc2d_callbacks_engine.rc2d_joystickadded != NULL)
         {
-            rc2d_callbacks_engine.rc2d_joystickadded(rc2d_event.jdevice.which);
+            rc2d_callbacks_engine.rc2d_joystickadded(event.jdevice.which);
         }
     }
 
     // Joystick remove
-    else if (rc2d_event.type == SDL_EVENT_JOYSTICK_REMOVED) 
+    else if (event.type == SDL_EVENT_JOYSTICK_REMOVED) 
     {
         if (rc2d_callbacks_engine.rc2d_joystickremoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_joystickremoved(rc2d_event.jdevice.which);
+            rc2d_callbacks_engine.rc2d_joystickremoved(event.jdevice.which);
         }
     }
 
     // Joystick hat moved
-    else if (rc2d_event.type == SDL_EVENT_JOYSTICK_HAT_MOTION) 
+    else if (event.type == SDL_EVENT_JOYSTICK_HAT_MOTION) 
     {
         if (rc2d_callbacks_engine.rc2d_joystickhat != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_joystickhat(rc2d_event.jhat.which, rc2d_event.jhat.hat, rc2d_event.jhat.value);
+            rc2d_callbacks_engine.rc2d_joystickhat(event.jhat.which, event.jhat.hat, event.jhat.value);
         }
     }
 
     // DROP FILE
-    else if (rc2d_event.type == SDL_EVENT_DROP_FILE) 
+    else if (event.type == SDL_EVENT_DROP_FILE) 
     {
         if (rc2d_callbacks_engine.rc2d_dropfile != NULL)
         {
-            char* filedir = rc2d_event.drop.file;
+            char* filedir = event.drop.file;
             rc2d_callbacks_engine.rc2d_dropfile(filedir);
             SDL_free(filedir);
         }
     }
 
     // SDL_DROPTEXT
-    else if (rc2d_event.type == SDL_EVENT_DROP_TEXT) 
+    else if (event.type == SDL_EVENT_DROP_TEXT) 
     {
         if (rc2d_callbacks_engine.rc2d_droptext != NULL) 
         {
-            char* filedir = rc2d_event.drop.file;
+            char* filedir = event.drop.file;
             rc2d_callbacks_engine.rc2d_droptext(filedir);
             SDL_free(filedir);
         }
     }
 
     // SDL_DROPBEGIN
-    else if (rc2d_event.type == SDL_EVENT_DROP_BEGIN) 
+    else if (event.type == SDL_EVENT_DROP_BEGIN) 
     {
         if (rc2d_callbacks_engine.rc2d_dropbegin != NULL) 
         {
-            char* filedir = rc2d_event.drop.file;
-            rc2d_callbacks_engine.rc2d_dropbegin(filedir);
+            char* filedir = event.drop.file;
+            rc2d_engine_state.config->callbacks.rc2d_dropbegin(filedir);
             SDL_free(filedir);
         }
     }
 
     // SDL_DROPCOMPLETE
-    else if (rc2d_event.type == SDL_EVENT_DROP_COMPLETE) 
+    else if (event.type == SDL_EVENT_DROP_COMPLETE) 
     {
         if (rc2d_callbacks_engine.rc2d_dropcomplete != NULL) 
         {
-            char* filedir = rc2d_event.drop.file;
+            char* filedir = event.drop.file;
             rc2d_callbacks_engine.rc2d_dropcomplete(filedir);
             SDL_free(filedir);
         }
@@ -989,7 +972,7 @@ SDL_AppResult rc2d_processevent(void)
  * 
  * @param callbacks Pointeur vers la structure RC2D_Callbacks contenant les callbacks à définir.
  */
-static void rc2d_set_callbacks(RC2D_Callbacks* callbacks) 
+static void rc2d_engine_set_callbacks(RC2D_EngineCallbacks* callbacks) 
 {
     // Game loop callbacks
     if (callbacks->rc2d_unload != NULL) rc2d_callbacks_engine.rc2d_unload = callbacks->rc2d_unload;
@@ -1068,12 +1051,12 @@ static bool rc2d_engine(void)
      * Set les informations de l'application.
      * Dois toujours etre fait avant d'initialiser SDL3
      */
-    SDL_SetAppMetadata(rc2d_app_info.name, rc2d_app_info.version, rc2d_app_info.identifier);
+    SDL_SetAppMetadata(rc2d_engine_state.config->appInfo->name, rc2d_engine_state.config->appInfo->version, rc2d_engine_state.config->appInfo->identifier);
 
     /**
      * Initialiser la librairie OpenSSL
      */
-    if (!rc2d_init_openssl())
+    if (!rc2d_engine_init_openssl())
     {
         return false;
     }
@@ -1081,7 +1064,7 @@ static bool rc2d_engine(void)
     /**
      * Initialiser la librairie SDL3_ttf
      */
-    if (!rc2d_init_sdlttf())
+    if (!rc2d_engine_init_sdlttf())
     {
         return false;
     }
@@ -1089,7 +1072,7 @@ static bool rc2d_engine(void)
     /**
      * Initialiser la librairie SDL3_mixer
      */
-    if (!rc2d_init_sdlmixer())
+    if (!rc2d_engine_init_sdlmixer())
     {
         return false;
     }
@@ -1097,7 +1080,7 @@ static bool rc2d_engine(void)
 	/**
      * Initialiser la librairie SDL3
      */
-    if (!rc2d_init_sdl())
+    if (!rc2d_engine_init_sdl())
     {
         return false;
     }
@@ -1107,9 +1090,9 @@ static bool rc2d_engine(void)
      * Créer la fenêtre principale de l'application
      */
 	SDL_PropertiesID window_props = SDL_CreateProperties();
-    SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, rc2d_app_info.name);
-    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, rc2d_window_width);
-    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, rc2d_window_height);
+    SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, rc2d_engine_state.config->appInfo->name);
+    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, rc2d_engine_state.config->windowWidth);
+    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, rc2d_engine_state.config->windowHeight);
     SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
     SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
     SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
@@ -1122,9 +1105,9 @@ static bool rc2d_engine(void)
      */
     SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
 
-    rc2d_window = SDL_CreateWindowWithProperties(window_props);
+    rc2d_engine_state.window = SDL_CreateWindowWithProperties(window_props);
     SDL_DestroyProperties(window_props);
-    if (!rc2d_window) 
+    if (!rc2d_engine_state.window) 
     {
         RC2D_log(RC2D_LOG_CRITICAL, "Error create window : %s", SDL_GetError());
         return false;
@@ -1140,12 +1123,12 @@ static bool rc2d_engine(void)
      * Vérifie la compatibilité du GPU avec les propriétés spécifiées.
      */
     SDL_PropertiesID gpu_props = SDL_CreateProperties();
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, rc2d_gpu_advanced_options.debugMode);
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN, rc2d_gpu_advanced_options.verbose);
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN, rc2d_gpu_advanced_options.preferLowPower);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, rc2d_engine_state.config->gpuOptions->debugMode);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN, rc2d_engine_state.config->gpuOptions->verbose);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN, rc2d_engine_state.config->gpuOptions->preferLowPower);
     
     // Pilote GPU forcé si nécessaire
-    switch (rc2d_gpu_advanced_options.driver) 
+    switch (rc2d_engine_state.config->gpuOptions->driver)
     {
         case RC2D_GPU_DRIVER_VULKAN:
             SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "vulkan");
@@ -1231,9 +1214,9 @@ static bool rc2d_engine(void)
     }
 
     // Créer le GPU device avec les propriétés spécifiées
-    rc2d_gpu_device = SDL_CreateGPUDeviceWithProperties(gpu_props);
+    rc2d_engine_state.gpu_device = SDL_CreateGPUDeviceWithProperties(gpu_props);
     SDL_DestroyProperties(gpu_props);
-    if (!rc2d_gpu_device) 
+    if (!rc2d_engine_state.gpu_device) 
     {
         RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
         return false;
@@ -1244,7 +1227,7 @@ static bool rc2d_engine(void)
     }
 
     // Associe la fenêtre au GPU
-    SDL_ClaimWindowForGPUDevice(rc2d_gpu_device, rc2d_window);
+    SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_window);
 
     // SDL3 : Configurer le mode de présentation du GPU
     /**
@@ -1270,9 +1253,9 @@ static bool rc2d_engine(void)
      */
     for (int i = 0; i < SDL_arraysize(present_modes); i++) 
     {
-        if (SDL_WindowSupportsGPUPresentMode(rc2d_gpu_device, rc2d_window, present_modes[i])) 
+        if (SDL_WindowSupportsGPUPresentMode(rc2d_engine_state.gpu_device, rc2d_engine_state.window, present_modes[i])) 
         {
-            rc2d_gpu_present_mode = present_modes[i];
+            rc2d_engine_state.gpu_present_mode = present_modes[i];
             break;
         }
     }
@@ -1305,21 +1288,21 @@ static bool rc2d_engine(void)
      */
     for (int i = 0; i < SDL_arraysize(compositions); i++) 
     {
-        if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_gpu_device, rc2d_window, compositions[i])) 
+        if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, compositions[i])) 
         {
-            rc2d_gpu_swapchain_composition = compositions[i];
+            rc2d_engine_state.gpu_swapchain_composition = compositions[i];
             break;
         }
     }
 
     // SDL3 : Set GPU Swapchain parameters
-    if (!SDL_SetGPUSwapchainParameters(rc2d_gpu_device, rc2d_window, rc2d_gpu_swapchain_composition, rc2d_gpu_present_mode)) 
+    if (!SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, rc2d_engine_state.gpu_present_mode, rc2d_engine_state.gpu_swapchain_composition))
     {
         RC2D_log(RC2D_LOG_CRITICAL, "Could not set swapchain parameters: %s", SDL_GetError());
     }
 
     // SDL3: Set GPU frames in flight
-    if (!SDL_SetGPUAllowedFramesInFlight(rc2d_gpu_device, (Uint32)rc2d_gpu_frames_in_flight)) 
+    if (!SDL_SetGPUAllowedFramesInFlight(rc2d_gpu_device, (Uint32)rc2d_engine_state.config->gpuFramesInFlight)) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to set GPU frames in flight: %s", SDL_GetError());
     }
@@ -1328,7 +1311,7 @@ static bool rc2d_engine(void)
      * Calcul initial du viewport GPU et de l'échelle de rendu pour l'ensemble de l'application.
      * Cela permet de s'assurer que le rendu est effectué à la bonne échelle et dans la bonne zone de la fenêtre.
      */
-    rc2d_calculate_renderscale_and_gpuviewport();
+    rc2d_engine_calculate_renderscale_and_gpuviewport();
 
     /**
      * Recupere les donnees du moniteur qui contient la fenetre window pour regarder 
@@ -1336,7 +1319,7 @@ static bool rc2d_engine(void)
      * 
 	 * Si les hz n'ont pas etait trouve, FPS par default : 60.
      */
-    rc2d_update_fps_based_on_monitor();
+    rc2d_engine_update_fps_based_on_monitor();
 
     /**
      * Une variable contrôlant les orientations autorisées sur iOS/Android.
@@ -1354,8 +1337,10 @@ static bool rc2d_engine(void)
 	return true;
 }
 
-bool rc2d_init(void)
+bool rc2d_engine_init(void)
 {
+    rc2d_engine_stateInit();
+
 	// Init GameEngine house
 	if (!rc2d_engine())
     {
@@ -1365,53 +1350,66 @@ bool rc2d_init(void)
 	return true;
 }
 
-void rc2d_quit(void)
+void rc2d_engine_quit(void)
 {
 	/**
-     * Détruire les ressources internes de RC2D
+     * Détruire les ressources internes des modules de la lib RC2D.
      */
 	rc2d_filesystem_quit();
     rc2d_touch_freeTouchState();
 
     // Lib OpenSSL Deinitialize
-    rc2d_cleanup_openssl();
+    rc2d_engine_cleanup_openssl();
 
     // Lib SDL3_ttf Deinitialize
-    rc2d_cleanup_sdlttf();
+    rc2d_engine_cleanup_sdlttf();
 
     // Lib SDL3_mixer Deinitialize
-    rc2d_cleanup_sdlmixer();
-
-    // TODO: Libérer : rc2d_letterbox_textures
+    rc2d_engine_cleanup_sdlmixer();
     
     // Destroy GPU device
-    if (rc2d_gpu_device != NULL)
+    if (rc2d_engine_state.gpu_device != NULL)
     {
-        SDL_DestroyGPUDevice(rc2d_gpu_device);
-        rc2d_gpu_device = NULL;
+        SDL_DestroyGPUDevice(rc2d_engine_state.gpu_device);
+        rc2d_engine_state.gpu_device = NULL;
     }
 
     // Destroy window
-    if (rc2d_window != NULL)
+    if (rc2d_engine_state.window != NULL)
     {
-        SDL_DestroyWindow(rc2d_window);
-        rc2d_window = NULL;
+        SDL_DestroyWindow(rc2d_engine_state.window);
+        rc2d_engine_state.window = NULL;
     }
 
+    // TODO: Destroy RC2D Engine state (tout ce qui est dans rc2d_engine_state)
+
     // Cleanup SDL3
-	rc2d_cleanup_sdl();
+	rc2d_engine_cleanup_sdl();
 }
 
-void rc2d_configure(const RC2D_Config* config)
+void rc2d_engine_configure(const RC2D_EngineConfig* config)
 {
+    /**
+     * Vérifie si le moteur RC2D a été initialisé.
+     * 
+     * Si le moteur n'est pas initialisé, on ne peut pas configurer les paramètres.
+     */
+    if (rc2d_engine_state.config == NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Engine state config is NULL. Cannot configure.\n");
+        return;
+    }
+
     /**
      * Vérifie si le pointeur de configuration du framework RC2D est valide.
      * 
-     * Si le pointeur est NULL, on ne peut pas continuer.
+     * Si le pointeur est NULL, alors on utilisera toutes les valeurs 
+     * par défaut pour la configuration.
      */
     if (config == NULL)
     {
-        RC2D_log(RC2D_LOG_WARN, "No RC2D_Config provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_Config provided. Using default values.\n");
+        return;
     }
 
     /**
@@ -1422,11 +1420,11 @@ void rc2d_configure(const RC2D_Config* config)
      */
     if (config->appInfo != NULL)
     {
-        rc2d_app_info = *(config->appInfo);
+        rc2d_engine_state.config->appInfo = config->appInfo;
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARN, "No RC2D_AppInfo provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_AppInfo provided. Using default values.\n");
     }
 
     /**
@@ -1440,93 +1438,128 @@ void rc2d_configure(const RC2D_Config* config)
      */
     if (config->callbacks != NULL)
     {
-        rc2d_set_callbacks(config->callbacks);
+        rc2d_engine_state.config->callbacks = config->callbacks;
+        rc2d_engine_set_callbacks(rc2d_engine_state.config->callbacks);
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARN, "No RC2D_Callbacks provided. Some events may not be handled.");
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_Callbacks provided. Some events may not be handled.\n");
     }
 
     /**
-     * Vérifie si la propriété concernant l'enumération du nombre
-     * d'images en vol pour le GPU est valide.
+     * Vérifie si la propriété concernant l'enumération du nombre d'images en vol pour le GPU est valide.
      * 
      * Sinon on utilise la valeur par défaut de 2 images en vol (RC2D_GPU_FRAMES_BALANCED).
      */
-    if (config->gpuFramesInFlight != RC2D_GPU_FRAMES_LOW_LATENCY &&
-        config->gpuFramesInFlight != RC2D_GPU_FRAMES_BALANCED &&
-        config->gpuFramesInFlight != RC2D_GPU_FRAMES_HIGH_THROUGHPUT)
+    if (config->gpuFramesInFlight == RC2D_GPU_FRAMES_LOW_LATENCY ||
+        config->gpuFramesInFlight == RC2D_GPU_FRAMES_BALANCED ||
+        config->gpuFramesInFlight == RC2D_GPU_FRAMES_HIGH_THROUGHPUT)
     {
-        rc2d_gpu_frames_in_flight = config->gpuFramesInFlight;
+        rc2d_engine_state.config->gpuFramesInFlight = config->gpuFramesInFlight;
     }
     else
     {
-        RC2D_log(RC2D_LOG_ERROR, "Invalid RC2D_GPUFramesInFlight value.");
+        RC2D_log(RC2D_LOG_ERROR, "Invalid RC2D_GPUFramesInFlight value. Using default.\n");
+        rc2d_engine_state.config->gpuFramesInFlight = RC2D_GPU_FRAMES_BALANCED;
     }
 
-    // Set GPU advanced options
+    /**
+     * Vérifie si la propriété concernant la configuration avancée du GPU est valide.
+     * 
+     * Si la configuration avancée est valide, on l'utilise, sinon on utilise les valeurs par défaut.
+     */
     if (config->gpuOptions != NULL)
     {
-        rc2d_gpu_advanced_options = *(config->gpuOptions);
+        rc2d_engine_state.config->gpuOptions = config->gpuOptions;
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "No RC2D_GPUAdvancedOptions provided. Using default GPU settings.");
+        RC2D_log(RC2D_LOG_INFO, "No RC2D_GPUAdvancedOptions provided. Using default GPU settings.\n");
     }
 
-    // Set window size
+    /**
+     * Vérifie si la propriété concernant la taille de la fenêtre en largeur de l'application est valide.
+     * 
+     * Si la taille de la fenêtre est valide (> 0), on l'utilise, sinon on utilise les valeurs par défaut.
+     */
     if (config->windowWidth > 0)
     {
-        rc2d_window_width = config->windowWidth;
+        rc2d_engine_state.config->windowWidth = config->windowWidth;
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARN, "Invalid window size width provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid window size width provided. Using default values.\n");
     }
 
+    /**
+     * Vérifie si la propriété concernant la taille de la fenêtre en hauteur de l'application est valide.
+     * 
+     * Si la taille de la fenêtre est valide (> 0), on l'utilise, sinon on utilise les valeurs par défaut.
+     */
     if (config->windowHeight > 0)
     {
-        rc2d_window_height = config->windowHeight;
+        rc2d_engine_state.config->windowHeight = config->windowHeight;
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARN, "Invalid window size height provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid window size height provided. Using default values.\n");
     }
 
-    // Set logical size
+    /**
+     * Vérifie si la propriété concernant la taille logique en largeur de l'application est valide.
+     * 
+     * Si la taille logique est valide (> 0), on l'utilise, sinon on utilise les valeurs par défaut.
+     */
     if (config->logicalWidth > 0)
     {
-        rc2d_logical_width = config->logicalWidth;
+        rc2d_engine_state.config->logicalWidth = config->logicalWidth;
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARN, "Invalid logical size width provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid logical size width provided. Using default values.\n");
     }
 
+    /**
+     * Vérifie si la propriété concernant la taille logique en hauteur de l'application est valide.
+     * 
+     * Si la taille logique est valide (> 0), on l'utilise, sinon on utilise les valeurs par défaut.
+     */
     if (config->logicalHeight > 0)
     {
-        rc2d_logical_height = config->logicalHeight;
+        rc2d_engine_state.config->logicalHeight = config->logicalHeight;
     }
     else
     {
-        RC2D_log(RC2D_LOG_WARN, "Invalid logical size height provided. Using default values.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid logical size height provided. Using default values.\n");
     }
     
-    // Set presentation mode : RC2D_PRESENTATION_PIXELART ou RC2D_PRESENTATION_CLASSIC
-    if (config->presentationMode != RC2D_PRESENTATION_PIXELART &&
-        config->presentationMode != RC2D_PRESENTATION_CLASSIC)
+    /**
+     * Vérifie si la propriété concernant le mode de présentation est valide.
+     * 
+     * Si le mode de présentation est valide, on l'utilise, sinon on utilise les valeurs par défaut.
+     */
+    if (config->presentationMode == RC2D_PRESENTATION_PIXELART ||
+        config->presentationMode == RC2D_PRESENTATION_CLASSIC)
     {
-        RC2D_log(RC2D_LOG_ERROR, "Invalid RC2D_PresentationMode: %d", config->presentationMode);
-    }
-    rc2d_presentation_mode = config->presentationMode;
-
-    // Set letterbox texture
-    if (config->letterboxTextures != NULL)
-    {
-        rc2d_letterbox_textures = *(config->letterboxTextures);
+        rc2d_engine_state.config->presentationMode = config->presentationMode;
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "No letterbox textures provided. Default black bars will be used.");
+        RC2D_log(RC2D_LOG_WARN, "Invalid presentation mode provided. Using default values.\n");
+        rc2d_engine_state.config->presentationMode = RC2D_PRESENTATION_CLASSIC;
+    }
+
+    /**
+     * Vérifie si la propriété concernant le mode de rendu des textures pour les letterbox est valide.
+     * 
+     * Si le mode de rendu est valide, on l'utilise, sinon on utilise les valeurs par défaut.
+     */
+    if (config->letterboxTextures != NULL)
+    {
+        rc2d_engine_state.letterbox_textures = *(config->letterboxTextures);
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "No letterbox textures provided. Default black bars will be used.\n");
     }
 }
