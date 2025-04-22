@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_mouse.h>
 #include <RC2D/RC2D_internal.h> // Required for : rc2d_engine_state.window (SDL_Window*)
+#include <RC2D/RC2D_logger.h> // Required for : RC2D_log
 
 #include <SDL3_image/SDL_image.h>
 
@@ -29,7 +30,7 @@ bool rc2d_mouse_isCursorSupported(void)
  */
 bool rc2d_mouse_isGrabbed(void) 
 {
-    return SDL_GetWindowGrab(rc2d_engine_state.window) == SDL_TRUE;
+    return SDL_GetWindowMouseGrab(rc2d_engine_state.window);
 }
 
 /**
@@ -41,16 +42,14 @@ void rc2d_mouse_setVisible(const bool visible)
 {
 	if (visible)
     {
-        int result = SDL_ShowCursor(SDL_ENABLE);
-        if (result < 0)
+        if (!SDL_ShowCursor())
         {
             RC2D_log(RC2D_LOG_ERROR, "SDL_ShowCursor failed in rc2d_mouse_setVisible: %s\n", SDL_GetError());
         }
     }
 	else 
     {
-        int result = SDL_ShowCursor(SDL_DISABLE);
-        if (result < 0)
+        if (!SDL_HideCursor())
         {
             RC2D_log(RC2D_LOG_ERROR, "SDL_ShowCursor failed in rc2d_mouse_setVisible: %s\n", SDL_GetError());
         }
@@ -65,16 +64,15 @@ void rc2d_mouse_setVisible(const bool visible)
  * @param hoty La position y du point chaud du curseur dans l'image.
  * @return Le curseur créé.
  */
-RC2D_Cursor rc2d_mouse_newCursor(const char* filePath, const int hotx, const int hoty)
+RC2D_Cursor* rc2d_mouse_newCursor(const char* filePath, const int hotx, const int hoty)
 {
     if (filePath == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Le chemin du fichier image est NULL dans rc2d_mouse_newCursor().");
-        return (RC2D_Cursor) { NULL };
+        return NULL;
     }
 
-	RC2D_Cursor cursor;
-	cursor.sdl_cursor = NULL;
+	RC2D_Cursor* cursor = NULL;
 
 	SDL_Surface* cursorImage = NULL;
 	cursorImage = IMG_Load(filePath);
@@ -91,9 +89,9 @@ RC2D_Cursor rc2d_mouse_newCursor(const char* filePath, const int hotx, const int
 		}
 		else
 		{
-			cursor.sdl_cursor = SDL_CreateColorCursor(cursorImage, hotx, hoty);
+			cursor = SDL_CreateColorCursor(cursorImage, hotx, hoty);
 
-			SDL_FreeSurface(cursorImage);
+			SDL_DestroySurface(cursorImage);
 			cursorImage = NULL;
 		}
 	}
@@ -102,37 +100,50 @@ RC2D_Cursor rc2d_mouse_newCursor(const char* filePath, const int hotx, const int
 }
 
 /**
- * Crée un nouveau curseur système en fonction de l'identifiant spécifié.
+ * \brief Crée un nouveau curseur système en fonction de l'identifiant spécifié.
+ * 
+ * Cette fonction permet d’obtenir un curseur système standard
+ * correspondant à l’identifiant RC2D fourni.
  * 
  * @param systemCursorId Identifiant du curseur système souhaité.
- * @return Le curseur système créé.
+ * @return Le curseur système créé. Si la création échoue, le curseur retourné sera invalide (NULL).
+ * 
+ * @since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-RC2D_Cursor rc2d_mouse_newSystemCursor(const RC2D_SystemCursor systemCursorId) 
+RC2D_Cursor* rc2d_mouse_newSystemCursor(const RC2D_SystemCursor systemCursorId) 
 {
     SDL_SystemCursor sdlCursorId;
     switch (systemCursorId) 
-	{
-        case RC2D_CURSOR_ARROW:     sdlCursorId = SDL_SYSTEM_CURSOR_ARROW; break;
-        case RC2D_CURSOR_IBEAM:     sdlCursorId = SDL_SYSTEM_CURSOR_IBEAM; break;
-        case RC2D_CURSOR_WAIT:      sdlCursorId = SDL_SYSTEM_CURSOR_WAIT; break;
-        case RC2D_CURSOR_CROSSHAIR: sdlCursorId = SDL_SYSTEM_CURSOR_CROSSHAIR; break;
-        case RC2D_CURSOR_WAITARROW: sdlCursorId = SDL_SYSTEM_CURSOR_WAITARROW; break;
-        case RC2D_CURSOR_SIZENWSE:  sdlCursorId = SDL_SYSTEM_CURSOR_SIZENWSE; break;
-        case RC2D_CURSOR_SIZENESW:  sdlCursorId = SDL_SYSTEM_CURSOR_SIZENESW; break;
-        case RC2D_CURSOR_SIZEWE:    sdlCursorId = SDL_SYSTEM_CURSOR_SIZEWE; break;
-        case RC2D_CURSOR_SIZENS:    sdlCursorId = SDL_SYSTEM_CURSOR_SIZENS; break;
-        case RC2D_CURSOR_SIZEALL:   sdlCursorId = SDL_SYSTEM_CURSOR_SIZEALL; break;
-        case RC2D_CURSOR_NO:        sdlCursorId = SDL_SYSTEM_CURSOR_NO; break;
-        case RC2D_CURSOR_HAND:      sdlCursorId = SDL_SYSTEM_CURSOR_HAND; break;
-        default:                    sdlCursorId = SDL_SYSTEM_CURSOR_ARROW; // Fallback to default cursor
+    {
+        case RC2D_SYSTEM_CURSOR_DEFAULT:       sdlCursorId = SDL_SYSTEM_CURSOR_DEFAULT; break;
+        case RC2D_SYSTEM_CURSOR_TEXT:          sdlCursorId = SDL_SYSTEM_CURSOR_TEXT; break;
+        case RC2D_SYSTEM_CURSOR_WAIT:          sdlCursorId = SDL_SYSTEM_CURSOR_WAIT; break;
+        case RC2D_SYSTEM_CURSOR_CROSSHAIR:     sdlCursorId = SDL_SYSTEM_CURSOR_CROSSHAIR; break;
+        case RC2D_SYSTEM_CURSOR_PROGRESS:      sdlCursorId = SDL_SYSTEM_CURSOR_PROGRESS; break;
+        case RC2D_SYSTEM_CURSOR_NWSE_RESIZE:   sdlCursorId = SDL_SYSTEM_CURSOR_NWSE_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_NESW_RESIZE:   sdlCursorId = SDL_SYSTEM_CURSOR_NESW_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_EW_RESIZE:     sdlCursorId = SDL_SYSTEM_CURSOR_EW_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_NS_RESIZE:     sdlCursorId = SDL_SYSTEM_CURSOR_NS_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_MOVE:          sdlCursorId = SDL_SYSTEM_CURSOR_MOVE; break;
+        case RC2D_SYSTEM_CURSOR_NOT_ALLOWED:   sdlCursorId = SDL_SYSTEM_CURSOR_NOT_ALLOWED; break;
+        case RC2D_SYSTEM_CURSOR_POINTER:       sdlCursorId = SDL_SYSTEM_CURSOR_POINTER; break;
+        case RC2D_SYSTEM_CURSOR_NW_RESIZE:     sdlCursorId = SDL_SYSTEM_CURSOR_NW_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_N_RESIZE:      sdlCursorId = SDL_SYSTEM_CURSOR_N_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_NE_RESIZE:     sdlCursorId = SDL_SYSTEM_CURSOR_NE_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_E_RESIZE:      sdlCursorId = SDL_SYSTEM_CURSOR_E_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_SE_RESIZE:     sdlCursorId = SDL_SYSTEM_CURSOR_SE_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_S_RESIZE:      sdlCursorId = SDL_SYSTEM_CURSOR_S_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_SW_RESIZE:     sdlCursorId = SDL_SYSTEM_CURSOR_SW_RESIZE; break;
+        case RC2D_SYSTEM_CURSOR_W_RESIZE:      sdlCursorId = SDL_SYSTEM_CURSOR_W_RESIZE; break;
+        default:                                sdlCursorId = SDL_SYSTEM_CURSOR_DEFAULT; break; // Fallback
     }
 
-    RC2D_Cursor cursor;
-    cursor.sdl_cursor = SDL_CreateSystemCursor(sdlCursorId);
-
-    if (cursor.sdl_cursor == NULL)
+    RC2D_Cursor* cursor = NULL;
+    cursor = SDL_CreateSystemCursor(sdlCursorId);
+    if (cursor == NULL)
     {
-        RC2D_log(RC2D_LOG_ERROR, "SDL_CreateSystemCursor failed in rc2d_mouse_newSystemCursor: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_ERROR, "SDL_CreateSystemCursor failed in rc2d_mouse_newSystemCursor: %s", SDL_GetError());
+        return NULL; // Erreur lors de la création du curseur
     }
 
     return cursor;
@@ -143,10 +154,20 @@ RC2D_Cursor rc2d_mouse_newSystemCursor(const RC2D_SystemCursor systemCursorId)
  * 
  * @param grabbed Détermine si la souris doit être capturée (true) ou relâchée (false).
  */
-void rc2d_mouse_setGrabbed(const bool grabbed) 
+void rc2d_window_setGrabbed(bool grabbed)
 {
-	SDL_bool mode = grabbed ? SDL_TRUE : SDL_FALSE;
-    SDL_SetWindowGrab(rc2d_sdl_window, mode);
+    // Vérifie si la fenêtre est valide
+    if (rc2d_engine_state.window == NULL)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Impossible de modifier la capture de souris : aucune fenêtre active.\n");
+        return;
+    }
+
+    // Définit la capture de souris de la fenêtre
+    (!SDL_SetWindowMouseGrab(rc2d_engine_state.window, grabbed))
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Impossible de définir la capture de souris : %s\n", SDL_GetError());
+    }
 }
 
 /**
@@ -156,7 +177,7 @@ void rc2d_mouse_setGrabbed(const bool grabbed)
  */
 bool rc2d_mouse_getRelativeMode(void) 
 {
-    return SDL_GetRelativeMouseMode() == SDL_TRUE;
+    return SDL_GetRelativeMouseMode();
 }
 
 /**
@@ -191,11 +212,11 @@ bool rc2d_mouse_isDown(const RC2D_MouseButtons button)
     switch (button) 
 	{
         case RC2D_MOUSE_BUTTON_LEFT:
-            return sdlButtonMask & SDL_BUTTON(SDL_BUTTON_LEFT);
+            return sdlButtonMask & SDL_BUTTON_MASK(SDL_BUTTON_LEFT);
         case RC2D_MOUSE_BUTTON_MIDDLE:
-            return sdlButtonMask & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+            return sdlButtonMask & SDL_BUTTON_MASK(SDL_BUTTON_MIDDLE);
         case RC2D_MOUSE_BUTTON_RIGHT:
-            return sdlButtonMask & SDL_BUTTON(SDL_BUTTON_RIGHT);
+            return sdlButtonMask & SDL_BUTTON_MASK(SDL_BUTTON_RIGHT);
         default:
             return false;
     }

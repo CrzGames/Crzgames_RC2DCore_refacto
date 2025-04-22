@@ -10,55 +10,150 @@ extern "C" {
 #endif
 
 /**
- * Structure représentant un curseur personnalisé.
- * @typedef {Object} RC2D_Cursor
- * @property {SDL_Cursor} sdl_cursor - Pointeur vers le curseur SDL.
+ * \brief Structure représentant un curseur personnalisé.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
-typedef struct RC2D_Cursor {
-	SDL_Cursor* sdl_cursor;
-} RC2D_Cursor;
+typedef struct SDL_Cursor RC2D_Cursor;
 
 /**
- * Enum définissant les différents types de curseurs système.
- * @typedef {enum} RC2D_SystemCursor
- * @property {number} RC2D_CURSOR_ARROW - Curseur Flèche.
- * @property {number} RC2D_CURSOR_IBEAM - Curseur I-beam (curseur de texte).
- * @property {number} RC2D_CURSOR_WAIT - Curseur d'attente (sablier).
- * @property {number} RC2D_CURSOR_CROSSHAIR - Curseur Viseur.
- * @property {number} RC2D_CURSOR_WAITARROW - Curseur d'attente avec flèche.
- * @property {number} RC2D_CURSOR_SIZENWSE - Curseur Redimensionner NW-SE.
- * @property {number} RC2D_CURSOR_SIZENESW - Curseur Redimensionner NE-SW.
- * @property {number} RC2D_CURSOR_SIZEWE - Curseur Redimensionner horizontalement.
- * @property {number} RC2D_CURSOR_SIZENS - Curseur Redimensionner verticalement.
- * @property {number} RC2D_CURSOR_SIZEALL - Curseur Redimensionner toutes les directions.
- * @property {number} RC2D_CURSOR_NO - Curseur interdit.
- * @property {number} RC2D_CURSOR_HAND - Curseur Main.
+ * \brief Enum définissant les différents types de curseurs système.
+ * 
+ * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
 typedef enum RC2D_SystemCursor {
-    RC2D_CURSOR_ARROW,      
-    RC2D_CURSOR_IBEAM,       
-    RC2D_CURSOR_WAIT,       
-    RC2D_CURSOR_CROSSHAIR,  
-    RC2D_CURSOR_WAITARROW,   
-    RC2D_CURSOR_SIZENWSE,    
-    RC2D_CURSOR_SIZENESW,
-    RC2D_CURSOR_SIZEWE,      
-    RC2D_CURSOR_SIZENS,     
-    RC2D_CURSOR_SIZEALL,     
-    RC2D_CURSOR_NO,          
-    RC2D_CURSOR_HAND
+    /**
+     * Le curseur par défaut. Généralement une flèche.
+     */
+    RC2D_SYSTEM_CURSOR_DEFAULT,
+
+    /**
+     * Curseur de sélection de texte. 
+     * Généralement un I-beam.
+     */
+    RC2D_SYSTEM_CURSOR_TEXT,
+
+    /**
+     * Curseur d'attente. Généralement un sablier, une montre ou une roue tournante.
+     */
+    RC2D_SYSTEM_CURSOR_WAIT,
+
+    /**
+     * Curseur en forme de croix pour des sélections précises.
+     */
+    RC2D_SYSTEM_CURSOR_CROSSHAIR,
+
+    /**
+     * Le programme est occupé mais reste interactif.
+     * Généralement une flèche combinée avec un sablier.
+     */
+    RC2D_SYSTEM_CURSOR_PROGRESS,
+
+    /**
+     * Flèche double pointant vers le nord-ouest et le sud-est.
+     * Utilisée pour redimensionner les fenêtres.
+     */
+    RC2D_SYSTEM_CURSOR_NWSE_RESIZE,
+
+    /**
+     * Flèche double pointant vers le nord-est et le sud-ouest.
+     * Utilisée pour redimensionner les fenêtres.
+     */
+    RC2D_SYSTEM_CURSOR_NESW_RESIZE,
+
+    /**
+     * Flèche double pointant vers l’est et l’ouest.
+     * Utilisée pour redimensionner horizontalement.
+     */
+    RC2D_SYSTEM_CURSOR_EW_RESIZE,
+
+    /**
+     * Flèche double pointant vers le nord et le sud.
+     * Utilisée pour redimensionner verticalement.
+     */
+    RC2D_SYSTEM_CURSOR_NS_RESIZE,
+
+    /**
+     * Curseur de déplacement. Généralement une croix à quatre flèches.
+     */
+    RC2D_SYSTEM_CURSOR_MOVE,
+
+    /**
+     * Action non permise. Généralement représenté par un cercle barré.
+     */
+    RC2D_SYSTEM_CURSOR_NOT_ALLOWED,
+
+    /**
+     * Curseur indiquant un lien cliquable. 
+     * Généralement une main pointant.
+     */
+    RC2D_SYSTEM_CURSOR_POINTER,
+
+    /**
+     * Redimensionnement depuis le coin supérieur gauche.
+     */
+    RC2D_SYSTEM_CURSOR_NW_RESIZE,
+
+    /**
+     * Redimensionnement depuis le haut.
+     */
+    RC2D_SYSTEM_CURSOR_N_RESIZE,
+
+    /**
+     * Redimensionnement depuis le coin supérieur droit.
+     */
+    RC2D_SYSTEM_CURSOR_NE_RESIZE,
+
+    /**
+     * Redimensionnement depuis la droite.
+     */
+    RC2D_SYSTEM_CURSOR_E_RESIZE,
+
+    /**
+     * Redimensionnement depuis le coin inférieur droit.
+     */
+    RC2D_SYSTEM_CURSOR_SE_RESIZE,
+
+    /**
+     * Redimensionnement depuis le bas.
+     */
+    RC2D_SYSTEM_CURSOR_S_RESIZE,
+
+    /**
+     * Redimensionnement depuis le coin inférieur gauche.
+     */
+    RC2D_SYSTEM_CURSOR_SW_RESIZE,
+
+    /**
+     * Redimensionnement depuis la gauche.
+     */
+    RC2D_SYSTEM_CURSOR_W_RESIZE,
+
+    /**
+     * Nombre total de curseurs système définis.
+     */
+    RC2D_SYSTEM_CURSOR_COUNT
 } RC2D_SystemCursor;
 
 /**
- * Enum définissant les différents boutons de la souris.
- * @typedef {enum} RC2D_MouseButtons
- * @property {number} RC2D_MOUSE_BUTTON_LEFT - Bouton gauche de la souris.
- * @property {number} RC2D_MOUSE_BUTTON_MIDDLE - Bouton central de la souris.
- * @property {number} RC2D_MOUSE_BUTTON_RIGHT - Bouton droit de la souris.
+ * \brief Enum définissant les différents boutons de la souris.
+ * 
+ * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
 typedef enum RC2D_MouseButtons {
+    /**
+     * Bouton gauche de la souris.
+     */
     RC2D_MOUSE_BUTTON_LEFT,
+
+    /**
+     * Bouton du milieu de la souris.
+     */
     RC2D_MOUSE_BUTTON_MIDDLE,
+
+    /**
+     * Bouton droit de la souris.
+     */
     RC2D_MOUSE_BUTTON_RIGHT
 } RC2D_MouseButtons;
 
