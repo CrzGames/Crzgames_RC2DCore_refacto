@@ -3,13 +3,6 @@
 
 #include <RC2D/RC2D_gpu.h>
 
-/**
- * A virer les 3 la include
- */
-#include <SDL3/SDL_joystick.h>
-#include <SDL3/SDL_stdinc.h>
-#include <SDL3/SDL_joystick.h>
-
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -202,13 +195,13 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_mousereleased)(int x, int y, const char* button, int presses);
     void (*rc2d_wheelmoved)(const char* scroll);
 
-    // Touch Callbacks
-    void (*rc2d_touchmoved)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float dx, float dy);
+    // Touch Callbacks -> TODO: A revoir
+    /*void (*rc2d_touchmoved)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float dx, float dy);
     void (*rc2d_touchpressed)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float pressure);
-    void (*rc2d_touchreleased)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float pressure);
+    void (*rc2d_touchreleased)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float pressure);*/
 
-    // Gamepad and Joystick Callbacks
-    void (*rc2d_gamepadaxis)(SDL_JoystickID joystick, Uint8 axis, float value);
+    // Gamepad and Joystick Callbacks -> TODO: A revoir
+    /*void (*rc2d_gamepadaxis)(SDL_JoystickID joystick, Uint8 axis, float value);
     void (*rc2d_gamepadpressed)(SDL_JoystickID joystick, Uint8 button);
     void (*rc2d_gamepadreleased)(SDL_JoystickID joystick, Uint8 button);
     void (*rc2d_joystickaxis)(SDL_JoystickID joystick, Uint8 axis, float value);
@@ -216,7 +209,7 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_joystickpressed)(SDL_JoystickID joystick, Uint8 button);
     void (*rc2d_joystickreleased)(SDL_JoystickID joystick, Uint8 button);
     void (*rc2d_joystickadded)(Sint32 joystick);
-    void (*rc2d_joystickremoved)(Sint32 joystick);
+    void (*rc2d_joystickremoved)(Sint32 joystick);*/
 
     // Drag and Drop Callbacks
     void (*rc2d_dropfile)(const char* pathFile);

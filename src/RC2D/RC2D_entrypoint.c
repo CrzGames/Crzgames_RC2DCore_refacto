@@ -4,6 +4,7 @@
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_graphics.h>
 
 /**
  * SDL3 Callback: Initialisation
@@ -113,14 +114,14 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     {
         rc2d_engine_state.config->callbacks->rc2d_update(rc2d_engine_state.delta_time);
     }
-    rc2d_graphics_clear();
+    // rc2d_graphics_clear();
     if (rc2d_engine_state.config != NULL && 
         rc2d_engine_state.config->callbacks != NULL && 
         rc2d_engine_state.config->callbacks->rc2d_draw != NULL) 
     {
         rc2d_engine_state.config->callbacks->rc2d_draw();
     }
-    rc2d_graphics_present();
+    // rc2d_graphics_present();
     rc2d_engine_deltatimeframerates_end();
 
     /**

@@ -3,10 +3,16 @@
 #include <RC2D/RC2D_assert.h>
 #include <RC2D/RC2D_window.h>
 #include <RC2D/RC2D_math.h>
+#include <RC2D/RC2D_filesystem.h>
+#include <RC2D/RC2D_touch.h>
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
+#include <SDL3/SDL_init.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_properties.h>
+#include <SDL3/SDL_gpu.h>
 #include <SDL3_ttf/SDL_ttf.h>
 //#include <SDL3_mixer/SDL_mixer.h>
 

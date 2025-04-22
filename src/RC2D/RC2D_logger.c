@@ -56,20 +56,6 @@ void rc2d_log_set_priority(const RC2D_LogLevel logLevel)
     SDL_LogSetAllPriority(logPriority);
 }
 
-/**
- * Affiche un message de log selon le format et les arguments spécifiés.
- *
- * Cette fonction affiche un message de log, en utilisant le formatage printf,
- * si son niveau de priorité est supérieur ou égal au niveau de log actuel.
- *
- * @param logLevel Le niveau de priorité du message.
- * @param format Le format du message, suivant la syntaxe de printf.
- * @param ... Les arguments à insérer dans le format du message.
- * 
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- * 
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 void rc2d_log(const RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...)
 {
     /**

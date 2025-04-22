@@ -2,7 +2,7 @@
 #include <RC2D/RC2D_assert.h>
 #include <RC2D/RC2D_internal.h>
 
-#include <SDL3/SDL_properties.h>
+#include <SDL3/SDL.h>
 
 void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo) 
 {

@@ -90,6 +90,25 @@ RC2D_LogLevel rc2d_log_get_priority(void);
  */
 void rc2d_log_set_priority(const RC2D_LogLevel logLevel);
 
+/**
+ * Affiche un message de log selon le format et les arguments spécifiés.
+ *
+ * Cette fonction affiche un message de log, en utilisant le formatage printf,
+ * si son niveau de priorité est supérieur ou égal au niveau de log actuel.
+ *
+ * \param {RC2D_LogLevel} logLevel - Le niveau de priorité du message.
+ * \param {const char*} file - Le nom du fichier source.
+ * \param {int} line - Le numéro de ligne dans le fichier source.
+ * \param {const char*} function - Le nom de la fonction appelante.
+ * \param {const char*} format - Le format du message, suivant la syntaxe de printf.
+ * \param {...} - Les arguments à insérer dans le format du message.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_log(RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...);
+
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
 }
