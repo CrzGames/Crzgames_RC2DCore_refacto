@@ -1051,7 +1051,7 @@ static double sqr(double a)
  */
 double rc2d_math_dist(double x1, double y1, double x2, double y2)
 {
-	return sqrt(sqr(y2 - y1) + sqr(x2 - x1));
+	return SDL_sqrt(sqr(y2 - y1) + sqr(x2 - x1));
 }
 
 /**
@@ -1316,8 +1316,8 @@ double rc2d_math_noise_2d(double x, double y)
     double n0, n1, n2;
 
     // Constantes de déformation pour 2D
-    double F2 = 0.5 * (sqrt(3.0) - 1.0);
-    double G2 = (3.0 - sqrt(3.0)) / 6.0;
+    double F2 = 0.5 * (SDL_sqrt(3.0) - 1.0);
+    double G2 = (3.0 - SDL_sqrt(3.0)) / 6.0;
 
 	// Déformation des cellules (x, y)
     double s = (x + y) * F2;

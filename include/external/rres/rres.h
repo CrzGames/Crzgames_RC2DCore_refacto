@@ -490,10 +490,9 @@ RRESAPI unsigned int rresComputeCRC32(unsigned char *data, int len);            
     #define RL_BOOL_TYPE
 #endif
 
-#include <stdlib.h>                 // Required for: malloc(), free()
-#include <string.h>                 // Required for: memcpy(), memcmp()
-#include <SDL.h>                    // Required for: SDL_RWFromFile(), SDL_RWseek(), SDL_RWread(), SDL_RWclose()
-#include "rc2d/rc2d_logger.h"       // Required for: RC2D_log()
+#include <SDL3/SDL_iostream.h>      // Required for: SDL_RWFromFile(), SDL_RWseek(), SDL_RWread(), SDL_RWclose()
+#include <SDL3/SDL_stdinc.h>        // Required for: SDL_memset(), SDL_memcpy(), SDL_memcmp()
+#include <RC2D/RC2D_logger.h>       // Required for: RC2D_log()
 
 // Load resource chunk packed data into our data struct
 static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo info, void *packedData);
@@ -550,14 +549,14 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
 
                     // Read and resource chunk from file data
                     // NOTE: Read data can be compressed/encrypted, it's up to the user library to manage decompression/decryption
-                    void *data = RRES_MALLOC(info.packedSize); // Allocate enough memory to store resource data chunk
+                    void *data = SDL_malloc(info.packedSize); // Allocate enough memory to store resource data chunk
                     SDL_RWread(rresRW, data, info.packedSize, 1); // Read data: propsCount + props[] + data (+additional_data)
 
                     // Get chunk.data properly organized (only if uncompressed/unencrypted)
                     chunk.data = rresLoadResourceChunkData(info, data);
                     chunk.info = info;
 
-                    RRES_FREE(data);
+                    SDL_free(data);
 
                     break; // Resource id found and loaded, stop checking the file
                 }
@@ -581,8 +580,8 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
 // Unload resource chunk from memory
 void rresUnloadResourceChunk(rresResourceChunk chunk)
 {
-    RRES_FREE(chunk.data.props);  // Resource chunk properties
-    RRES_FREE(chunk.data.raw);    // Resource chunk raw data
+    SDL_free(chunk.data.props);  // Resource chunk properties
+    SDL_free(chunk.data.raw);    // Resource chunk raw data
 }
 
 // Load resource from file by id
@@ -637,20 +636,20 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                         rres.count++;
                     }
 
-                    rres.chunks = (rresResourceChunk *)RRES_CALLOC(rres.count, sizeof(rresResourceChunk)); // Load as many rres slots as required
+                    rres.chunks = (rresResourceChunk *)SDL_calloc(rres.count, sizeof(rresResourceChunk)); // Load as many rres slots as required
                     SDL_RWseek(rresRW, currentFileOffset, RW_SEEK_SET); // Return to the first resource chunk position
 
                     // Read and load data chunk from file data
                     // NOTE: Read data can be compressed/encrypted,
                     // it's up to the user library to manage decompression/decryption
-                    void *data = RRES_MALLOC(info.packedSize); // Allocate enough memory to store resource data chunk
+                    void *data = SDL_malloc(info.packedSize); // Allocate enough memory to store resource data chunk
                     SDL_RWread(rresRW, data, info.packedSize, 1); // Read data: propsCount + props[] + data (+additional_data)
 
                     // Get chunk.data properly organized (only if uncompressed/unencrypted)
                     rres.chunks[0].data = rresLoadResourceChunkData(info, data);
                     rres.chunks[0].info = info;
 
-                    RRES_FREE(data);
+                    SDL_free(data);
 
                     int j = 1;
 
@@ -662,14 +661,14 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
 
                         RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
-                        void *data = RRES_MALLOC(info.packedSize); // Allocate enough memory to store resource data chunk
+                        void *data = SDL_malloc(info.packedSize); // Allocate enough memory to store resource data chunk
                         SDL_RWread(rresRW, data, info.packedSize, 1); // Read data: propsCount + props[] + data (+additional_data)
 
                         // Get chunk.data properly organized (only if uncompressed/unencrypted)
                         rres.chunks[j].data = rresLoadResourceChunkData(info, data);
                         rres.chunks[j].info = info;
 
-                        RRES_FREE(data);
+                        SDL_free(data);
 
                         j++;
                     }
@@ -698,7 +697,7 @@ void rresUnloadResourceMulti(rresResourceMulti multi)
 {
     for (unsigned int i = 0; i < multi.count; i++) rresUnloadResourceChunk(multi.chunks[i]);
 
-    RRES_FREE(multi.chunks);
+    SDL_free(multi.chunks);
 }
 
 // Load resource chunk info for provided id
@@ -759,7 +758,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
         if (((header.id[0] == 'r') && (header.id[1] == 'r') && (header.id[2] == 'e') && (header.id[3] == 's')) && (header.version == 100))
         {
             // Load all resource chunks info
-            infos = (rresResourceChunkInfo *)RRES_CALLOC(header.chunkCount, sizeof(rresResourceChunkInfo));
+            infos = (rresResourceChunkInfo *)SDL_calloc(header.chunkCount, sizeof(rresResourceChunkInfo));
             count = header.chunkCount;
 
             for (unsigned int i = 0; i < count; i++)
@@ -809,19 +808,19 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
                 {
                     RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory found at offset: 0x%08x\n", header.cdOffset);
 
-                    void *data = RRES_MALLOC(info.packedSize);
+                    void *data = SDL_malloc(info.packedSize);
                     SDL_RWread(rresRW, data, info.packedSize, 1);
 
                     // Load resource chunk data (central directory), data is uncompressed/unencrypted by default
                     rresResourceChunkData chunkData = rresLoadResourceChunkData(info, data);
-                    RRES_FREE(data);
+                    SDL_free(data);
 
                     dir.count = chunkData.props[0]; // File entries count
 
                     RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory file entries count: %i\n", dir.count);
 
                     unsigned char *ptr = (unsigned char *)chunkData.raw;
-                    dir.entries = (rresDirEntry *)RRES_CALLOC(dir.count, sizeof(rresDirEntry));
+                    dir.entries = (rresDirEntry *)SDL_calloc(dir.count, sizeof(rresDirEntry));
 
                     for (unsigned int i = 0; i < dir.count; i++)
                     {
@@ -832,13 +831,13 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
 
                         // Resource fileName, NULL terminated and 0-padded to 4-byte,
                         // fileNameSize considers NULL and padding
-                        memcpy(dir.entries[i].fileName, ptr + 16, dir.entries[i].fileNameSize);
+                        SDL_memcpy(dir.entries[i].fileName, ptr + 16, dir.entries[i].fileNameSize);
 
                         ptr += (16 + dir.entries[i].fileNameSize); // Move pointer for the next entry
                     }
 
-                    RRES_FREE(chunkData.props);
-                    RRES_FREE(chunkData.raw);
+                    SDL_free(chunkData.props);
+                    SDL_free(chunkData.raw);
                 }
             }
         }
@@ -853,7 +852,7 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
 // Unload central directory data
 void rresUnloadCentralDirectory(rresCentralDir dir)
 {
-    RRES_FREE(dir.entries);
+    SDL_free(dir.entries);
 }
 
 // Get rresResourceDataType from FourCC code
@@ -968,20 +967,20 @@ static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo inf
 
             if (chunkData.propCount > 0)
             {
-                chunkData.props = (unsigned int *)RRES_CALLOC(chunkData.propCount, sizeof(unsigned int));
+                chunkData.props = (unsigned int *)SDL_calloc(chunkData.propCount, sizeof(unsigned int));
                 for (unsigned int i = 0; i < chunkData.propCount; i++) chunkData.props[i] = ((unsigned int *)data)[i + 1];
             }
 
-            chunkData.raw = RRES_MALLOC(info.baseSize);
-            memcpy(chunkData.raw, ((unsigned char *)data) + sizeof(int) + (chunkData.propCount*sizeof(int)), info.baseSize);
+            chunkData.raw = SDL_malloc(info.baseSize);
+            SDL_memcpy(chunkData.raw, ((unsigned char *)data) + sizeof(int) + (chunkData.propCount*sizeof(int)), info.baseSize);
         }
         else
         {
             // Data is compressed/encrypted
             // We just return the loaded resource packed data from .rres file,
             // it's up to the user to manage decompression/decryption on user library
-            chunkData.raw = RRES_MALLOC(info.packedSize);
-            memcpy(chunkData.raw, (unsigned char *)data, info.packedSize);
+            chunkData.raw = SDL_malloc(info.packedSize);
+            SDL_memcpy(chunkData.raw, (unsigned char *)data, info.packedSize);
         }
     }
 

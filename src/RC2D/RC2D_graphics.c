@@ -284,7 +284,7 @@ int rc2d_graphics_polygon(const int numPoints, const int* pointsArray)
         RC2D_log(RC2D_LOG_ERROR, "SDL_RenderDrawLines failed: %s", SDL_GetError());
     }
 
-    free(points);
+    SDL_free(points);
     return 0; // Succès
 }
 
@@ -443,7 +443,7 @@ int rc2d_graphics_rectangles(const char* mode, const int count, const int* rects
         }
     }
 
-    free(rects);
+    SDL_free(rects);
     return result;
 }
 
@@ -586,7 +586,7 @@ int rc2d_graphics_lines(const int numPoints, const int* pointsArray)
         RC2D_log(RC2D_LOG_ERROR, "SDL_RenderDrawLines failed: %s", SDL_GetError());
     }
 
-    free(points);
+    SDL_free(points);
     return result;
 }
 
@@ -629,7 +629,7 @@ int rc2d_graphics_points(const int numPoints, const int* pointsArray)
         RC2D_log(RC2D_LOG_ERROR, "SDL_RenderDrawPoints failed: %s", SDL_GetError());
     }
 
-    free(points);
+    SDL_free(points);
     return result;
 }
 

@@ -269,7 +269,7 @@ static unsigned char* base64_decode(const char* cipher, RC2D_DataType dataType)
         // Trouver les positions des caractères dans base64_map
         int b[4];
         for (int j = 0; j < 4; j++) {
-            b[j] = (cipher[i+j] == '=') ? 0 : (strchr(base64_map, cipher[i+j]) - base64_map);
+            b[j] = (cipher[i+j] == '=') ? 0 : (SDL_strchr(base64_map, cipher[i+j]) - base64_map);
         }
 
         // Convertir les 4 octets de base64 en 3 octets normaux

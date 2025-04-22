@@ -107,10 +107,10 @@ bool rc2d_collision_betweenCircleSegment(const RC2D_Segment segment, const RC2D_
     int dotABBC = -ABx * BCx - ABy * BCy;
 
     // Calcul de la norme du vecteur AB
-    float normAB = sqrt(ABx * ABx + ABy * ABy);
+    float normAB = SDL_sqrt(ABx * ABx + ABy * ABy);
 
     // Calcul de la distance du centre de circle à la droite formée par point et point2
-    float distance = fabs(ABx * ACy - ABy * ACx) / normAB;
+    float distance = SDL_fabs(ABx * ACy - ABy * ACx) / normAB;
 
     // Vérification si la distance est inférieure au rayon du cercle
     if (distance > circle.rayon) 
@@ -125,7 +125,7 @@ bool rc2d_collision_betweenCircleSegment(const RC2D_Segment segment, const RC2D_
     }
 
     // Vérification supplémentaire si le cercle touche les extrémités du segment
-    if (sqrt(ACx * ACx + ACy * ACy) <= circle.rayon || sqrt(BCx * BCx + BCy * BCy) <= circle.rayon) 
+    if (SDL_sqrt(ACx * ACx + ACy * ACy) <= circle.rayon || SDL_sqrt(BCx * BCx + BCy * BCy) <= circle.rayon) 
     {
         return true;
     }
@@ -199,7 +199,7 @@ static RC2D_Vector2D calculateNormal(RC2D_Point p1, RC2D_Point p2)
     RC2D_Vector2D normal = {-edge.y, edge.x};
 
     // Normaliser le vecteur normal
-    double length = sqrt(normal.x * normal.x + normal.y * normal.y);
+    double length = SDL_sqrt(normal.x * normal.x + normal.y * normal.y);
     normal.x /= length;
     normal.y /= length;
 
@@ -385,7 +385,7 @@ static float rc2d_math_distanceBetweenPoints(const RC2D_Point a, const RC2D_Poin
 {
     float dx = b.x - a.x;
     float dy = b.y - a.y;
-    return sqrt(dx * dx + dy * dy);
+    return SDL_sqrt(dx * dx + dy * dy);
 }
 
 /**
@@ -408,7 +408,7 @@ bool rc2d_collision_raycastSegment(const RC2D_Ray ray, const RC2D_Segment segmen
     RC2D_Vector2D v3 = {-ray.direction.y, ray.direction.x};
 
     double dot = v2.x * v3.x + v2.y * v3.y;
-    if (fabs(dot) < 0.000001) 
+    if (SDL_fabs(dot) < 0.000001) 
     {
         return false; // Les lignes sont parallèles
     }
@@ -500,7 +500,7 @@ bool rc2d_collision_raycastCircle(const RC2D_Ray ray, const RC2D_Circle circle, 
         return false;
 
     // Calculer la distance entre le point d'impact le plus proche et le point d'intersection
-    double thc = sqrt(radius2 - d2);
+    double thc = SDL_sqrt(radius2 - d2);
     double t0 = tca - thc;
 
     // Si t0 est négatif, l'intersection est derrière le rayon, ajuster pour obtenir l'intersection la plus proche
@@ -546,8 +546,8 @@ static bool traceLineAndCheckCollision(const RC2D_ImageData* imageData, const RC
     int x0 = (int)ray.origin.x;
     int y0 = (int)ray.origin.y;
 
-    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int dx = SDL_abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -SDL_abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
     int err = dx + dy, e2;
 
     for (;;) 
