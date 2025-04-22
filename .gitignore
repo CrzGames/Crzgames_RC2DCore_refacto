@@ -5,6 +5,7 @@
 /site/
 /dist/
 nul
+build
 
 # librc2d android project
 **/local.properties
