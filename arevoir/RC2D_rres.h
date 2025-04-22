@@ -30,7 +30,7 @@ typedef struct Wave {
     unsigned int sampleSize; // Taille d'un échantillon en bits (par exemple, 16 bits)
     unsigned int channels;   // Nombre de canaux (1 pour mono, 2 pour stéréo, etc.)
     void *data;              // Données audio brutes PCM + Libéré la mémoire SEULEMENT quand nous utilisons plus l'audio
-    Mix_Chunk *sound;        // Données audio prêtes à être jouées
+    // Mix_Chunk *sound;        // Données audio prêtes à être jouées
 } Wave;
 
 

@@ -3,6 +3,13 @@
 
 #include <RC2D/RC2D_gpu.h>
 
+/**
+ * A virer les 3 la include
+ */
+#include <SDL3/SDL_joystick.h>
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_joystick.h>
+
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
