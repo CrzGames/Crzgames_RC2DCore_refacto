@@ -1,5 +1,5 @@
-#ifndef RC2D_SCANCODE_H
-#define RC2D_SCANCODE_H
+#ifndef RC2D_scancode_h
+#define RC2D_scancode_h
 
 #include <SDL3/SDL_scancode.h>
 
@@ -295,4 +295,4 @@ typedef enum RC2D_Scancode
 }
 #endif
 
-#endif /* RC2D_SCANCODE_H */
+#endif // RC2D_scancode_h

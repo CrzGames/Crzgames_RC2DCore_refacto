@@ -302,7 +302,7 @@ static bool rc2d_engine_create_gpu(void)
      */
     SDL_PropertiesID gpu_props = SDL_CreateProperties();
     SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, rc2d_engine_state.config->gpuOptions->debugMode);
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN, rc2d_engine_state.config->gpuOptions->verbose);
+    //SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN, rc2d_engine_state.config->gpuOptions->verbose);
     SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN, rc2d_engine_state.config->gpuOptions->preferLowPower);
     
     // Pilote GPU forcé si nécessaire

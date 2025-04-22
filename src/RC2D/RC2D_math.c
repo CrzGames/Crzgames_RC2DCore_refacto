@@ -5,6 +5,7 @@
 
 #include <stdarg.h> // Require for : va_list, va_start, va_arg, va_end
 #include <limits.h> // Require for : UINT_MAX
+#include <stdlib.h> // Require for : RAND_MAX
 
 /**
  * Calcule le produit vectoriel de trois points pour déterminer la convexité.
@@ -1120,11 +1121,10 @@ int rc2d_math_normalize(int x, int y)
  */
 int rc2d_math_random(int min, int max)
 {
-	int random = SDL_rand() % max + min;
-
-	return random;
+    int range = max - min + 1;
+    int random = SDL_rand(range);
+    return min + random;
 }
-
 /**
  * Génère un nombre aléatoire entre 0 et 1.
  *
@@ -1132,7 +1132,8 @@ int rc2d_math_random(int min, int max)
  */
 double rc2d_math_random0and1(void)
 {
-	return (double)SDL_rand() / ((double)RAND_MAX + 1);
+    const Sint32 precision = 1 << 24; // 2^24
+    return (double)SDL_rand(precision) / (double)precision;
 }
 
 /**

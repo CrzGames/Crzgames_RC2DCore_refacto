@@ -73,7 +73,7 @@ extern RC2D_EngineState rc2d_engine_state;
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-int rc2d_engine_init(void);
+bool rc2d_engine_init(void);
 
 /**
  * \brief Libère les ressources allouées par le moteur RC2D.

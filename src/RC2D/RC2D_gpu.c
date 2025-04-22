@@ -2,7 +2,7 @@
 #include <RC2D/RC2D_assert.h>
 #include <RC2D/RC2D_internal.h>
 
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_properties.h>
 
 void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo) 
 {
@@ -17,10 +17,10 @@ void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo)
     RC2D_assert_release(propsGPU != 0, RC2D_LOG_CRITICAL, "Failed to get GPU properties : %s", SDL_GetError());
 
     // Récupération des informations sur le GPU
-    gpuInfo->gpu_device_name = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_NAME_STRING);
-    gpuInfo->gpu_device_driver_name = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING);
-    gpuInfo->gpu_device_driver_version = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING);
-    gpuInfo->gpu_device_driver_info = SDL_GetStringProperty(propsGPU, SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING);
+    gpuInfo->gpu_device_name = SDL_GetStringProperty(propsGPU, "SDL_PROP_GPU_DEVICE_NAME_STRING", NULL);
+    gpuInfo->gpu_device_driver_name = SDL_GetStringProperty(propsGPU, "SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING", NULL);
+    gpuInfo->gpu_device_driver_version = SDL_GetStringProperty(propsGPU, "SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING", NULL);
+    gpuInfo->gpu_device_driver_info = SDL_GetStringProperty(propsGPU, "SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING", NULL);
 
     // Destruction des propriétés du GPU
     SDL_DestroyProperties(propsGPU);
