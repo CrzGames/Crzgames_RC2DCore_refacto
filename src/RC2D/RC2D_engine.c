@@ -236,6 +236,255 @@ static void rc2d_engine_cleanup_sdl(void)
 }
 
 /**
+ * \brief Crée la fenêtre principale de l'application RC2D.
+ * 
+ * Cette fonction configure et crée la fenêtre SDL3 avec les propriétés spécifiées dans la configuration du moteur.
+ * La fenêtre est initialement cachée pour éviter des artefacts visuels jusqu'à ce que le rendu GPU soit prêt.
+ * 
+ * \return true si la fenêtre a été créée avec succès, false sinon.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static bool rc2d_engine_create_window(void)
+{
+    SDL_PropertiesID window_props = SDL_CreateProperties();
+    SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, rc2d_engine_state.config->appInfo->name);
+    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, rc2d_engine_state.config->windowWidth);
+    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, rc2d_engine_state.config->windowHeight);
+    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
+    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
+    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
+    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
+
+    /**
+     * IMPORTANT :
+     * Cache la fenêtre tant que le rendu GPU n'est pas prêt pour éviter des artefacts visuels.
+     * On l'affichera plus tard juste avant la première frame de la boucle de jeu.
+     */
+    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
+
+    rc2d_engine_state.window = SDL_CreateWindowWithProperties(window_props);
+    SDL_DestroyProperties(window_props);
+    if (!rc2d_engine_state.window) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Error creating window: %s", SDL_GetError());
+        return false;
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "Window created successfully, is hidden temporarily.\n");
+    }
+
+    return true;
+}
+
+/**
+ * \brief Initialise le dispositif GPU pour le rendu graphique dans RC2D.
+ * 
+ * Cette fonction configure et crée le dispositif GPU SDL3, vérifie les formats de shaders supportés,
+ * configure les modes de présentation et les paramètres de swapchain, et associe la fenêtre au GPU.
+ * 
+ * \return true si le GPU a été initialisé avec succès, false sinon.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static bool rc2d_engine_create_gpu(void)
+{
+    /**
+     * Créer le GPU device pour le rendu graphique
+     * Vérifie la compatibilité du GPU avec les propriétés spécifiées.
+     */
+    SDL_PropertiesID gpu_props = SDL_CreateProperties();
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, rc2d_engine_state.config->gpuOptions->debugMode);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN, rc2d_engine_state.config->gpuOptions->verbose);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN, rc2d_engine_state.config->gpuOptions->preferLowPower);
+    
+    // Pilote GPU forcé si nécessaire
+    switch (rc2d_engine_state.config->gpuOptions->driver)
+    {
+        case RC2D_GPU_DRIVER_VULKAN:
+            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "vulkan");
+            break;
+        case RC2D_GPU_DRIVER_METAL:
+            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "metal");
+            break;
+        case RC2D_GPU_DRIVER_DIRECT3D12:
+            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "direct3d12");
+            break;
+        case RC2D_GPU_DRIVER_DEFAULT:
+        default:
+            // Ne pas setter la propriété pour laisser SDL choisir automatiquement
+            break;
+    }
+
+    // Vérification de la compatibilité du GPU avec les propriétés spécifiées.
+    if (!SDL_GPUSupportsProperties(gpu_props)) {
+        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties (1).");
+        SDL_DestroyProperties(gpu_props);
+        return false;
+    }
+
+    /**
+     * Créer le GPU device temporaire pour vérifier plus loin les formats de shaders supportés
+     */
+    SDL_GPUDevice* gpu_device_tmp = SDL_CreateGPUDeviceWithProperties(gpu_props);
+    if (!gpu_device_tmp) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
+        SDL_DestroyProperties(gpu_props);
+        return false;
+    }
+
+    /**
+     * Détecter les formats supportés par le GPU
+     * Activation de tous les formats de shaders compatibles (SPIR-V, DXIL, MSL, etc.)
+     */
+    SDL_GPUShaderFormat supported_formats = SDL_GetGPUShaderFormats(gpu_device_tmp);
+    RC2D_log(RC2D_LOG_INFO, "Supported shader formats : ");
+    if (supported_formats & SDL_GPU_SHADERFORMAT_PRIVATE)
+    {
+        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_PRIVATE_BOOLEAN, true);
+        RC2D_log(RC2D_LOG_INFO, "- PRIVATE(NDA)");
+    }
+    if (supported_formats & SDL_GPU_SHADERFORMAT_SPIRV)
+    {
+        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
+        RC2D_log(RC2D_LOG_INFO, "- SPIR-V");
+    }
+    if (supported_formats & SDL_GPU_SHADERFORMAT_DXBC)
+    {
+        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXBC_BOOLEAN, true);
+        RC2D_log(RC2D_LOG_INFO, "- DXBC");
+    }
+    if (supported_formats & SDL_GPU_SHADERFORMAT_DXIL)
+    {
+        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXIL_BOOLEAN, true);
+        RC2D_log(RC2D_LOG_INFO, "- DXIL");
+    }
+    if (supported_formats & SDL_GPU_SHADERFORMAT_MSL)
+    {
+        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
+        RC2D_log(RC2D_LOG_INFO, "- MSL");
+    }
+    if (supported_formats & SDL_GPU_SHADERFORMAT_METALLIB)
+    {
+        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_METALLIB_BOOLEAN, true);
+        RC2D_log(RC2D_LOG_INFO, "- METALLIB");
+    }
+
+    // Détruire le GPU device temporaire
+    if (gpu_device_tmp != NULL) 
+    {
+        SDL_DestroyGPUDevice(gpu_device_tmp);
+    }
+
+    // Vérification de la compatibilité du GPU avec les nouvelles propriétés spécifiées.
+    if (!SDL_GPUSupportsProperties(gpu_props)) {
+        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties (2).");
+        SDL_DestroyProperties(gpu_props);
+        return false;
+    }
+
+    // Créer le GPU device avec les propriétés spécifiées
+    rc2d_engine_state.gpu_device = SDL_CreateGPUDeviceWithProperties(gpu_props);
+    SDL_DestroyProperties(gpu_props);
+    if (!rc2d_engine_state.gpu_device) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
+        return false;
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "GPU device created successfully.\n");
+    }
+
+    // Associe la fenêtre au GPU
+    SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_engine_state.window);
+
+    // SDL3 : Configurer le mode de présentation du GPU
+    /**
+     * SDL_GPU_PRESENTMODE_MAILBOX est utiliser par défaut,
+     * car il est généralement le meilleur choix pour la plupart des applications.
+     * Il offre un bon équilibre entre la latence et la fluidité de l'affichage, 
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_PRESENTMODE_VSYNC est un bon choix si vous voulez éviter le tearing,
+     * mais il peut introduire une latence supplémentaire, mais il est toujours disponible et sûr.
+     * 
+     * SDL_GPU_PRESENTMODE_IMMEDIATE est le moins recommandé, car il peut entraîner du tearing,
+     * mais il peut être utilisé si vous avez besoin de la latence la plus basse possible.
+     */
+    SDL_GPUPresentMode present_modes[] = {
+        SDL_GPU_PRESENTMODE_MAILBOX,
+        SDL_GPU_PRESENTMODE_VSYNC,
+        SDL_GPU_PRESENTMODE_IMMEDIATE
+    };
+    /**
+     * On utilisera SDL_GPU_PRESENTMODE_VSYNC par défaut, puisque c'est le mode le plus sûr et le plus compatible.
+     * Mais si le GPU supporte le mode SDL_GPU_PRESENTMODE_MAILBOX, on l'utilisera.
+     */
+    for (int i = 0; i < SDL_arraysize(present_modes); i++) 
+    {
+        if (SDL_WindowSupportsGPUPresentMode(rc2d_engine_state.gpu_device, rc2d_engine_state.window, present_modes[i])) 
+        {
+            rc2d_engine_state.gpu_present_mode = present_modes[i];
+            break;
+        }
+    }
+
+    // Configurer le swapchain pour le GPU
+    /**
+     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084 est le meilleur choix pour les écrans HDR,
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR est un bon choix pour les écrans HDR,
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR est un bon choix pour les écrans SDR,
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR est toujours disponible sur tous les systèmes.
+     */
+    SDL_GPUSwapchainComposition compositions[] = {
+        SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084,
+        SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
+        SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
+        SDL_GPU_SWAPCHAINCOMPOSITION_SDR
+    };
+    /**
+     * On utilisera SDL_GPU_SWAPCHAINCOMPOSITION_SDR par défaut, 
+     * car il est toujours disponible sur tous les systèmes.
+     * 
+     * Mais si le GPU supporte le mode SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084, 
+     * ou meilleur choix qu'on peut faire, on l'utilisera.
+     */
+    for (int i = 0; i < SDL_arraysize(compositions); i++) 
+    {
+        if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, compositions[i])) 
+        {
+            rc2d_engine_state.gpu_swapchain_composition = compositions[i];
+            break;
+        }
+    }
+
+    // Set GPU Swapchain parameters
+    if (!SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, rc2d_engine_state.gpu_present_mode, rc2d_engine_state.gpu_swapchain_composition))
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Could not set swapchain parameters: %s", SDL_GetError());
+        return false;
+    }
+
+    // Set GPU frames in flight
+    if (!SDL_SetGPUAllowedFramesInFlight(rc2d_engine_state.gpu_device, (Uint32)rc2d_engine_state.config->gpuFramesInFlight)) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to set GPU frames in flight: %s", SDL_GetError());
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * \brief Calcule l'échelle de rendu et le viewport GPU.
  *
  * Cette fonction calcule l'échelle de rendu interne et le viewport GPU en fonction de la taille de la fenêtre,
@@ -1087,226 +1336,20 @@ static bool rc2d_engine(void)
         return false;
     }
 
-	/**
-     * SDL3
-     * Créer la fenêtre principale de l'application
-     */
-	SDL_PropertiesID window_props = SDL_CreateProperties();
-    SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, rc2d_engine_state.config->appInfo->name);
-    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, rc2d_engine_state.config->windowWidth);
-    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, rc2d_engine_state.config->windowHeight);
-    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
-    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
-    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
-    SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
-
     /**
-     * IMPORTANT :
-     * Cache la fenêtre tant que le rendu GPU n'est pas prêt..etc pour éviter des artefacts visuels.
-     * On l'affichera plus tard juste avant la première frame de la boucle de jeu.
+     * Créer la fenêtre principale
      */
-    SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
-
-    rc2d_engine_state.window = SDL_CreateWindowWithProperties(window_props);
-    SDL_DestroyProperties(window_props);
-    if (!rc2d_engine_state.window) 
+    if (!rc2d_engine_create_window())
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Error create window : %s", SDL_GetError());
-        return false;
-    }
-    else
-    {
-        RC2D_log(RC2D_LOG_INFO, "Window created successfully, is hidden temporarily.\n");
-    }
-
-    /**
-     * SDL3
-     * Créer le GPU device pour le rendu graphique
-     * Vérifie la compatibilité du GPU avec les propriétés spécifiées.
-     */
-    SDL_PropertiesID gpu_props = SDL_CreateProperties();
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, rc2d_engine_state.config->gpuOptions->debugMode);
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN, rc2d_engine_state.config->gpuOptions->verbose);
-    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN, rc2d_engine_state.config->gpuOptions->preferLowPower);
-    
-    // Pilote GPU forcé si nécessaire
-    switch (rc2d_engine_state.config->gpuOptions->driver)
-    {
-        case RC2D_GPU_DRIVER_VULKAN:
-            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "vulkan");
-            break;
-        case RC2D_GPU_DRIVER_METAL:
-            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "metal");
-            break;
-        case RC2D_GPU_DRIVER_DIRECT3D12:
-            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "direct3d12");
-            break;
-        case RC2D_GPU_DRIVER_DEFAULT:
-        default:
-            // Ne pas setter la propriété pour laisser SDL choisir automatiquement
-            break;
-    }
-
-    // Vérification de la compatibilité du GPU avec les propriétés spécifiées.
-    if (!SDL_GPUSupportsProperties(gpu_props)) {
-        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties (1).");
-        SDL_DestroyProperties(gpu_props);
         return false;
     }
 
     /**
-     * Créer le GPU device temporaire pour vérifier plus loin les formats de shaders supportés
+     * Initialiser et créer le dispositif GPU
      */
-    SDL_GPUDevice* gpu_device_tmp = SDL_CreateGPUDeviceWithProperties(gpu_props);
-    if (!gpu_device_tmp) 
+    if (!rc2d_engine_create_gpu())
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
-        SDL_DestroyProperties(gpu_props);
         return false;
-    }
-
-    /**
-     * Détecter les formats supportés par le GPU
-     * Activation de tous les formats de shaders compatibles (SPIR-V, DXIL, MSL, etc.)
-     */
-    SDL_GPUShaderFormat supported_formats = SDL_GetGPUShaderFormats(gpu_device_tmp);
-    RC2D_log(RC2D_LOG_INFO, "Supported shader formats : ");
-    if (supported_formats & SDL_GPU_SHADERFORMAT_PRIVATE)
-    {
-        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_PRIVATE_BOOLEAN, true);
-        RC2D_log(RC2D_LOG_INFO, "- PRIVATE(NDA)");
-    }
-    if (supported_formats & SDL_GPU_SHADERFORMAT_SPIRV)
-    {
-        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
-        RC2D_log(RC2D_LOG_INFO, "- SPIR-V");
-    }
-    if (supported_formats & SDL_GPU_SHADERFORMAT_DXBC)
-    {
-        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXBC_BOOLEAN, true);
-        RC2D_log(RC2D_LOG_INFO, "- DXBC");
-    }
-    if (supported_formats & SDL_GPU_SHADERFORMAT_DXIL)
-    {
-        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXIL_BOOLEAN, true);
-        RC2D_log(RC2D_LOG_INFO, "- DXIL");
-    }
-    if (supported_formats & SDL_GPU_SHADERFORMAT_MSL)
-    {
-        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
-        RC2D_log(RC2D_LOG_INFO, "- MSL");
-    }
-    if (supported_formats & SDL_GPU_SHADERFORMAT_METALLIB)
-    {
-        SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_METALLIB_BOOLEAN, true);
-        RC2D_log(RC2D_LOG_INFO, "- METALLIB");
-    }
-
-    // Détruire le GPU device temporaire
-    if (gpu_device_tmp != NULL) 
-    {
-        SDL_DestroyGPUDevice(gpu_device_tmp);
-    }
-
-    // Vérification de la compatibilité du GPU avec les nouvelles propriétés spécifiées.
-    if (!SDL_GPUSupportsProperties(gpu_props)) {
-        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties (2).");
-        SDL_DestroyProperties(gpu_props);
-        return false;
-    }
-
-    // Créer le GPU device avec les propriétés spécifiées
-    rc2d_engine_state.gpu_device = SDL_CreateGPUDeviceWithProperties(gpu_props);
-    SDL_DestroyProperties(gpu_props);
-    if (!rc2d_engine_state.gpu_device) 
-    {
-        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
-        return false;
-    }
-    else
-    {
-        RC2D_log(RC2D_LOG_INFO, "GPU device created successfully.\n");
-    }
-
-    // Associe la fenêtre au GPU
-    SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_engine_state.window);
-
-    // SDL3 : Configurer le mode de présentation du GPU
-    /**
-     * SDL_GPU_PRESENTMODE_MAILBOX est utiliser par défaut,
-     * car il est généralement le meilleur choix pour la plupart des applications.
-     * Il offre un bon équilibre entre la latence et la fluidité de l'affichage, 
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_PRESENTMODE_VSYNC est un bon choix si vous voulez éviter le tearing,
-     * mais il peut introduire une latence supplémentaire, mais il est toujours disponible et sûr.
-     * 
-     * SDL_GPU_PRESENTMODE_IMMEDIATE est le moins recommandé, car il peut entraîner du tearing,
-     * mais il peut être utilisé si vous avez besoin de la latence la plus basse possible.
-     */
-    SDL_GPUPresentMode present_modes[] = {
-        SDL_GPU_PRESENTMODE_MAILBOX,
-        SDL_GPU_PRESENTMODE_VSYNC,
-        SDL_GPU_PRESENTMODE_IMMEDIATE
-    };
-    /**
-     * On utilisera SDL_GPU_PRESENTMODE_VSYNC par défaut, puisque c'est le mode le plus sûr et le plus compatible.
-     * Mais si le GPU supporte le mode SDL_GPU_PRESENTMODE_MAILBOX, on l'utilisera.
-     */
-    for (int i = 0; i < SDL_arraysize(present_modes); i++) 
-    {
-        if (SDL_WindowSupportsGPUPresentMode(rc2d_engine_state.gpu_device, rc2d_engine_state.window, present_modes[i])) 
-        {
-            rc2d_engine_state.gpu_present_mode = present_modes[i];
-            break;
-        }
-    }
-
-    // SDL3 : Configurer le swapchain pour le GPU
-    /**
-     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084 est le meilleur choix pour les écrans HDR,
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR est un bon choix pour les écrans HDR,
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR est un bon choix pour les écrans SDR,
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR est toujours disponible sur tous les systèmes.
-     */
-    SDL_GPUSwapchainComposition compositions[] = {
-        SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084,
-        SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
-        SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
-        SDL_GPU_SWAPCHAINCOMPOSITION_SDR
-    };
-    /**
-     * On utilisera SDL_GPU_SWAPCHAINCOMPOSITION_SDR par défaut, 
-     * car il est toujours disponible sur tous les systèmes.
-     * 
-     * Mais si le GPU supporte le mode SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084, 
-     * ou meilleur choix qu'on peut faire, on l'utilisera.
-     */
-    for (int i = 0; i < SDL_arraysize(compositions); i++) 
-    {
-        if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, compositions[i])) 
-        {
-            rc2d_engine_state.gpu_swapchain_composition = compositions[i];
-            break;
-        }
-    }
-
-    // SDL3 : Set GPU Swapchain parameters
-    if (!SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, rc2d_engine_state.gpu_present_mode, rc2d_engine_state.gpu_swapchain_composition))
-    {
-        RC2D_log(RC2D_LOG_CRITICAL, "Could not set swapchain parameters: %s", SDL_GetError());
-    }
-
-    // SDL3: Set GPU frames in flight
-    if (!SDL_SetGPUAllowedFramesInFlight(rc2d_engine_state.gpu_device, (Uint32)rc2d_engine_state.config->gpuFramesInFlight)) 
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to set GPU frames in flight: %s", SDL_GetError());
     }
 
     /**
@@ -1460,7 +1503,7 @@ void rc2d_engine_configure(const RC2D_EngineConfig* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_ERROR, "Invalid RC2D_GPUFramesInFlight value. Using default.\n");
+        RC2D_log(RC2D_LOG_WARN, "Invalid RC2D_GPUFramesInFlight value. Using default.\n");
         rc2d_engine_state.config->gpuFramesInFlight = RC2D_GPU_FRAMES_BALANCED;
     }
 
@@ -1475,7 +1518,7 @@ void rc2d_engine_configure(const RC2D_EngineConfig* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "No RC2D_GPUAdvancedOptions provided. Using default GPU settings.\n");
+        RC2D_log(RC2D_LOG_WARN, "No RC2D_GPUAdvancedOptions provided. Using default GPU settings.\n");
     }
 
     /**
@@ -1561,6 +1604,6 @@ void rc2d_engine_configure(const RC2D_EngineConfig* config)
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "No letterbox textures provided. Default black bars will be used.\n");
+        RC2D_log(RC2D_LOG_WARN, "No letterbox textures provided. Default black bars will be used.\n");
     }
 }
