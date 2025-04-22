@@ -6,7 +6,7 @@
 static bool rc2d_is_current_fullscreen = false;
 static RC2D_FullscreenType rc2d_current_fullscreen_type = RC2D_FULLSCREEN_NONE;
 
-static bool rc2d_window_hasFlag(Uint64 flag)
+static bool rc2d_window_hasFlag(SDL_WindowFlags flag)
 {
     // Vérifie si la fenêtre est valide
     if (rc2d_engine_state.window == NULL)
@@ -16,7 +16,7 @@ static bool rc2d_window_hasFlag(Uint64 flag)
     }
 
     // Récupère les drapeaux de la fenêtre
-    Uint32 flags = SDL_GetWindowFlags(rc2d_engine_state.window);
+    SDL_WindowFlags flags = SDL_GetWindowFlags(rc2d_engine_state.window);
 
     // Vérifie si le drapeau spécifié est présent dans les drapeaux de la fenêtre
     return (flags & flag) != 0;

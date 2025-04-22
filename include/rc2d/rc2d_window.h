@@ -2,6 +2,7 @@
 #define RC2D_WINDOW_H
 
 #include <RC2D/RC2D_pixels.h>
+#include <RC2D/RC2D_math.h>
 
 #include <SDL3/SDL_video.h>
 
