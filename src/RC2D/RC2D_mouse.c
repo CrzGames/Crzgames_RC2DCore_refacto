@@ -13,7 +13,7 @@ static RC2D_Cursor* currentCursor = NULL;
  */
 bool rc2d_mouse_isCursorSupported(void) 
 {
-#if defined(__ANDROID__) || defined(__IPHONEOS__)
+#if defined(RC2D_PLATFORM_IOS) || defined(RC2D_PLATFORM_ANDROID)
     return false;
 #else
     // Pour les plateformes de bureau et html5 supposez que le support de curseur existe.

@@ -158,7 +158,16 @@ bool rc2d_system_isTV(void);
  */
 RC2D_Sandbox rc2d_system_getSandbox(void);
 
-// TODO: A revoir
+/**
+ * \brief Joue une vibration sur un appareil haptique.
+ * 
+ * \param {double} seconds - La durée de la vibration en secondes.
+ * \param {float} strength - La force de la vibration (entre 0.0 et 1.0).
+ * 
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
 void rc2d_system_vibrate(const double seconds, const float strength);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */

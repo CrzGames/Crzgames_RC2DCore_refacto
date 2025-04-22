@@ -1369,7 +1369,7 @@ static bool rc2d_engine(void)
     /**
      * Une variable contrôlant les orientations autorisées sur iOS/Android.
      */
-#ifdef RC2D_PLATFORM_IOS || RC2D_PLATFORM_ANDROID
+#if defined(RC2D_PLATFORM_IOS) || defined(RC2D_PLATFORM_ANDROID)
     SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 #endif
 

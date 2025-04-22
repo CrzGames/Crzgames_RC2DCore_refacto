@@ -10,9 +10,18 @@
  * Fonction de rappel pour arrêter la vibration.
  *
  * Cette fonction arrête la vibration d'un périphérique haptique et ferme le gestionnaire haptique.
-
- * @param interval La durée de la vibration en millisecondes.
- * @param param Un pointeur vers le périphérique haptique (SDL_Haptic) à arrêter.
+ * Elle est appelée après un certain intervalle de temps spécifié lors de la planification d'un timer.
+ * 
+ * \param interval La durée de la vibration en millisecondes.
+ * \param param Un pointeur vers le périphérique haptique (SDL_Haptic) à arrêter.
+ * 
+ * \return 0 pour indiquer que le timer ne doit pas être replanifié.
+ * 
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \sa rc2d_system_vibrate()
  */
 static Uint32 stopVibration(Uint32 interval, void *param)
 {
@@ -38,13 +47,6 @@ static Uint32 stopVibration(Uint32 interval, void *param)
     return 0; // Retourner 0 pour que le timer ne se replanifie pas automatiquement
 }
 
-
-/**
- * Permet de faire vibrer l'appareil pendant une durée et avec une intensité spécifiée.
- * Utilise la première manette haptique disponible pour générer une vibration.
- * @param seconds La durée de la vibration en secondes.
- * @param strength L'intensité de la vibration, entre 0 (aucune vibration) et 1 (vibration maximale).
- */
 void rc2d_system_vibrate(const double seconds, const float strength) 
 {
     if (seconds <= 0 || strength < 0 || strength > 1)
