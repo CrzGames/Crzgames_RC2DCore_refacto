@@ -23,12 +23,10 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
     const RC2D_EngineConfig* config = rc2d_engine_setup();
 
     /**
-     * Si la configuration est NULL, alors on utilise la configuration par défaut de RC2D.
+     * Si la configuration est NULL (const RC2D_EngineConfig* config), 
+     * alors on utilisera la configuration par défaut de RC2D.
      */
-    if (config != NULL) 
-    {
-        rc2d_engine_configure(config);
-    }
+    rc2d_engine_configure(config);
 
     /**
      * Initialise le moteur RC2D.

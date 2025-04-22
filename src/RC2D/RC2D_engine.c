@@ -1384,8 +1384,6 @@ static bool rc2d_engine(void)
 
 bool rc2d_engine_init(void)
 {
-    rc2d_engine_stateInit();
-
 	// Init GameEngine house
 	if (!rc2d_engine())
     {
@@ -1435,9 +1433,14 @@ void rc2d_engine_quit(void)
 void rc2d_engine_configure(const RC2D_EngineConfig* config)
 {
     /**
-     * Vérifie si le moteur RC2D a été initialisé.
-     * 
-     * Si le moteur n'est pas initialisé, on ne peut pas configurer les paramètres.
+     * Cela permet de s'assurer que l'état du moteur est dans un 
+     * état valide avant de le configurer.
+     */
+    rc2d_engine_stateInit();
+
+    /**
+     * Vérifie si l'état du moteur RC2D est valide.
+     * Si l'état du moteur est NULL, alors on ne peut pas le configurer.
      */
     if (rc2d_engine_state.config == NULL)
     {
