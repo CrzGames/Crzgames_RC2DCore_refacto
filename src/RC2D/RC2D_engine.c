@@ -33,8 +33,10 @@ RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
         .driver = RC2D_GPU_DRIVER_DEFAULT
     };
 
+    static RC2D_EngineCallbacks default_callbacks = {0};
+
     static RC2D_EngineConfig default_config = {
-        .callbacks = NULL,
+        .callbacks = &default_callbacks,
         .windowWidth = 800,
         .windowHeight = 600,
         .logicalWidth = 1920,
