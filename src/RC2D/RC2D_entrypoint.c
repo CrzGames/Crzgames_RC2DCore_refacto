@@ -3,6 +3,7 @@
 
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_logger.h>
 
 /**
  * SDL3 Callback: Initialisation

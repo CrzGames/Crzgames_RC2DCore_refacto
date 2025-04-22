@@ -9,7 +9,6 @@
 //#include <SDL3_mixer/SDL_mixer.h>
 
 SDL_GPUDevice* rc2d_gpu_device = NULL; 
-SDL_GPUViewport rc2d_gpu_viewport = {0};
 SDL_GPUPresentMode rc2d_gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
 SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
 
@@ -48,8 +47,11 @@ static int rc2d_window_height = 600;
 /**
  * Utiliser en interne simplement lors de l'initialisation du framework RC2D.
  * 
- * Si l'utilisateur lors de rc2d_setup() ne spécifie pas de taille logique,
+ * - Si l'utilisateur lors de rc2d_setup() ne spécifie pas de taille logique,
  * on utilise la taille par défaut de 1920x1080.
+ * 
+ * - Egalement utilisé pour calculer le ratio d'aspect de la fenêtre, pour la
+ * fonction : rc2d_calculate_renderscale_and_gpuviewport()
  */
 static int rc2d_logical_width = 1920;
 static int rc2d_logical_height = 1080;
@@ -306,12 +308,14 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
     viewport_y = safe_area.y + (safe_area.h - viewport_height) / 2.0f;
 
     // Applique le viewport au GPU
-    rc2d_gpu_viewport.x = viewport_x;
-    rc2d_gpu_viewport.y = viewport_y;
-    rc2d_gpu_viewport.w = viewport_width;
-    rc2d_gpu_viewport.h = viewport_height;
-    rc2d_gpu_viewport.min_depth = 0.0f;
-    rc2d_gpu_viewport.max_depth = 1.0f;
+    SDL_GPUViewport* rc2d_gpu_viewport = {0};
+    rc2d_gpu_viewport->x = viewport_x;
+    rc2d_gpu_viewport->y = viewport_y;
+    rc2d_gpu_viewport->w = viewport_width;
+    rc2d_gpu_viewport->h = viewport_height;
+    rc2d_gpu_viewport->min_depth = 0.0f;
+    rc2d_gpu_viewport->max_depth = 1.0f;
+    // TODO: SDL_SetGPUViewport()
 
     // Applique l’échelle de rendu interne
     rc2d_render_scale = scale * display_scale;
@@ -336,6 +340,7 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
             rc2d_letterbox_areas[rc2d_letterbox_count].h = safe_area.h;
             rc2d_letterbox_count++;
         }
+
         // Barres horizontales noir (haut/bas)
         if (viewport_y > safe_area.y) 
         {
@@ -363,28 +368,28 @@ static void rc2d_calculate_renderscale_and_gpuviewport(void)
  */
 static void rc2d_update_fps_based_on_monitor(void) 
 {
-    // Récupére le monitor associé a la fenetre window
-    SDL_DisplayID displayIndex = SDL_GetDisplayForWindow(rc2d_window);
-    if (displayIndex == 0) 
+    // Récupére le moniteur associé a la fenetre.
+    SDL_DisplayID displayID = SDL_GetDisplayForWindow(rc2d_window);
+    if (displayID == 0) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Could not get display index for window: %s", SDL_GetError());
         return;
     }
 
-    // Obtient le mode d'affichage actuel pour ce moniteur
+    // Obtient le mode d'affichage actuel du moniteur.
     const SDL_DisplayMode* currentDisplayMode = NULL;
-    if (SDL_GetCurrentDisplayMode(displayIndex) == NULL) 
+    if (SDL_GetCurrentDisplayMode(displayID) == NULL) 
     {
-        RC2D_log(RC2D_LOG_ERROR, "Could not get current display mode for display #%d: %s", displayIndex, SDL_GetError());
+        RC2D_log(RC2D_LOG_ERROR, "Could not get current display mode for display #%d: %s", displayID, SDL_GetError());
         return;
     }
 
-    // Met à jour les FPS selon le taux de rafraîchissement du moniteur
-    if (mode->refresh_rate_numerator > 0 && mode->refresh_rate_denominator > 0) 
+    // Met à jour les FPS selon le taux de rafraîchissement du moniteur.
+    if (currentDisplayMode->refresh_rate_numerator > 0 && currentDisplayMode->refresh_rate_denominator > 0) 
     {
         rc2d_fps = (double)currentDisplayMode->refresh_rate_numerator / currentDisplayMode->refresh_rate_denominator;
     } 
-    else if (mode->refresh_rate > 0.0f) 
+    else if (currentDisplayMode->refresh_rate > 0.0f) 
     {
         rc2d_fps = (double)currentDisplayMode->refresh_rate;
     } 
@@ -1103,8 +1108,9 @@ static bool rc2d_engine(void)
     SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
 
     /**
+     * IMPORTANT :
      * Cache la fenêtre tant que le rendu GPU n'est pas prêt..etc pour éviter des artefacts visuels.
-     * On l'affichera plus tard juste avant le début de la boucle de jeu.
+     * On l'affichera plus tard juste avant la première frame de la boucle de jeu.
      */
     SDL_SetBooleanProperty(window_props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
 

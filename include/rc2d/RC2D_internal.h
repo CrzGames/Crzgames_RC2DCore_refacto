@@ -19,7 +19,6 @@ extern SDL_Window* rc2d_window;
 
 // Dispositif GPU SDL3 pour le rendu matériel
 extern SDL_GPUDevice* rc2d_gpu_device;
-extern SDL_GPUViewport rc2d_gpu_viewport;
 extern SDL_GPUPresentMode rc2d_gpu_present_mode;
 extern SDL_GPUSwapchainComposition rc2d_gpu_swapchain_composition;
 
