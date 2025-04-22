@@ -30,7 +30,7 @@ typedef struct RC2D_EngineState {
     // Pointeur vers la configuration utilisateur
     RC2D_EngineConfig* config;
 
-    // SDL : Window, Event
+    // SDL : Window
     SDL_Window* window;
 
     // SDL : GPU

@@ -1,5 +1,5 @@
 #include <RC2D/RC2D_mouse.h>
-#include <RC2D/RC2D_internal.h> // Required for : rc2d_window (SDL_Window*)
+#include <RC2D/RC2D_internal.h> // Required for : rc2d_engine_state.window (SDL_Window*)
 
 #include <SDL3_image/SDL_image.h>
 
@@ -29,7 +29,7 @@ bool rc2d_mouse_isCursorSupported(void)
  */
 bool rc2d_mouse_isGrabbed(void) 
 {
-    return SDL_GetWindowGrab(rc2d_window) == SDL_TRUE;
+    return SDL_GetWindowGrab(rc2d_engine_state.window) == SDL_TRUE;
 }
 
 /**

@@ -442,36 +442,40 @@ void rc2d_engine_deltatimeframerates_end(void)
 SDL_AppResult rc2d_engine_processevent(SDL_Event *event) 
 {
     // Quit program
-    if (event.type == SDL_EVENT_QUIT)
+    if (event->type == SDL_EVENT_QUIT)
     {
         return SDL_APP_SUCCESS;
     }
 
-    // La préférence de la langue local à changé
-    else if (event.type == SDL_EVENT_LOCALE_CHANGED)
+    // La préférence de la langue locale a changé
+    else if (event->type == SDL_EVENT_LOCALE_CHANGED)
     {
-        if (rc2d_callbacks_engine.rc2d_localechanged != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_localechanged != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_localechanged();
+            rc2d_engine_state.config->callbacks->rc2d_localechanged();
         }
     }
 
-    else if (event.type == SDL_EVENT_DISPLAY_ORIENTATION) 
+    else if (event->type == SDL_EVENT_DISPLAY_ORIENTATION) 
     {
-        if (rc2d_callbacks_engine.rc2d_displayorientation != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_displayorientation(event.display.orientation);
+            rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged(event->display.orientation);
         }
     }
 
-    else if (event.type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
+    else if (event->type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
     {
         // Met à jour le viewport GPU et le render scale
         rc2d_calculate_renderscale_and_gpuviewport();
     }
 
     // Window HDR State changed
-    else if (event.type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
+    else if (event->type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
     {
         // Re-vérifie le meilleur swapchain disponible
         SDL_GPUSwapchainComposition compositions[] = {
@@ -482,64 +486,70 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         };
         for (int i = 0; i < SDL_arraysize(compositions); i++) 
         {
-            if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_gpu_device, rc2d_window, compositions[i])) 
+            if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, compositions[i])) 
             {
-                rc2d_gpu_swapchain_composition = compositions[i];
+                rc2d_engine_state.gpu_swapchain_composition = compositions[i];
                 break;
             }
         }
 
         // Re-set la composition (en gardant le mode de présentation actuel)
-        if (!SDL_SetGPUSwapchainParameters(rc2d_gpu_device, rc2d_window, rc2d_gpu_swapchain_composition, rc2d_gpu_present_mode)) 
+        if (!SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, rc2d_engine_state.gpu_swapchain_composition, rc2d_engine_state.gpu_present_mode)) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Failed to update swapchain on HDR state change: %s", SDL_GetError());
         }
     }
 
     // Touch moved
-    else if (event.type == SDL_EVENT_FINGER_MOTION) 
+    else if (event->type == SDL_EVENT_FINGER_MOTION) 
     {
-        if (rc2d_callbacks_engine.rc2d_touchmoved != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_touchmoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_touchmoved(event.tfinger.touchId, event.tfinger.fingerId,
-                                            event.tfinger.x, event.tfinger.y,
-                                            event.tfinger.dx, event.tfinger.dy);
+            rc2d_engine_state.config->callbacks->rc2d_touchmoved(event->tfinger.touchId, event->tfinger.fingerId,
+                                                                event->tfinger.x, event->tfinger.y,
+                                                                event->tfinger.dx, event->tfinger.dy);
         }
 
         // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(event.tfinger.fingerId, SDL_EVENT_FINGER_MOTION, event.tfinger.pressure, event.tfinger.x, event.tfinger.y);
+        rc2d_touch_updateState(event->tfinger.fingerId, SDL_EVENT_FINGER_MOTION, event->tfinger.pressure, event->tfinger.x, event->tfinger.y);
     }
 
     // Touch pressed
-    else if (event.type == SDL_EVENT_FINGER_DOWN) 
+    else if (event->type == SDL_EVENT_FINGER_DOWN) 
     {
-        if (rc2d_callbacks_engine.rc2d_touchpressed != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_touchpressed != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_touchpressed(event.tfinger.touchId, event.tfinger.fingerId,
-                                            event.tfinger.x, event.tfinger.y,
-                                            event.tfinger.pressure);
+            rc2d_engine_state.config->callbacks->rc2d_touchpressed(event->tfinger.touchId, event->tfinger.fingerId,
+                                                                  event->tfinger.x, event->tfinger.y,
+                                                                  event->tfinger.pressure);
         }
 
         // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(event.tfinger.fingerId, SDL_EVENT_FINGER_DOWN, event.tfinger.pressure, event.tfinger.x, event.tfinger.y);
+        rc2d_touch_updateState(event->tfinger.fingerId, SDL_EVENT_FINGER_DOWN, event->tfinger.pressure, event->tfinger.x, event->tfinger.y);
     }
 
     // Touch released
-    else if (event.type == SDL_EVENT_FINGER_UP) 
+    else if (event->type == SDL_EVENT_FINGER_UP) 
     {
-        if (rc2d_callbacks_engine.rc2d_touchreleased != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_touchreleased != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_touchreleased(event.tfinger.touchId, event.tfinger.fingerId,
-                                                event.tfinger.x, event.tfinger.y,
-                                                event.tfinger.pressure);
+            rc2d_engine_state.config->callbacks->rc2d_touchreleased(event->tfinger.touchId, event->tfinger.fingerId,
+                                                                   event->tfinger.x, event->tfinger.y,
+                                                                   event->tfinger.pressure);
         }
 
         // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(event.tfinger.fingerId, SDL_EVENT_FINGER_UP, 0.0f, 0.0f, 0.0f);
+        rc2d_touch_updateState(event->tfinger.fingerId, SDL_EVENT_FINGER_UP, 0.0f, 0.0f, 0.0f);
     }
 
     // Window safe area changed
-    else if (event.type == SDL_EVENT_WINDOW_SAFE_AREA_CHANGED) 
+    else if (event->type == SDL_EVENT_WINDOW_SAFE_AREA_CHANGED) 
     {
         /**
          * Quand la zone de sécurité de la fenêtre change,
@@ -549,7 +559,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     }
 
     // Window enter fullscreen
-    else if (event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) 
+    else if (event->type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN) 
     {
         /**
          * Quand la fenêtre entre en mode plein écran, 
@@ -560,17 +570,19 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         rc2d_update_fps_based_on_monitor();
         rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowenterfullscreen != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowenterfullscreen != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowenterfullscreen();
+            rc2d_engine_state.config->callbacks->rc2d_windowenterfullscreen();
         }
     }
 
     // Window leave fullscreen
-    else if (event.type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) 
+    else if (event->type == SDL_EVENT_WINDOW_LEAVE_FULLSCREEN) 
     {
         /**
-         * Quand la fenêtre quitter le mode plein écran, 
+         * Quand la fenêtre quitte le mode plein écran, 
          * on met à jour la largeur et la hauteur de la fenêtre
          * on met à jour les FPS en fonction du moniteur actuel
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
@@ -578,24 +590,26 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         rc2d_update_fps_based_on_monitor();
         rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowleavefullscreen != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowleavefullscreen != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowleavefullscreen();
+            rc2d_engine_state.config->callbacks->rc2d_windowleavefullscreen();
         }
     }
 
     // Window pixel size changed
-    else if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) 
+    else if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) 
     {
         /**
-         * En cas de changement de tailel de pixels de la fenêtre (ex: changement de DPI), 
+         * En cas de changement de taille de pixels de la fenêtre (ex: changement de DPI), 
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_calculate_renderscale_and_gpuviewport();
     }
 
     // Window display scale changed
-    else if (event.type == SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED) 
+    else if (event->type == SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED) 
     {
         /** 
          * En cas de changement d'échelle d'affichage de la fenêtre, 
@@ -605,7 +619,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     }
 
     // Window resized
-    else if (event.window.event == SDL_EVENT_WINDOW_RESIZED) 
+    else if (event->type == SDL_EVENT_WINDOW_RESIZED) 
     {
         /** 
          * En cas de changement de la taille de la fenêtre,
@@ -614,24 +628,27 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          */
         rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowresized != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowresized != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowresized(event.window.data1, event.window.data2);
+            rc2d_engine_state.config->callbacks->rc2d_windowresized(event->window.data1, event->window.data2);
         }
     }
 
     // Window moved
-    else if (event.window.event == SDL_EVENT_WINDOW_MOVED) 
+    else if (event->type == SDL_EVENT_WINDOW_MOVED) 
     {
-        if (rc2d_callbacks_engine.rc2d_windowmoved != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowmoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowmoved(event.window.data1, event.window.data2);
-
+            rc2d_engine_state.config->callbacks->rc2d_windowmoved(event->window.data1, event->window.data2);
         }
     }
 
     // Window display changed
-    else if (event.window.event == SDL_EVENT_WINDOW_DISPLAY_CHANGED) 
+    else if (event->type == SDL_EVENT_WINDOW_DISPLAY_CHANGED) 
     {
         /**
          * Quand la fenêtre change de moniteur,
@@ -642,32 +659,38 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         rc2d_update_fps_based_on_monitor();
         rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowdisplaychanged != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowdisplaychanged != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowdisplaychanged(event.window.data1, event.window.data2);
+            rc2d_engine_state.config->callbacks->rc2d_windowdisplaychanged(event->window.data1, event->window.data2);
         }
     }
 
     // Window exposed
-    else if (event.window.event == SDL_EVENT_WINDOW_EXPOSED) 
+    else if (event->type == SDL_EVENT_WINDOW_EXPOSED) 
     {
-        if (rc2d_callbacks_engine.rc2d_windowexposed != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowexposed != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowexposed();
+            rc2d_engine_state.config->callbacks->rc2d_windowexposed();
         }
     }
 
     // Window minimized
-    else if (event.window.event == SDL_EVENT_WINDOW_MINIMIZED) 
+    else if (event->type == SDL_EVENT_WINDOW_MINIMIZED) 
     {
-        if (rc2d_callbacks_engine.rc2d_windowminimized != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowminimized != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowminimized();
+            rc2d_engine_state.config->callbacks->rc2d_windowminimized();
         }
     }
 
     // Window maximized
-    else if (event.window.event == SDL_EVENT_WINDOW_MAXIMIZED) 
+    else if (event->type == SDL_EVENT_WINDOW_MAXIMIZED) 
     {
         /** 
          * En cas de changement de la taille de la fenêtre,
@@ -676,14 +699,16 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          */
         rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowmaximized != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowmaximized != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowmaximized();
+            rc2d_engine_state.config->callbacks->rc2d_windowmaximized();
         }
     }
 
     // Window restored
-    else if (event.window.event == SDL_EVENT_WINDOW_RESTORED) 
+    else if (event->type == SDL_EVENT_WINDOW_RESTORED) 
     {
         /** 
          * La fenêtre a été restaurée après avoir été minimisée ou maximisée à son état normal.
@@ -692,270 +717,309 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          */
         rc2d_calculate_renderscale_and_gpuviewport();
 
-        if (rc2d_callbacks_engine.rc2d_windowrestored != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowrestored != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_windowrestored();
+            rc2d_engine_state.config->callbacks->rc2d_windowrestored();
         }
     }
 
     // Mouse entered window
-    else if (event.window.event == SDL_EVENT_WINDOW_MOUSE_ENTER) 
+    else if (event->type == SDL_EVENT_WINDOW_MOUSE_ENTER) 
     {
-        if (rc2d_callbacks_engine.rc2d_mouseenteredwindow != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mouseenteredwindow != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_mouseenteredwindow();
+            rc2d_engine_state.config->callbacks->rc2d_mouseenteredwindow();
         }
     }
 
     // Mouse leave window
-    else if (event.window.event == SDL_EVENT_WINDOW_MOUSE_LEAVE) 
+    else if (event->type == SDL_EVENT_WINDOW_MOUSE_LEAVE) 
     {
-        if (rc2d_callbacks_engine.rc2d_mouseleavewindow != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mouseleavewindow != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_mouseleavewindow();
+            rc2d_engine_state.config->callbacks->rc2d_mouseleavewindow();
         }
     }
 
     // Keyboard focus gained
-    else if (event.window.event == SDL_EVENT_WINDOW_FOCUS_GAINED) 
+    else if (event->type == SDL_EVENT_WINDOW_FOCUS_GAINED) 
     {
-        if (rc2d_callbacks_engine.rc2d_keyboardfocusgained != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keyboardfocusgained != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_keyboardfocusgained();
+            rc2d_engine_state.config->callbacks->rc2d_keyboardfocusgained();
         }
     }
 
     // Keyboard focus lost
-    else if (event.window.event == SDL_EVENT_WINDOW_FOCUS_LOST) 
+    else if (event->type == SDL_EVENT_WINDOW_FOCUS_LOST) 
     {
-        if (rc2d_callbacks_engine.rc2d_keyboardfocuslost != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keyboardfocuslost != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_keyboardfocuslost();
+            rc2d_engine_state.config->callbacks->rc2d_keyboardfocuslost();
         }
     }
 
     // Window closed
-    else if (event.window.event == SDL_EVENT_WINDOW_CLOSE_REQUESTED) 
+    else if (event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) 
     {
-        if (rc2d_callbacks_engine.rc2d_windowclosed != NULL)
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowclosed != NULL)
         {
-            rc2d_callbacks_engine.rc2d_windowclosed();
+            rc2d_engine_state.config->callbacks->rc2d_windowclosed();
         }
         
         return SDL_APP_SUCCESS;
     }
     
     // Mouse Moved
-    else if (event.type == SDL_EVENT_MOUSE_MOTION) 
+    else if (event->type == SDL_EVENT_MOUSE_MOTION) 
     {
-        if (rc2d_callbacks_engine.rc2d_mousemoved != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mousemoved != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_mousemoved(event.motion.x, event.motion.y);
+            rc2d_engine_state.config->callbacks->rc2d_mousemoved(event->motion.x, event->motion.y);
         }
     }
 
     // Mouse Wheel
-    else if (event.type == SDL_EVENT_MOUSE_WHEEL) 
+    else if (event->type == SDL_EVENT_MOUSE_WHEEL) 
     {
-        if (rc2d_callbacks_engine.rc2d_wheelmoved != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_wheelmoved != NULL) 
         {
             const char* stateScroll = "";
 
-            if (event.wheel.y > 0) stateScroll = "up"; // scroll up
-            else if (event.wheel.y < 0) stateScroll = "down"; // scroll down
-            else if (event.wheel.x > 0) stateScroll = "right"; // scroll right
-            else if (event.wheel.x < 0) stateScroll = "left"; // scroll left
+            if (event->wheel.y > 0) stateScroll = "up"; // scroll up
+            else if (event->wheel.y < 0) stateScroll = "down"; // scroll down
+            else if (event->wheel.x > 0) stateScroll = "right"; // scroll right
+            else if (event->wheel.x < 0) stateScroll = "left"; // scroll left
 
-            rc2d_callbacks_engine.rc2d_wheelmoved(stateScroll);
+            rc2d_engine_state.config->callbacks->rc2d_wheelmoved(stateScroll);
         }
     }
 
     // Mouse pressed
-    else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) 
+    else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) 
     {
-        if (rc2d_callbacks_engine.rc2d_mousepressed != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mousepressed != NULL) 
         {
             const char* button = "";
 
-            if (event.button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
-            else if (event.button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
-            else if (event.button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
+            if (event->button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
+            else if (event->button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
+            else if (event->button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
 
-            rc2d_callbacks_engine.rc2d_mousepressed(event.button.x, event.button.y, button, event.button.clicks);
+            rc2d_engine_state.config->callbacks->rc2d_mousepressed(event->button.x, event->button.y, button, event->button.clicks);
         }
     }
 
     // Mouse released
-    else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) 
+    else if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) 
     {
-        if (rc2d_callbacks_engine.rc2d_mousereleased != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mousereleased != NULL) 
         {
             const char* button = "";
 
-            if (event.button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
-            else if (event.button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
-            else if (event.button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
+            if (event->button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
+            else if (event->button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
+            else if (event->button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
 
-            rc2d_callbacks_engine.rc2d_mousereleased(event.button.x, event.button.y, button, event.button.clicks);
+            rc2d_engine_state.config->callbacks->rc2d_mousereleased(event->button.x, event->button.y, button, event->button.clicks);
         }
     }
 
     // Keyboard pressed
-    else if (event.type == SDL_EVENT_KEY_DOWN)
+    else if (event->type == SDL_EVENT_KEY_DOWN)
     {
-        if (rc2d_callbacks_engine.rc2d_keypressed != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keypressed != NULL) 
         {
-            const char* keyCurrent = SDL_GetKeyName(event.key.keysym.sym);
+            const char* keyCurrent = SDL_GetKeyName(event->key.keysym.sym);
+            bool keyRepeat = event->key.repeat != 0;
 
-            bool keyRepeat = event.key.repeat != 0;
-
-            rc2d_callbacks_engine.rc2d_keypressed(keyCurrent, keyRepeat);
+            rc2d_engine_state.config->callbacks->rc2d_keypressed(keyCurrent, keyRepeat);
         }
     }
 
     // Keyboard released
-    else if (event.type == SDL_EVENT_KEY_UP)
+    else if (event->type == SDL_EVENT_KEY_UP)
     {
-        if (rc2d_callbacks_engine.rc2d_keyreleased != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keyreleased != NULL) 
         {
-            const char* keyCurrent = SDL_GetKeyName(event.key.keysym.sym);
-            rc2d_callbacks_engine.rc2d_keyreleased(keyCurrent);
+            const char* keyCurrent = SDL_GetKeyName(event->key.keysym.sym);
+            rc2d_engine_state.config->callbacks->rc2d_keyreleased(keyCurrent);
         }
     }
 
     // Gamepad axis moved
-    else if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION) 
+    else if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION) 
     {
-        if (rc2d_callbacks_engine.rc2d_gamepadaxis != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_gamepadaxis != NULL) 
         {
-            /*
-            En normalisant les valeurs d'axe de cette manière, vous assurez que les callbacks reçoivent une valeur flottante entre -1.0 et 1.0, 
-            ce qui est généralement plus utile pour la logique de jeu, car cela indique la direction et l'intensité de l'entrée de manière cohérente, 
-            indépendamment de la plateforme ou du contrôleur spécifique.
-            */
-            float valueNormalized = event.caxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
-            rc2d_callbacks_engine.rc2d_gamepadaxis(event.caxis.which, event.caxis.axis, valueNormalized);
+            float valueNormalized = event->caxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
+            rc2d_engine_state.config->callbacks->rc2d_gamepadaxis(event->caxis.which, event->caxis.axis, valueNormalized);
         }
     }
 
     // Gamepad Pressed
-    else if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) 
+    else if (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) 
     {
-        if (rc2d_callbacks_engine.rc2d_gamepadpressed != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_gamepadpressed != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_gamepadpressed(event.cbutton.which, event.cbutton.button);
+            rc2d_engine_state.config->callbacks->rc2d_gamepadpressed(event->cbutton.which, event->cbutton.button);
         }
     }
 
     // Gamepad Released
-    else if (event.type == SDL_EVENT_GAMEPAD_BUTTON_UP) 
+    else if (event->type == SDL_EVENT_GAMEPAD_BUTTON_UP) 
     {
-        if (rc2d_callbacks_engine.rc2d_gamepadreleased != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_gamepadreleased != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_gamepadreleased(event.cbutton.which, event.cbutton.button);
+            rc2d_engine_state.config->callbacks->rc2d_gamepadreleased(event->cbutton.which, event->cbutton.button);
         }
     }
 
     // Joystick axis moved
-    else if (event.type == SDL_EVENT_JOYSTICK_AXIS_MOTION) 
+    else if (event->type == SDL_EVENT_JOYSTICK_AXIS_MOTION) 
     {
-        if (rc2d_callbacks_engine.rc2d_joystickaxis != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_joystickaxis != NULL) 
         {
-            /*
-            En normalisant les valeurs d'axe de cette manière, vous assurez que les callbacks reçoivent une valeur flottante entre -1.0 et 1.0, 
-            ce qui est généralement plus utile pour la logique de jeu, car cela indique la direction et l'intensité de l'entrée de manière cohérente, 
-            indépendamment de la plateforme ou du contrôleur spécifique.
-            */
-            float valueNormalized = event.jaxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
-            rc2d_callbacks_engine.rc2d_joystickaxis(event.jaxis.which, event.jaxis.axis, valueNormalized);
+            float valueNormalized = event->jaxis.value / (float)SDL_JOYSTICK_AXIS_MAX;
+            rc2d_engine_state.config->callbacks->rc2d_joystickaxis(event->jaxis.which, event->jaxis.axis, valueNormalized);
         }
     }
 
     // Joystick Pressed
-    else if (event.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) 
+    else if (event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) 
     {
-        if (rc2d_callbacks_engine.rc2d_joystickpressed != NULL)
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_joystickpressed != NULL)
         {
-            rc2d_callbacks_engine.rc2d_joystickpressed(event.jbutton.which, event.jbutton.button);
+            rc2d_engine_state.config->callbacks->rc2d_joystickpressed(event->jbutton.which, event->jbutton.button);
         }
     }
 
     // Joystick Released
-    else if (event.type == SDL_EVENT_JOYSTICK_BUTTON_UP)
+    else if (event->type == SDL_EVENT_JOYSTICK_BUTTON_UP)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_joystickreleased != NULL)
         {
-        if (rc2d_callbacks_engine.rc2d_joystickreleased != NULL)
-        {
-            rc2d_callbacks_engine.rc2d_joystickreleased(event.jbutton.which, event.jbutton.button);
+            rc2d_engine_state.config->callbacks->rc2d_joystickreleased(event->jbutton.which, event->jbutton.button);
         }
     }
 
     // Joystick added
-    else if (event.type == SDL_EVENT_JOYSTICK_ADDED) 
+    else if (event->type == SDL_EVENT_JOYSTICK_ADDED) 
     {
-        if (rc2d_callbacks_engine.rc2d_joystickadded != NULL)
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_joystickadded != NULL)
         {
-            rc2d_callbacks_engine.rc2d_joystickadded(event.jdevice.which);
+            rc2d_engine_state.config->callbacks->rc2d_joystickadded(event->jdevice.which);
         }
     }
 
     // Joystick remove
-    else if (event.type == SDL_EVENT_JOYSTICK_REMOVED) 
+    else if (event->type == SDL_EVENT_JOYSTICK_REMOVED) 
     {
-        if (rc2d_callbacks_engine.rc2d_joystickremoved != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_joystickremoved != NULL)
         {
-            rc2d_callbacks_engine.rc2d_joystickremoved(event.jdevice.which);
+            rc2d_engine_state.config->callbacks->rc2d_joystickremoved(event->jdevice.which);
         }
     }
 
     // Joystick hat moved
-    else if (event.type == SDL_EVENT_JOYSTICK_HAT_MOTION) 
+    else if (event->type == SDL_EVENT_JOYSTICK_HAT_MOTION) 
     {
-        if (rc2d_callbacks_engine.rc2d_joystickhat != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_joystickhat != NULL) 
         {
-            rc2d_callbacks_engine.rc2d_joystickhat(event.jhat.which, event.jhat.hat, event.jhat.value);
+            rc2d_engine_state.config->callbacks->rc2d_joystickhat(event->jhat.which, event->jhat.hat, event->jhat.value);
         }
     }
 
     // DROP FILE
-    else if (event.type == SDL_EVENT_DROP_FILE) 
+    else if (event->type == SDL_EVENT_DROP_FILE) 
     {
-        if (rc2d_callbacks_engine.rc2d_dropfile != NULL)
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_dropfile != NULL)
         {
-            char* filedir = event.drop.file;
-            rc2d_callbacks_engine.rc2d_dropfile(filedir);
+            char* filedir = event->drop.file;
+            rc2d_engine_state.config->callbacks->rc2d_dropfile(filedir);
             SDL_free(filedir);
         }
     }
 
     // SDL_DROPTEXT
-    else if (event.type == SDL_EVENT_DROP_TEXT) 
+    else if (event->type == SDL_EVENT_DROP_TEXT) 
     {
-        if (rc2d_callbacks_engine.rc2d_droptext != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_droptext != NULL) 
         {
-            char* filedir = event.drop.file;
-            rc2d_callbacks_engine.rc2d_droptext(filedir);
+            char* filedir = event->drop.file;
+            rc2d_engine_state.config->callbacks->rc2d_droptext(filedir);
             SDL_free(filedir);
         }
     }
 
     // SDL_DROPBEGIN
-    else if (event.type == SDL_EVENT_DROP_BEGIN) 
+    else if (event->type == SDL_EVENT_DROP_BEGIN) 
     {
-        if (rc2d_callbacks_engine.rc2d_dropbegin != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_dropbegin != NULL) 
         {
-            char* filedir = event.drop.file;
-            rc2d_engine_state.config->callbacks.rc2d_dropbegin(filedir);
+            char* filedir = event->drop.file;
+            rc2d_engine_state.config->callbacks->rc2d_dropbegin(filedir);
             SDL_free(filedir);
         }
     }
 
     // SDL_DROPCOMPLETE
-    else if (event.type == SDL_EVENT_DROP_COMPLETE) 
+    else if (event->type == SDL_EVENT_DROP_COMPLETE) 
     {
-        if (rc2d_callbacks_engine.rc2d_dropcomplete != NULL) 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_dropcomplete != NULL) 
         {
-            char* filedir = event.drop.file;
-            rc2d_callbacks_engine.rc2d_dropcomplete(filedir);
+            char* filedir = event->drop.file;
+            rc2d_engine_state.config->callbacks->rc2d_dropcomplete(filedir);
             SDL_free(filedir);
         }
     }
@@ -965,68 +1029,6 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
      * doit continuer à traiter les événements.
      */
     return SDL_APP_CONTINUE;
-}
-
-/**
- * @brief Définit les callbacks de la librairie RC2D.
- * 
- * @param callbacks Pointeur vers la structure RC2D_Callbacks contenant les callbacks à définir.
- */
-static void rc2d_engine_set_callbacks(RC2D_EngineCallbacks* callbacks) 
-{
-    // Game loop callbacks
-    if (callbacks->rc2d_unload != NULL) rc2d_callbacks_engine.rc2d_unload = callbacks->rc2d_unload;
-    if (callbacks->rc2d_load != NULL) rc2d_callbacks_engine.rc2d_load = callbacks->rc2d_load;
-    if (callbacks->rc2d_draw != NULL) rc2d_callbacks_engine.rc2d_draw = callbacks->rc2d_draw;
-    if (callbacks->rc2d_update != NULL) rc2d_callbacks_engine.rc2d_update = callbacks->rc2d_update;
-
-    // Keyboard callbacks
-    if (callbacks->rc2d_keypressed != NULL) rc2d_callbacks_engine.rc2d_keypressed = callbacks->rc2d_keypressed;
-    if (callbacks->rc2d_keyreleased != NULL) rc2d_callbacks_engine.rc2d_keyreleased = callbacks->rc2d_keyreleased;
-
-    // Mouse callbacks
-    if (callbacks->rc2d_mousemoved != NULL) rc2d_callbacks_engine.rc2d_mousemoved = callbacks->rc2d_mousemoved;
-    if (callbacks->rc2d_mousepressed != NULL) rc2d_callbacks_engine.rc2d_mousepressed = callbacks->rc2d_mousepressed;
-    if (callbacks->rc2d_mousereleased != NULL) rc2d_callbacks_engine.rc2d_mousereleased = callbacks->rc2d_mousereleased;
-    if (callbacks->rc2d_wheelmoved != NULL) rc2d_callbacks_engine.rc2d_wheelmoved = callbacks->rc2d_wheelmoved;
-
-    // Touch callbacks
-    if (callbacks->rc2d_touchmoved != NULL) rc2d_callbacks_engine.rc2d_touchmoved = callbacks->rc2d_touchmoved;
-    if (callbacks->rc2d_touchpressed != NULL) rc2d_callbacks_engine.rc2d_touchpressed = callbacks->rc2d_touchpressed;
-    if (callbacks->rc2d_touchreleased != NULL) rc2d_callbacks_engine.rc2d_touchreleased = callbacks->rc2d_touchreleased;
-
-    // Joystick/Gamepad callbacks
-    if (callbacks->rc2d_gamepadpressed != NULL) rc2d_callbacks_engine.rc2d_gamepadpressed = callbacks->rc2d_gamepadpressed;
-    if (callbacks->rc2d_gamepadreleased != NULL) rc2d_callbacks_engine.rc2d_gamepadreleased = callbacks->rc2d_gamepadreleased;
-    if (callbacks->rc2d_joystickpressed != NULL) rc2d_callbacks_engine.rc2d_joystickpressed = callbacks->rc2d_joystickpressed;
-    if (callbacks->rc2d_joystickreleased != NULL) rc2d_callbacks_engine.rc2d_joystickreleased = callbacks->rc2d_joystickreleased;
-    if (callbacks->rc2d_joystickadded != NULL) rc2d_callbacks_engine.rc2d_joystickadded = callbacks->rc2d_joystickadded;
-    if (callbacks->rc2d_joystickremoved != NULL) rc2d_callbacks_engine.rc2d_joystickremoved = callbacks->rc2d_joystickremoved;
-    if (callbacks->rc2d_joystickaxis != NULL) rc2d_callbacks_engine.rc2d_joystickaxis = callbacks->rc2d_joystickaxis;
-    if (callbacks->rc2d_joystickhat != NULL) rc2d_callbacks_engine.rc2d_joystickhat = callbacks->rc2d_joystickhat;
-    if (callbacks->rc2d_gamepadaxis != NULL) rc2d_callbacks_engine.rc2d_gamepadaxis = callbacks->rc2d_gamepadaxis;
-
-    // File drop callbacks
-    if (callbacks->rc2d_dropfile != NULL) rc2d_callbacks_engine.rc2d_dropfile = callbacks->rc2d_dropfile;
-    if (callbacks->rc2d_droptext != NULL) rc2d_callbacks_engine.rc2d_droptext = callbacks->rc2d_droptext;
-    if (callbacks->rc2d_dropbegin != NULL) rc2d_callbacks_engine.rc2d_dropbegin = callbacks->rc2d_dropbegin;
-    if (callbacks->rc2d_dropcomplete != NULL) rc2d_callbacks_engine.rc2d_dropcomplete = callbacks->rc2d_dropcomplete;
-
-    // Window callbacks
-    if (callbacks->rc2d_windowexposed != NULL) rc2d_callbacks_engine.rc2d_windowexposed = callbacks->rc2d_windowexposed;
-    if (callbacks->rc2d_windowmoved != NULL) rc2d_callbacks_engine.rc2d_windowmoved = callbacks->rc2d_windowmoved;
-    if (callbacks->rc2d_windowsizedchanged != NULL) rc2d_callbacks_engine.rc2d_windowsizedchanged = callbacks->rc2d_windowsizedchanged;
-    if (callbacks->rc2d_windowminimized != NULL) rc2d_callbacks_engine.rc2d_windowminimized = callbacks->rc2d_windowminimized;
-    if (callbacks->rc2d_windowmaximized != NULL) rc2d_callbacks_engine.rc2d_windowmaximized = callbacks->rc2d_windowmaximized;
-    if (callbacks->rc2d_windowrestored != NULL) rc2d_callbacks_engine.rc2d_windowrestored = callbacks->rc2d_windowrestored;
-    if (callbacks->rc2d_mouseenteredwindow != NULL) rc2d_callbacks_engine.rc2d_mouseenteredwindow = callbacks->rc2d_mouseenteredwindow;
-    if (callbacks->rc2d_mouseleavewindow != NULL) rc2d_callbacks_engine.rc2d_mouseleavewindow = callbacks->rc2d_mouseleavewindow;
-    if (callbacks->rc2d_keyboardfocusgained != NULL) rc2d_callbacks_engine.rc2d_keyboardfocusgained = callbacks->rc2d_keyboardfocusgained;
-    if (callbacks->rc2d_keyboardfocuslost != NULL) rc2d_callbacks_engine.rc2d_keyboardfocuslost = callbacks->rc2d_keyboardfocuslost;
-    if (callbacks->rc2d_windowclosed != NULL) rc2d_callbacks_engine.rc2d_windowclosed = callbacks->rc2d_windowclosed;
-    if (callbacks->rc2d_windowtakefocus != NULL) rc2d_callbacks_engine.rc2d_windowtakefocus = callbacks->rc2d_windowtakefocus;
-    if (callbacks->rc2d_windowhittest != NULL) rc2d_callbacks_engine.rc2d_windowhittest = callbacks->rc2d_windowhittest;
-    if (callbacks->rc2d_windowresized != NULL) rc2d_callbacks_engine.rc2d_windowresized = callbacks->rc2d_windowresized;
 }
 
 /**
@@ -1227,7 +1229,7 @@ static bool rc2d_engine(void)
     }
 
     // Associe la fenêtre au GPU
-    SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_window);
+    SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_engine_state.window);
 
     // SDL3 : Configurer le mode de présentation du GPU
     /**
@@ -1302,7 +1304,7 @@ static bool rc2d_engine(void)
     }
 
     // SDL3: Set GPU frames in flight
-    if (!SDL_SetGPUAllowedFramesInFlight(rc2d_gpu_device, (Uint32)rc2d_engine_state.config->gpuFramesInFlight)) 
+    if (!SDL_SetGPUAllowedFramesInFlight(rc2d_engine_state.gpu_device, (Uint32)rc2d_engine_state.config->gpuFramesInFlight)) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to set GPU frames in flight: %s", SDL_GetError());
     }
@@ -1439,7 +1441,6 @@ void rc2d_engine_configure(const RC2D_EngineConfig* config)
     if (config->callbacks != NULL)
     {
         rc2d_engine_state.config->callbacks = config->callbacks;
-        rc2d_engine_set_callbacks(rc2d_engine_state.config->callbacks);
     }
     else
     {

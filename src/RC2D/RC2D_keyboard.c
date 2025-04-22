@@ -40,14 +40,14 @@ void rc2d_keyboard_setTextInput(const bool enabled)
 {
     if (enabled) 
 	{
-        if (!SDL_StartTextInput(rc2d_window))
+        if (!SDL_StartTextInput(rc2d_engine_state.window))
         {
             RC2D_log(RC2D_LOG_WARN, "Impossible de démarrer la saisie de texte : %s\n", SDL_GetError());
         }
     } 
 	else 
 	{
-        if (!SDL_StopTextInput(rc2d_window))
+        if (!SDL_StopTextInput(rc2d_engine_state.window))
         {
             RC2D_log(RC2D_LOG_WARN, "Impossible d'arrêter la saisie de texte : %s\n", SDL_GetError());
         }

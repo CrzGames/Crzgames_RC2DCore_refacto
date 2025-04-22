@@ -52,7 +52,7 @@ bool rc2d_window_showMessageBox(const char *title, const char *message, const ch
     messageBoxData.message = message;
     messageBoxData.numbuttons = numButtons;
     messageBoxData.buttons = buttons;
-    messageBoxData.window = attachToWindow ? rc2d_window : NULL;
+    messageBoxData.window = attachToWindow ? rc2d_engine_state.window : NULL;
 
     // Affiche la boîte de message SDL et récupère l'index du bouton pressé
     int buttonId;
@@ -95,7 +95,7 @@ bool rc2d_window_showSimpleMessageBox(const char *title, const char *message, RC
     }
 
     // Affiche la boîte de message simple SDL
-    if (SDL_ShowSimpleMessageBox(sdlType, title, message, attachToWindow ? rc2d_window : NULL) == 0) 
+    if (SDL_ShowSimpleMessageBox(sdlType, title, message, attachToWindow ? rc2d_engine_state.window : NULL) == 0) 
 	{
         return true;
     } 
