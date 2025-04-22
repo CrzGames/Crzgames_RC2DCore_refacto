@@ -471,7 +471,7 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
         return NULL; // Aucun joystick connecté
     }
 
-    RC2D_Joystick** joysticks = (RC2D_Joystick**)malloc(sizeof(RC2D_Joystick*) * joystickCount);
+    RC2D_Joystick** joysticks = (RC2D_Joystick**)SDL_malloc(sizeof(RC2D_Joystick*) * joystickCount);
     if (!joysticks) 
 	{
         RC2D_log(RC2D_LOG_ERROR, "Malloc failed in rc2d_joystick_getJoysticks");  
@@ -480,7 +480,7 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
 
     for (int i = 0; i < joystickCount; ++i) 
 	{
-        joysticks[i] = (RC2D_Joystick*)malloc(sizeof(RC2D_Joystick));
+        joysticks[i] = (RC2D_Joystick*)SDL_malloc(sizeof(RC2D_Joystick));
 
         if (!joysticks[i]) 
 		{

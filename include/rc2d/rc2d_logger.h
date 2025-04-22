@@ -3,7 +3,9 @@
 
 #include <RC2D/RC2D_assert.h>
 
-#include <stdarg.h> // Required for : ... (va_list, va_start, va_end, vsnprintf)
+#include <SDL3/SDL_stdinc.h>
+
+#include <stdarg.h> // Required for : ... (va_list, va_start, va_end)
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus

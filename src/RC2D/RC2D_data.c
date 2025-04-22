@@ -19,15 +19,7 @@ Librairies OpenSSL pour les algorithmes de chiffrement symétrique / asymétriqu
 #include <openssl/evp.h>  // Required for : Algorithm AES, Algorithm SHA, XCHACHA..etc
 #include <openssl/hmac.h> // Required for : HMAC (Keyed-Hashing for Message Authentication)
 #include <openssl/rand.h> // Required for :
-
 #include <openssl/err.h>  // Required for : Gestion des erreurs OpenSSL
-
-/*
-Libraries Standard C
-*/
-#include <stdlib.h>       // Required for : malloc, free
-#include <memory.h>       // Required for : memcpy, memset
-#include <string.h>       // Required for : strlen
 
 /*
 Encrypt and Decrypt
@@ -74,7 +66,7 @@ static RC2D_EncodedData* hex_encode(const unsigned char* data, size_t sizeData, 
     size_t extraChar = (dataType == RC2D_DATA_TYPE_TEXT) ? 1 : 0; // +1 pour le caractère nul si c'est du texte
 
     // Allouer de l'espace pour la chaîne hexadécimale avec ou sans caractère nul supplémentaire
-    char* hex = malloc(sizeData * 2 + extraChar);
+    char* hex = SDL_malloc(sizeData * 2 + extraChar);
     if (hex == NULL) 
     {
         return NULL; // Échec de l'allocation mémoire
@@ -92,7 +84,7 @@ static RC2D_EncodedData* hex_encode(const unsigned char* data, size_t sizeData, 
         hex[sizeData * 2] = '\0'; // Assure la compatibilité avec les chaînes C pour les données textuelles
     }
 
-    RC2D_EncodedData* encodedData = malloc(sizeof(RC2D_EncodedData));
+    RC2D_EncodedData* encodedData = SDL_malloc(sizeof(RC2D_EncodedData));
     if (encodedData == NULL) 
     {
         SDL_free(hex); // Assurez-vous de libérer hex si l'allocation de encodedData échoue
@@ -127,12 +119,12 @@ static unsigned char* hex_decode(const char* hex, RC2D_DataType dataType)
         return NULL; // Invalid input
     }
 
-    size_t len = strlen(hex) / 2;
+    size_t len = SDL_strlen(hex) / 2;
 
     // Allouer de l'espace supplémentaire pour le caractère nul uniquement si c'est du texte
     size_t extraChar = (dataType == RC2D_DATA_TYPE_TEXT) ? 1 : 0;
 
-    unsigned char* plain = malloc(len + extraChar);
+    unsigned char* plain = SDL_malloc(len + extraChar);
     if (plain == NULL) 
     {
         return NULL; // Gestion de l'échec de l'allocation mémoire
@@ -187,7 +179,7 @@ static RC2D_EncodedData* base64_encode(const unsigned char* data, size_t sizeDat
     size_t output_len = 4 * ((sizeData + 2) / 3);
 
     // Adjust allocation for null-termination based on data type
-    char* cipher = malloc(output_len + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0)); 
+    char* cipher = SDL_malloc(output_len + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0)); 
     if (cipher == NULL) 
     {
         return NULL; // Memory allocation failed
@@ -223,7 +215,7 @@ static RC2D_EncodedData* base64_encode(const unsigned char* data, size_t sizeDat
     }
 
     // Allocate memory for the encoded data structure
-    RC2D_EncodedData* encodedData = malloc(sizeof(RC2D_EncodedData));
+    RC2D_EncodedData* encodedData = SDL_malloc(sizeof(RC2D_EncodedData));
     if (!encodedData) 
     {
         SDL_free(cipher);
@@ -259,13 +251,13 @@ static unsigned char* base64_decode(const char* cipher, RC2D_DataType dataType)
     }
 
     // Calculer la taille des données décodées
-    size_t input_len = strlen(cipher);
+    size_t input_len = SDL_strlen(cipher);
     size_t output_len = (input_len / 4) * 3;
     if (cipher[input_len - 1] == '=') output_len--;
     if (cipher[input_len - 2] == '=') output_len--;
 
     // Allouer avec ou sans espace supplémentaire pour le caractère nul selon le dataType
-    unsigned char* plain = malloc(output_len + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0));
+    unsigned char* plain = SDL_malloc(output_len + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0));
     if (plain == NULL) 
     {
         return NULL;
@@ -303,7 +295,7 @@ RC2D_EncodedData* rc2d_data_encode(const unsigned char* data, size_t dataSize, R
     }
     
     // Allocation de mémoire pour la structure RC2D_EncodedData
-    RC2D_EncodedData* encodedData = (RC2D_EncodedData*)malloc(sizeof(RC2D_EncodedData));
+    RC2D_EncodedData* encodedData = (RC2D_EncodedData*)SDL_malloc(sizeof(RC2D_EncodedData));
     if (!encodedData) 
     {
         return NULL; // Memory allocation failed
@@ -391,7 +383,7 @@ static RC2D_CompressedData* compress_lz4(const unsigned char* data, size_t dataS
     int maxCompressedSize = LZ4_compressBound(dataSize);
 
     // Allocation de mémoire pour les données compressées
-    unsigned char* compressedBuffer = (unsigned char*)malloc(maxCompressedSize);
+    unsigned char* compressedBuffer = (unsigned char*)SDL_malloc(maxCompressedSize);
     if (!compressedBuffer) 
     {
         // Échec de l'allocation mémoire
@@ -408,7 +400,7 @@ static RC2D_CompressedData* compress_lz4(const unsigned char* data, size_t dataS
     }
 
     // Allocation de la structure pour stocker les résultats de la compression
-    RC2D_CompressedData* compressedData = (RC2D_CompressedData*)malloc(sizeof(RC2D_CompressedData));
+    RC2D_CompressedData* compressedData = (RC2D_CompressedData*)SDL_malloc(sizeof(RC2D_CompressedData));
     if (!compressedData) 
     {
         SDL_free(compressedBuffer);
@@ -449,7 +441,7 @@ static unsigned char* decompress_lz4(const RC2D_CompressedData* compressedData)
     size_t extraSpace = compressedData->dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0;
 
     // Allocation de mémoire pour les données décompressées avec éventuellement un espace supplémentaire pour le caractère nul
-    unsigned char* decompressedData = (unsigned char*)malloc(compressedData->originalSize + extraSpace);
+    unsigned char* decompressedData = (unsigned char*)SDL_malloc(compressedData->originalSize + extraSpace);
     if (!decompressedData) 
     {
         // Échec de l'allocation mémoire
@@ -525,7 +517,7 @@ static char* to_hex(unsigned char* hash, size_t size)
         return NULL; // Invalid input
     }
 
-    char* output = malloc((size * 2) + 1);
+    char* output = SDL_malloc((size * 2) + 1);
     for (size_t i = 0; i < size; i++) 
     {
         sprintf(output + (i * 2), "%02x", hash[i]);
@@ -594,7 +586,7 @@ char* rc2d_data_hash(const char* data, const RC2D_HashFormat format)
     // Calcul du hash
     // Finalisation du hash
     if (1 != EVP_DigestInit_ex(mdctx, md_type, NULL) || 
-        1 != EVP_DigestUpdate(mdctx, data, strlen(data)) || 
+        1 != EVP_DigestUpdate(mdctx, data, SDL_strlen(data)) || 
         1 != EVP_DigestFinal_ex(mdctx, hash_result, &hash_len)) 
     {
         EVP_MD_CTX_free(mdctx);
@@ -875,7 +867,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         }
 
         // Allocation et chiffrement
-        unsigned char* ciphertext = malloc(dataSize + EVP_CIPHER_block_size(cipher)); // Prévoir espace pour le bloc de padding
+        unsigned char* ciphertext = SDL_malloc(dataSize + EVP_CIPHER_block_size(cipher)); // Prévoir espace pour le bloc de padding
         if (!ciphertext) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le ciphertext dans rc2d_data_encrypt().\n");
@@ -893,7 +885,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
 
         // Combinaison du sel, de l'IV et du ciphertext
         size_t totalSize = sizeof(salt) + sizeof(iv) + ciphertext_len;
-        unsigned char* encryptedData = malloc(totalSize);
+        unsigned char* encryptedData = SDL_malloc(totalSize);
         if (!encryptedData) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour les données chiffrées dans rc2d_data_encrypt().\n");
@@ -902,15 +894,15 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         }
 
         // Construction des données chiffrées: sel + IV + ciphertext
-        memcpy(encryptedData, salt, sizeof(salt));
-        memcpy(encryptedData + sizeof(salt), iv, sizeof(iv));
-        memcpy(encryptedData + sizeof(salt) + sizeof(iv), ciphertext, ciphertext_len);
+        SDL_memcpy(encryptedData, salt, sizeof(salt));
+        SDL_memcpy(encryptedData + sizeof(salt), iv, sizeof(iv));
+        SDL_memcpy(encryptedData + sizeof(salt) + sizeof(iv), ciphertext, ciphertext_len);
         
         // Libération du ciphertext intermédiaire
         SDL_free(ciphertext);
 
         // Création de la structure RC2D_EncryptedData
-        RC2D_EncryptedData* encryptedDataStruct = malloc(sizeof(RC2D_EncryptedData));
+        RC2D_EncryptedData* encryptedDataStruct = SDL_malloc(sizeof(RC2D_EncryptedData));
         if (!encryptedDataStruct) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour la structure RC2D_EncryptedData dans rc2d_data_encrypt().\n");
@@ -931,7 +923,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         }
 
         // Stockez le HMAC dans la structure
-        encryptedDataStruct->hmac = malloc(hmac_len);
+        encryptedDataStruct->hmac = SDL_malloc(hmac_len);
         if (encryptedDataStruct->hmac == NULL) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le HMAC dans rc2d_data_encrypt().\n");
@@ -940,7 +932,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
             SDL_free(encryptedData);
             return NULL;
         }
-        memcpy(encryptedDataStruct->hmac, hmac, hmac_len);
+        SDL_memcpy(encryptedDataStruct->hmac, hmac, hmac_len);
         encryptedDataStruct->hmacSize = hmac_len;
 
         // Stockez les données dans la structure :
@@ -978,10 +970,10 @@ unsigned char* rc2d_data_decrypt(const RC2D_EncryptedData* encryptedData)
     {
         // Extraction du sel et de l'IV
         unsigned char salt[SALT_SIZE];
-        memcpy(salt, encryptedData->data, SALT_SIZE);
+        SDL_memcpy(salt, encryptedData->data, SALT_SIZE);
 
         unsigned char iv[EVP_MAX_IV_LENGTH];
-        memcpy(iv, encryptedData->data + SALT_SIZE, EVP_MAX_IV_LENGTH);
+        SDL_memcpy(iv, encryptedData->data + SALT_SIZE, EVP_MAX_IV_LENGTH);
 
         // Préparation de la clé
         unsigned char key[EVP_MAX_KEY_LENGTH];
@@ -1004,7 +996,7 @@ unsigned char* rc2d_data_decrypt(const RC2D_EncryptedData* encryptedData)
         }
 
         // Allocation pour le plaintext
-        unsigned char* plaintext = malloc(ciphertext_len); // L'espace nécessaire pourrait être légèrement supérieur à `ciphertext_len`
+        unsigned char* plaintext = SDL_malloc(ciphertext_len); // L'espace nécessaire pourrait être légèrement supérieur à `ciphertext_len`
         if (!plaintext) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le plaintext dans rc2d_data_decrypt().\n");
@@ -1023,7 +1015,7 @@ unsigned char* rc2d_data_decrypt(const RC2D_EncryptedData* encryptedData)
         // Ajout d'un caractère nul à la fin si les données sont de type texte
         if (encryptedData->dataType == RC2D_DATA_TYPE_TEXT) 
         {
-            plaintext = realloc(plaintext, plaintext_len + 1); // Ajustement pour le caractère nul
+            plaintext = SDL_realloc(plaintext, plaintext_len + 1); // Ajustement pour le caractère nul
             if (!plaintext) 
             {
                 RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le caractère nul dans rc2d_data_decrypt().\n");

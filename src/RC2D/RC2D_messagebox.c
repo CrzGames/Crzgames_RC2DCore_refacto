@@ -30,7 +30,7 @@ bool rc2d_window_showMessageBox(const char *title, const char *message, const ch
     }
 
     // Alloue dynamiquement de l'espace pour le tableau de boutons
-    SDL_MessageBoxButtonData *buttons = (SDL_MessageBoxButtonData*)malloc(numButtons * sizeof(SDL_MessageBoxButtonData));
+    SDL_MessageBoxButtonData *buttons = (SDL_MessageBoxButtonData*)SDL_malloc(numButtons * sizeof(SDL_MessageBoxButtonData));
     if (buttons == NULL) {
         // Gestion de l'échec de l'allocation de mémoire
         RC2D_log(RC2D_LOG_ERROR, "Impossible d'allouer de la mémoire pour le tableau de boutons.\n");

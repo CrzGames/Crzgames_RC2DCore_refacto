@@ -3,6 +3,8 @@
 #include <RC2D/RC2D_rres.h> 
 #include <RC2D/RC2D_logger.h>
 
+#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free, SDL_memset, SDL_memcpy
+
 // Remarque : Les algorithme pour encrypt/compresser sont utiliser de base via rrespacker
 #include <lz4/lz4.h> // Compression algorithm: LZ4
 #include <monocypher/monocypher.h> // Encryption algorithm: XChaCha20-Poly1305
@@ -22,7 +24,7 @@ void rc2d_rres_setCipherPassword(const char *pass)
     // Effacez le mot de passe précédent
     rc2d_rres_cleanCipherPassword();
 
-    size_t passwordLength = strlen(pass);
+    size_t passwordLength = SDL_strlen(pass);
     
     // Assurez-vous que la longueur du mot de passe ne dépasse pas la limite maximale
     if (passwordLength > 15) 
@@ -32,10 +34,10 @@ void rc2d_rres_setCipherPassword(const char *pass)
     }
 
     // Initialise le buffer à zéro
-    memset(passwordBuffer, 0, sizeof(passwordBuffer));
+    SDL_memset(passwordBuffer, 0, sizeof(passwordBuffer));
 
     // Copie le mot de passe dans le buffer
-    memcpy(passwordBuffer, pass, passwordLength);
+    SDL_memcpy(passwordBuffer, pass, passwordLength);
 
     // Définit le mot de passe pour le décryptage
     password = passwordBuffer;
@@ -62,7 +64,7 @@ const char *rc2d_rres_getCipherPassword(void)
 void rc2d_rres_cleanCipherPassword(void)
 {
     // Efface le mot de passe
-    memset(passwordBuffer, 0, sizeof(passwordBuffer));
+    SDL_memset(passwordBuffer, 0, sizeof(passwordBuffer));
     password = NULL;
 }
 
@@ -87,7 +89,7 @@ void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size
             rawData = RRES_CALLOC(chunk.data.props[0], 1);
             if (rawData != NULL) 
             {
-                memcpy(rawData, chunk.data.raw, chunk.data.props[0]);
+                SDL_memcpy(rawData, chunk.data.raw, chunk.data.props[0]);
             }
 
             // Set size of data chunk
@@ -304,7 +306,7 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk)
             // Issue Github par rapport à cela (v1.2.0) : https://github.com/raysan5/rres/issues/13 (concerne la taille totale des données audio brutes)
             unsigned int size = wave.frameCount * wave.sampleSize * wave.channels / 8;
             wave.data = RRES_CALLOC(size, 1);
-            memcpy(wave.data, chunk.data.raw, size);
+            SDL_memcpy(wave.data, chunk.data.raw, size);
 
             // Chargement des données PCM brutes en tant que Mix_Chunk
             wave.sound = Mix_QuickLoad_RAW((Uint8 *)wave.data, size);
@@ -405,7 +407,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Get some memory for the possible message output
             decryptedData = (unsigned char *)RRES_CALLOC(chunk->info.packedSize - 16 - 16, 1);
-            if (decryptedData != NULL) memcpy(decryptedData, chunk->data.raw, chunk->info.packedSize - 16 - 16);
+            if (decryptedData != NULL) SDL_memcpy(decryptedData, chunk->data.raw, chunk->info.packedSize - 16 - 16);
 
             // Required variables for key stretching
             uint8_t key[32] = { 0 };                    // Encryption key
@@ -413,7 +415,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Retrieve salt from chunk packed data
             // salt is stored at the end of packed data, before nonce and MAC: salt[16] + MD5[16]
-            memcpy(salt, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16 - 16), 16);
+            SDL_memcpy(salt, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16 - 16), 16);
             
             // Key stretching configuration
             crypto_argon2_config config;
@@ -424,7 +426,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
-            inputs.pass_size = strlen(rc2d_rres_getCipherPassword()); // Password length
+            inputs.pass_size = SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
             inputs.salt = salt; // Salt for the password
             inputs.salt_size = 16;
 
@@ -444,7 +446,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Retrieve MD5 from chunk packed data
             // NOTE: MD5 is stored at the end of packed data, after salt: salt[16] + MD5[16]
-            memcpy(md5, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 4*sizeof(unsigned int));
+            SDL_memcpy(md5, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 4*sizeof(unsigned int));
 
             // Message decryption, requires key
             struct AES_ctx ctx = { 0 };
@@ -459,7 +461,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             // Wipe secrets if they are no longer needed
             crypto_wipe(key, 32);
 
-            if (memcmp(decryptMD5, md5, 4*sizeof(unsigned int)) == 0)    // Decrypted successfully!
+            if (SDL_memcmp(decryptMD5, md5, 4*sizeof(unsigned int)) == 0)    // Decrypted successfully!
             {
                 chunk->info.packedSize -= (16 + 16);    // We remove additional data size from packed size (salt[16] + MD5[16])
                 RC2D_log(RC2D_LOG_DEBUG, "RRES: %c%c%c%c: Data decrypted successfully (AES)\n", chunk->info.type[0], chunk->info.type[1], chunk->info.type[2], chunk->info.type[3]);
@@ -486,7 +488,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Retrieve salt from chunk packed data
             // salt is stored at the end of packed data, before nonce and MAC: salt[16] + nonce[24] + MAC[16]
-            memcpy(salt, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16 - 24 - 16), 16);
+            SDL_memcpy(salt, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16 - 24 - 16), 16);
             
             // Key stretching configuration
             crypto_argon2_config config;
@@ -497,7 +499,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
-            inputs.pass_size = strlen(rc2d_rres_getCipherPassword()); // Password length
+            inputs.pass_size = SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
             inputs.salt = salt; // Salt for the password
             inputs.salt_size = 16;
 
@@ -518,8 +520,8 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Retrieve nonce and MAC from chunk packed data
             // nonce and MAC are stored at the end of packed data, after salt: salt[16] + nonce[24] + MAC[16]
-            memcpy(nonce, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16 - 24), 24);
-            memcpy(mac, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 16);
+            SDL_memcpy(nonce, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16 - 24), 24);
+            SDL_memcpy(mac, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 16);
 
             // Message decryption requires key, nonce and MAC
             int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, (const uint8_t *)chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
@@ -614,7 +616,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
         // Move chunk->data.raw pointer (chunk->data.propCount*sizeof(int)) positions
         void *raw = RRES_CALLOC(chunk->info.baseSize - 20, 1);
-        if (raw != NULL) memcpy(raw, ((unsigned char *)unpackedData) + 20, chunk->info.baseSize - 20);
+        if (raw != NULL) SDL_memcpy(raw, ((unsigned char *)unpackedData) + 20, chunk->info.baseSize - 20);
         RRES_FREE(chunk->data.raw);
         chunk->data.raw = raw;
         RRES_FREE(unpackedData);
@@ -692,11 +694,11 @@ unsigned int *ComputeMD5(unsigned char *data, int size)
     int newDataSize = ((((size + 8)/64) + 1)*64) - 8;
 
     unsigned char *msg = (unsigned char *)RRES_CALLOC(newDataSize + 64, 1);   // Also appends "0" bits (we alloc also 64 extra bytes...)
-    memcpy(msg, data, size);
+    SDL_memcpy(msg, data, size);
     msg[size] = 128;                 // Write the "1" bit
 
     unsigned int bitsLen = 8*size;
-    memcpy(msg + newDataSize, &bitsLen, 4);  // We append the len in bits at the end of the buffer
+    SDL_memcpy(msg + newDataSize, &bitsLen, 4);  // We append the len in bits at the end of the buffer
 
     // Process the message in successive 512-bit chunks for each 512-bit chunk of message
     for (int offset = 0; offset < newDataSize; offset += (512/8))

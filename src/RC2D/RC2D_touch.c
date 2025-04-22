@@ -4,8 +4,6 @@
 #include <SDL3/SDL_touch.h> // Required for : SDL_FINGERDOWN, SDL_FINGERMOTION, SDL_FINGERUP
 #include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free
 
-#include <stdlib.h> // Required for : malloc, free, realloc
-
 static RC2D_TouchState* touchState = NULL;
 
 /**

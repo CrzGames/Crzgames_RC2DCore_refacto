@@ -1,7 +1,6 @@
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_internal.h>
 
-#include <string.h> // Required for : strcmp()
 #include <stdarg.h> // Required for : va_list, va_start, va_end
 #include <math.h> // Required for : cosf, sinf, M_PI
 
@@ -266,7 +265,7 @@ int rc2d_graphics_polygon(const int numPoints, const int* pointsArray)
         return -1; // Un polygone doit avoir au moins 3 points pour être valide.
     }
 
-    SDL_Point* points = (SDL_Point*)malloc(sizeof(SDL_Point) * (numPoints + 1)); // +1 pour fermer le polygone
+    SDL_Point* points = (SDL_Point*)SDL_SDL_malloc(sizeof(SDL_Point) * (numPoints + 1)); // +1 pour fermer le polygone
     if (!points) 
 	{
         return -1; // Échec d'allocation
@@ -382,7 +381,7 @@ int rc2d_graphics_rectangle(const char* mode, const int x, const int y, const in
 	rect.h = height;
 
 	int result = -1;
-    if (strcmp(mode, "fill") == 0) 
+    if (SDL_strcmp(mode, "fill") == 0) 
 	{
         result = SDL_RenderFillRect(rc2d_sdl_renderer, &rect);
 		if (result != 0)
@@ -390,7 +389,7 @@ int rc2d_graphics_rectangle(const char* mode, const int x, const int y, const in
 			RC2D_log(RC2D_LOG_ERROR, "SDL_RenderFillRect failed in rc2d_graphics_rectangle: %s\n", SDL_GetError());
 		}
     } 
-	else if (strcmp(mode, "line") == 0) 
+	else if (SDL_strcmp(mode, "line") == 0) 
 	{
         result = SDL_RenderDrawRect(rc2d_sdl_renderer, &rect);
 		if (result != 0)
@@ -412,7 +411,7 @@ int rc2d_graphics_rectangle(const char* mode, const int x, const int y, const in
  */
 int rc2d_graphics_rectangles(const char* mode, const int count, const int* rectsArray) 
 {
-    SDL_Rect* rects = (SDL_Rect*)malloc(sizeof(SDL_Rect) * count);
+    SDL_Rect* rects = (SDL_Rect*)SDL_SDL_malloc(sizeof(SDL_Rect) * count);
     if (!rects) 
 	{
         return -1; // Échec d'allocation
@@ -427,7 +426,7 @@ int rc2d_graphics_rectangles(const char* mode, const int count, const int* rects
     }
 
     int result = -1;
-    if (strcmp(mode, "fill") == 0) 
+    if (SDL_strcmp(mode, "fill") == 0) 
 	{
         result = SDL_RenderFillRects(rc2d_sdl_renderer, rects, count);
         if (result != 0) 
@@ -435,7 +434,7 @@ int rc2d_graphics_rectangles(const char* mode, const int count, const int* rects
             RC2D_log(RC2D_LOG_ERROR, "SDL_RenderFillRects failed: %s", SDL_GetError());
         }
     } 
-	else if (strcmp(mode, "line") == 0) 
+	else if (SDL_strcmp(mode, "line") == 0) 
 	{
         result = SDL_RenderDrawRects(rc2d_sdl_renderer, rects, count);
         if (result != 0) 
@@ -452,7 +451,7 @@ int rc2d_graphics_circle(const char* mode, const int x, const int y, const int r
 {
 	int result = -1;
 
-    if (strcmp(mode, "fill") == 0) 
+    if (SDL_strcmp(mode, "fill") == 0) 
 	{
         for (int w = 0; w < radius * 2; w++) 
 		{
@@ -472,7 +471,7 @@ int rc2d_graphics_circle(const char* mode, const int x, const int y, const int r
             }
         }
     } 
-	else if (strcmp(mode, "line") == 0) 
+	else if (SDL_strcmp(mode, "line") == 0) 
 	{
         for (int i = 0; i < CIRCLE_POINTS; i++) 
 		{
@@ -509,7 +508,7 @@ int rc2d_graphics_circles(const char* mode, const int numCircles, const int* cir
         int y = circlesArray[i * 3 + 1];
         int radius = circlesArray[i * 3 + 2];
 
-        if (strcmp(mode, "fill") == 0) 
+        if (SDL_strcmp(mode, "fill") == 0) 
 		{
             for (int w = 0; w < radius * 2; w++) 
 			{
@@ -528,7 +527,7 @@ int rc2d_graphics_circles(const char* mode, const int numCircles, const int* cir
                 }
             }
         } 
-		else if (strcmp(mode, "line") == 0) 
+		else if (SDL_strcmp(mode, "line") == 0) 
 		{
             for (int i = 0; i < CIRCLE_POINTS; i++) 
 			{ 
@@ -567,7 +566,7 @@ int rc2d_graphics_line(const int x1, const int y1, const int x2, const int y2)
  */
 int rc2d_graphics_lines(const int numPoints, const int* pointsArray) 
 {
-    SDL_Point* points = (SDL_Point*)malloc(sizeof(SDL_Point) * numPoints);
+    SDL_Point* points = (SDL_Point*)SDL_SDL_malloc(sizeof(SDL_Point) * numPoints);
     if (!points) 
 	{
 		RC2D_log(RC2D_LOG_ERROR, "SDL_Point failed in rc2d_graphics_lines_array: %s\n", SDL_GetError());
@@ -611,7 +610,7 @@ int rc2d_graphics_point(const int x, const int y)
  */
 int rc2d_graphics_points(const int numPoints, const int* pointsArray) 
 {
-    SDL_Point* points = (SDL_Point*)malloc(sizeof(SDL_Point) * numPoints);
+    SDL_Point* points = (SDL_Point*)SDL_SDL_malloc(sizeof(SDL_Point) * numPoints);
     if (!points) 
 	{
 		RC2D_log(RC2D_LOG_ERROR, "SDL_Point failed in rc2d_graphics_points: %s\n", SDL_GetError());

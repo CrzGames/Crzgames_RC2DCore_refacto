@@ -94,21 +94,21 @@ void rc2d_log(const RC2D_LogLevel logLevel, const char* file, int line, const ch
     const char* levelStr = rc2d_log_level_to_string(logLevel);
 
     // Préparer le message de log
-    const char* filename = strrchr(file, '/');
-    if (!filename) filename = strrchr(file, '\\');
+    const char* filename = SDL_strrchr(file, '/');
+    if (!filename) filename = SDL_strrchr(file, '\\');
     filename = filename ? filename + 1 : file;
 
     char prefix[256];
-    snprintf(prefix, sizeof(prefix), "[%s:%s:%d:%s] ", levelStr, filename, line, function);
+    SDL_snprintf(prefix, sizeof(prefix), "[%s:%s:%d:%s] ", levelStr, filename, line, function);
 
     char message[1024];
     va_list args;
     va_start(args, format);
-    vsnprintf(message, sizeof(message), format, args);
+    SDL_vsnprintf(message, sizeof(message), format, args);
     va_end(args);
 
     char fullMessage[1280];
-    snprintf(fullMessage, sizeof(fullMessage), "%s%s", prefix, message);
+    SDL_snprintf(fullMessage, sizeof(fullMessage), "%s%s", prefix, message);
 
     // Utiliser SDL_LogMessageV pour les plateformes natives
     SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, sdlPriority, "%s", fullMessage);

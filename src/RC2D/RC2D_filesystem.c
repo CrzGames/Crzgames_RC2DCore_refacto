@@ -213,7 +213,7 @@ RC2D_FileSystemResult rc2d_filesystem_read(const char* pathFile, unsigned char**
 
     // Allouer la mémoire nécessaire pour contenir le contenu du fichier.
     // Si dataType est texte, allouer un octet supplémentaire pour le caractère nul de fin.
-    *data = (unsigned char*)malloc(fileSize + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0));
+    *data = (unsigned char*)SDL_malloc(fileSize + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0));
     if (*data == NULL) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible d'allouer de la mémoire pour le contenu du fichier : %s\n", pathFile);
