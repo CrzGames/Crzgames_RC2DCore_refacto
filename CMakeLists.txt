@@ -18,6 +18,9 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 # Option Tests unitaires avec Criterion
 option(RC2D_BUILD_TESTS "Build unit tests with Criterion" OFF)
 
+# Option pour construire les exemples
+option(RC2D_BUILD_EXAMPLES "Build examples" ON)
+
 # Option pour choisir entre statique et dynamique
 option(RC2D_BUILD_SHARED_LIBS "Build shared libraries" OFF)
 

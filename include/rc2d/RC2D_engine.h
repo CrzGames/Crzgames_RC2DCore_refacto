@@ -3,7 +3,7 @@
 
 #include <RC2D/RC2D_gpu.h>
 
-/* Set up for C function definitions, even when using C++ */
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -321,6 +321,8 @@ typedef struct RC2D_EngineConfig {
  * \return {RC2D_Config*} Un pointeur vers la configuration personnalisée, ou NULL pour utiliser la config par défaut.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_engine_getDefaultConfig
  */
 const RC2D_EngineConfig* rc2d_engine_setup(void);
 
@@ -333,10 +335,12 @@ const RC2D_EngineConfig* rc2d_engine_setup(void);
  * \return {RC2D_EngineConfig*} - Structure de configuration avec les valeurs par défaut.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_engine_setup
  */
 RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void);
 
-/* Ends C function definitions when using C++ */
+/* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
 }
 #endif

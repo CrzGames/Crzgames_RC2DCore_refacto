@@ -18,7 +18,7 @@ static RC2D_LogLevel currentLogLevel = RC2D_LOG_DEBUG;
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static const char* rc2d_log_level_to_string(RC2D_LogLevel level) 
+static const char* rc2d_logger_log_level_to_string(RC2D_LogLevel level) 
 {
     switch (level) 
     {
@@ -31,12 +31,12 @@ static const char* rc2d_log_level_to_string(RC2D_LogLevel level)
     }
 }
 
-RC2D_LogLevel rc2d_log_get_priority(void)
+RC2D_LogLevel rc2d_logger_get_priority(void)
 {
     return currentLogLevel;
 }
 
-void rc2d_log_set_priority(const RC2D_LogLevel logLevel) 
+void rc2d_logger_set_priority(const RC2D_LogLevel logLevel) 
 {
     // Enregistre le niveau de log actuel
     currentLogLevel = logLevel;
@@ -56,7 +56,7 @@ void rc2d_log_set_priority(const RC2D_LogLevel logLevel)
     SDL_LogSetAllPriority(logPriority);
 }
 
-void rc2d_log(const RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...)
+void rc2d_logger_log(const RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...)
 {
     /**
      * Vérifie si le niveau de log est inférieur au niveau actuel
@@ -77,7 +77,7 @@ void rc2d_log(const RC2D_LogLevel logLevel, const char* file, int line, const ch
     }
 
     // Convertit le niveau de log de RC2D en chaîne de caractères
-    const char* levelStr = rc2d_log_level_to_string(logLevel);
+    const char* levelStr = rc2d_logger_log_level_to_string(logLevel);
 
     // Préparer le message de log
     const char* filename = SDL_strrchr(file, '/');

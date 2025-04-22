@@ -3,9 +3,9 @@
 const RC2D_EngineConfig* rc2d_engine_setup(void)
 {
 #ifdef NDEBUG // Release mode
-    rc2d_log_set_priority(RC2D_LOG_ERROR);
+    rc2d_logger_set_priority(RC2D_LOG_ERROR);
 #else // Debug mode
-    rc2d_log_set_priority(RC2D_LOG_DEBUG);
+    rc2d_logger_set_priority(RC2D_LOG_DEBUG);
 #endif
 
     RC2D_EngineConfig* config = rc2d_engine_getDefaultConfig();

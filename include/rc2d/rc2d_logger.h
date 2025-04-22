@@ -30,7 +30,7 @@ extern "C" {
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  */
 #define RC2D_log(level, format, ...) \
-    rc2d_log((level), SDL_FILE, SDL_LINE, SDL_FUNCTION, (format), ##__VA_ARGS__)
+    rc2d_logger_log((level), SDL_FILE, SDL_LINE, SDL_FUNCTION, (format), ##__VA_ARGS__)
 
 /**
  * \brief Cette enum est utilisée pour définir le niveau de priorité des messages de log.
@@ -73,7 +73,7 @@ typedef enum RC2D_LogLevel {
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-RC2D_LogLevel rc2d_log_get_priority(void);
+RC2D_LogLevel rc2d_logger_get_priority(void);
 
 /**
  * \brief Définit le niveau de priorité des messages de log.
@@ -88,7 +88,7 @@ RC2D_LogLevel rc2d_log_get_priority(void);
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_log_set_priority(const RC2D_LogLevel logLevel);
+void rc2d_logger_set_priority(const RC2D_LogLevel logLevel);
 
 /**
  * Affiche un message de log selon le format et les arguments spécifiés.
@@ -107,7 +107,7 @@ void rc2d_log_set_priority(const RC2D_LogLevel logLevel);
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_log(RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...);
+void rc2d_logger_log(RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
