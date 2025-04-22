@@ -19,12 +19,12 @@
 #include <RC2D/RC2D_math.h>
 #include <RC2D/RC2D_messagebox.h>
 #include <RC2D/RC2D_mouse.h>
-#include <RC2D/RC2D_rres.h>
+// #include <RC2D/RC2D_rres.h>
 #include <RC2D/RC2D_pixels.h>
 #include <RC2D/RC2D_platform.h>
 #include <RC2D/RC2D_power.h>
 #include <RC2D/RC2D_scancode.h>
-//#include <RC2D/RC2D_spine.h>
+// #include <RC2D/RC2D_spine.h>
 #include <RC2D/RC2D_storage.h>
 #include <RC2D/RC2D_system.h>
 #include <RC2D/RC2D_thread.h>
