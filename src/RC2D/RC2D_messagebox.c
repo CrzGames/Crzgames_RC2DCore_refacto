@@ -66,7 +66,7 @@ bool rc2d_window_showMessageBox(const char *title, const char *message, const ch
     }
 
     // Libère la mémoire allouée pour le tableau de boutons
-    SDL_free((buttons);
+    SDL_free(buttons);
 
     return true;
 }
