@@ -6,15 +6,18 @@
 #include <RC2D/RC2D_audio.h>
 #include <RC2D/RC2D_collision.h>
 #include <RC2D/RC2D_data.h>
+#include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_event.h>
 #include <RC2D/RC2D_filedialog.h>
 #include <RC2D/RC2D_filesystem.h>
 #include <RC2D/RC2D_gpu.h>
 #include <RC2D/RC2D_graphics.h>
+#include <RC2D/RC2D_guid.h>
 #include <RC2D/RC2D_iostream.h>
 #include <RC2D/RC2D_joystick.h>
 #include <RC2D/RC2D_keyboard.h>
 #include <RC2D/RC2D_keycode.h>
+#include <RC2D/RC2D_local.h>
 #include <RC2D/RC2D_logger.h>
 #include <RC2D/RC2D_math.h>
 #include <RC2D/RC2D_messagebox.h>
@@ -28,11 +31,12 @@
 #include <RC2D/RC2D_storage.h>
 #include <RC2D/RC2D_system.h>
 #include <RC2D/RC2D_thread.h>
-#include <RC2D/RC2D_timer.h>
+#include <RC2D/RC2D_time.h>
 #include <RC2D/RC2D_timer.h>
 #include <RC2D/RC2D_touch.h>
 #include <RC2D/RC2D_tray.h>
 #include <RC2D/RC2D_tweening.h>
+#include <RC2D/RC2D_version.h>
 #include <RC2D/RC2D_window.h>
 
 #endif // RC2D_H
