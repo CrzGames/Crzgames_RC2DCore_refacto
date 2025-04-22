@@ -169,6 +169,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
      */
     if (result == SDL_APP_FAILURE) 
     {
-        RC2D_log(RC2D_LOG_ERROR, "Application failed: %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_CRITICAL, "Application failed: %s", SDL_GetError());
     }
 }
