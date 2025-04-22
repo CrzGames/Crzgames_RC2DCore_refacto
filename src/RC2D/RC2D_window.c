@@ -412,7 +412,7 @@ bool rc2d_window_getVSync(void)
      * True si le mode de présentation GPU est synchrone (MAILBOX ou VSYNC) est actif, 
      * sinon false (IMMEDIATE).
      */
-    return rc2d_gpu_present_mode != SDL_GPU_PRESENTMODE_IMMEDIATE;
+    return rc2d_engine_state.gpu_present_mode != SDL_GPU_PRESENTMODE_IMMEDIATE;
 }
 
 RC2D_FullscreenInfo rc2d_window_getFullscreen(void)

@@ -2,6 +2,7 @@
 #define RC2D_MESSAGEBOX_H
 
 #include <stdbool.h> // Required for : bool
+#include <stdint.h> // Required for : uint32_t
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
