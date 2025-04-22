@@ -6,7 +6,7 @@
 
 double rc2d_timer_getDelta(void) 
 {
-	return rc2d_delta_time;
+	return rc2d_engine_state.delta_time;
 }
 
 int rc2d_timer_getFPS(void)

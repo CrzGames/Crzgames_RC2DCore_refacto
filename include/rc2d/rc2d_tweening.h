@@ -6,6 +6,30 @@
 extern "C" {
 #endif
 
+/*
+Pour voir les courbes : https://easings.net/
+
+Specific tweening functions:
+- Decay : Simule une décroissance ou un amortissement naturel jusqu'à l'arrêt.
+- Parabolic Jump : Imitation d'un mouvement parabolique, idéal pour simuler des sauts ou des arcs.
+- Smooth Start : Une transition douce qui commence lentement et accélère progressivement.
+- Smooth Stop : Une transition douce qui ralentit progressivement avant de s'arrêter.
+- Smooth Step : Une transition douce qui commence lentement, accélère, puis ralentit avant de s'arrêter.
+
+Standard tweening functions:
+- Spring : Les animations qui simulent un comportement de ressort, avec des oscillations avant de se stabiliser à la valeur cible.
+- Overshoot : Les animations qui dépassent la valeur cible puis reviennent, pour un effet dynamique.
+- Cos : Les animations qui utilisent les propriétés du cosinus pour une transition en douceur.
+- Sine : Les animations de démarrage et d'arrêt doux utilisant les propriétés du sinus.
+- Cubic : Changements plus prononcés que pour les animations quadratiques, utiles pour des transitions plus dynamiques.
+- Quint : Changements encore plus prononcés, pour des animations qui commencent lentement et finissent rapidement (ou l'inverse).
+- Circ : Des transitions qui suivent une courbe circulaire, donnant une sensation de mouvement plus naturel.
+- Elastic : Des animations qui dépassent la valeur cible avant de s'y installer, imitant un comportement élastique.
+- Quad, Quart, et Expo : D'autres formes de changements progressifs avec différents niveaux d'accélération et de décélération.
+- Back : Des animations qui reculent légèrement avant de progresser vers l'objectif, créant un effet de rebond.
+- Bounce : Imitent un objet rebondissant contre une surface avant de s'arrêter.
+*/
+
 /**
  * Structure représentant l'état d'une animation. 
  * Elle contient toutes les informations nécessaires pour calculer l'interpolation des valeurs au cours du temps,
@@ -53,30 +77,6 @@ RC2D_TweenContext rc2d_tweening_createTweenContext(double duration, double start
  * @return La valeur interpolée entre 0 et 1, calculée en utilisant la fonction de tweening de l'état d'animation.
  */
 double rc2d_tweening_interpolate(RC2D_TweenContext* tweenContext);
-
-/*
-Pour voir les courbes : https://easings.net/
-
-Specific tweening functions:
-- Decay : Simule une décroissance ou un amortissement naturel jusqu'à l'arrêt.
-- Parabolic Jump : Imitation d'un mouvement parabolique, idéal pour simuler des sauts ou des arcs.
-- Smooth Start : Une transition douce qui commence lentement et accélère progressivement.
-- Smooth Stop : Une transition douce qui ralentit progressivement avant de s'arrêter.
-- Smooth Step : Une transition douce qui commence lentement, accélère, puis ralentit avant de s'arrêter.
-
-Standard tweening functions:
-- Spring : Les animations qui simulent un comportement de ressort, avec des oscillations avant de se stabiliser à la valeur cible.
-- Overshoot : Les animations qui dépassent la valeur cible puis reviennent, pour un effet dynamique.
-- Cos : Les animations qui utilisent les propriétés du cosinus pour une transition en douceur.
-- Sine : Les animations de démarrage et d'arrêt doux utilisant les propriétés du sinus.
-- Cubic : Changements plus prononcés que pour les animations quadratiques, utiles pour des transitions plus dynamiques.
-- Quint : Changements encore plus prononcés, pour des animations qui commencent lentement et finissent rapidement (ou l'inverse).
-- Circ : Des transitions qui suivent une courbe circulaire, donnant une sensation de mouvement plus naturel.
-- Elastic : Des animations qui dépassent la valeur cible avant de s'y installer, imitant un comportement élastique.
-- Quad, Quart, et Expo : D'autres formes de changements progressifs avec différents niveaux d'accélération et de décélération.
-- Back : Des animations qui reculent légèrement avant de progresser vers l'objectif, créant un effet de rebond.
-- Bounce : Imitent un objet rebondissant contre une surface avant de s'arrêter.
-*/
 
 /**
  * \brief Applique un effet de décroissance exponentielle à l'animation, simulant un amortissement naturel.

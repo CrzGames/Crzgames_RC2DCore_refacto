@@ -2,5 +2,5 @@
 
 void rc2d_event_quit(void)
 {
-	rc2d_game_is_running = false;
+	rc2d_engine_state.game_is_running = false;
 }

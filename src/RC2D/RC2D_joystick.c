@@ -489,10 +489,10 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
             // Libérer la mémoire allouée précédemment
             for (int j = 0; j < i; ++j) 
 			{
-                SDL_free((joysticks[j]);
+                SDL_free(joysticks[j]);
             }
 			
-            SDL_free((joysticks);
+            SDL_free(joysticks);
 
             return NULL;
         }
@@ -502,8 +502,8 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
         {
             RC2D_log(RC2D_LOG_ERROR, "SDL_JoystickOpen error in rc2d_joystick_getJoysticks : %s", SDL_GetError());
 
-            SDL_free((joysticks[i]);
-            SDL_free((joysticks);
+            SDL_free(joysticks[i]);
+            SDL_free(joysticks);
 
             return NULL;
         }
@@ -514,8 +514,8 @@ RC2D_Joystick** rc2d_joystick_getJoysticks(void)
             RC2D_log(RC2D_LOG_ERROR, "SDL_JoystickInstanceID error in rc2d_joystick_getJoysticks : %s", SDL_GetError());
 
             SDL_JoystickClose(joysticks[i]->sdlJoystick);
-            SDL_free((joysticks[i]);
-            SDL_free((joysticks);
+            SDL_free(joysticks[i]);
+            SDL_free(joysticks);
 
             return NULL;
         }
@@ -547,9 +547,9 @@ void rc2d_joystick_freeJoysticks(RC2D_Joystick** joysticks, int count)
                 SDL_JoystickClose(joysticks[i]->sdlJoystick);
             }
 
-            SDL_free((joysticks[i]);
+            SDL_free(joysticks[i]);
         }
     }
 
-    SDL_free((joysticks);
+    SDL_free(joysticks);
 }

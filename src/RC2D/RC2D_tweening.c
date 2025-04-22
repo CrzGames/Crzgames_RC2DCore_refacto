@@ -16,12 +16,14 @@
 
 RC2D_TweenContext rc2d_tweening_createTweenContext(double duration, double startValue, double endValue, double (*tweenFunction)(double))
 {
+	// Vérifier si la durée est valide
 	if (tweenFunction == NULL) 
 	{
 		RC2D_log(RC2D_LOG_ERROR, "Impossible de créer un état d'animation avec une fonction de tweening null dans rc2d_tweening_createTweenContext.\n");
 		return (RC2D_TweenContext){0};
 	}
 
+	// Créer et initialiser le contexte de tweening avec les valeurs fournies
 	RC2D_TweenContext tweenContext;
 	tweenContext.duration = duration;
 	tweenContext.startValue = startValue;
@@ -29,11 +31,13 @@ RC2D_TweenContext rc2d_tweening_createTweenContext(double duration, double start
 	tweenContext.tweenFunction = tweenFunction;
 	tweenContext.elapsedTime = 0.0;
 
+	// Renvoie le contexte de tweening
 	return tweenContext;
 }
 
 double rc2d_tweening_interpolate(RC2D_TweenContext* tweenContext) 
 {
+	// Vérifier si le contexte de tweening est valide
     if (tweenContext == NULL || tweenContext->tweenFunction == NULL)
 	{
 		RC2D_log(RC2D_LOG_ERROR, "Impossible d'interpoler une animation avec un état d'animation null ou une fonction de tweening null dans rc2d_tweening_interpolate.\n");
@@ -70,17 +74,17 @@ double rc2d_tweening_parabolicJump(const double x)
 
 double rc2d_tweening_smoothStart(const double x) 
 {
-    return pow(x, 2); // Exemple simple d'accélération douce
+    return pow(x, 2);
 }
 
 double rc2d_tweening_smoothStop(const double x) 
 {
-    return 1 - pow(1 - x, 2); // Inverse de Smooth Start pour un arrêt doux
+    return 1 - pow(1 - x, 2);
 }
 
 double rc2d_tweening_smoothStep(const double x) 
 {
-    return x < 0.5 ? 2 * pow(x, 2) : 1 - 2 * pow(1 - x, 2); // Combinaison de Smooth Start et Smooth Stop
+    return x < 0.5 ? 2 * pow(x, 2) : 1 - 2 * pow(1 - x, 2);
 }
 
 double rc2d_tweening_easeInOvershoot(const double x) 
