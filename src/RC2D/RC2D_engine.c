@@ -23,6 +23,8 @@ RC2D_EngineState rc2d_engine_state = {0};
 
 RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
 {
+    static RC2D_LetterboxTextures default_letterbox_textures = {0};
+    
     static RC2D_AppInfo default_app_info = {
         .name = "RC2D Game",
         .version = "1.0.0",
@@ -45,7 +47,7 @@ RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
         .logicalWidth = 1920,
         .logicalHeight = 1080,
         .presentationMode = RC2D_PRESENTATION_CLASSIC,
-        .letterboxTextures = NULL,
+        .letterboxTextures = &default_letterbox_textures,
         .appInfo = &default_app_info,
         .gpuFramesInFlight = RC2D_GPU_FRAMES_BALANCED,
         .gpuOptions = &default_gpu_options
@@ -144,7 +146,12 @@ static void rc2d_engine_stateInit(void) {
     rc2d_engine_state.gpu_device = NULL;
     rc2d_engine_state.gpu_present_mode = SDL_GPU_PRESENTMODE_VSYNC;
     rc2d_engine_state.gpu_swapchain_composition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;
-
+    rc2d_engine_state.gpu_current_command_buffer = NULL;
+    rc2d_engine_state.gpu_current_render_pass = NULL;
+    rc2d_engine_state.gpu_current_swapchain_texture = NULL;
+    static SDL_GPUViewport default_viewport = {0, 0, 0, 0};
+    rc2d_engine_state.gpu_current_viewport = &default_viewport;
+    
     // État d'exécution de la boucle de jeu
     rc2d_engine_state.fps = 60;
     rc2d_engine_state.delta_time = 0.0;
@@ -703,14 +710,13 @@ static void rc2d_engine_calculate_renderscale_and_gpuviewport(void)
     viewport_y = safe_area.y + (safe_area.height - viewport_height) / 2.0f;
 
     // Applique le viewport au GPU
-    SDL_GPUViewport rc2d_gpu_viewport = {0};
-    rc2d_gpu_viewport.x = viewport_x;
-    rc2d_gpu_viewport.y = viewport_y;
-    rc2d_gpu_viewport.w = viewport_width;
-    rc2d_gpu_viewport.h = viewport_height;
-    rc2d_gpu_viewport.min_depth = 0.0f;
-    rc2d_gpu_viewport.max_depth = 1.0f;
-    // TODO: add SDL_SetGPUViewport()
+    rc2d_engine_state.gpu_current_viewport->x = viewport_x;
+    rc2d_engine_state.gpu_current_viewport->y = viewport_y;
+    rc2d_engine_state.gpu_current_viewport->w = viewport_width;
+    rc2d_engine_state.gpu_current_viewport->h = viewport_height;
+    rc2d_engine_state.gpu_current_viewport->min_depth = 0.0f;
+    rc2d_engine_state.gpu_current_viewport->max_depth = 1.0f;
+    SDL_SetGPUViewport(rc2d_engine_state.gpu_current_render_pass, rc2d_engine_state.gpu_current_viewport);
 
     // Applique l’échelle de rendu interne
     rc2d_engine_state.render_scale = scale * display_scale;

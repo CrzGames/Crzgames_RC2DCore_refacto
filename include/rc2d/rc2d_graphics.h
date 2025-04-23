@@ -201,12 +201,12 @@ int rc2d_graphics_ellipse(const int x, const int y, const int radiusx, const int
 int rc2d_graphics_line(const int x1, const int y1, const int x2, const int y2);
 int rc2d_graphics_lines(const int numPoints, const int* pointsArray);
 
-int rc2d_graphics_point(const int x, const int y);
+//int rc2d_graphics_point(const int x, const int y);
 int rc2d_graphics_points(const int numPoints, const int* pointsArray);
 
 int rc2d_graphics_polygon(const int numPoints, const int* pointsArray);
 
-int rc2d_graphics_rectangle(const char* mode, const int x, const int y, const int width, const int height);
+//int rc2d_graphics_rectangle(const char* mode, const int x, const int y, const int width, const int height);
 int rc2d_graphics_rectangles(const char* mode, const int count, const int* rectsArray);
 
 void rc2d_graphics_draw(RC2D_Image image, int x, int y, const double r, float sx, float sy, int ox, int oy, bool flipHorizontal, bool flipVertical);
@@ -215,9 +215,12 @@ void rc2d_graphics_drawQuad(RC2D_Quad quad, int x, int y, const double r, float 
 void rc2d_graphics_drawCanvas(RC2D_Canvas canvas, int x, int y, const double r, float sx, float sy, int ox, int oy, bool flipHorizontal, bool flipVertical);
 void rc2d_graphics_drawText(RC2D_Text text, int x, int y, const double r, float sx, float sy, int ox, int oy, bool flipHorizontal, bool flipVertical);
 
-
 // COORDINATE SYSTEM
 void rc2d_graphics_scale(float scaleX, float scaleY);
+
+// NEWS API SDL3 GPU
+void rc2d_graphics_rectangle(const char* mode, RC2D_Rect* rect, RC2D_Color color);
+void rc2d_graphics_point(RC2D_Vertex point, RC2D_Color color);
 
 #ifdef __cplusplus
 }

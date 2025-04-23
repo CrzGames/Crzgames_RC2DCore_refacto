@@ -12,6 +12,17 @@ extern "C" {
 #endif
 
 /**
+ * Structure représentant un point 2D avec des coordonnées flottantes.
+ * @typedef {object} RC2D_Vertex
+ * @property {number} x - La coordonnée x du point.
+ * @property {number} y - La coordonnée y du point.
+ */
+typedef struct {
+    float x;
+    float y;
+} RC2D_Vertex;
+
+/**
  * Structure représentant une boîte englobante alignée sur les axes (AABB),
  * utilisée pour les calculs de collision.
  * @typedef {object} RC2D_AABB

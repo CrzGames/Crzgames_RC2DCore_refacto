@@ -37,6 +37,11 @@ typedef struct RC2D_EngineState {
     SDL_GPUDevice* gpu_device;
     SDL_GPUPresentMode gpu_present_mode;
     SDL_GPUSwapchainComposition gpu_swapchain_composition;
+    SDL_GPUCommandBuffer* gpu_current_command_buffer;
+    SDL_GPUTexture* gpu_current_swapchain_texture;
+    SDL_GPURenderPass* gpu_current_render_pass;
+    SDL_GPUViewport* gpu_current_viewport;
+    SDL_GPUGraphicsPipeline* gpu_pipeline;
 
     // RC2D : État d'exécution
     int fps;
