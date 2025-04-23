@@ -252,7 +252,7 @@ static bool rc2d_engine_init_sdl(void)
      */
     for (int i = 0; i < sizeof(subsystems) / sizeof(subsystems[0]); ++i) 
     {
-        if (SDL_InitSubSystem(subsystems[i]) != 0) 
+        if (!SDL_InitSubSystem(subsystems[i])) 
         {
             RC2D_log(RC2D_LOG_CRITICAL, "Failed to init SDL subsystem %s: %s\n", names[i], SDL_GetError());
         } 
