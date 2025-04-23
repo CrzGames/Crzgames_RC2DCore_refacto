@@ -172,8 +172,8 @@ elseif(WIN32)
   endif()
 
   # Librairies OpenSSL précompilées statiques pour Windows
-  target_include_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
-  target_link_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
+  target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
+  target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
   
   # Link avec les libs statiques
   target_link_libraries(${PROJECT_NAME} PRIVATE libssl_static libcrypto_static Crypt32)

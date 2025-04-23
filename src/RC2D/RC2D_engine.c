@@ -215,19 +215,47 @@ static void rc2d_engine_cleanup_sdlmixer(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static bool rc2d_engine_init_sdl(void) 
+static bool rc2d_engine_init_sdl(void)
 {
-    if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_SENSOR | SDL_INIT_CAMERA) != 0)
-	{
-		RC2D_log(RC2D_LOG_CRITICAL, "Could not init SDL3 Error : %s \n", SDL_GetError());
-		return false;
-	}
-    else
+    /**
+     * Liste des sous-systèmes SDL3 à initialiser.
+     */
+    int flags[] = {
+        SDL_INIT_AUDIO,
+        SDL_INIT_VIDEO,
+        SDL_INIT_JOYSTICK,
+        SDL_INIT_HAPTIC,
+        SDL_INIT_GAMEPAD,
+        SDL_INIT_EVENTS,
+        SDL_INIT_SENSOR,
+        SDL_INIT_CAMERA
+    };
+
+    const char* names[] = {
+        "AUDIO", 
+        "VIDEO", 
+        "JOYSTICK", 
+        "HAPTIC", 
+        "GAMEPAD", 
+        "EVENTS", 
+        "SENSOR", 
+        "CAMERA"
+    };
+
+    for (int i = 0; i < sizeof(flags) / sizeof(flags[0]); ++i) 
     {
-        RC2D_log(RC2D_LOG_INFO, "SDL3 initialized successfully.\n");
-        return true;
+        if (SDL_InitSubSystem(flags[i]) != 0) 
+        {
+            RC2D_log(RC2D_LOG_CRITICAL, "Failed to init SDL subsystem %s: %s\n", names[i], SDL_GetError());
+        } 
+        else {
+            RC2D_log(RC2D_LOG_INFO, "Initialized SDL subsystem %s successfully.\n", names[i]);
+        }
     }
+
+    return true;
 }
+
 
 /**
  * \brief Libère les ressources SDL3.
