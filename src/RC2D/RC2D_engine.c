@@ -508,8 +508,18 @@ static bool rc2d_engine_create_gpu(void)
         RC2D_log(RC2D_LOG_INFO, "- METALLIB");
     }
 
-    // Associe la fenêtre au GPU
-    SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_engine_state.window);
+    /**
+     * Associe la fenêtre au GPU device
+     */
+    if (!SDL_ClaimWindowForGPUDevice(rc2d_engine_state.gpu_device, rc2d_engine_state.window))
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de l'association de la fenêtre au GPU : %s", SDL_GetError());
+        return false;
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "Fenêtre associée au GPU avec succès.");
+    }
 
     // SDL3 : Configurer le mode de présentation du GPU
     /**
@@ -575,7 +585,16 @@ static bool rc2d_engine_create_gpu(void)
                     RC2D_log(RC2D_LOG_INFO, "GPU swapchain configuré avec succès : present_mode = %s, composition = %s", rc2d_present_mode_to_string(pm), rc2d_composition_to_string(sc));
                     swapchain_combo_found = true;
                     break;
-                } 
+                }
+                else
+                {
+                    /**
+                     * Si la combinaison de mode de présentation et de composition est supportée individuellement
+                     * mais qu'elle échoue lors de l'application avec SDL_SetGPUSwapchainParameters, on loggue un avertissement
+                     * en précisant les noms lisibles de la combinaison qui a échoué.
+                     */
+                    RC2D_log(RC2D_LOG_WARN, "La combinaison de mode de présentation et de composition a échoué : present_mode = %s, composition = %s", rc2d_present_mode_to_string(pm), rc2d_composition_to_string(sc));
+                }
             }
         }
 
@@ -597,6 +616,10 @@ static bool rc2d_engine_create_gpu(void)
     {
         RC2D_log(RC2D_LOG_CRITICAL, "Failed to set GPU frames in flight: %s", SDL_GetError());
         return false;
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "GPU frames in flight set to %d", rc2d_engine_state.config->gpuFramesInFlight);
     }
 
     return true;
@@ -752,8 +775,8 @@ static void rc2d_engine_update_fps_based_on_monitor(void)
     }
 
     // Obtient le mode d'affichage actuel du moniteur.
-    const SDL_DisplayMode* currentDisplayMode = NULL;
-    if (SDL_GetCurrentDisplayMode(displayID) == NULL) 
+    const SDL_DisplayMode* currentDisplayMode = SDL_GetCurrentDisplayMode(displayID);
+    if (currentDisplayMode == NULL) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Could not get current display mode for display #%d: %s", displayID, SDL_GetError());
         return;
@@ -932,6 +955,8 @@ static bool rc2d_engine(void)
      */
 	//rc2d_keyboard_init();
     rc2d_timer_init();
+
+    RC2D_log(RC2D_LOG_INFO, "RC2D Engine initialisé avec succès.\n");
 
 	return true;
 }

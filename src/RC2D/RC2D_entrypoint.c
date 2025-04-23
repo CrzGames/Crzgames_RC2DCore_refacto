@@ -54,6 +54,10 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
     {
         rc2d_engine_state.config->callbacks->rc2d_load();
     }
+    else
+    {
+        RC2D_log(RC2D_LOG_WARN, "No rc2d_load callback provided. Skipping load step.\n");
+    }
 
     /**
      * 1. Affiche enfin la fenêtre après tout l'init (GPU, logique, textures…)
