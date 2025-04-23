@@ -159,12 +159,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     }
 
     /**
-     * Libére les ressources notamment celles des librairies externes de RC2D 
-     * et des modules interne à RC2D.
-     */
-    rc2d_engine_quit();
-
-    /**
      * Si le résultat est SDL_APP_FAILURE, cela signifie que l'application a échoué 
      * et doit être terminée avec un code d'erreur.
      */
@@ -172,4 +166,10 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     {
         RC2D_log(RC2D_LOG_CRITICAL, "Application failed: %s", SDL_GetError());
     }
+
+    /**
+     * Libére les ressources notamment celles des librairies externes de RC2D 
+     * et des modules interne à RC2D.
+     */
+    rc2d_engine_quit();
 }

@@ -147,7 +147,10 @@ typedef enum RC2D_GPUFramesInFlight {
  *
  * Ce type permet à l'utilisateur de forcer un backend GPU spécifique à l'initialisation.
  * RC2D se base sur les backends supportés par SDL3_GPU : `vulkan`, `metal`, `direct3d12`.
- *
+ * 
+ * \note Concernant RC2D_GPU_DRIVER_PRIVATE, il s'agit d'un backend propriétaire par rapport à la plateforme de développement.
+ * Tels que pour la Playstation 5, la Xbox Series X/S, Nintendo Switch 1/2, etc.
+ * 
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
 typedef enum RC2D_GPUDriver {
@@ -181,7 +184,15 @@ typedef enum RC2D_GPUDriver {
      * Cela est pertinent pour les applications Windows qui souhaitent tirer parti
      * des fonctionnalités avancées de Direct3D12.
      */
-    RC2D_GPU_DRIVER_DIRECT3D12
+    RC2D_GPU_DRIVER_DIRECT3D12,
+
+    /**
+     * Forcer l'utilisation d'un backend GPU privée sous NDA (Non Disclosure Agreement).
+     * 
+     * Par rapport à la plateforme de développement, cela peut être un backend propriétaire ou un
+     * backend expérimental qui n'est pas encore public.
+     */
+    RC2D_GPU_DRIVER_PRIVATE
 } RC2D_GPUDriver;
 
 /**
@@ -228,7 +239,7 @@ typedef struct RC2D_GPUAdvancedOptions {
     bool preferLowPower;
 
     /**
-     * Permet de forcer un backend graphique spécifique (Vulkan, Metal ou Direct3D12).
+     * Permet de forcer un backend graphique spécifique (Vulkan, Metal, Direct3D12 ou un backend privé).
      * 
      * \note RC2D_GPU_DRIVER_DEFAULT par défaut dans RC2D, ce qui laisse SDL choisir automatiquement.
      */

@@ -9,11 +9,14 @@
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
+
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_gpu.h>
+
 #include <SDL3_ttf/SDL_ttf.h>
+
 //#include <SDL3_mixer/SDL_mixer.h>
 
 RC2D_EngineState rc2d_engine_state = {0};
@@ -54,8 +57,8 @@ RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
 /**
  * \brief Affiche la liste des pilotes GPU supportés par SDL3.
  *
- * Cette fonction interroge les pilotes intégrés que SDL3 connaît à la compilation.
- * Elle peut être utilisée pour diagnostiquer les backends disponibles sur la plateforme.
+ * Cette fonction vérifie si au moins un backend GPU est supporté par SDL3.
+ * Elle affiche également la liste des pilotes GPU disponibles.
  * 
  * \return {bool} - true si au moins un backend GPU est supporté, false sinon.
  *
@@ -69,7 +72,7 @@ static bool rc2d_engine_supported_gpu_backends(void)
         return false;
     }
 
-    RC2D_log(RC2D_LOG_INFO, "Pilotes GPU disponibles via SDL3 (%d détecté%s) :", count, count > 1 ? "s" : "");
+    RC2D_log(RC2D_LOG_INFO, "Pilotes GPU disponibles pour SDL3 (%d détecté%s) :", count, count > 1 ? "s" : "");
     for (int i = 0; i < count; ++i) 
     {
         const char* name = SDL_GetGPUDriver(i);
@@ -77,11 +80,9 @@ static bool rc2d_engine_supported_gpu_backends(void)
         {
             RC2D_log(RC2D_LOG_INFO, "  - %d : %s", i, name);
         }
-        else 
-        {
-            RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de la récupération du nom du pilote GPU %d.", i);
-        }
     }
+
+    return true;
 }
 
 /**
@@ -133,7 +134,7 @@ static bool rc2d_engine_init_openssl(void)
 {
     if (OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL) == 0)
     {
-        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Échec de l'initialisation d'OpenSSL : %s", ERR_error_string(ERR_get_error(), NULL));
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Erreur lors de l'initialisation d'OpenSSL : %s", ERR_error_string(ERR_get_error(), NULL));
         return false;
     }
     else 
@@ -172,12 +173,12 @@ static bool rc2d_engine_init_sdlttf(void)
 {
     if (!TTF_Init()) 
     {
-		RC2D_log(RC2D_LOG_CRITICAL, "Could not init SDL3_ttf : %s \n", SDL_GetError());
+		RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de l'initialisation de SDL3_ttf : %s\n", SDL_GetError());
 		return false;
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "SDL3_ttf initialized successfully.\n");
+        RC2D_log(RC2D_LOG_INFO, "SDL3_ttf initialisé avec succès.\n");
         return true;
     }
 }
@@ -193,7 +194,7 @@ static bool rc2d_engine_init_sdlttf(void)
 static void rc2d_engine_cleanup_sdlttf(void)
 {
     TTF_Quit();
-    RC2D_log(RC2D_LOG_INFO, "SDL3_ttf cleaned up successfully.\n");
+    RC2D_log(RC2D_LOG_INFO, "SDL3_ttf nettoyé avec succès.\n");
 }
 
 /**
@@ -235,7 +236,7 @@ static void rc2d_engine_cleanup_sdlmixer(void)
     // FIXEME : En attente de la mise en œuvre de SDL3_mixer
     /*Mix_CloseAudio();
     Mix_Quit();*/
-    RC2D_log(RC2D_LOG_INFO, "SDL3_mixer cleaned up successfully.\n");
+    RC2D_log(RC2D_LOG_INFO, "SDL3_mixer nettoyé avec succès.\n");
 }
 
 /**
@@ -287,10 +288,10 @@ static bool rc2d_engine_init_sdl(void)
     {
         if (!SDL_InitSubSystem(subsystems[i])) 
         {
-            RC2D_log(RC2D_LOG_CRITICAL, "Failed to init SDL subsystem %s: %s\n", names[i], SDL_GetError());
+            RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de l'initialisation du sous-système SDL3 %s : %s\n", names[i], SDL_GetError());
         } 
         else {
-            RC2D_log(RC2D_LOG_INFO, "Initialized SDL subsystem %s successfully.\n", names[i]);
+            RC2D_log(RC2D_LOG_INFO, "Initialise le sous-système SDL3 %s avec succès.\n", names[i]);
         }
     }
 
@@ -308,7 +309,7 @@ static bool rc2d_engine_init_sdl(void)
 static void rc2d_engine_cleanup_sdl(void)
 {
     SDL_Quit();
-    RC2D_log(RC2D_LOG_INFO, "SDL3 cleaned up successfully.\n");
+    RC2D_log(RC2D_LOG_INFO, "SDL3 nettoyé avec succès.\n");
 }
 
 /**
@@ -343,12 +344,12 @@ static bool rc2d_engine_create_window(void)
     SDL_DestroyProperties(window_props);
     if (!rc2d_engine_state.window) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Error creating window: %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de la création de la fenêtre : %s", SDL_GetError());
         return false;
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "Window created successfully, is hidden temporarily.\n");
+        RC2D_log(RC2D_LOG_INFO, "La fenêtre est créée avec succès, mais temporairement masquée le temps que tout soit prêt.");
     }
 
     return true;
@@ -387,6 +388,9 @@ static bool rc2d_engine_create_gpu(void)
         case RC2D_GPU_DRIVER_DIRECT3D12:
             SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "direct3d12");
             break;
+        case RC2D_GPU_DRIVER_PRIVATE:
+            SDL_SetStringProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, "a voir plus tard avec SDL3");
+            break;
         case RC2D_GPU_DRIVER_DEFAULT:
         default:
             // Ne pas setter la propriété pour laisser SDL choisir automatiquement
@@ -395,7 +399,7 @@ static bool rc2d_engine_create_gpu(void)
 
     // Vérification de la compatibilité du GPU avec les propriétés spécifiées.
     if (!SDL_GPUSupportsProperties(gpu_props)) {
-        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties (1).");
+        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties : RC2D_EngineConfig.config->gpuOptions->? (1).");
         SDL_DestroyProperties(gpu_props);
         return false;
     }
@@ -456,7 +460,7 @@ static bool rc2d_engine_create_gpu(void)
 
     // Vérification de la compatibilité du GPU avec les nouvelles propriétés spécifiées.
     if (!SDL_GPUSupportsProperties(gpu_props)) {
-        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties (2).");
+        RC2D_log(RC2D_LOG_CRITICAL, "GPU not supported with current properties : RC2D_EngineConfig.config->gpuOptions->? (2).");
         SDL_DestroyProperties(gpu_props);
         return false;
     }
@@ -836,8 +840,11 @@ static bool rc2d_engine(void)
     }
 
     /**
-     * Vérifier si le GPU est supporté par l'API SDL3_GPU.
-     * Cela permet de s'assurer que le GPU est compatible avec les propriétés spécifiées.
+     * Vérifier si le GPU de l'utilisateur est supporté par l'API SDL3_GPU.
+     * 
+     * Cela permet de s'assurer que le GPU est compatible avec au 
+     * moins un des backends supportés par SDL3_GPU.
+     * 
      * Si le GPU n'est pas supporté, on ne peut pas continuer.
      */
     if (!rc2d_engine_supported_gpu_backends())

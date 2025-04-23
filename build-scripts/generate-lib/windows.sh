@@ -10,7 +10,8 @@ BUILD_DIR="$ROOT_DIR/build/windows"
 DIST_DIR="$ROOT_DIR/dist/lib/windows"
 
 # Architectures cibles
-ARCHS=("x64" "arm64")
+ARCHS=("x64")
+# ARCHS=("x64" "arm64")
 
 # Créer les dossiers nécessaires
 for ARCH in "${ARCHS[@]}"; do
