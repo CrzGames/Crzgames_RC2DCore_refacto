@@ -830,7 +830,7 @@ void rc2d_engine_quit(void)
      * Détruire les ressources internes des modules de la lib RC2D.
      */
 	//rc2d_filesystem_quit();
-    rc2d_touch_freeTouchState();
+    //rc2d_touch_freeTouchState();
 
     // Lib OpenSSL Deinitialize
     rc2d_engine_cleanup_openssl();
