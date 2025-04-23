@@ -20,7 +20,7 @@ void rc2d_draw(void)
     RC2D_log(RC2D_LOG_INFO, "RC2D Engine is drawing...\n");
 }
     
-const RC2D_EngineConfig* rc2d_engine_setup(void)
+const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
 {
 #ifdef NDEBUG // Release mode
     rc2d_logger_set_priority(RC2D_LOG_ERROR);

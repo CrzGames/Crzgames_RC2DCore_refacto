@@ -21,14 +21,10 @@
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) 
 {
     /**
-     * Met à NULL le pointeur d'état de l'application.
-     */
-    *appstate = NULL;
-
-    /**
      * La définition de la fonction rc2d_setup doit être définie par l'utilisateur.
+     * On passe les arguments de la ligne de commande à la fonction rc2d_setup.
      */
-    const RC2D_EngineConfig* config = rc2d_engine_setup();
+    const RC2D_EngineConfig* config = rc2d_engine_setup(argc, argv);
 
     /**
      * Si la configuration est NULL (const RC2D_EngineConfig* config), 

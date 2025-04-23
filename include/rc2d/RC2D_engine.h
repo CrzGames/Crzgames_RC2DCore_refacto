@@ -318,13 +318,15 @@ typedef struct RC2D_EngineConfig {
  *
  * \note Si vous souhaitez utiliser la configuration par défaut de RC2D, vous pouvez retourner NULL.
  *
+ * \param {int} argc - Nombre d'arguments de la ligne de commande.
+ * \param {char**} argv - Arguments de la ligne de commande.
  * \return {RC2D_Config*} Un pointeur vers la configuration personnalisée, ou NULL pour utiliser la config par défaut.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
  * \see rc2d_engine_getDefaultConfig
  */
-const RC2D_EngineConfig* rc2d_engine_setup(void);
+const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[]);
 
 /**
  * \brief Renvoie une configuration RC2D_EngineConfig avec toutes les valeurs par défaut.
