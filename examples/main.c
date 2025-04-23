@@ -33,9 +33,6 @@ const RC2D_EngineConfig* rc2d_engine_setup(void)
     config->callbacks->rc2d_update = rc2_update;
     config->callbacks->rc2d_load = rc2d_load;
     config->callbacks->rc2d_unload = rc2d_unload;
-    config->gpuOptions->debugMode = false;
-    config->gpuOptions->verbose = false;
-    config->gpuOptions->preferLowPower = false;
 
     RC2D_assert_release(config != NULL, RC2D_LOG_CRITICAL, "RC2D_EngineConfig config is NULL. Cannot setup the engine.");
 
