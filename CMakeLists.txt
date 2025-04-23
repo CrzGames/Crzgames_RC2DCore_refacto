@@ -172,11 +172,11 @@ elseif(WIN32)
   endif()
 
   # Librairies OpenSSL précompilées statiques pour Windows
-  target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
-  target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/${WINDOWS_ARCH_DIR}")
+  target_include_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
+  target_link_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
   
   # Link avec les libs statiques
-  target_link_libraries(${PROJECT_NAME} PRIVATE libcrypto_static libssl_static Crypt32)
+  target_link_libraries(${PROJECT_NAME} PRIVATE libssl_static libcrypto_static Crypt32)
 elseif(ANDROID)
   target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/include")
   target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/lib")
@@ -189,10 +189,14 @@ endif()
 
 # Link les dépendances (librairies communes à tous les plateformes)
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  SDL3_image::SDL3_image
   #SDL3_mixer::SDL3_mixer -> FIXME: SDL3_mixer n'ai pas encore disponible
+  SDL3_image::SDL3_image
   SDL3_ttf::SDL3_ttf
   SDL3::SDL3
+  libssl_static # OpenSSL
+  libcrypto_static # OpenSSL
+  Crypt32 # OpenSSL Windows CryptoAPI
+  ws2_32 # OpenSSL Windows Winsock2
 )
 
 # Génération des sorties
@@ -219,14 +223,6 @@ if(RC2D_BUILD_EXAMPLES)
   target_include_directories(rc2d_example PRIVATE
     "${PROJECT_SOURCE_DIR}/include"
     "${PROJECT_SOURCE_DIR}/include/external"
-  )
-
-  # Linker les dépendances SDL3, SDL3_ttf, SDL3_image, SDL3_mixer et RC2D
-  target_link_libraries(rc2d_example PRIVATE
-    SDL3_image::SDL3_image
-    SDL3_ttf::SDL3_ttf
-    SDL3::SDL3
-    ${PROJECT_NAME} # RC2D
   )
 
   # OpenSSL
@@ -272,11 +268,20 @@ if(RC2D_BUILD_EXAMPLES)
     endif()
 
     # Librairies OpenSSL précompilées statiques pour Windows
-    target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
-    target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/x64/Release")
-    
-    # Link avec les libs statiques
-    target_link_libraries(${PROJECT_NAME} PRIVATE libcrypto_static libssl_static Crypt32)
+    target_include_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
+    target_link_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
+
+    # Linker les dépendances SDL3, SDL3_ttf, SDL3_image, SDL3_mixer, OpenSSL et RC2D
+    target_link_libraries(rc2d_example PRIVATE
+      SDL3_image::SDL3_image
+      SDL3_ttf::SDL3_ttf
+      SDL3::SDL3
+      libssl_static # OpenSSL
+      libcrypto_static # OpenSSL
+      Crypt32 # OpenSSL Windows CryptoAPI
+      ws2_32 # OpenSSL Windows Winsock2
+      ${PROJECT_NAME} # RC2D
+    )
   elseif(ANDROID)
     target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/include")
     target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/lib")
