@@ -52,6 +52,39 @@ RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
 }
 
 /**
+ * \brief Affiche la liste des pilotes GPU supportés par SDL3.
+ *
+ * Cette fonction interroge les pilotes intégrés que SDL3 connaît à la compilation.
+ * Elle peut être utilisée pour diagnostiquer les backends disponibles sur la plateforme.
+ * 
+ * \return {bool} - true si au moins un backend GPU est supporté, false sinon.
+ *
+ * @since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static bool rc2d_engine_supported_gpu_backends(void)
+{
+    int count = SDL_GetNumGPUDrivers();
+    if (count <= 0) {
+        RC2D_log(RC2D_LOG_CRITICAL, "Aucun backend GPU compatible pour SDL3 détecté.");
+        return false;
+    }
+
+    RC2D_log(RC2D_LOG_INFO, "Pilotes GPU disponibles via SDL3 (%d détecté%s) :", count, count > 1 ? "s" : "");
+    for (int i = 0; i < count; ++i) 
+    {
+        const char* name = SDL_GetGPUDriver(i);
+        if (name != NULL)
+        {
+            RC2D_log(RC2D_LOG_INFO, "  - %d : %s", i, name);
+        }
+        else 
+        {
+            RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de la récupération du nom du pilote GPU %d.", i);
+        }
+    }
+}
+
+/**
  * \brief Initialise les valeurs par défaut de l'état global du moteur RC2D.
  *
  * Cette fonction configure les valeurs par défaut pour toutes les variables de la structure RC2D_EngineState.
@@ -798,6 +831,16 @@ static bool rc2d_engine(void)
      * Initialiser la librairie SDL3
      */
     if (!rc2d_engine_init_sdl())
+    {
+        return false;
+    }
+
+    /**
+     * Vérifier si le GPU est supporté par l'API SDL3_GPU.
+     * Cela permet de s'assurer que le GPU est compatible avec les propriétés spécifiées.
+     * Si le GPU n'est pas supporté, on ne peut pas continuer.
+     */
+    if (!rc2d_engine_supported_gpu_backends())
     {
         return false;
     }
