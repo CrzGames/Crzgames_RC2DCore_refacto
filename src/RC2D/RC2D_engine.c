@@ -373,7 +373,7 @@ static bool rc2d_engine_create_gpu(void)
     SDL_GPUDevice* gpu_device_tmp = SDL_CreateGPUDeviceWithProperties(gpu_props);
     if (!gpu_device_tmp) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device (1) : %s", SDL_GetError());
         SDL_DestroyProperties(gpu_props);
         return false;
     }
@@ -433,7 +433,7 @@ static bool rc2d_engine_create_gpu(void)
     SDL_DestroyProperties(gpu_props);
     if (!rc2d_engine_state.gpu_device) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device : %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_CRITICAL, "Error create GPU device (2) : %s", SDL_GetError());
         return false;
     }
     else

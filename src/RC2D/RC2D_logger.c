@@ -22,14 +22,14 @@ static const char* rc2d_logger_log_level_to_string(RC2D_LogLevel level)
 {
     switch (level) 
     {
-        case RC2D_LOG_TRACE:     return "TRACE";
-        case RC2D_LOG_VERBOSE:   return "VERBOSE";
-        case RC2D_LOG_DEBUG:     return "DEBUG";
-        case RC2D_LOG_INFO:      return "INFO";
-        case RC2D_LOG_WARN:      return "WARN";
-        case RC2D_LOG_ERROR:     return "ERROR";
-        case RC2D_LOG_CRITICAL:  return "CRITICAL";
-        default:                 return "UNKNOWN";
+        case RC2D_LOG_TRACE:     return "trace";
+        case RC2D_LOG_VERBOSE:   return "verbose";
+        case RC2D_LOG_DEBUG:     return "debug";
+        case RC2D_LOG_INFO:      return "info";
+        case RC2D_LOG_WARN:      return "warn";
+        case RC2D_LOG_ERROR:     return "error";
+        case RC2D_LOG_CRITICAL:  return "critical";
+        default:                 return "unknown";
     }
 }
 
