@@ -217,7 +217,7 @@ if(RC2D_BUILD_EXAMPLES)
   set(RC2D_EXAMPLE_SOURCES "${PROJECT_SOURCE_DIR}/examples/main.c")
 
   # Créer un exécutable pour l'exemple
-  add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+  add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
 
   # Inclure les headers du projet rc2d et external
   target_include_directories(rc2d_example PRIVATE

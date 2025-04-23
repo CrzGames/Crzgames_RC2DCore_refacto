@@ -208,8 +208,7 @@ static void rc2d_engine_cleanup_sdlmixer(void)
 /**
  * \brief Initialise la bibliothèque SDL3.
  *
- * Cette fonction initialise la bibliothèque SDL3 pour le rendu graphique, audio et les événements.
- * Elle doit être appelée avant d'utiliser les fonctions de rendu ou d'événements.
+ * Cette fonction initialise les sous-systèmes SDL3 nécessaires au moteur RC2D.
  *
  * \return true si l'initialisation a réussi, false sinon.
  * 
@@ -220,7 +219,7 @@ static bool rc2d_engine_init_sdl(void)
     /**
      * Liste des sous-systèmes SDL3 à initialiser.
      */
-    int flags[] = {
+    int subsystems[] = {
         SDL_INIT_AUDIO,
         SDL_INIT_VIDEO,
         SDL_INIT_JOYSTICK,
@@ -251,9 +250,9 @@ static bool rc2d_engine_init_sdl(void)
      * On vérifie si chaque sous-système s'initialise correctement.
      * Si un sous-système échoue, on loggue l'erreur et on continue.
      */
-    for (int i = 0; i < sizeof(flags) / sizeof(flags[0]); ++i) 
+    for (int i = 0; i < sizeof(subsystems) / sizeof(subsystems[0]); ++i) 
     {
-        if (SDL_InitSubSystem(flags[i]) != 0) 
+        if (SDL_InitSubSystem(subsystems[i]) != 0) 
         {
             RC2D_log(RC2D_LOG_CRITICAL, "Failed to init SDL subsystem %s: %s\n", names[i], SDL_GetError());
         } 
@@ -264,7 +263,6 @@ static bool rc2d_engine_init_sdl(void)
 
     return true;
 }
-
 
 /**
  * \brief Libère les ressources SDL3.
