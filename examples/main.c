@@ -29,14 +29,11 @@ void rc2d_update(double dt)
 
 void rc2d_draw(void)
 {
-    /* Draw a filled red rectangle */
+    /*
     rc2d_graphics_rectangle("fill", &filled_rect, red_color);
-
-    /* Draw an outlined blue rectangle */
     rc2d_graphics_rectangle("line", &outlined_rect, blue_color);
-
-    /* Draw a point at (200, 200) with yellow color */
     rc2d_graphics_point((RC2D_Vertex){ 200.0f, 200.0f }, (RC2D_Color){ 255, 255, 0, 255 });
+    */
 }
 
 const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
