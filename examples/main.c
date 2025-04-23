@@ -29,6 +29,10 @@ const RC2D_EngineConfig* rc2d_engine_setup(void)
 #endif
 
     RC2D_EngineConfig* config = rc2d_engine_getDefaultConfig();
+    config->gpuOptions->debugMode = true;
+    config->gpuOptions->verbose = true;
+    config->gpuOptions->preferLowPower = false;
+    config->gpuOptions->driver = RC2D_GPU_DRIVER_DEFAULT;
     config->callbacks->rc2d_draw = rc2d_draw;
     config->callbacks->rc2d_update = rc2_update;
     config->callbacks->rc2d_load = rc2d_load;
