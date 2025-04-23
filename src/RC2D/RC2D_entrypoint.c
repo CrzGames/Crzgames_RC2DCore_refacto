@@ -4,6 +4,9 @@
  * 
  * - SDL_MAIN_USE_CALLBACKS et <SDL3/SDL_main.h> doivent être inclus UNE SEULE FOIS
  * dans un fichier source (.c/.cpp).
+ * 
+ * - A partir du moment ou SDL_MAIN_USE_CALLBACKS est défini et <SDL3/SDL_main.h> est inclus,
+ * la fonction main() ne doit pas être définie dans le code de l'application.
  */
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
