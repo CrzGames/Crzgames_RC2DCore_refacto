@@ -4,14 +4,13 @@
 
 #include <SDL3/SDL_properties.h>
 
-void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo) 
+void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
 {
     // Vérification des paramètres d'entrée
-    RC2D_assert_release(gpuDevice != NULL, RC2D_LOG_CRITICAL, "GPU device is NULL.");
     RC2D_assert_release(gpuInfo != NULL, RC2D_LOG_CRITICAL, "GPU info is NULL.");
 
     // Récupération des propriétés du GPU
-    SDL_PropertiesID propsGPU = SDL_GetGPUDeviceProperties(gpuDevice);
+    SDL_PropertiesID propsGPU = SDL_GetGPUDeviceProperties(rc2d_gpu_getDevice());
 
     // Vérification de la récupération des propriétés
     RC2D_assert_release(propsGPU != 0, RC2D_LOG_CRITICAL, "Failed to get GPU properties : %s", SDL_GetError());
@@ -24,6 +23,29 @@ void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo)
 
     // Destruction des propriétés du GPU
     SDL_DestroyProperties(propsGPU);
+}
+
+static RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats()
+{
+    // Récupération des formats de shaders supportés par le GPU via SDL_GPU
+    SDL_GPUShaderFormat formats = SDL_GetGPUShaderFormats(rc2d_gpu_getDevice());
+
+    /**
+     * Par défault, mis à RC2D_GPU_SHADERFORMAT_NONE.
+     * 
+     * On vérifie chaque format de shader supporté et on l'ajoute au résultat.
+     * Peut être combiné avec un bitmask.
+     */
+    RC2D_GPUShaderFormat result = RC2D_GPU_SHADERFORMAT_NONE;
+    if (formats & SDL_GPU_SHADERFORMAT_PRIVATE)    result |= RC2D_GPU_SHADERFORMAT_PRIVATE;
+    if (formats & SDL_GPU_SHADERFORMAT_SPIRV)      result |= RC2D_GPU_SHADERFORMAT_SPIRV;
+    if (formats & SDL_GPU_SHADERFORMAT_DXBC)       result |= RC2D_GPU_SHADERFORMAT_DXBC;
+    if (formats & SDL_GPU_SHADERFORMAT_DXIL)       result |= RC2D_GPU_SHADERFORMAT_DXIL;
+    if (formats & SDL_GPU_SHADERFORMAT_MSL)        result |= RC2D_GPU_SHADERFORMAT_MSL;
+    if (formats & SDL_GPU_SHADERFORMAT_METALLIB)   result |= RC2D_GPU_SHADERFORMAT_METALLIB;
+
+    // Retourne le résultat
+    return result;
 }
 
 RC2D_GPUDevice* rc2d_gpu_getDevice(void)

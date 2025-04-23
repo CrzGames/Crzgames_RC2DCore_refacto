@@ -247,6 +247,33 @@ typedef struct RC2D_GPUAdvancedOptions {
 } RC2D_GPUAdvancedOptions;
 
 /**
+ * \brief Formats de shaders supportés par le GPU.
+ *
+ * Utilisé pour indiquer quels formats de shaders sont disponibles selon le backend.
+ *
+ * Formats de shaders supportés :
+ * - RC2D_GPU_SHADERFORMAT_SPIRV : SPIR-V (Vulkan)
+ * - RC2D_GPU_SHADERFORMAT_DXBC : DXBC (Direct3D 11)
+ * - RC2D_GPU_SHADERFORMAT_DXIL : DXIL (Direct3D 12)
+ * - RC2D_GPU_SHADERFORMAT_MSL : MSL (Metal)
+ * - RC2D_GPU_SHADERFORMAT_METALLIB : MetalLib (Metal)
+ * - RC2D_GPU_SHADERFORMAT_PRIVATE : Private (Propriétaire)
+ * 
+ * \note Peut être combiné avec un bitmask.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+typedef enum RC2D_GPUShaderFormat {
+    RC2D_GPU_SHADERFORMAT_NONE       = 0,
+    RC2D_GPU_SHADERFORMAT_PRIVATE    = 1 << 0,
+    RC2D_GPU_SHADERFORMAT_SPIRV      = 1 << 1,
+    RC2D_GPU_SHADERFORMAT_DXBC       = 1 << 2,
+    RC2D_GPU_SHADERFORMAT_DXIL       = 1 << 3,
+    RC2D_GPU_SHADERFORMAT_MSL        = 1 << 4,
+    RC2D_GPU_SHADERFORMAT_METALLIB   = 1 << 5
+} RC2D_GPUShaderFormat;
+
+/**
  * \brief Remplit une structure RC2D_GPUInfo avec les métadonnées du GPU utilisé.
  * 
  * \param {RC2D_GPUDevice*} gpuDevice - Le périphérique GPU SDL initialisé par RC2D.
@@ -256,7 +283,7 @@ typedef struct RC2D_GPUAdvancedOptions {
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo);
+void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo);
 
 /**
  * \brief Récupère le périphérique GPU utilisé par RC2D.
@@ -268,6 +295,15 @@ void rc2d_gpu_getInfo(RC2D_GPUDevice* gpuDevice, RC2D_GPUInfo* gpuInfo);
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 RC2D_GPUDevice* rc2d_gpu_getDevice(void);
+
+/**
+ * \brief Récupère les formats de shaders supportés par le GPU actuel.
+ *
+ * \return {RC2D_GPUShaderFormat} Bitmask RC2D_GPUShaderFormat contenant les formats supportés.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
