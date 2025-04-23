@@ -231,6 +231,10 @@ static bool rc2d_engine_init_sdl(void)
         SDL_INIT_CAMERA
     };
 
+    /**
+     * Liste des noms des sous-systèmes SDL3 pour le logging.
+     * Doit être dans le même ordre que la liste des flags ci-dessus.
+     */
     const char* names[] = {
         "AUDIO", 
         "VIDEO", 
@@ -242,6 +246,11 @@ static bool rc2d_engine_init_sdl(void)
         "CAMERA"
     };
 
+    /**
+     * Initialisation de SDL3 avec tous les sous-systèmes nécessaires.
+     * On vérifie si chaque sous-système s'initialise correctement.
+     * Si un sous-système échoue, on loggue l'erreur et on continue.
+     */
     for (int i = 0; i < sizeof(flags) / sizeof(flags[0]); ++i) 
     {
         if (SDL_InitSubSystem(flags[i]) != 0) 
