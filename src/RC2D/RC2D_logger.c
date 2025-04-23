@@ -22,12 +22,14 @@ static const char* rc2d_logger_log_level_to_string(RC2D_LogLevel level)
 {
     switch (level) 
     {
-        case RC2D_LOG_DEBUG:    return "debug";
-        case RC2D_LOG_INFO:     return "info";
-        case RC2D_LOG_WARN:     return "warn";
-        case RC2D_LOG_ERROR:    return "error";
-        case RC2D_LOG_CRITICAL: return "critical";
-        default:                return "unknown";
+        case RC2D_LOG_TRACE:     return "TRACE";
+        case RC2D_LOG_VERBOSE:   return "VERBOSE";
+        case RC2D_LOG_DEBUG:     return "DEBUG";
+        case RC2D_LOG_INFO:      return "INFO";
+        case RC2D_LOG_WARN:      return "WARN";
+        case RC2D_LOG_ERROR:     return "ERROR";
+        case RC2D_LOG_CRITICAL:  return "CRITICAL";
+        default:                 return "UNKNOWN";
     }
 }
 
@@ -45,15 +47,18 @@ void rc2d_logger_set_priority(const RC2D_LogLevel logLevel)
     SDL_LogPriority logPriority;
     switch(logLevel) 
     {
-        case RC2D_LOG_DEBUG: logPriority = SDL_LOG_PRIORITY_DEBUG; break;
-        case RC2D_LOG_INFO: logPriority = SDL_LOG_PRIORITY_INFO; break;
-        case RC2D_LOG_WARN: logPriority = SDL_LOG_PRIORITY_WARN; break;
-        case RC2D_LOG_ERROR: logPriority = SDL_LOG_PRIORITY_ERROR; break;
-        case RC2D_LOG_CRITICAL: logPriority = SDL_LOG_PRIORITY_CRITICAL; break;
+        case RC2D_LOG_TRACE:     logPriority = SDL_LOG_PRIORITY_TRACE;     break;
+        case RC2D_LOG_VERBOSE:   logPriority = SDL_LOG_PRIORITY_VERBOSE;   break;
+        case RC2D_LOG_DEBUG:     logPriority = SDL_LOG_PRIORITY_DEBUG;     break;
+        case RC2D_LOG_INFO:      logPriority = SDL_LOG_PRIORITY_INFO;      break;
+        case RC2D_LOG_WARN:      logPriority = SDL_LOG_PRIORITY_WARN;      break;
+        case RC2D_LOG_ERROR:     logPriority = SDL_LOG_PRIORITY_ERROR;     break;
+        case RC2D_LOG_CRITICAL:  logPriority = SDL_LOG_PRIORITY_CRITICAL;  break;
+        default:                 logPriority = SDL_LOG_PRIORITY_INFO;       break;
     }
 
     // Definit la priorite de log pour toutes les categories
-    SDL_LogSetAllPriority(logPriority);
+    SDL_SetLogPriorities(logPriority);
 }
 
 void rc2d_logger_log(const RC2D_LogLevel logLevel, const char* file, int line, const char* function, const char* format, ...)
@@ -68,12 +73,14 @@ void rc2d_logger_log(const RC2D_LogLevel logLevel, const char* file, int line, c
     SDL_LogPriority sdlPriority;
     switch (logLevel) 
     {
-        case RC2D_LOG_DEBUG:    sdlPriority = SDL_LOG_PRIORITY_DEBUG;    break;
-        case RC2D_LOG_INFO:     sdlPriority = SDL_LOG_PRIORITY_INFO;     break;
-        case RC2D_LOG_WARN:     sdlPriority = SDL_LOG_PRIORITY_WARN;     break;
-        case RC2D_LOG_ERROR:    sdlPriority = SDL_LOG_PRIORITY_ERROR;    break;
-        case RC2D_LOG_CRITICAL: sdlPriority = SDL_LOG_PRIORITY_CRITICAL; break;
-        default:                sdlPriority = SDL_LOG_PRIORITY_INFO;     break;
+        case RC2D_LOG_TRACE:     sdlPriority = SDL_LOG_PRIORITY_TRACE;     break;
+        case RC2D_LOG_VERBOSE:   sdlPriority = SDL_LOG_PRIORITY_VERBOSE;   break;
+        case RC2D_LOG_DEBUG:     sdlPriority = SDL_LOG_PRIORITY_DEBUG;     break;
+        case RC2D_LOG_INFO:      sdlPriority = SDL_LOG_PRIORITY_INFO;      break;
+        case RC2D_LOG_WARN:      sdlPriority = SDL_LOG_PRIORITY_WARN;      break;
+        case RC2D_LOG_ERROR:     sdlPriority = SDL_LOG_PRIORITY_ERROR;     break;
+        case RC2D_LOG_CRITICAL:  sdlPriority = SDL_LOG_PRIORITY_CRITICAL;  break;
+        default:                 sdlPriority = SDL_LOG_PRIORITY_INFO;       break;
     }
 
     // Convertit le niveau de log de RC2D en chaîne de caractères

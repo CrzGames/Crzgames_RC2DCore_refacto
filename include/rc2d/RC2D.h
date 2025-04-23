@@ -14,7 +14,7 @@
 #include <RC2D/RC2D_graphics.h>
 #include <RC2D/RC2D_guid.h>
 #include <RC2D/RC2D_iostream.h>
-#include <RC2D/RC2D_joystick.h>
+// #include <RC2D/RC2D_joystick.h>
 #include <RC2D/RC2D_keyboard.h>
 #include <RC2D/RC2D_keycode.h>
 #include <RC2D/RC2D_local.h>

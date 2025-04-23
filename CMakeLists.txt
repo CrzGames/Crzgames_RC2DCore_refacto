@@ -207,6 +207,87 @@ if(APPLE)
   )
 endif()
 
+# Pour les exemples
+if(RC2D_BUILD_EXAMPLES)
+  # Ajouter le fichier de l'exemple
+  set(RC2D_EXAMPLE_SOURCES "${PROJECT_SOURCE_DIR}/examples/main.c")
+
+  # Créer un exécutable pour l'exemple
+  add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+
+  # Inclure les headers du projet rc2d et external
+  target_include_directories(rc2d_example PRIVATE
+    "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}/include/external"
+  )
+
+  # Linker les dépendances SDL3, SDL3_ttf, SDL3_image, SDL3_mixer et RC2D
+  target_link_libraries(rc2d_example PRIVATE
+    SDL3_image::SDL3_image
+    SDL3_ttf::SDL3_ttf
+    SDL3::SDL3
+    ${PROJECT_NAME} # RC2D
+  )
+
+  # OpenSSL
+  if(APPLE)
+    # OpenSSL via XCFramework : macOS, iOS, tvOS
+    if(NOT DEFINED OPENSSL_APPLE_VERSION)
+      set(OPENSSL_APPLE_VERSION "3.3.3001" CACHE STRING "OpenSSL version" FORCE)
+    endif()
+
+    set(OPENSSL_XCFRAMEWORK_URL "https://github.com/krzyzanowskim/OpenSSL/releases/download/${OPENSSL_APPLE_VERSION}/OpenSSL.xcframework.zip")
+    set(OPENSSL_XCFRAMEWORK_ZIP "${CMAKE_BINARY_DIR}/OpenSSL.xcframework.zip")
+    set(OPENSSL_XCFRAMEWORK_DIR "${CMAKE_BINARY_DIR}/OpenSSL.xcframework")
+
+    if(NOT EXISTS "${OPENSSL_XCFRAMEWORK_DIR}")
+        file(DOWNLOAD "${OPENSSL_XCFRAMEWORK_URL}" "${OPENSSL_XCFRAMEWORK_ZIP}"
+          SHOW_PROGRESS
+          STATUS OPENSSL_DOWNLOAD_STATUS)
+        list(GET OPENSSL_DOWNLOAD_STATUS 0 STATUS_CODE)
+        if(NOT STATUS_CODE EQUAL 0)
+            message(FATAL_ERROR "Failed to download OpenSSL.xcframework.zip: ${OPENSSL_DOWNLOAD_STATUS}")
+        endif()
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E tar xzf "${OPENSSL_XCFRAMEWORK_ZIP}"
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+            RESULT_VARIABLE EXTRACT_RESULT
+        )
+        if(NOT EXTRACT_RESULT EQUAL 0)
+            message(FATAL_ERROR "Failed to extract OpenSSL.xcframework.zip")
+        endif()
+    endif()
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${OPENSSL_XCFRAMEWORK_DIR}")
+  elseif(WIN32)
+    # Windows => Détection dynamique architecture (x64 ou ARM64)
+    include(CheckCCompilerFlag)
+    string(TOLOWER "${CMAKE_GENERATOR_PLATFORM}" GENERATOR_PLATFORM_LOWER)
+    
+    if(GENERATOR_PLATFORM_LOWER STREQUAL "arm64")
+      set(WINDOWS_ARCH_DIR "arm64")
+    else()
+      # Par défaut, x64
+      set(WINDOWS_ARCH_DIR "x64")
+    endif()
+
+    # Librairies OpenSSL précompilées statiques pour Windows
+    target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
+    target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/x64/Release")
+    
+    # Link avec les libs statiques
+    target_link_libraries(${PROJECT_NAME} PRIVATE libcrypto_static libssl_static Crypt32)
+  elseif(ANDROID)
+    target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/include")
+    target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/lib")
+    target_link_libraries(${PROJECT_NAME} PRIVATE ssl crypto)
+  elseif(UNIX AND NOT APPLE)
+    target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Linux/include")
+    target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Linux/lib")
+    target_link_libraries(${PROJECT_NAME} PRIVATE libssl_static libcrypto_static Crypt32)
+  endif()
+endif()
+
 # Pour les tests unitaires
 if(RC2D_BUILD_TESTS)
   enable_testing()

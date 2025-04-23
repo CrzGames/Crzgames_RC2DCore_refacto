@@ -34,10 +34,20 @@ extern "C" {
 
 /**
  * \brief Cette enum est utilisée pour définir le niveau de priorité des messages de log.
- * 
+ *
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
 typedef enum RC2D_LogLevel {
+    /**
+     * Niveaux très détaillés pour le traçage.
+     */
+    RC2D_LOG_TRACE,
+
+    /**
+     * Messages verbeux (moins détaillés que TRACE, mais plus que DEBUG).
+     */
+    RC2D_LOG_VERBOSE,
+
     /**
      * Messages de débogage.
      */
@@ -47,21 +57,21 @@ typedef enum RC2D_LogLevel {
      * Messages informatifs.
      */
     RC2D_LOG_INFO,
-    
+
     /**
      * Messages d'avertissement.
      */
     RC2D_LOG_WARN,
-    
+
     /**
      * Messages d'erreur.
      */
     RC2D_LOG_ERROR,
-    
+
     /**
      * Messages d'erreur critique.
      */
-    RC2D_LOG_CRITICAL   
+    RC2D_LOG_CRITICAL
 } RC2D_LogLevel;
 
 /**
