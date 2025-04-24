@@ -44,11 +44,23 @@ void rc2d_graphics_clear(void)
      * \brief Étape 3 : Création du ColorTargetInfo pour le render pass
      *
      * Cette structure décrit **quelle texture** sera utilisée comme cible de rendu (ici la swapchain),
-     * mais aussi **comment** le GPU doit l’utiliser :
-     *  - La couleur de fond (clear_color)
-     *  - Les opérations de chargement (load_op) et de stockage (store_op)
-     *  - Les options de résolution (resolve_texture) — non utilisées ici
-     *  - L’activation du cycle (cycle = true), pour autoriser la réutilisation intelligente des ressources
+     * 
+     * Mais aussi **comment** le GPU doit l’utiliser :
+     *  - texture : La texture qui sera utilisée comme cible de couleur par une passe de rendu.
+     *  - mip_level : Le niveau mip à utiliser comme cible de couleur. 
+     *  - layer_or_depth_plane : L'indice de couche ou le plan de profondeur à utiliser comme cible de couleur. 
+     *                           Cette valeur est traitée comme un indice de couche sur les tableaux 2D et les textures cubiques, 
+     *                           et comme un plan de profondeur sur les textures 3D.
+     *  - clear_color : La couleur à laquelle la cible de couleur doit être réinitialisée au début de la passe de rendu. 
+     *                  Ignoré si SDL_GPU_LOADOP_CLEAR n'est pas utilisé.
+     *  - load_op : Ce qui est fait avec le contenu de la cible de couleur au début de la passe de rendu.
+     *  - store_op : Ce qui est fait avec le contenu de la cible de couleur à la fin de la passe de rendu.
+     *  - resolve_texture : La texture qui recevra les résultats d'une opération de résolution multi-échantillon. 
+     *                      Ignorée si un RESOLVE* store_op n'est pas utilisé.
+     * - resolve_mip_level : Le niveau mip de la texture de résolution à utiliser pour l'opération de résolution. 
+     *                       Ignoré si un store_op RESOLVE* n'est pas utilisé.
+     * - resolve_layer : L'indice de couche de la texture à utiliser pour l'opération de résolution. 
+     *                   Ignoré si un RESOLVE* store_op n'est pas utilisé.
      */
     SDL_GPUColorTargetInfo color_target = {
         .texture = rc2d_engine_state.gpu_current_swapchain_texture,
@@ -279,7 +291,9 @@ void rc2d_graphics_rectangle(const char* mode, RC2D_Rect* rect, RC2D_Color color
         /* Clean up index buffer */
         SDL_ReleaseGPUTransferBuffer(rc2d_engine_state.gpu_device, index_transfer_buffer);
         SDL_ReleaseGPUBuffer(rc2d_engine_state.gpu_device, index_buffer);
-    } else {
+    } 
+    else 
+    {
         RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Invalid mode: must be 'fill' or 'line'");
     }
 
