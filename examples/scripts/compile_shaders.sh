@@ -36,6 +36,7 @@ mkdir -p "$OUT_DIR/spirv" "$OUT_DIR/dxil" "$OUT_DIR/msl" "$OUT_DIR/json"
 # Garder la version 1.2 par défaut n'est donc pas cohérent avec les exigences de SDL3.
 # Il est fortement conseillé d'utiliser --msl-version 2.1 (ou supérieur) pour compiler les shaders Metal destinés à SDL3 GPU API.
 MSL_VERSION="2.1"
+# A voir pour la version 2.3 : iOS 14.0+ iPadOS 14.0+ macOS 11.0+ tvOS 14.0+
 
 # Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal) et JSON (réflexion des ressources shaders)
 # Via le binaire SDL_shadercross
