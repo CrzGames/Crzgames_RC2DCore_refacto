@@ -19,26 +19,39 @@ set SRC_DIR=..\shaders\src
 set OUT_DIR=..\shaders\compiled
 
 :: Vérification de l'existence du binaire SDL_shadercross
-if not exist "%SHADERCROSS%" (
+where %SHADERCROSS% >nul 2>nul
+if errorlevel 1 (
     echo Erreur : SDL_shadercross n'est pas installé ou n'est pas dans le PATH.
-    echo Veuillez installer SDL_shadercross et vous assurer qu'il est accessible.
     exit /b 1
 )
 
+:: Création des répertoire source des shaders compilés
 if not exist "%OUT_DIR%\spirv" mkdir "%OUT_DIR%\spirv"
 if not exist "%OUT_DIR%\dxil" mkdir "%OUT_DIR%\dxil"
+if not exist "%OUT_DIR%\json" mkdir "%OUT_DIR%\json"
 
+:: Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et JSON (réflexion des ressources shaders)
+:: Via le binaire SDL_shadercross
 for %%f in (%SRC_DIR%\*.hlsl) do (
-    for %%e in (spirv dxil) do (
-        %SHADERCROSS% "%%f" -o "%OUT_DIR%\%%e\%%~nf.%%e"
-    )
+    set "filename=%%~nf"
+
+    call %SHADERCROSS% "%%f" -o "%OUT_DIR%\spirv\%%~nf.spv"
+    call %SHADERCROSS% "%%f" -o "%OUT_DIR%\dxil\%%~nf.dxil"
+    call %SHADERCROSS% "%%f" -o "%OUT_DIR%\json\%%~nf.json"
 )
 
-echo Ignorer la compilation des shaders MSL sur Windows.
+:: Récupération du répertoire de sortie absolu des shaders compilés
+pushd "%OUT_DIR%"
+set ABS_OUT_DIR=%CD%
+popd
+
+:: Affichage des résultats
+echo Ignore la compilation des shaders MSL sur Windows.
 echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12) terminée.
 echo Les shaders compilés sont disponibles dans le répertoire de sortie :
-echo %OUT_DIR%
-echo SPIR-V (Vulkan) : %OUT_DIR%\spirv
-echo DXIL (Direct3D12) : %OUT_DIR%\dxil
+echo %ABS_OUT_DIR%
+echo SPIR-V (Vulkan) : %ABS_OUT_DIR%\spirv
+echo DXIL (Direct3D12) : %ABS_OUT_DIR%\dxil
+echo JSON (réflexion des ressources shaders) : %ABS_OUT_DIR%\json
 
 endlocal
