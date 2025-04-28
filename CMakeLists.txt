@@ -76,7 +76,7 @@ else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-error=strict-prototypes -Wno-newline-eof")
 endif()
 
-# SDL3, SDL3_ttf, SDL3_image : 
+# SDL3_ttf, SDL3_image, SDL3_mixer : 
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
 # mais de les utiliser à partir du répertoire "vendored", dont également les submodules
 # des repositories de SDL3_ttf, SDL3_mixer et SDL3_image
@@ -84,7 +84,7 @@ set(SDLTTF_VENDORED ON)
 set(SDLIMAGE_VENDORED ON)
 #set(SDLMIXER_VENDORED ON)
 
-# SDL3_image : Désactiver explicitement tous les formats qui sont activé par défault, sauf PNG et SVG
+# SDL3_image : Désactiver explicitement tous les formats qui sont activé par défault, sauf : PNG et SVG
 set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
 set(SDLIMAGE_BMP OFF CACHE BOOL "" FORCE)
 set(SDLIMAGE_GIF OFF CACHE BOOL "" FORCE)
@@ -109,125 +109,14 @@ add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
-# Sources du projet
-file(GLOB_RECURSE SOURCES
-  "${PROJECT_SOURCE_DIR}/src/*.c"
-)
-
-# Choisir entre bibliothèque partagée ou statique
-if(RC2D_BUILD_SHARED_LIBS)
-  add_library(${PROJECT_NAME} SHARED ${SOURCES})
-else()
-  add_library(${PROJECT_NAME} STATIC ${SOURCES})
-  # Rajouter le suffixe "_static" au nom de la bibliothèque statique, pour éviter les conflits
-  set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
-endif()
-
-# Inclure les répertoires d'en-tête (headers)
-target_include_directories(${PROJECT_NAME} PRIVATE
-  "${PROJECT_SOURCE_DIR}/include"
-  "${PROJECT_SOURCE_DIR}/include/external"
-)
-
-# OpenSSL
-if(APPLE)
-  # OpenSSL via XCFramework : macOS, iOS, tvOS
-  if(NOT DEFINED OPENSSL_APPLE_VERSION)
-    set(OPENSSL_APPLE_VERSION "3.3.3001" CACHE STRING "OpenSSL version" FORCE)
-  endif()
-
-  set(OPENSSL_XCFRAMEWORK_URL "https://github.com/krzyzanowskim/OpenSSL/releases/download/${OPENSSL_APPLE_VERSION}/OpenSSL.xcframework.zip")
-  set(OPENSSL_XCFRAMEWORK_ZIP "${CMAKE_BINARY_DIR}/OpenSSL.xcframework.zip")
-  set(OPENSSL_XCFRAMEWORK_DIR "${CMAKE_BINARY_DIR}/OpenSSL.xcframework")
-
-  if(NOT EXISTS "${OPENSSL_XCFRAMEWORK_DIR}")
-      file(DOWNLOAD "${OPENSSL_XCFRAMEWORK_URL}" "${OPENSSL_XCFRAMEWORK_ZIP}"
-        SHOW_PROGRESS
-        STATUS OPENSSL_DOWNLOAD_STATUS)
-      list(GET OPENSSL_DOWNLOAD_STATUS 0 STATUS_CODE)
-      if(NOT STATUS_CODE EQUAL 0)
-          message(FATAL_ERROR "Failed to download OpenSSL.xcframework.zip: ${OPENSSL_DOWNLOAD_STATUS}")
-      endif()
-      execute_process(
-          COMMAND ${CMAKE_COMMAND} -E tar xzf "${OPENSSL_XCFRAMEWORK_ZIP}"
-          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-          RESULT_VARIABLE EXTRACT_RESULT
-      )
-      if(NOT EXTRACT_RESULT EQUAL 0)
-          message(FATAL_ERROR "Failed to extract OpenSSL.xcframework.zip")
-      endif()
-  endif()
-
-  target_link_libraries(${PROJECT_NAME} PRIVATE "${OPENSSL_XCFRAMEWORK_DIR}")
-elseif(WIN32)
-  # Windows => Détection dynamique architecture (x64 ou ARM64)
-  include(CheckCCompilerFlag)
-  string(TOLOWER "${CMAKE_GENERATOR_PLATFORM}" GENERATOR_PLATFORM_LOWER)
-  
-  if(GENERATOR_PLATFORM_LOWER STREQUAL "arm64")
-    set(WINDOWS_ARCH_DIR "arm64")
-  else()
-    # Par défaut, x64
-    set(WINDOWS_ARCH_DIR "x64")
-  endif()
-
-  # Librairies OpenSSL précompilées statiques pour Windows
-  target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
-  target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
-  
-  # Link avec les libs statiques
-  target_link_libraries(${PROJECT_NAME} PRIVATE libssl_static libcrypto_static Crypt32)
-elseif(ANDROID)
-  target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/include")
-  target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/lib")
-  target_link_libraries(${PROJECT_NAME} PRIVATE ssl crypto)
-elseif(UNIX AND NOT APPLE)
-  target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Linux/include")
-  target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Linux/lib")
-  target_link_libraries(${PROJECT_NAME} PRIVATE libssl_static libcrypto_static Crypt32)
-endif()
-
-# Link les dépendances (librairies communes à tous les plateformes)
-target_link_libraries(${PROJECT_NAME} PRIVATE
-  #SDL3_mixer::SDL3_mixer -> FIXME: SDL3_mixer n'ai pas encore disponible
-  SDL3_image::SDL3_image
-  SDL3_ttf::SDL3_ttf
-  SDL3::SDL3
-  libssl_static # OpenSSL
-  libcrypto_static # OpenSSL
-  Crypt32 # OpenSSL Windows CryptoAPI
-  ws2_32 # OpenSSL Windows Winsock2
-)
-
-# Génération des sorties
-if(APPLE)
-  # Pour Apple (macOS, iOS, tvOS) générer un bundle cross-platform : XCFramework
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/xcframework
-    COMMAND xcodebuild -create-xcframework
-      -library $<TARGET_FILE:${PROJECT_NAME}>
-      -headers ${PROJECT_SOURCE_DIR}/include
-      -output ${CMAKE_BINARY_DIR}/xcframework/${PROJECT_NAME}.xcframework
-  )
-endif()
-
-# Pour les exemples
-if(RC2D_BUILD_EXAMPLES)
-  # Ajouter le fichier de l'exemple
-  set(RC2D_EXAMPLE_SOURCES "${PROJECT_SOURCE_DIR}/examples/main.c")
-
-  # Créer un exécutable pour l'exemple
-  add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
-
-  # Inclure les headers du projet rc2d et external
-  target_include_directories(rc2d_example PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-    "${PROJECT_SOURCE_DIR}/include/external"
-  )
-
-  # OpenSSL
+# Fonction pour OpenSSL :
+# - Sur les plateformes Apple (macOS, iOS, tvOS) : utilise XCFramework, on télécharge et extrait OpenSSL.xcframework
+# - Sur Windows : utilise les librairies précompilées statiques de Crzgames_LibCpp_Windows
+# - Sur Android : à faire
+# - Sur Linux : à faire
+# Puis lors de l'appel de la fonction, on link les librairies OpenSSL avec le target_name
+function(rc2d_configure_openssl target_name)
   if(APPLE)
-    # OpenSSL via XCFramework : macOS, iOS, tvOS
     if(NOT DEFINED OPENSSL_APPLE_VERSION)
       set(OPENSSL_APPLE_VERSION "3.3.3001" CACHE STRING "OpenSSL version" FORCE)
     endif()
@@ -254,51 +143,118 @@ if(RC2D_BUILD_EXAMPLES)
         endif()
     endif()
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE "${OPENSSL_XCFRAMEWORK_DIR}")
+    target_link_libraries(${target_name} PRIVATE "${OPENSSL_XCFRAMEWORK_DIR}")
   elseif(WIN32)
-    # Windows => Détection dynamique architecture (x64 ou ARM64)
-    include(CheckCCompilerFlag)
     string(TOLOWER "${CMAKE_GENERATOR_PLATFORM}" GENERATOR_PLATFORM_LOWER)
-    
+
+    # Détection dynamique architecture (x64 ou ARM64)
     if(GENERATOR_PLATFORM_LOWER STREQUAL "arm64")
       set(WINDOWS_ARCH_DIR "arm64")
     else()
-      # Par défaut, x64
       set(WINDOWS_ARCH_DIR "x64")
     endif()
 
     # Librairies OpenSSL précompilées statiques pour Windows
-    target_include_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
-    target_link_directories(rc2d_example PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
+    target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
 
-    # Linker les dépendances SDL3, SDL3_ttf, SDL3_image, SDL3_mixer, OpenSSL et RC2D
-    target_link_libraries(rc2d_example PRIVATE
-      SDL3_image::SDL3_image
-      SDL3_ttf::SDL3_ttf
-      SDL3::SDL3
-      libssl_static # OpenSSL
+    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
+
+    target_link_libraries(${target_name} PRIVATE
+      libssl_static    # OpenSSL
       libcrypto_static # OpenSSL
-      Crypt32 # OpenSSL Windows CryptoAPI
-      ws2_32 # OpenSSL Windows Winsock2
-      ${PROJECT_NAME} # RC2D
+      Crypt32          # OpenSSL Windows CryptoAPI
+      ws2_32           # OpenSSL Windows Winsock2
     )
   elseif(ANDROID)
-    target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/include")
-    target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Android/lib")
-    target_link_libraries(${PROJECT_NAME} PRIVATE ssl crypto)
+
   elseif(UNIX AND NOT APPLE)
-    target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Linux/include")
-    target_link_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Linux/lib")
-    target_link_libraries(${PROJECT_NAME} PRIVATE libssl_static libcrypto_static Crypt32)
+
   endif()
+endfunction()
+
+# Headers de RC2D + les lib qui sont dans le répertoire "external"
+function(rc2d_include_headers target_name)
+  target_include_directories(${target_name} PRIVATE
+    "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}/include/external"
+  )
+endfunction()
+
+# Sources du projet RC2D
+file(GLOB_RECURSE SOURCES
+  "${PROJECT_SOURCE_DIR}/src/*.c"
+)
+
+# Choisir entre bibliothèque dynamique/partagées ou statique pour RC2D
+if(RC2D_BUILD_SHARED_LIBS)
+  add_library(${PROJECT_NAME} SHARED ${SOURCES})
+else()
+  add_library(${PROJECT_NAME} STATIC ${SOURCES})
+  # Rajouter le suffixe "_static" au nom de la bibliothèque statique, pour éviter les conflits
+  set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
 endif()
 
-# Pour les tests unitaires
+# Inclure les répertoires d'en-tête (headers)
+rc2d_include_headers(${PROJECT_NAME})
+
+# Link les dépendances communes à toutes les plateformes
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  #SDL3_mixer::SDL3_mixer -> FIXME: SDL3_mixer n'ai pas encore disponible
+  SDL3_image::SDL3_image
+  SDL3_ttf::SDL3_ttf
+  SDL3::SDL3
+)
+
+# Linker la dépendance OpenSSL non commune à toutes les plateformes
+# Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
+rc2d_configure_openssl(${PROJECT_NAME})
+
+# Génération des sorties pour RC2D
+if(APPLE)
+  # Pour Apple (macOS, iOS, tvOS) générer un bundle cross-platform : XCFramework
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/xcframework
+    COMMAND xcodebuild -create-xcframework
+      -library $<TARGET_FILE:${PROJECT_NAME}>
+      -headers ${PROJECT_SOURCE_DIR}/include
+      -output ${CMAKE_BINARY_DIR}/xcframework/${PROJECT_NAME}.xcframework
+  )
+endif()
+
+# Pour l'exemple RC2D
+if(RC2D_BUILD_EXAMPLES)
+  # Ajouter les fichiers source de l'exemple
+    # Cela inclut tous les fichiers .c dans le répertoire "examples" et ses sous-répertoires
+  file(GLOB_RECURSE RC2D_EXAMPLE_SOURCES
+    "${PROJECT_SOURCE_DIR}/examples/*.c"
+  )
+
+  # Créer un exécutable pour l'exemple
+  add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
+
+  # Inclure les répertoires d'en-tête (headers)
+  rc2d_include_headers(rc2d_example)
+
+  # Linker la dépendance OpenSSL non commune à toutes les plateformes
+  # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
+  rc2d_configure_openssl(rc2d_example)
+
+  # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
+  target_link_libraries(rc2d_example PRIVATE
+    SDL3_image::SDL3_image
+    SDL3_ttf::SDL3_ttf
+    SDL3::SDL3
+    ${PROJECT_NAME} # RC2D
+  )
+endif()
+
+# Pour les tests unitaires RC2D
 if(RC2D_BUILD_TESTS)
   enable_testing()
 
-  # Ajouter les fichiers des tests unitaires
-  # Cela inclut tous les fichiers .c dans le répertoire tests et ses sous-répertoires
+  # Ajouter les fichiers source des tests unitaires
+  # Cela inclut tous les fichiers .c dans le répertoire "tests" et ses sous-répertoires
   file(GLOB_RECURSE RC2D_TEST_SOURCES
     "${PROJECT_SOURCE_DIR}/tests/*.c"
   )
@@ -306,25 +262,28 @@ if(RC2D_BUILD_TESTS)
   # Créer un exécutable pour les tests
   add_executable(rc2d_tests ${RC2D_TEST_SOURCES})
 
-  # Inclure les headers du projet rc2d dans les tests
-  # Cela permet d'accéder aux fichiers d'en-tête de la bibliothèque RC2D
-  target_include_directories(rc2d_tests PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-  )
+  # Inclure les répertoires d'en-tête (headers)
+  rc2d_include_headers(rc2d_tests)
 
-  # Linker la lib RC2D avec le binaire de test
-  target_link_libraries(rc2d_tests PRIVATE ${PROJECT_NAME})
+  # Linker la dépendance OpenSSL non commune à toutes les plateformes
+  # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
+  rc2d_configure_openssl(rc2d_tests)
 
-  # Linker Criterion selon l'OS
-  if(UNIX)
-    find_library(CRITERION_LIB criterion REQUIRED)
-    target_link_libraries(rc2d_tests PRIVATE ${CRITERION_LIB})
+  # Linker Criterion selon la plateforme
+  if(APPLE)
   elseif(WIN32)
-    # Sous Windows : on suppose l’utilisation de vcpkg ou autre gestionnaire
-    # Sinon, il faudra builder Criterion et linker manuellement
-    find_package(Criterion REQUIRED)
-    target_link_libraries(rc2d_tests PRIVATE Criterion::Criterion)
+  
+  elseif(LINUX)
+
   endif()
+
+  # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
+  target_link_libraries(rc2d_tests PRIVATE
+    SDL3_image::SDL3_image
+    SDL3_ttf::SDL3_ttf
+    SDL3::SDL3
+    ${PROJECT_NAME} # RC2D
+  )
 
   # Permet de lancer les tests avec la commande "ctest" intégrée dans CMake
   add_test(NAME RC2D_AllTests COMMAND rc2d_tests)

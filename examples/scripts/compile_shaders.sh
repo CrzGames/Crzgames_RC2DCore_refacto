@@ -20,7 +20,7 @@ SHADERCROSS="shadercross"
 SRC_DIR="../shaders/src"
 OUT_DIR="../shaders/compiled"
 
-# Vérification de l'existence de SDL_shadercross
+# Vérification de l'existence du binaire de SDL_shadercross
 if ! command -v $SHADERCROSS &> /dev/null; then
     echo "Erreur : SDL_shadercross n'est pas installé ou n'est pas dans le PATH."
     echo "Veuillez installer SDL_shadercross et vous assurer qu'il est accessible."

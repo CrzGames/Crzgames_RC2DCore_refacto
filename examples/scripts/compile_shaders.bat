@@ -14,16 +14,16 @@ setlocal
 :: 4. Les shaders SPIR-V (Vulkan) seront dans ..\shaders\compiled\spirv
 :: 5. Les shaders DXIL (Direct3D12) seront dans ..\shaders\compiled\dxil
 
-:: Vérification de l'existence de SDL_shadercross
-if not exist "shadercross.exe" (
-    echo SDL_shadercross n'est pas trouvé dans le répertoire courant.
-    echo Assurez-vous que SDL_shadercross est installé et disponible dans votre PATH.
-    exit /b 1
-)
-
-set SHADERCROSS=shadercross.exe
+set SHADERCROSS=shadercross
 set SRC_DIR=..\shaders\src
 set OUT_DIR=..\shaders\compiled
+
+:: Vérification de l'existence du binaire SDL_shadercross
+if not exist "%SHADERCROSS%" (
+    echo Erreur : SDL_shadercross n'est pas installé ou n'est pas dans le PATH.
+    echo Veuillez installer SDL_shadercross et vous assurer qu'il est accessible.
+    exit /b 1
+)
 
 if not exist "%OUT_DIR%\spirv" mkdir "%OUT_DIR%\spirv"
 if not exist "%OUT_DIR%\dxil" mkdir "%OUT_DIR%\dxil"
