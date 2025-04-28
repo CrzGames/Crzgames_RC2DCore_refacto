@@ -29,6 +29,14 @@ fi
 # Création des répertoire source des shaders compilés
 mkdir -p "$OUT_DIR/spirv" "$OUT_DIR/dxil" "$OUT_DIR/msl" "$OUT_DIR/json"
 
+# Concernant la version MSL (Metal), il est recommandé de spécifier explicitement le modèle de version cible.
+# SDL_shadercross utilise par défaut MSL 1.2 pour garantir une compatibilité maximale avec d'anciens appareils.
+# Cependant, l'API GPU SDL3 impose des exigences matérielles minimales (macOS 10.14+, iOS/tvOS 13.0+, A9 ou Intel Mac2 GPU minimum),
+# MSL 2.1 ou supérieur systématiquement disponible sur ces appareils.
+# Garder la version 1.2 par défaut n'est donc pas cohérent avec les exigences de SDL3.
+# Il est fortement conseillé d'utiliser --msl-version 2.1 (ou supérieur) pour compiler les shaders Metal destinés à SDL3 GPU API.
+MSL_VERSION="2.1"
+
 # Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal) et JSON (réflexion des ressources shaders)
 # Via le binaire SDL_shadercross
 for file in "$SRC_DIR"/*.hlsl; do
@@ -36,7 +44,7 @@ for file in "$SRC_DIR"/*.hlsl; do
 
     $SHADERCROSS "$file" -o "$OUT_DIR/spirv/$filename.spv"
     $SHADERCROSS "$file" -o "$OUT_DIR/dxil/$filename.dxil"
-    $SHADERCROSS "$file" -o "$OUT_DIR/msl/$filename.msl"
+    $SHADERCROSS "$file" -o "$OUT_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
     $SHADERCROSS "$file" -o "$OUT_DIR/json/$filename.json"
 done
 
