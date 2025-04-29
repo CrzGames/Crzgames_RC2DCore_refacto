@@ -120,7 +120,7 @@ for %%f in (%SRC_DIR%\*.hlsl) do (
 :: Si aucun fichier .hlsl n'est trouvé, le script affiche un message d'erreur et se termine.
 :found
 if "%FOUND_HLSL%"=="false" (
-    call :print_red "Aucun shader HLSL (.hlsl) trouve dans le repertoire :"
+    call :print_red "Aucun shader source HLSL (.hlsl) trouve dans le repertoire :"
     call :print_red "%ABS_SRC_DIR%"
     exit /b 0
 )
