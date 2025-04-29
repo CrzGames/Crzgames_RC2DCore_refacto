@@ -44,8 +44,8 @@ extern "C" {
  * - libvkd3d-shader.dylib : ?
  * - libvkd3d-utils.dylib : Bibliothèque utilitaire pour VKD3D.
  */
-#ifndef RC2D_SHADER_HOT_RELOAD_ENABLED
-#define RC2D_SHADER_HOT_RELOAD_ENABLED 0
+#ifndef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+#define RC2D_GPU_SHADER_HOT_RELOAD_ENABLED 0
 #endif
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
