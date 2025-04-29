@@ -43,7 +43,7 @@ popd
 
 :: Vérification de l'existence du binaire shadercross local
 if not exist "%ABS_SHADERCROSS%" (
-    call ::print_red "Erreur : Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouver a l'emplacement suivant :"
+    call ::print_red "Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouver a l'emplacement suivant :"
     call ::print_red "%ABS_SHADERCROSS%"
     call ::print_red "Veuillez vous assurer que le binaire et ces dependances sont presents dans le repertoire specifier."
     exit /b 1
@@ -114,25 +114,25 @@ call ::print_green "%ABS_OUT_REFLECTION_DIR%"
 endlocal
 
 :: ---------------------------------------
-:: Fonctions d'affichage coloré
+:: Fonctions d'affichage coloré avec préfixes
 :: ---------------------------------------
 :print_red
     setlocal
     set "TEXT=%~1"
-    echo [31m%TEXT%[0m
+    echo [31m[ERROR] %TEXT%[0m
     endlocal
     goto :eof
 
 :print_green
     setlocal
     set "TEXT=%~1"
-    echo [32m%TEXT%[0m
+    echo [32m[INFO] %TEXT%[0m
     endlocal
     goto :eof
 
 :print_success
     setlocal
     set "TEXT=%~1"
-    echo [32m%TEXT%[0m
+    echo [32m[SUCCESS] %TEXT%[0m
     endlocal
     goto :eof

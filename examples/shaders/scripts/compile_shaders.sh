@@ -35,18 +35,18 @@ OUT_REFLECTION_DIR="../reflection"
 COMPILED_COUNT=0
 
 # ------------------------------------------------
-# Fonctions d'affichage coloré
+# Fonctions d'affichage coloré avec préfixes
 # ------------------------------------------------
 print_red() {
-    echo -e "\033[31m$1\033[0m"
+    echo -e "\033[31m[ERROR] $1\033[0m"
 }
 
 print_green() {
-    echo -e "\033[32m$1\033[0m"
+    echo -e "\033[32m[INFO] $1\033[0m"
 }
 
 print_success() {
-    echo -e "\033[32m$1\033[0m"
+    echo -e "\033[32m[SUCCESS] $1 ✅\033[0m"
 }
 
 # Résoudre le chemin absolu du binaire shadercross
@@ -57,7 +57,7 @@ ABS_SRC_DIR="$(cd "$(dirname "$SRC_DIR")" && pwd)/$(basename "$SRC_DIR")"
 
 # Vérification de l'existence du binaire shadercross local
 if [ ! -f "$ABS_SHADERCROSS" ]; then
-    print_red "Erreur : Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouver à l'emplacement suivant :"
+    print_red "Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouver à l'emplacement suivant :"
     print_red "$ABS_SHADERCROSS"
     print_red "Veuillez vous assurer que le binaire et ses dependances sont presents dans le repertoire specifier."
     exit 1
