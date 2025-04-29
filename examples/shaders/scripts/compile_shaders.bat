@@ -81,14 +81,6 @@ if "%HAS_ONLY_OPTION%"=="true" (
     set COMPILE_MSL=true
 )
 
-:: Debug : Afficher l'état des variables après parsing
-echo DEBUG: COMPILE_SPIRV=%COMPILE_SPIRV%
-echo DEBUG: COMPILE_DXIL=%COMPILE_DXIL%
-echo DEBUG: COMPILE_MSL=%COMPILE_MSL%
-echo DEBUG: COMPILE_JSON=%COMPILE_JSON%
-echo DEBUG: MSL_VERSION=%MSL_VERSION%
-echo DEBUG: HAS_ONLY_OPTION=%HAS_ONLY_OPTION%
-
 :: ==================================================
 :: Variables de chemins
 :: ==================================================
