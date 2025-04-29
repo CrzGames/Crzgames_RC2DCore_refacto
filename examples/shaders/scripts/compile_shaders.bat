@@ -70,7 +70,7 @@ if not exist "%OUT_COMPILED_DIR%\dxil" mkdir "%OUT_COMPILED_DIR%\dxil"
 if not exist "%OUT_COMPILED_DIR%\msl" mkdir "%OUT_COMPILED_DIR%\msl"
 if not exist "%OUT_REFLECTION_DIR%" mkdir "%OUT_REFLECTION_DIR%"
 
-:: Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et JSON (réflexion des ressources shaders)
+:: Compilation des shaders HLSL vers SPIR-V (Vulkan), Metal (MSL), DXIL (Direct3D12) et JSON (réflexion des ressources shaders)
 :: Via le binaire SDL_shadercross
 for %%f in (%SRC_DIR%\*.hlsl) do (
     set "filename=%%~nf"
@@ -102,7 +102,7 @@ echo.
 call :print_success "%COMPILED_COUNT% shader(s) compile(s) avec succes ✅"
 echo.
 echo Ignore la compilation des shaders MSL sur Windows.
-echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12) terminer.
+echo Compilation des shaders source HLSL vers SPIR-V (Vulkan), Metal (MSL) et DXIL (Direct3D12) terminer.
 echo Compilation des fichiers JSON de reflexion des ressources shaders terminer.
 echo Les shaders compiler sont disponibles dans les repertoires de sortie :
 echo SPIR-V (Vulkan) : 
