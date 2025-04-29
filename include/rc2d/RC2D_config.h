@@ -9,7 +9,7 @@ extern "C" {
 /**
  * \brief Si RC2D_SHADER_HOT_RELOAD_ENABLED est défini à 1, le support des shaders en ligne est activé.
  * 
- * Shaders en ligne (1): à chaud, pendant l'exécution du jeu, avec hot reload.
+ * Shaders en ligne (1) : à chaud, pendant l'exécution du jeu, avec hot reload.
  * Shader hors ligne (0) : pré-compilation avant l'exécution du jeu, sans hot reload.
  * 
  * Cette option permet d'activer le rechargement à chaud des shaders, ce qui signifie que les shaders peuvent être 
