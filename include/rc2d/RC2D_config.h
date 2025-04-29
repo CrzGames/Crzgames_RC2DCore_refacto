@@ -16,7 +16,7 @@ extern "C" {
  * rechargés sans avoir à redémarrer l'application. Permet lors de la modification des source d'un shader HLSL de
  * voir le résultat immédiatement en cours d'exécution dans l'application.
  * 
- * \note Cette fonctionnalité est utile pour le développement, mais peut avoir un impact sur les performances.
+ * \note Cette fonctionnalité est utile pour le développement, mais cela engendre une surcharge à l'exécution.
  * Il est donc fortement recommandé de la désactiver pour les versions de production et d'utiliser les shaders hors ligne.
  * Ce qui évitera également d'embarquer les bibliothèques tiers dans l'application.
  * 
