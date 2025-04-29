@@ -229,7 +229,7 @@ goto :eof
 :print_help
 echo.
 echo ===========================================
-echo Compilation de shaders hors-ligne - RC2D
+echo Compilation de shaders hors ligne - RC2D
 echo ===========================================
 echo.
 echo Compatibilite : 
