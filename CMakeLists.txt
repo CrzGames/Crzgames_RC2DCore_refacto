@@ -230,12 +230,13 @@ if(RC2D_BUILD_EXAMPLES)
     "${PROJECT_SOURCE_DIR}/examples/src/*.c"
   )
 
-  target_include_directories(rc2d_example PRIVATE
-    "${PROJECT_SOURCE_DIR}/examples/include"
-  )
-
   # Créer un exécutable pour l'exemple
   add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
+
+  # Les fichiers d'en-tête (headers) de l'exemple sont dans le répertoire "examples/include"
+  target_include_directories(rc2d_example PRIVATE
+  "${PROJECT_SOURCE_DIR}/examples/include"
+  )
 
   # Inclure les répertoires d'en-tête (headers)
   rc2d_include_headers(rc2d_example)
