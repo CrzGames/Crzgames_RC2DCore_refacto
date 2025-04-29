@@ -5,6 +5,7 @@
 #include <RC2D/RC2D_asyncio.h>
 #include <RC2D/RC2D_audio.h>
 #include <RC2D/RC2D_collision.h>
+#include <RC2D/RC2D_config.h>
 #include <RC2D/RC2D_data.h>
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_event.h>
