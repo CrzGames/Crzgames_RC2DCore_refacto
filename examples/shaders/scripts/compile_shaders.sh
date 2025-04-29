@@ -48,9 +48,9 @@ ABS_SHADERCROSS="$(cd "$(dirname "$RELATIVE_SHADERCROSS")" && pwd)/$(basename "$
 
 # Vérification de l'existence du binaire shadercross local
 if [ ! -f "$ABS_SHADERCROSS" ]; then
-    print_red "Erreur : Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouvé à l'emplacement suivant :"
+    print_red "Erreur : Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouver à l'emplacement suivant :"
     print_red "$ABS_SHADERCROSS"
-    print_red "Veuillez vous assurer que le binaire et ses dépendances sont présents dans le répertoire spécifié."
+    print_red "Veuillez vous assurer que le binaire et ses dependances sont presents dans le repertoire specifier."
     exit 1
 fi
 
@@ -84,14 +84,14 @@ ABS_COMPILED_DIR="$(cd "$OUT_COMPILED_DIR" && pwd)"
 ABS_REFLECTION_DIR="$(cd "$OUT_REFLECTION_DIR" && pwd)"
 
 # Affichage des logs pour information
-echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), MSL (Metal) et DXIL (Direct3D12) terminée."
-echo "Compilation des fichiers JSON de réflexion des ressources shaders terminée."
-echo "Les shaders compilés sont disponibles dans les répertoires de sortie :"
+echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), MSL (Metal) et DXIL (Direct3D12) terminer."
+echo "Compilation des fichiers JSON de reflexion des ressources shaders terminer."
+echo "Les shaders compiler sont disponibles dans les repertoires de sortie :"
 echo "SPIR-V (Vulkan) :" 
 print_green "$ABS_COMPILED_DIR/spirv"
 echo "MSL (Metal) :" 
 print_green "$ABS_COMPILED_DIR/msl"
 echo "DXIL (Direct3D12) :"
 print_green "$ABS_COMPILED_DIR/dxil"
-echo "Les fichiers JSON de réflexion des ressources shaders sont disponibles dans le répertoire de sortie :"
+echo "Les fichiers JSON de reflexion des ressources shaders sont disponibles dans le repertoire de sortie :"
 print_green "$ABS_REFLECTION_DIR"

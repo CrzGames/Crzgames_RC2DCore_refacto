@@ -52,7 +52,7 @@ if not exist "%OUT_REFLECTION_DIR%" mkdir "%OUT_REFLECTION_DIR%"
 :: Via le binaire SDL_shadercross
 for %%f in (%SRC_DIR%\*.hlsl) do (
     set "filename=%%~nf"
-    
+
     call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\spirv\%%~nf.spv"
     call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\dxil\%%~nf.dxil"
     call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_REFLECTION_DIR%\%%~nf.json"
@@ -70,14 +70,14 @@ popd
 
 :: Affichage des logs pour information
 echo Ignore la compilation des shaders MSL sur Windows.
-echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12) terminée.
-echo Compilation des fichiers JSON de réflexion des ressources shaders terminée.
-echo Les shaders compilés sont disponibles dans les répertoires de sortie :
+echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12) terminer.
+echo Compilation des fichiers JSON de reflexion des ressources shaders terminer.
+echo Les shaders compiler sont disponibles dans les repertoires de sortie :
 echo SPIR-V (Vulkan) : 
 call ::print_green "%ABS_OUT_COMPILED_DIR%\spirv"
 echo DXIL (Direct3D12) : 
 call ::print_green "%ABS_OUT_COMPILED_DIR%\dxil"
-echo Les fichiers JSON de réflexion des ressources shaders sont disponibles dans le répertoire de sortie :
+echo Les fichiers JSON de reflexion des ressources shaders sont disponibles dans le repertoire de sortie :
 call ::print_green "%ABS_OUT_REFLECTION_DIR%"
 
 endlocal
