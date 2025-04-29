@@ -263,6 +263,7 @@ echo     et JSON (reflexion des ressources shaders) en utilisant le binaire shad
 echo.
 echo     Les shaders source HLSL doivent etre places dans le repertoire ../src.
 echo     Les shaders compiles seront places dans le repertoire ../compiled.
+echo     Les fichiers JSON de reflexion des ressources shaders seront places dans le repertoire ../reflection.
 echo.
 echo     Repertoires de sortie :
 echo         ../compiled/spirv : shaders SPIR-V (Vulkan)
