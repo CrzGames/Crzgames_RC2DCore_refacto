@@ -5,9 +5,9 @@ setlocal
 :: Configuration par défaut
 :: ==================================================
 set MSL_VERSION=2.1
-set COMPILE_SPIRV=true
-set COMPILE_DXIL=true
-set COMPILE_MSL=true
+set COMPILE_SPIRV=false
+set COMPILE_DXIL=false
+set COMPILE_MSL=false
 set COMPILE_JSON=true
 set HAS_ONLY_OPTION=false
 
@@ -33,38 +33,39 @@ if /i "%~1"=="--msl-version" (
     set MSL_VERSION=%~2
     shift
     shift
+    goto parse_args
 )
 
 if /i "%~1"=="--only-spirv" (
     set COMPILE_SPIRV=true
     set HAS_ONLY_OPTION=true
     shift
+    goto parse_args
 )
 
 if /i "%~1"=="--only-dxil" (
     set COMPILE_DXIL=true
     set HAS_ONLY_OPTION=true
     shift
+    goto parse_args
 )
 
 if /i "%~1"=="--only-msl" (
     set COMPILE_MSL=true
     set HAS_ONLY_OPTION=true
     shift
+    goto parse_args
 )
 
 if /i "%~1"=="--no-json" (
     set COMPILE_JSON=false
     shift
+    goto parse_args
 )
 
-if not "%~1"=="" (
-    call :print_red "Argument inconnu : %~1"
-    call :print_red "Utilisez --help pour afficher la liste des options disponibles."
-    exit /b 1
-)
-
-goto parse_args
+call :print_red "Argument inconnu : %~1"
+call :print_red "Utilisez --help pour afficher la liste des options disponibles."
+exit /b 1
 
 :end_args
 
@@ -73,7 +74,20 @@ if "%HAS_ONLY_OPTION%"=="true" (
     if not "%COMPILE_SPIRV%"=="true" set COMPILE_SPIRV=false
     if not "%COMPILE_DXIL%"=="true" set COMPILE_DXIL=false
     if not "%COMPILE_MSL%"=="true" set COMPILE_MSL=false
+) else (
+    :: Si aucune option --only-* n'a été utilisée, activer tous les formats par défaut
+    set COMPILE_SPIRV=true
+    set COMPILE_DXIL=true
+    set COMPILE_MSL=true
 )
+
+:: Debug : Afficher l'état des variables après parsing
+echo DEBUG: COMPILE_SPIRV=%COMPILE_SPIRV%
+echo DEBUG: COMPILE_DXIL=%COMPILE_DXIL%
+echo DEBUG: COMPILE_MSL=%COMPILE_MSL%
+echo DEBUG: COMPILE_JSON=%COMPILE_JSON%
+echo DEBUG: MSL_VERSION=%MSL_VERSION%
+echo DEBUG: HAS_ONLY_OPTION=%HAS_ONLY_OPTION%
 
 :: ==================================================
 :: Variables de chemins
@@ -120,10 +134,18 @@ if "%FOUND_HLSL%"=="false" (
 )
 
 :: Création des répertoires de sortie si nécessaire
-if not exist "%OUT_COMPILED_DIR%\spirv" mkdir "%OUT_COMPILED_DIR%\spirv"
-if not exist "%OUT_COMPILED_DIR%\dxil" mkdir "%OUT_COMPILED_DIR%\dxil"
-if not exist "%OUT_COMPILED_DIR%\msl" mkdir "%OUT_COMPILED_DIR%\msl"
-if not exist "%OUT_REFLECTION_DIR%" mkdir "%OUT_REFLECTION_DIR%"
+if "%COMPILE_SPIRV%"=="true" (
+    if not exist "%OUT_COMPILED_DIR%\spirv" mkdir "%OUT_COMPILED_DIR%\spirv"
+)
+if "%COMPILE_DXIL%"=="true" (
+    if not exist "%OUT_COMPILED_DIR%\dxil" mkdir "%OUT_COMPILED_DIR%\dxil"
+)
+if "%COMPILE_MSL%"=="true" (
+    if not exist "%OUT_COMPILED_DIR%\msl" mkdir "%OUT_COMPILED_DIR%\msl"
+)
+if "%COMPILE_JSON%"=="true" (
+    if not exist "%OUT_REFLECTION_DIR%" mkdir "%OUT_REFLECTION_DIR%"
+)
 
 :: Compilation des shaders HLSL vers SPIR-V (Vulkan), Metal (MSL), DXIL (Direct3D12) et JSON (réflexion des ressources shaders)
 :: Via le binaire SDL_shadercross
