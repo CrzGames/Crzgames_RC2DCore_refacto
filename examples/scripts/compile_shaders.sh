@@ -1,9 +1,24 @@
 #!/bin/bash
 
-# Compatibilité : Ce script est conçu pour fonctionner sur les systèmes Unix (Linux/macOS).
+# Compatibilité : 
+# Ce script est conçu pour fonctionner sur les systèmes Unix (Linux/macOS).
 
 # Documentation :
-# Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal) en utilisant SDL_shadercross.
+# Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal) et JSON (réflexion des ressources shaders).
+# Il utilise le binaire SDL_shadercross pour effectuer la compilation.
+# Les shaders source HLSL doivent être placés dans le répertoire ../shaders/src.
+# Les shaders compilés seront placés dans le répertoire ../shaders/compiled.
+# Les répertoires de sortie pour les shaders compilés sont organisés comme suit :
+# - ../shaders/compiled/spirv : pour les shaders SPIR-V (Vulkan)
+# - ../shaders/compiled/dxil : pour les shaders DXIL (Direct3D12)
+# - ../shaders/compiled/msl : pour les shaders MSL (Metal)
+# - ../shaders/compiled/json : pour les fichiers JSON de réflexion des ressources shaders
+# Le script vérifie d'abord si le binaire SDL_shadercross est installé et disponible dans le PATH.
+# Si le binaire n'est pas trouvé, le script affiche un message d'erreur et se termine.
+# Ensuite, il crée les répertoires de sortie nécessaires pour les shaders compilés.
+# Il compile chaque fichier HLSL dans le répertoire source en utilisant SDL_shadercross et génère les fichiers de sortie correspondants.
+# Le script utilise la version 2.1 de MSL (Metal) par défaut, mais vous pouvez modifier la variable MSL_VERSION pour spécifier une autre version si nécessaire.
+# Ce script est conçu pour être exécuté dans le répertoire racine du projet.
 
 # Utilisation :
 # 1. Assurez-vous que SDL_shadercross est installé et disponible dans votre PATH.
@@ -11,10 +26,6 @@
 # chmod +x scripts/compile_shaders.sh
 # 3. Exécutez le script :
 # ./scripts/compile_shaders.sh
-# 4. Les shaders compilés seront placés dans le répertoire de sortie spécifié : ..\shaders\compiled
-# 5. Les shaders SPIR-V (Vulkan) seront dans ..\shaders\compiled\spirv
-# 6. Les shaders DXIL (Direct3D12) seront dans ..\shaders\compiled\dxil
-# 7. Les shaders MSL (Metal) seront dans ..\shaders\compiled\msl
 
 SHADERCROSS="shadercross"
 SRC_DIR="../shaders/src"
@@ -52,8 +63,9 @@ done
 # Récupération du répertoire de sortie absolu des shaders compilés
 ABS_OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 
-# Affichage des résultats
+# Affichage des logs pour information
 echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal) terminée."
+echo "Compilation des fichiers JSON de réflexion des ressources shaders terminée."
 echo "Les shaders compilés sont disponibles dans le répertoire de sortie :"
 echo "$ABS_OUT_DIR"
 echo "SPIR-V (Vulkan) : $ABS_OUT_DIR/spirv"

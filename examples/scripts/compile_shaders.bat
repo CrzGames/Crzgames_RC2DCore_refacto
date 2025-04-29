@@ -1,18 +1,28 @@
 @echo off
 setlocal
 
-:: Compatibilité : Ce script est conçu pour fonctionner sur les systèmes Windows.
+:: Compatibilité : 
+:: Ce script est conçu pour fonctionner sur les systèmes Windows.
 
 :: Documentation :
-:: Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan) et DXIL (Direct3D12) en utilisant SDL_shadercross.
+:: Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12) et JSON (réflexion des ressources shaders).
+:: Il utilise le binaire SDL_shadercross pour effectuer la compilation.
+:: Les shaders source HLSL doivent être placés dans le répertoire ../shaders/src.
+:: Les shaders compilés seront placés dans le répertoire ../shaders/compiled.
+:: Les répertoires de sortie pour les shaders compilés sont organisés comme suit :
+:: - ../shaders/compiled/spirv : pour les shaders SPIR-V (Vulkan)
+:: - ../shaders/compiled/dxil : pour les shaders DXIL (Direct3D12)
+:: - ../shaders/compiled/json : pour les fichiers JSON de réflexion des ressources shaders
+:: Le script vérifie d'abord si le binaire SDL_shadercross est installé et disponible dans le PATH.
+:: Si le binaire n'est pas trouvé, le script affiche un message d'erreur et se termine.
+:: Ensuite, il crée les répertoires de sortie nécessaires pour les shaders compilés.
+:: Il compile chaque fichier HLSL dans le répertoire source en utilisant SDL_shadercross et génère les fichiers de sortie correspondants.
+:: Ce script est conçu pour être exécuté dans le répertoire racine du projet.
 
 :: Utilisation :
 :: 1. Assurez-vous que SDL_shadercross est installé et disponible dans votre PATH.
 :: 2. Exécutez le script :
 :: .\scripts\compile_shaders.bat
-:: 3. Les shaders compilés seront placés dans le répertoire de sortie spécifié : ..\shaders\compiled
-:: 4. Les shaders SPIR-V (Vulkan) seront dans ..\shaders\compiled\spirv
-:: 5. Les shaders DXIL (Direct3D12) seront dans ..\shaders\compiled\dxil
 
 set SHADERCROSS=shadercross
 set SRC_DIR=..\shaders\src
@@ -45,9 +55,10 @@ pushd "%OUT_DIR%"
 set ABS_OUT_DIR=%CD%
 popd
 
-:: Affichage des résultats
+:: Affichage des logs pour information
 echo Ignore la compilation des shaders MSL sur Windows.
 echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12) terminée.
+echo Compilation des fichiers JSON de réflexion des ressources shaders terminée.
 echo Les shaders compilés sont disponibles dans le répertoire de sortie :
 echo %ABS_OUT_DIR%
 echo SPIR-V (Vulkan) : %ABS_OUT_DIR%\spirv
