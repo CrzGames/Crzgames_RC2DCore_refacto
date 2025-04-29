@@ -23,7 +23,7 @@
 # Utilisation :
 # 1. Assurez-vous que SDL_shadercross est installé et disponible dans votre PATH.
 # 2. Rendez le script exécutable :
-# chmod +x scripts/compile_shaders.sh
+# chmod +x ./shaders/scripts/compile_shaders.sh
 # 3. Exécutez le script :
 # ./shaders/scripts/compile_shaders.sh
 
