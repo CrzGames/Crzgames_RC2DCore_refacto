@@ -231,7 +231,7 @@ if(RC2D_BUILD_EXAMPLES)
   )
 
   target_include_directories(rc2d_example PRIVATE
-  "${PROJECT_SOURCE_DIR}/examples/include"
+    "${PROJECT_SOURCE_DIR}/examples/include"
   )
 
   # Créer un exécutable pour l'exemple
