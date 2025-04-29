@@ -180,20 +180,20 @@ call :print_success "%COMPILED_COUNT% shader(s) compile(s) avec succes ✅"
 echo.
 
 if "%COMPILE_SPIRV%"=="true" (
-    echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) terminé.
+    echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) terminer.
 )
 if "%COMPILE_MSL%"=="true" (
-    echo Compilation des shaders source HLSL vers Metal (MSL) terminé.
+    echo Compilation des shaders source HLSL vers Metal (MSL) terminer.
 )
 if "%COMPILE_DXIL%"=="true" (
-    echo Compilation des shaders source HLSL vers DXIL (Direct3D12) terminé.
+    echo Compilation des shaders source HLSL vers DXIL (Direct3D12) terminer.
 )
 if "%COMPILE_JSON%"=="true" (
-    echo Compilation des fichiers JSON de reflexion des ressources shaders terminé.
+    echo Compilation des fichiers JSON de reflexion des ressources shaders terminer.
 )
 
 echo.
-echo Les shaders compilés sont disponibles dans les répertoires de sortie :
+echo Les shaders compiler sont disponibles dans les repertoires de sortie :
 echo.
 
 if "%COMPILE_SPIRV%"=="true" (
@@ -215,11 +215,10 @@ if "%COMPILE_DXIL%"=="true" (
 )
 
 if "%COMPILE_JSON%"=="true" (
-    echo JSON (réflexion des ressources shaders) :
+    echo JSON (reflexion des ressources shaders) :
     call :print_green "%ABS_OUT_REFLECTION_DIR%"
     echo.
 )
-
 
 endlocal
 goto :eof
