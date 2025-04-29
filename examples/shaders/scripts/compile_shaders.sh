@@ -5,26 +5,25 @@
 
 # Documentation :
 # Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal) et JSON (réflexion des ressources shaders).
-# Il utilise le binaire SDL_shadercross pour effectuer la compilation.
-# Les shaders source HLSL doivent être placés dans le répertoire ../shaders/src.
-# Les shaders compilés seront placés dans le répertoire ../shaders/compiled.
+# Il utilise le binaire shadercross de SDL3_shadercross pour effectuer la compilation des shaders.
+# Les shaders source HLSL doivent être placés dans le répertoire ../src.
+# Les shaders compilés seront placés dans le répertoire ../compiled.
 # Les répertoires de sortie pour les shaders compilés sont organisés comme suit :
-# - ../shaders/compiled/spirv : pour les shaders SPIR-V (Vulkan)
-# - ../shaders/compiled/dxil : pour les shaders DXIL (Direct3D12)
-# - ../shaders/compiled/msl : pour les shaders MSL (Metal)
-# - ../shaders/compiled/json : pour les fichiers JSON de réflexion des ressources shaders
-# Le script vérifie d'abord si le binaire SDL_shadercross est installé et disponible dans le PATH.
+# - ../compiled/spirv : pour les shaders SPIR-V (Vulkan)
+# - ../compiled/msl : pour les shaders MSL (Metal)
+# - ../compiled/dxil : pour les shaders DXIL (Direct3D12)
+# Le répertoire ../reflection contiendra les fichiers JSON de réflexion des ressources shaders.
+# Le script vérifie d'abord si le binaire shadercross de SDL3_shadercross est présent dans le répertoire ../tools.
 # Si le binaire n'est pas trouvé, le script affiche un message d'erreur et se termine.
-# Ensuite, il crée les répertoires de sortie nécessaires pour les shaders compilés.
+# Ensuite, il vérifie s'il existe des fichiers HLSL à compiler dans le répertoire ../src.
+# Si aucun fichier HLSL n'est trouvé, le script affiche un message d'erreur et se termine.
+# Si des fichiers HLSL sont trouvés, le script crée les répertoires de sortie nécessaires pour les shaders compilés.
 # Il compile chaque fichier HLSL dans le répertoire source en utilisant SDL_shadercross et génère les fichiers de sortie correspondants.
-# Le script utilise la version 2.1 de MSL (Metal) par défaut, mais vous pouvez modifier la variable MSL_VERSION pour spécifier une autre version si nécessaire.
-# Ce script est conçu pour être exécuté dans le répertoire racine du projet.
 
 # Utilisation :
-# 1. Assurez-vous que SDL_shadercross est installé et disponible dans votre PATH.
-# 2. Rendez le script exécutable :
+# 1. Rendez le script exécutable :
 # chmod +x ./shaders/scripts/compile_shaders.sh
-# 3. Exécutez le script :
+# 2. Exécutez le script :
 # ./shaders/scripts/compile_shaders.sh
 
 RELATIVE_SHADERCROSS="../tools/shadercross"
