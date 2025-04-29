@@ -32,6 +32,8 @@ SRC_DIR="../src"
 OUT_COMPILED_DIR="../compiled"
 OUT_REFLECTION_DIR="../reflection"
 
+COMPILED_COUNT=0
+
 # ------------------------------------------------
 # Fonctions d'affichage coloré
 # ------------------------------------------------
@@ -43,8 +45,15 @@ print_green() {
     echo -e "\033[32m$1\033[0m"
 }
 
+print_success() {
+    echo -e "\033[32m$1\033[0m"
+}
+
 # Résoudre le chemin absolu du binaire shadercross
 ABS_SHADERCROSS="$(cd "$(dirname "$RELATIVE_SHADERCROSS")" && pwd)/$(basename "$RELATIVE_SHADERCROSS")"
+
+# Résoudre le chemin absolu du répertoire source des shaders
+ABS_SRC_DIR="$(cd "$(dirname "$SRC_DIR")" && pwd)/$(basename "$SRC_DIR")"
 
 # Vérification de l'existence du binaire shadercross local
 if [ ! -f "$ABS_SHADERCROSS" ]; then
@@ -52,6 +61,17 @@ if [ ! -f "$ABS_SHADERCROSS" ]; then
     print_red "$ABS_SHADERCROSS"
     print_red "Veuillez vous assurer que le binaire et ses dependances sont presents dans le repertoire specifier."
     exit 1
+fi
+
+# Vérification s'il existe des fichiers .hlsl à compiler
+shopt -s nullglob
+HLSL_FILES=("$SRC_DIR"/*.hlsl)
+shopt -u nullglob
+
+if [ ${#HLSL_FILES[@]} -eq 0 ]; then
+    print_red "Aucun shader HLSL (.hlsl) trouvé dans le répertoire suivant :"
+    print_red "$ABS_SRC_DIR"
+    exit 0
 fi
 
 # Création des répertoires de sortie si nécessaire
@@ -71,10 +91,16 @@ MSL_VERSION="2.1"
 for file in "$SRC_DIR"/*.hlsl; do
     filename=$(basename "$file" .hlsl)
 
+    # Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal)
     "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/spirv/$filename.spv"
     "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/dxil/$filename.dxil"
     "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
+
+    # Compilation du fichier JSON de réflexion des ressources shaders
     "$ABS_SHADERCROSS" "$file" -o "$OUT_REFLECTION_DIR/$filename.json"
+
+    # Incrémentation du compteur de shaders compilés
+    COMPILED_COUNT=$((COMPILED_COUNT + 1))
 done
 
 # Récupération du répertoire de sortie absolu des shaders compilés
@@ -84,6 +110,9 @@ ABS_COMPILED_DIR="$(cd "$OUT_COMPILED_DIR" && pwd)"
 ABS_REFLECTION_DIR="$(cd "$OUT_REFLECTION_DIR" && pwd)"
 
 # Affichage des logs pour information
+echo ""
+print_success "$COMPILED_COUNT shader(s) compile(s) avec succes ✅"
+echo ""
 echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), MSL (Metal) et DXIL (Direct3D12) terminer."
 echo "Compilation des fichiers JSON de reflexion des ressources shaders terminer."
 echo "Les shaders compiler sont disponibles dans les repertoires de sortie :"

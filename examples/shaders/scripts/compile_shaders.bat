@@ -29,9 +29,16 @@ set SRC_DIR=..\src
 set OUT_COMPILED_DIR=..\compiled
 set OUT_REFLECTION_DIR=..\reflection
 
+set COMPILED_COUNT=0
+
 :: Résoudre le chemin absolu du binaire shadercross
 pushd "%~dp0%RELATIVE_SHADERCROSS%\.."
 set ABS_SHADERCROSS=%CD%\shadercross.exe
+popd
+
+:: Résoudre le chemin absolu du répertoire source des shaders
+pushd "%SRC_DIR%"
+set ABS_SRC_DIR=%CD%
 popd
 
 :: Vérification de l'existence du binaire shadercross local
@@ -40,6 +47,21 @@ if not exist "%ABS_SHADERCROSS%" (
     call ::print_red "%ABS_SHADERCROSS%"
     call ::print_red "Veuillez vous assurer que le binaire et ces dependances sont presents dans le repertoire specifier."
     exit /b 1
+)
+
+:: Vérification s'il existe des fichiers .hlsl à compiler dans le répertoire source : %SRC_DIR%
+set FOUND_HLSL=false
+for %%f in (%SRC_DIR%\*.hlsl) do (
+    set FOUND_HLSL=true
+    goto :found
+)
+
+:: Si aucun fichier .hlsl n'est trouvé, le script affiche un message d'erreur et se termine.
+:found
+if "%FOUND_HLSL%"=="false" (
+    call :print_red "Aucun shader HLSL (.hlsl) trouve dans le repertoire :"
+    call :print_red "%ABS_SRC_DIR%"
+    exit /b 0
 )
 
 :: Création des répertoires de sortie si nécessaire
@@ -53,9 +75,15 @@ if not exist "%OUT_REFLECTION_DIR%" mkdir "%OUT_REFLECTION_DIR%"
 for %%f in (%SRC_DIR%\*.hlsl) do (
     set "filename=%%~nf"
 
+    :: Compilation des shaders HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12)
     call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\spirv\%%~nf.spv"
     call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\dxil\%%~nf.dxil"
+
+    :: Compilation des fichiers JSON de réflexion des ressources shaders
     call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_REFLECTION_DIR%\%%~nf.json"
+
+    :: Incrémentation du compteur de shaders compilés
+    set /A COMPILED_COUNT+=1
 )
 
 :: Récupération du répertoire de sortie absolu des shaders compilés
@@ -69,6 +97,9 @@ set ABS_OUT_REFLECTION_DIR=%CD%
 popd
 
 :: Affichage des logs pour information
+echo.
+call :print_success "%COMPILED_COUNT% shader(s) compile(s) avec succes ✅"
+echo.
 echo Ignore la compilation des shaders MSL sur Windows.
 echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) et DXIL (Direct3D12) terminer.
 echo Compilation des fichiers JSON de reflexion des ressources shaders terminer.
@@ -93,6 +124,13 @@ endlocal
     goto :eof
 
 :print_green
+    setlocal
+    set "TEXT=%~1"
+    echo [32m%TEXT%[0m
+    endlocal
+    goto :eof
+
+:print_success
     setlocal
     set "TEXT=%~1"
     echo [32m%TEXT%[0m
