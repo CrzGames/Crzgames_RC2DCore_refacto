@@ -225,9 +225,13 @@ endif()
 # Pour l'exemple RC2D
 if(RC2D_BUILD_EXAMPLES)
   # Ajouter les fichiers source de l'exemple
-    # Cela inclut tous les fichiers .c dans le répertoire "examples" et ses sous-répertoires
+  # Cela inclut tous les fichiers .c dans le répertoire "examples/src" et ses sous-répertoires
   file(GLOB_RECURSE RC2D_EXAMPLE_SOURCES
-    "${PROJECT_SOURCE_DIR}/examples/*.c"
+    "${PROJECT_SOURCE_DIR}/examples/src/*.c"
+  )
+
+  target_include_directories(rc2d_example PRIVATE
+  "${PROJECT_SOURCE_DIR}/examples/include"
   )
 
   # Créer un exécutable pour l'exemple

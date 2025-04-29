@@ -25,20 +25,37 @@
 # 2. Rendez le script exécutable :
 # chmod +x scripts/compile_shaders.sh
 # 3. Exécutez le script :
-# ./scripts/compile_shaders.sh
+# ./shaders/scripts/compile_shaders.sh
 
-SHADERCROSS="shadercross"
-SRC_DIR="../shaders/src"
-OUT_DIR="../shaders/compiled"
+RELATIVE_SHADERCROSS="../tools/shadercross"
+SRC_DIR="../src"
+OUT_COMPILED_DIR="../compiled"
+OUT_REFLECTION_DIR="../reflection"
 
-# Vérification de l'existence du binaire de SDL_shadercross
-if ! command -v $SHADERCROSS &> /dev/null; then
-    echo "Erreur : SDL_shadercross n'est pas installé ou n'est pas dans le PATH."
+# ------------------------------------------------
+# Fonctions d'affichage coloré
+# ------------------------------------------------
+print_red() {
+    echo -e "\033[31m$1\033[0m"
+}
+
+print_green() {
+    echo -e "\033[32m$1\033[0m"
+}
+
+# Résoudre le chemin absolu du binaire shadercross
+ABS_SHADERCROSS="$(cd "$(dirname "$RELATIVE_SHADERCROSS")" && pwd)/$(basename "$RELATIVE_SHADERCROSS")"
+
+# Vérification de l'existence du binaire shadercross local
+if [ ! -f "$ABS_SHADERCROSS" ]; then
+    print_red "Erreur : Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouvé à l'emplacement suivant :"
+    print_red "$ABS_SHADERCROSS"
+    print_red "Veuillez vous assurer que le binaire et ses dépendances sont présents dans le répertoire spécifié."
     exit 1
 fi
 
-# Création des répertoire source des shaders compilés
-mkdir -p "$OUT_DIR/spirv" "$OUT_DIR/dxil" "$OUT_DIR/msl" "$OUT_DIR/json"
+# Création des répertoires de sortie si nécessaire
+mkdir -p "$OUT_COMPILED_DIR/spirv" "$OUT_COMPILED_DIR/dxil" "$OUT_COMPILED_DIR/msl" "$OUT_REFLECTION_DIR"
 
 # Concernant la version MSL (Metal), il est recommandé de spécifier explicitement le modèle de version cible.
 # SDL_shadercross utilise par défaut MSL 1.2 pour garantir une compatibilité maximale avec d'anciens appareils.
@@ -54,21 +71,27 @@ MSL_VERSION="2.1"
 for file in "$SRC_DIR"/*.hlsl; do
     filename=$(basename "$file" .hlsl)
 
-    $SHADERCROSS "$file" -o "$OUT_DIR/spirv/$filename.spv"
-    $SHADERCROSS "$file" -o "$OUT_DIR/dxil/$filename.dxil"
-    $SHADERCROSS "$file" -o "$OUT_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
-    $SHADERCROSS "$file" -o "$OUT_DIR/json/$filename.json"
+    "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/spirv/$filename.spv"
+    "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/dxil/$filename.dxil"
+    "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
+    "$ABS_SHADERCROSS" "$file" -o "$OUT_REFLECTION_DIR/$filename.json"
 done
 
 # Récupération du répertoire de sortie absolu des shaders compilés
-ABS_OUT_DIR="$(cd "$OUT_DIR" && pwd)"
+ABS_COMPILED_DIR="$(cd "$OUT_COMPILED_DIR" && pwd)"
+
+# Récupération du répertoire de sortie absolu des fichiers JSON de réflexion des ressources shaders
+ABS_REFLECTION_DIR="$(cd "$OUT_REFLECTION_DIR" && pwd)"
 
 # Affichage des logs pour information
-echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal) terminée."
+echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), MSL (Metal) et DXIL (Direct3D12) terminée."
 echo "Compilation des fichiers JSON de réflexion des ressources shaders terminée."
-echo "Les shaders compilés sont disponibles dans le répertoire de sortie :"
-echo "$ABS_OUT_DIR"
-echo "SPIR-V (Vulkan) : $ABS_OUT_DIR/spirv"
-echo "DXIL (Direct3D12) : $ABS_OUT_DIR/dxil"
-echo "MSL (Metal) : $ABS_OUT_DIR/msl"
-echo "JSON (réflexion des ressources shaders) : $ABS_OUT_DIR/json"
+echo "Les shaders compilés sont disponibles dans les répertoires de sortie :"
+echo "SPIR-V (Vulkan) :" 
+print_green "$ABS_COMPILED_DIR/spirv"
+echo "MSL (Metal) :" 
+print_green "$ABS_COMPILED_DIR/msl"
+echo "DXIL (Direct3D12) :"
+print_green "$ABS_COMPILED_DIR/dxil"
+echo "Les fichiers JSON de réflexion des ressources shaders sont disponibles dans le répertoire de sortie :"
+print_green "$ABS_REFLECTION_DIR"
