@@ -1,4 +1,4 @@
-#include <game.h>
+#include <mygame/game.h>
 #include <RC2D/RC2D.h>
 
 void rc2d_unload(void)

@@ -10,7 +10,7 @@
 #define RC2D_GPU_SHADER_HOT_RELOAD_ENABLED 1
 #endif
 
-#include <game.h>
+#include <mygame/game.h>
 #include <RC2D/RC2D.h>
 
 const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
