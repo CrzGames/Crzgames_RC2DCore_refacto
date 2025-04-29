@@ -1,60 +1,6 @@
 @echo off
 setlocal
 
-:: Affichage de l'aide si --help est demande
-if /i "%~1"=="--help" (
-    echo.
-    echo ===========================================
-    echo Compilation de shaders RC2D
-    echo ===========================================
-    echo.
-    echo Compatibilite : 
-    echo     Ce script est concu pour fonctionner sur les systemes Windows.
-    echo.
-    echo Utilisation :
-    echo     compile_shaders.bat [options]
-    echo.
-    echo Options disponibles :
-    echo     --msl-version [version]   Specifie la version de MSL pour Metal
-    echo     --only-spirv              Compiler uniquement pour SPIR-V (Vulkan)
-    echo     --only-dxil               Compiler uniquement pour DXIL (Direct3D12)
-    echo     --only-msl                Compiler uniquement pour MSL (Metal)
-    echo     --no-json                 Desactiver la generation des fichiers JSON (reflexion des ressources shaders)
-    echo     --help                    Afficher cette aide
-    echo.
-    echo Comportement par defaut :
-    echo     Compile les shaders source HLSL en SPIR-V, DXIL et MSL.
-    echo     Genere les fichiers JSON de reflexion des ressources shaders.
-    echo     Version MSL par defaut : 2.1
-    echo.
-    echo Exemples :
-    echo     compile_shaders.bat --only-spirv
-    echo     compile_shaders.bat --msl-version 2.3 --only-msl
-    echo     compile_shaders.bat
-    echo.
-    echo Documentation :
-    echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)
-    echo     et JSON (reflexion des ressources shaders) en utilisant le binaire shadercross de SDL3_shadercross.
-    echo.
-    echo     Les shaders source HLSL doivent etre places dans le repertoire ../src.
-    echo     Les shaders compiles seront places dans le repertoire ../compiled.
-    echo.
-    echo     Repertoires de sortie :
-    echo         ../compiled/spirv : shaders SPIR-V (Vulkan)
-    echo         ../compiled/msl   : shaders MSL (Metal)
-    echo         ../compiled/dxil  : shaders DXIL (Direct3D12)
-    echo         ../reflection     : fichiers JSON de reflexion des ressources shaders
-    echo.
-    echo     Le script verifie si le binaire shadercross est present dans ../tools.
-    echo     S'il est absent, un message d'erreur est affiche et le script se termine.
-    echo.
-    echo     Ensuite, il verifie s'il existe des fichiers HLSL a compiler dans ../src.
-    echo     S'il n'y en a pas, le script affiche un message et termine proprement.
-    echo     Sinon, il compile tous les fichiers .hlsl trouves.
-    echo.
-    exit /b 0
-)
-
 :: ==================================================
 :: Configuration par défaut
 :: ==================================================
@@ -63,13 +9,7 @@ set COMPILE_SPIRV=true
 set COMPILE_DXIL=true
 set COMPILE_MSL=true
 set COMPILE_JSON=true
-:: Concernant la version MSL (Metal), il est recommandé de spécifier explicitement le modèle de version cible.
-:: SDL_shadercross utilise par défaut MSL 1.2 pour garantir une compatibilité maximale avec d'anciens appareils.
-:: Cependant, l'API GPU SDL3 impose des exigences matérielles minimales (macOS 10.14+, iOS/tvOS 13.0+, A9 ou Intel Mac2 GPU minimum),
-:: MSL 2.1 ou supérieur systématiquement disponible sur ces appareils.
-:: Garder la version 1.2 par défaut n'est donc pas cohérent avec les exigences de SDL3.
-:: Il est fortement conseillé d'utiliser --msl-version 2.1 (ou supérieur) pour compiler les shaders Metal destinés à SDL3 GPU API.
-set MSL_VERSION=2.1
+set HAS_ONLY_OPTION=false
 
 :: ==================================================
 :: Gestion des arguments en ligne de commande
@@ -77,34 +17,63 @@ set MSL_VERSION=2.1
 :parse_args
 if "%~1"=="" goto end_args
 
+:: Vérification explicite pour --help
+if /i "%~1"=="--help" (
+    call :print_help
+    exit /b 0
+)
+
 if /i "%~1"=="--msl-version" (
     if "%~2"=="" (
-        call :print_red "Erreur : --msl-version requiert un argument."
+        call :print_red "--msl-version requiert un argument."
         call :print_red "Usage : compile_shaders.bat --msl-version [version]"
         call :print_red "Exemple : compile_shaders.bat --msl-version 2.3"
         exit /b 1
     )
     set MSL_VERSION=%~2
     shift
-) else if /i "%~1"=="--only-spirv" (
-    set COMPILE_SPIRV=true
-    set COMPILE_DXIL=false
-    set COMPILE_MSL=false
-) else if /i "%~1"=="--only-dxil" (
-    set COMPILE_SPIRV=false
-    set COMPILE_DXIL=true
-    set COMPILE_MSL=false
-) else if /i "%~1"=="--only-msl" (
-    set COMPILE_SPIRV=false
-    set COMPILE_DXIL=false
-    set COMPILE_MSL=true
-) else if /i "%~1"=="--no-json" (
-    set COMPILE_JSON=false
+    shift
 )
 
-shift
+if /i "%~1"=="--only-spirv" (
+    set COMPILE_SPIRV=true
+    set HAS_ONLY_OPTION=true
+    shift
+)
+
+if /i "%~1"=="--only-dxil" (
+    set COMPILE_DXIL=true
+    set HAS_ONLY_OPTION=true
+    shift
+)
+
+if /i "%~1"=="--only-msl" (
+    set COMPILE_MSL=true
+    set HAS_ONLY_OPTION=true
+    shift
+)
+
+if /i "%~1"=="--no-json" (
+    set COMPILE_JSON=false
+    shift
+)
+
+if not "%~1"=="" (
+    call :print_red "Argument inconnu : %~1"
+    call :print_red "Utilisez --help pour afficher la liste des options disponibles."
+    exit /b 1
+)
+
 goto parse_args
+
 :end_args
+
+:: Si une option --only-* a été utilisée, désactiver les formats non spécifiés
+if "%HAS_ONLY_OPTION%"=="true" (
+    if not "%COMPILE_SPIRV%"=="true" set COMPILE_SPIRV=false
+    if not "%COMPILE_DXIL%"=="true" set COMPILE_DXIL=false
+    if not "%COMPILE_MSL%"=="true" set COMPILE_MSL=false
+)
 
 :: ==================================================
 :: Variables de chemins
@@ -239,6 +208,63 @@ if "%COMPILE_JSON%"=="true" (
 
 
 endlocal
+goto :eof
+
+:: ==================================================
+:: Fonction pour afficher l'aide détaillée
+:: ==================================================
+:print_help
+echo.
+echo ===========================================
+echo Compilation de shaders RC2D
+echo ===========================================
+echo.
+echo Compatibilite : 
+echo     Ce script est concu pour fonctionner sur les systemes Windows.
+echo.
+echo Utilisation :
+echo     compile_shaders.bat [options]
+echo.
+echo Options disponibles :
+echo     --msl-version [version]   Specifie la version de MSL pour Metal
+echo     --only-spirv              Compiler uniquement pour SPIR-V (Vulkan)
+echo     --only-dxil               Compiler uniquement pour DXIL (Direct3D12)
+echo     --only-msl                Compiler uniquement pour MSL (Metal)
+echo     --no-json                 Desactiver la generation des fichiers JSON (reflexion des ressources shaders)
+echo     --help                    Afficher cette aide
+echo.
+echo Comportement par defaut :
+echo     Compile les shaders source HLSL en SPIR-V, DXIL et MSL.
+echo     Genere les fichiers JSON de reflexion des ressources shaders.
+echo     Version MSL par defaut : 2.1
+echo.
+echo Exemples :
+echo     compile_shaders.bat --only-dxil
+echo     compile_shaders.bat --only-msl --msl-version 2.3 --no-json
+echo     compile_shaders.bat --only-spirv --only-msl
+echo     compile_shaders.bat
+echo.
+echo Documentation :
+echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)
+echo     et JSON (reflexion des ressources shaders) en utilisant le binaire shadercross de SDL3_shadercross.
+echo.
+echo     Les shaders source HLSL doivent etre places dans le repertoire ../src.
+echo     Les shaders compiles seront places dans le repertoire ../compiled.
+echo.
+echo     Repertoires de sortie :
+echo         ../compiled/spirv : shaders SPIR-V (Vulkan)
+echo         ../compiled/msl   : shaders MSL (Metal)
+echo         ../compiled/dxil  : shaders DXIL (Direct3D12)
+echo         ../reflection     : fichiers JSON de reflexion des ressources shaders
+echo.
+echo     Le script verifie si le binaire shadercross est present dans ../tools.
+echo     S'il est absent, un message d'erreur est affiche et le script se termine.
+echo.
+echo     Ensuite, il verifie s'il existe des fichiers HLSL a compiler dans ../src.
+echo     S'il n'y en a pas, le script affiche un message et termine proprement.
+echo     Sinon, il compile tous les fichiers .hlsl trouves.
+echo.
+goto :eof
 
 :: ---------------------------------------
 :: Fonctions d'affichage coloré avec préfixes
