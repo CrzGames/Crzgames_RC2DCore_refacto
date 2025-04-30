@@ -20,23 +20,11 @@ extern "C" {
  * Il est donc fortement recommandé de la désactiver pour les versions de production et d'utiliser les shaders hors ligne.
  * Ce qui évitera également d'embarquer les bibliothèques tiers dans l'application.
  * 
- * Pour Windows, il faudra linker/fournir les bibliothèques suivantes :
- * - dxcompiler.dll : Traduit HLSL en DXIL (Direct3D12) ou SPIR-V (Vulkan).
- * - dxil.dll : Contient les définitions de base et le validateur DXIL officiel de Microsoft.
- * - libspirv-cross-c-shared.dll : Traduit SPIR-V en MSL (Metal) + Permet la réflexion automatique des ressources shaders.
- * - SDL3_shadercross.dll + SDL3_shadercross.lib OU SDL3_shadercross_static.lib : Permet la compilation en ligne de shaders.
- * 
- * Pour Linux, il faudra linker/fournir les bibliothèques suivantes :
- * - libdxcompiler.so : Traduit HLSL en DXIL (Direct3D12) ou SPIR-V (Vulkan).
- * - libdxil.so : Contient les définitions de base et la validation du format DXIL.
- * - libspirv-cross-c-shared.so : Traduit SPIR-V en MSL (Metal) + Permet la réflexion automatique des ressources shaders.
- * - libSDL3_shadercross.so : Permet la compilation en ligne de shaders.
- * 
- * Pour macOS, il faudra linker/fournir les bibliothèques suivantes :
- * - libdxcompiler.dylib : Traduit HLSL en DXIL (Direct3D12) ou SPIR-V (Vulkan).
- * - libdxil.dylib : Contient les définitions de base et la validation du format DXIL.
- * - libspirv-cross-c-shared.dylib : Traduit SPIR-V en MSL (Metal) + Permet la réflexion automatique des ressources shaders.
- * - libSDL3_shadercross.dylib : Permet la compilation en ligne de shaders.
+ * Pour Windows/macOS/Linux, il faudra linker/fournir les bibliothèques suivantes :
+ * - dxcompiler : Traduit HLSL en DXIL (Direct3D12) ou SPIR-V (Vulkan).
+ * - dxil : Contient les définitions de base et le validateur DXIL officiel de Microsoft.
+ * - libspirv-cross-c-shared : Traduit SPIR-V en MSL (Metal) + Permet la réflexion automatique des ressources shaders.
+ * - SDL3_shadercross : Permet la compilation en ligne de shaders.
  */
 #ifndef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
 #define RC2D_GPU_SHADER_HOT_RELOAD_ENABLED 0
