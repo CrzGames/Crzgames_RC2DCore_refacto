@@ -801,6 +801,25 @@ static void rc2d_engine_update_fps_based_on_monitor(void)
     {
         rc2d_engine_state.fps = 60.0; // fallback
     }
+
+    /**
+     * Permet définir le tickrate de la callback SDL_AppIterate qui est appelé par SDL3,
+     * par rapport au taux de rafraîchissement du moniteur.
+     */
+    char fps_str[16];
+    SDL_snprintf(fps_str, sizeof(fps_str), "%d", (int)rc2d_engine_state.fps);
+
+    // FIXME: En attendant que SDL3 puisse : Utilise une précision à virgule flottante
+    //SDL_snprintf(fps_str, sizeof(fps_str), "%.2f", rc2d_engine_state.fps);
+
+    if (!SDL_SetHintWithPriority(SDL_HINT_MAIN_CALLBACK_RATE, fps_str, SDL_HINT_OVERRIDE)) 
+    {
+        RC2D_log(RC2D_LOG_WARN, "Failed to set SDL_HINT_MAIN_CALLBACK_RATE to %s Hz with OVERRIDE priority: %s", fps_str, SDL_GetError());
+    } 
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "Set SDL_HINT_MAIN_CALLBACK_RATE to %s Hz with OVERRIDE priority", fps_str);
+    }
 }
 
 void rc2d_engine_deltatimeframerates_start(void)
@@ -817,21 +836,30 @@ void rc2d_engine_deltatimeframerates_start(void)
 
 void rc2d_engine_deltatimeframerates_end(void)
 {
+    /**
+     * Si le mode de présentation est SDL_GPU_PRESENTMODE_IMMEDIATE,
+     * on doit attendre un certain temps avant de passer à la frame suivante.
+     * Cela permet de respecter le FPS cible défini par l'utilisateur.
+     * 
+     * SDL_GPU_PRESENTMODE_MAILBOX et SDL_GPU_PRESENTMODE_VSYNC
+     * gèrent automatiquement le timing, donc pas besoin d'attendre.
+     */
     if (rc2d_engine_state.gpu_present_mode == SDL_GPU_PRESENTMODE_IMMEDIATE)
     {
-        // Capture le temps a la fin de la frame actuelle
-        Uint64 frameEnd = SDL_GetPerformanceCounter();
-
-        // Calcule le temps de la frame actuelle en millisecondes
-        double frameTimeMs = (double)(frameEnd - rc2d_engine_state.last_frame_time) * 1000.0 / (double)SDL_GetPerformanceFrequency();
-
-        // Attendre le temps necessaire pour atteindre le FPS cible
-        double targetFrameMs = 1000.0 / rc2d_engine_state.fps;
-        if (frameTimeMs < targetFrameMs) 
+        // Vérifie si la hint SDL_HINT_MAIN_CALLBACK_RATE est active
+        const char* callback_rate = SDL_GetHint(SDL_HINT_MAIN_CALLBACK_RATE);
+        if (callback_rate == NULL || SDL_strcmp(callback_rate, "0") == 0)
         {
-            Uint64 delayNs = (Uint64)((targetFrameMs - frameTimeMs) * 1e6);
-            SDL_DelayPrecise(delayNs);
-        }   
+            // Fallback : utilise SDL_DelayPrecise si la hint n'est pas définie ou définie à 0
+            Uint64 frameEnd = SDL_GetPerformanceCounter();
+            double frameTimeMs = (double)(frameEnd - rc2d_engine_state.last_frame_time) * 1000.0 / (double)SDL_GetPerformanceFrequency();
+            double targetFrameMs = 1000.0 / rc2d_engine_state.fps;
+            if (frameTimeMs < targetFrameMs) 
+            {
+                Uint64 delayNs = (Uint64)((targetFrameMs - frameTimeMs) * 1e6);
+                SDL_DelayPrecise(delayNs);
+            }
+        }
     }
 }
 
