@@ -102,10 +102,11 @@ void rc2d_engine_quit(void);
 SDL_AppResult rc2d_engine_processevent(SDL_Event *event);
 
 /**
- * \brief Démarre le calcul du delta time.
+ * \brief Capture le temps au début de la frame actuelle et donc calcule 
+ * le delta time à chaque frame.
  * 
- * Capture le temps au début de la frame actuelle et donc calcule le delta time
- * à chaque frame.
+ * \note Cette fonction doit être appelée en premier dans la callback principale 
+ * de l'application (SDL_AppIterate) pour calculer le delta time.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
