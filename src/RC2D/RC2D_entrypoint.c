@@ -117,7 +117,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
      * 5. Présenter le rendu à l'écran.
      * 6. Terminer le calcul du delta time et des frame rates.
      */
-    rc2d_engine_deltatimeframerates_start();
+    rc2d_engine_deltatime_start();
     if (rc2d_engine_state.config != NULL && 
         rc2d_engine_state.config->callbacks != NULL && 
         rc2d_engine_state.config->callbacks->rc2d_update != NULL) 
@@ -132,7 +132,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         rc2d_engine_state.config->callbacks->rc2d_draw();
     }
     rc2d_graphics_present();
-    rc2d_engine_deltatimeframerates_end();
+    rc2d_engine_deltatime_end();
 
     /**
      * SDL_APP_CONTINUE : La boucle principale de l'application continue.

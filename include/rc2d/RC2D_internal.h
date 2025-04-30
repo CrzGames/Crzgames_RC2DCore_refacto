@@ -102,26 +102,27 @@ void rc2d_engine_quit(void);
 SDL_AppResult rc2d_engine_processevent(SDL_Event *event);
 
 /**
- * \brief Démarre le calcul du delta time et des frame rates.
+ * \brief Démarre le calcul du delta time.
  * 
- * Capture le temps au début de la frame actuelle.
+ * Capture le temps au début de la frame actuelle et donc calcule le delta time
+ * à chaque frame.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_engine_deltatimeframerates_start(void);
+void rc2d_engine_deltatime_start(void);
 
 /**
- * \brief Termine le calcul du delta time et des frame rates.
+ * \brief Permet de faire une pause entre chaque frame pour atteindre le FPS cible.
  * 
- * Capture le temps à la fin de la frame actuelle et ajuste le délai pour atteindre le FPS cible.
- * Cette fonction est utilisée uniquement si le mode de présentation SDL_GPU_PRESENTMODE_IMMEDIATE 
- * de la swapchain GPU est utiliser.
+ * Elle permet de fixer le tickrate de la callback principale de l'application (SDL_AppIterate).
  * 
- * Puisque SDL_GPU_PRESENTMODE_VSYNC et SDL_GPU_PRESENTMODE_MAILBOX gèrent déjà ce délai automatiquement.
+ * \note Si SDL_HINT_MAIN_CALLBACK_RATE est défini, cette fonction ne fait rien.
+ * Sinon, elle attend le temps nécessaire pour atteindre le FPS cible.
+ * SDL_HINT_MAIN_CALLBACK_RATE peux ne pas marcher sur toutes les plateformes.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_engine_deltatimeframerates_end(void);
+void rc2d_engine_deltatime_end(void);
 
 /**
  * \brief Configure le moteur RC2D avec les paramètres spécifiés.
