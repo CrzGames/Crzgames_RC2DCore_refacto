@@ -186,6 +186,8 @@ void rc2d_assert_init(void);
  */
 void rc2d_timer_init(void);
 
+void rc2d_gpu_hotReloadShaders(void);
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 }

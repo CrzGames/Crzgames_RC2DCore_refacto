@@ -1093,7 +1093,7 @@ void rc2d_engine_quit(void)
     for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) {
         SDL_free(rc2d_engine_state.gpu_shaders[i].filename);
         if (rc2d_engine_state.gpu_shaders[i].shader) {
-            SDL_DestroyGPUShader(rc2d_engine_state.gpu_shaders[i].shader);
+            SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_shaders[i].shader);
         }
     }
     SDL_free(rc2d_engine_state.gpu_shaders);

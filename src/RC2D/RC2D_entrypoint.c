@@ -119,7 +119,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
      */
     rc2d_engine_deltatime_start();
 #ifdef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
-    rc2d_check_shader_updates();
+    rc2d_gpu_hotReloadShaders();
 #endif
     if (rc2d_engine_state.config != NULL && 
         rc2d_engine_state.config->callbacks != NULL && 
