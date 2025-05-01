@@ -10,7 +10,7 @@
 SDL_GPUShader* rc2d_gpu_loadShader(const char* filename)
 {
     // Vérification des paramètres d'entrée
-    RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader name is NULL");
+    RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader filename is NULL");
 
     // Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
     const char* basePath = SDL_GetBasePath();
@@ -37,12 +37,15 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename)
 
     /**
      * fullPath : Chemin d'accès complet au fichier binaire du shader compilé ou au fichier HLSL source.
-     * entrypoint : Point d'entrée du shader (main pour SPIR-V, DXIL et HLSL, main0 pour MSL).
      */
     char fullPath[512];
-    const char* entrypoint = NULL;
 
 #ifndef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders HLSL
+    /**
+     * entrypoint : Point d'entrée du shader (main pour SPIR-V, DXIL et main0 pour MSL).
+     */
+    const char* entrypoint = NULL;
+
     // Récupérer les formats supportés par le backend actuel
     SDL_GPUShaderFormat backendFormatsSupported = rc2d_gpu_getSupportedShaderFormats();
 
@@ -106,25 +109,60 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename)
     Uint32 numStorageBuffers = 0;
     Uint32 numStorageTextures = 0;
 
-    SDL_IOStream* jsonStream = SDL_OpenIO(jsonPath, "r");
-    if (jsonStream) 
+    void* jsonContent = SDL_LoadFile(jsonPath, NULL);
+    if (jsonContent) 
     {
-        char buffer[512];
-        while (SDL_ReadLineIO(jsonStream, buffer, sizeof(buffer))) 
-        {
-            if (SDL_strstr(buffer, "\"samplers\"")) SDL_sscanf(buffer, "\"samplers\": %d", &numSamplers);
-            if (SDL_strstr(buffer, "\"uniformBuffers\"")) SDL_sscanf(buffer, "\"uniformBuffers\": %d", &numUniformBuffers);
-            if (SDL_strstr(buffer, "\"readOnlyStorageBuffers\"")) SDL_sscanf(buffer, "\"readOnlyStorageBuffers\": %d", &numStorageBuffers);
-            if (SDL_strstr(buffer, "\"readOnlyStorageTextures\"")) SDL_sscanf(buffer, "\"readOnlyStorageTextures\": %d", &numStorageTextures);
-        }
-        SDL_CloseIO(jsonStream);
-    } 
+        const char* content = (const char*)jsonContent;
+    
+        // Essayer les différentes clés connues, y compris alternatives
+        if (SDL_strstr(content, "\"samplers\""))
+            SDL_sscanf(content, "%*[^\"samplers\"]\"samplers\"%*[: ]%u", &numSamplers);
+        if (SDL_strstr(content, "\"uniform_buffers\""))
+            SDL_sscanf(content, "%*[^\"uniform_buffers\"]\"uniform_buffers\"%*[: ]%u", &numUniformBuffers);
+        else if (SDL_strstr(content, "\"uniformBuffers\""))
+            SDL_sscanf(content, "%*[^\"uniformBuffers\"]\"uniformBuffers\"%*[: ]%u", &numUniformBuffers);
+        if (SDL_strstr(content, "\"storage_buffers\""))
+            SDL_sscanf(content, "%*[^\"storage_buffers\"]\"storage_buffers\"%*[: ]%u", &numStorageBuffers);
+        else if (SDL_strstr(content, "\"readOnlyStorageBuffers\""))
+            SDL_sscanf(content, "%*[^\"readOnlyStorageBuffers\"]\"readOnlyStorageBuffers\"%*[: ]%u", &numStorageBuffers);
+        if (SDL_strstr(content, "\"storage_textures\""))
+            SDL_sscanf(content, "%*[^\"storage_textures\"]\"storage_textures\"%*[: ]%u", &numStorageTextures);
+        else if (SDL_strstr(content, "\"readOnlyStorageTextures\""))
+            SDL_sscanf(content, "%*[^\"readOnlyStorageTextures\"]\"readOnlyStorageTextures\"%*[: ]%u", &numStorageTextures);
+    
+        SDL_free(jsonContent);
+    }
     else 
     {
         RC2D_log(RC2D_LOG_WARN, "Shader reflection file not found: %s", jsonPath);
     }
-#else // Compilation en ligne des shaders HLSL
+    
+    // Création du shader GPU avec les informations de réflexion récupérées depuis le fichier JSON
+    SDL_GPUShaderCreateInfo info = {
+        .code = codeShaderCompiled,
+        .code_size = codeShaderCompiledSize,
+        .entrypoint = entrypoint,
+        .format = format,
+        .stage = stage,
+        .num_samplers = numSamplers,
+        .num_uniform_buffers = numUniformBuffers,
+        .num_storage_buffers = numStorageBuffers,
+        .num_storage_textures = numStorageTextures,
+        .props = 0
+    };
 
+    SDL_GPUShader* shader = SDL_CreateGPUShader(rc2d_gpu_getDevice(), &info);
+    SDL_free(codeShaderCompiled);
+
+    if (!shader) 
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU shader from file: %s", filename);
+        return NULL;
+    }
+
+    RC2D_log(RC2D_LOG_INFO, "Shader loaded: %s", filename);
+    return shader;
+#else // Compilation en ligne des shaders HLSL
     /**
      * On génère le chemin d'accès au fichier HLSL source en fonction du nom du shader et de son stage.
      * On utilise SDL_snprintf pour formater le chemin d'accès au fichier HLSL source.
@@ -161,36 +199,17 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename)
         &hlslInfo,
         &metadata
     );
-
     SDL_free(codeHLSLSource);
-    return shader;
-#endif
-
-    // Création du shader GPU avec les informations récupérées (hors ligne)
-    SDL_GPUShaderCreateInfo info = {
-        .code = codeShaderCompiled,
-        .code_size = codeShaderCompiledSize,
-        .entrypoint = entrypoint,
-        .format = format,
-        .stage = stage,
-        .num_samplers = numSamplers,
-        .num_uniform_buffers = numUniformBuffers,
-        .num_storage_buffers = numStorageBuffers,
-        .num_storage_textures = numStorageTextures,
-        .props = 0
-    };
-
-    SDL_GPUShader* shader = SDL_CreateGPUShader(rc2d_gpu_getDevice(), &info);
-    SDL_free(codeShaderCompiled);
 
     if (!shader) 
     {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU shader from file: %s", filename);
+        RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU shader from HLSL: %s", filename);
         return NULL;
     }
 
     RC2D_log(RC2D_LOG_INFO, "Shader loaded: %s", filename);
     return shader;
+#endif
 }
 
 void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 

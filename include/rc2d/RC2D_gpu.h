@@ -305,6 +305,22 @@ RC2D_GPUDevice* rc2d_gpu_getDevice(void);
  */
 RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
 
+/**
+ * \brief Charge un shader à partir d'un fichier source HLSL ou d'un fichier binaire précompilé.
+ * 
+ * Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est défini à 1, cela compile le shader à la volée à
+ * partir du fichier source HLSL. Sinon, cela charge le fichier binaire déjà précompilé.
+ * 
+ * \param {const char*} filename - Nom du fichier shader à charger.
+ * 
+ * \return {SDL_GPUShader*} Pointeur vers le shader chargé, ou NULL en cas d'erreur.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+SDL_GPUShader* rc2d_gpu_loadShader(const char* filename);
+
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
 }
