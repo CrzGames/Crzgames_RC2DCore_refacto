@@ -248,7 +248,7 @@ echo     --help                    Afficher cette aide
 echo.
 echo Comportement par defaut :
 echo     Compile les shaders source HLSL en : SPIR-V, DXIL et MSL.
-echo     Genere les fichiers JSON : Reflexion automatique sur les ressources utilisées par un shader.
+echo     Genere les fichiers JSON : Les informations de reflexion automatique sur les ressources utilisées par un shader.
 echo     Version MSL par defaut : 2.1
 echo.
 echo Exemples :

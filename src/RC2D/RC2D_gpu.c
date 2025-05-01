@@ -3,6 +3,195 @@
 #include <RC2D/RC2D_internal.h>
 
 #include <SDL3/SDL_properties.h>
+#ifdef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+#include <SDL3_shadercross/SDL_shadercross.h>
+#endif
+
+SDL_GPUShader* rc2d_shader_loadCompiled(const char* filename)
+{
+    // Vérification des paramètres d'entrée
+    RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader name is NULL");
+
+    // Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
+    const char* basePath = SDL_GetBasePath();
+    RC2D_assert_release(basePath != NULL, RC2D_LOG_CRITICAL, "SDL_GetBasePath() failed");
+
+    /**
+     * Déterminer le stage en fonction du suffixe (vertex ou fragment)
+     * On utilise SDL_strstr pour vérifier la présence de ".vertex" ou ".fragment" dans le nom du fichier
+     */
+    SDL_GPUShaderStage stage;
+    if (SDL_strstr(filename, ".vertex")) 
+    {
+        stage = SDL_GPU_SHADERSTAGE_VERTEX;
+    } 
+    else if (SDL_strstr(filename, ".fragment")) 
+    {
+        stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
+    } 
+    else 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Unknown shader stage suffix: expected .vertex or .fragment.");
+        return NULL;
+    }
+
+    /**
+     * fullPath : Chemin d'accès complet au fichier binaire du shader compilé ou au fichier HLSL source.
+     * entrypoint : Point d'entrée du shader (main pour SPIR-V, DXIL et HLSL, main0 pour MSL).
+     */
+    char fullPath[512];
+    const char* entrypoint = NULL;
+
+#ifndef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders HLSL
+    // Récupérer les formats supportés par le backend actuel
+    SDL_GPUShaderFormat backendFormatsSupported = rc2d_gpu_getSupportedShaderFormats();
+
+    // Le format de shader à utiliser pour la compilation hors ligne
+    SDL_GPUShaderFormat format = SDL_GPU_SHADERFORMAT_INVALID;
+
+    // Générer le chemin d'accès au fichier binaire du shader compilé en fonction du backend
+    if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_SPIRV) 
+    {
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/spirv/%s.spv", basePath, filename);
+        format = SDL_GPU_SHADERFORMAT_SPIRV;
+        entrypoint = "main";
+    } 
+    else if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_MSL) 
+    {
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/msl/%s.msl", basePath, filename);
+        format = SDL_GPU_SHADERFORMAT_MSL;
+        entrypoint = "main0"; // SDL_shadercross requiert "main0" pour MSL
+    } 
+    else if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_DXIL) 
+    {
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/dxil/%s.dxil", basePath, filename);
+        format = SDL_GPU_SHADERFORMAT_DXIL;
+        entrypoint = "main";
+    } 
+    else 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "No compatible shader format for this backend");
+        return NULL;
+    }
+
+    /**
+     * Charger le fichier du shader compilé
+     * On utilise SDL_LoadFile pour charger le fichier binaire du shader compilé
+     */
+    size_t codeShaderCompiledSize = 0;
+    void* codeShaderCompiled = SDL_LoadFile(fullPath, &codeShaderCompiledSize);
+    if (!codeShaderCompiled) 
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Failed to load compiled shader: %s", fullPath);
+        return NULL;
+    }
+
+    /**
+     * Récupérer les informations de réflexion du shader (nombre de samplers, uniform buffers, etc.)
+     * En mode hors ligne, on utilise un fichier JSON généré par le compilateur de shaders.
+     * 
+     * On génère le chemin d'accès au fichier JSON de réflexion en fonction du nom du shader et de son stage.
+     */
+    char jsonPath[512];
+    SDL_snprintf(jsonPath, sizeof(jsonPath), "%sshaders/reflection/%s.json", basePath, filename);
+
+    /**
+     * On ouvre le fichier JSON de réflexion pour récupérer les informations de réflexions sur le shader.
+     * On utilise SDL_OpenIO pour ouvrir le fichier JSON et SDL_ReadLineIO pour lire chaque ligne.
+     * On utilise SDL_sscanf pour extraire les valeurs des champs "samplers", "uniformBuffers", "readOnlyStorageBuffers" et "readOnlyStorageTextures".
+     * On ferme le fichier JSON après la lecture.
+     */
+    Uint32 numSamplers = 0;
+    Uint32 numUniformBuffers = 0;
+    Uint32 numStorageBuffers = 0;
+    Uint32 numStorageTextures = 0;
+
+    SDL_IOStream* jsonStream = SDL_OpenIO(jsonPath, "r");
+    if (jsonStream) 
+    {
+        char buffer[512];
+        while (SDL_ReadLineIO(jsonStream, buffer, sizeof(buffer))) 
+        {
+            if (SDL_strstr(buffer, "\"samplers\"")) SDL_sscanf(buffer, "\"samplers\": %d", &numSamplers);
+            if (SDL_strstr(buffer, "\"uniformBuffers\"")) SDL_sscanf(buffer, "\"uniformBuffers\": %d", &numUniformBuffers);
+            if (SDL_strstr(buffer, "\"readOnlyStorageBuffers\"")) SDL_sscanf(buffer, "\"readOnlyStorageBuffers\": %d", &numStorageBuffers);
+            if (SDL_strstr(buffer, "\"readOnlyStorageTextures\"")) SDL_sscanf(buffer, "\"readOnlyStorageTextures\": %d", &numStorageTextures);
+        }
+        SDL_CloseIO(jsonStream);
+    } 
+    else 
+    {
+        RC2D_log(RC2D_LOG_WARN, "Shader reflection file not found: %s", jsonPath);
+    }
+#else // Compilation en ligne des shaders HLSL
+
+    /**
+     * On génère le chemin d'accès au fichier HLSL source en fonction du nom du shader et de son stage.
+     * On utilise SDL_snprintf pour formater le chemin d'accès au fichier HLSL source.
+     */
+    SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, filename);
+
+    /**
+     * Charger le fichier HLSL source
+     * On utilise SDL_LoadFile pour charger le fichier HLSL source.
+     */
+    size_t codeHLSLSize = 0;
+    char* codeHLSLSource = SDL_LoadFile(fullPath, &codeHLSLSize);
+    if (!codeHLSLSource) 
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source: %s", fullPath);
+        return NULL;
+    }
+
+    // Réflexion automatique via shadercross
+    SDL_ShaderCross_GraphicsShaderMetadata metadata = {0};
+    SDL_ShaderCross_HLSL_Info hlslInfo = {
+        .source = codeHLSLSource,
+        .entrypoint = "main",
+        .include_dir = NULL,
+        .defines = NULL,
+        .shader_stage = stage,
+        .enable_debug = true,
+        .name = filename,
+        .props = 0
+    };
+
+    SDL_GPUShader* shader = SDL_ShaderCross_CompileGraphicsShaderFromHLSL(
+        rc2d_gpu_getDevice(),
+        &hlslInfo,
+        &metadata
+    );
+
+    SDL_free(hlslSource);
+    return shader;
+#endif
+
+    // Création du shader GPU avec les informations récupérées (hors ligne)
+    SDL_GPUShaderCreateInfo info = {
+        .code = codeShaderCompiled,
+        .code_size = codeShaderCompiledSize,
+        .entrypoint = entrypoint,
+        .format = format,
+        .stage = stage,
+        .num_samplers = numSamplers,
+        .num_uniform_buffers = numUniformBuffers,
+        .num_storage_buffers = numStorageBuffers,
+        .num_storage_textures = numStorageTextures,
+        .props = 0
+    };
+
+    SDL_GPUShader* shader = SDL_CreateGPUShader(rc2d_gpu_getDevice(), &info);
+    SDL_free(codeShaderCompiled);
+
+    if (!shader) 
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU shader from file: %s", filename);
+        return NULL;
+    }
+
+    RC2D_log(RC2D_LOG_INFO, "Shader loaded: %s", filename);
+    return shader;
+}
 
 void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
 {
