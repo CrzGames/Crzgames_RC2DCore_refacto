@@ -206,7 +206,7 @@ static bool rc2d_engine_init_sdlshadercross(void)
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-static void rc2d_engine_cleanup_shadercross(void)
+static void rc2d_engine_cleanup_sdlshadercross(void)
 {
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     SDL_ShaderCross_Quit();
