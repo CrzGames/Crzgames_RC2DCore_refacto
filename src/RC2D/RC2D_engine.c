@@ -155,6 +155,15 @@ static void rc2d_engine_stateInit(void) {
     rc2d_engine_state.gpu_current_swapchain_texture = NULL;
     static SDL_GPUViewport default_viewport = {0, 0, 0, 0};
     rc2d_engine_state.gpu_current_viewport = &default_viewport;
+
+    // Initialiser le cache des shaders
+    rc2d_engine_state.gpu_shader_count = 0;
+    rc2d_engine_state.gpu_shaders = NULL;
+    rc2d_engine_state.gpu_shader_mutex = SDL_CreateMutex();
+    if (!rc2d_engine_state.gpu_shader_mutex) {
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Erreur lors de la création du mutex pour les shaders : %s", SDL_GetError());
+        return;
+    }
     
     // État d'exécution de la boucle de jeu
     rc2d_engine_state.fps = 60;
@@ -1079,6 +1088,21 @@ void rc2d_engine_quit(void)
     // Lib SDL3_shadercross Deinitialize
     rc2d_engine_cleanup_sdlshadercross();
     
+    // Libérer les shaders internes
+    SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
+    for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) {
+        SDL_free(rc2d_engine_state.gpu_shaders[i].filename);
+        if (rc2d_engine_state.gpu_shaders[i].shader) {
+            SDL_DestroyGPUShader(rc2d_engine_state.gpu_shaders[i].shader);
+        }
+    }
+    SDL_free(rc2d_engine_state.gpu_shaders);
+    rc2d_engine_state.gpu_shaders = NULL;
+    rc2d_engine_state.gpu_shader_count = 0;
+    SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
+    SDL_DestroyMutex(rc2d_engine_state.gpu_shader_mutex);
+    rc2d_engine_state.gpu_shader_mutex = NULL;
+
     // Destroy GPU device
     if (rc2d_engine_state.gpu_device != NULL)
     {

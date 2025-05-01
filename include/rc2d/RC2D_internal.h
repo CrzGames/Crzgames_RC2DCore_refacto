@@ -6,6 +6,7 @@
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_mutex.h>
 
 /**
  * IMPORTANT : 
@@ -17,6 +18,24 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * \brief Structure représentant une entrée de shader dans le moteur RC2D.
+ *
+ * Cette structure est utilisée pour gérer les shaders chargés par le moteur,
+ * y compris leur nom de fichier, le pointeur vers le shader chargé et le timestamp
+ * de la dernière modification du fichier.
+ * 
+ * \note Cela est utilisé pour le rechargement à chaud des shaders via RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+ * si défini à 1.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_ShaderEntry {
+    char* filename;              // Nom du fichier shader (e.g., "test.fragment")
+    SDL_GPUShader* shader;       // Pointeur vers le shader chargé
+    Sint64 lastModified;         // Timestamp de la dernière modification du fichier
+} RC2D_ShaderEntry;
 
 /**
  * \brief Structure regroupant l'état global du moteur RC2D.
@@ -42,6 +61,10 @@ typedef struct RC2D_EngineState {
     SDL_GPURenderPass* gpu_current_render_pass;
     SDL_GPUViewport* gpu_current_viewport;
     SDL_GPUGraphicsPipeline* gpu_pipeline;
+
+    RC2D_ShaderEntry* gpu_shaders;   // Tableau dynamique des shaders chargés
+    int gpu_shader_count;            // Nombre de shaders chargés
+    SDL_Mutex* gpu_shader_mutex;     // Mutex pour protéger l'accès aux shaders
 
     // RC2D : État d'exécution
     int fps;
