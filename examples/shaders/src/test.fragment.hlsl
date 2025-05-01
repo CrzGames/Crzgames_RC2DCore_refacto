@@ -1,4 +1,4 @@
-cbuffer UniformBlock : register(b0, space0)
+cbuffer UniformBlock : register(b0, space1)
 {
     float2 resolution;
     float time;

@@ -146,30 +146,33 @@ for %%f in (%SRC_DIR%\*.hlsl) do (
 
     :: Vérifier que le fichier contient une fonction main en tant que point d'entrée dans le shader
     :: Si le fichier ne contient pas de point d'entrée "main", l'ignorer et passer au suivant
-    findstr /C:"main" "%%f" >nul
+    call :check_shader_main "%%f"
     if errorlevel 1 (
-        echo [SKIP] Ignoré %%~nxf : aucun point d'entrée "main"
-        goto :skip_shader
-    )
+        echo [33m[SKIP] Ignore le shader %%~nxf : aucun point d'entrer "main"[0m
+    ) else (
+        :: Compilation des shaders HLSL vers SPIR-V (Vulkan)
+        if "%COMPILE_SPIRV%"=="true" (
+            call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\spirv\%%~nf.spv"
+        )
 
-    :: Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal)
-    if "%COMPILE_SPIRV%"=="true" (
-        call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\spirv\%%~nf.spv"
-    )
-    if "%COMPILE_DXIL%"=="true" (
-        call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\dxil\%%~nf.dxil"
-    )
-    if "%COMPILE_MSL%"=="true" (
-        call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\msl\%%~nf.msl" --msl-version %MSL_VERSION%
-    )
+        :: Compilation des shaders HLSL vers DXIL (Direct3D12)
+        if "%COMPILE_DXIL%"=="true" (
+            call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\dxil\%%~nf.dxil"
+        )
 
-    :: Compilation des fichiers JSON de réflexion des ressources shaders
-    if "%COMPILE_JSON%"=="true" (
-        call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_REFLECTION_DIR%\%%~nf.json"
-    )
+        :: Compilation des shaders HLSL vers MSL (Metal)
+        if "%COMPILE_MSL%"=="true" (
+            call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\msl\%%~nf.msl" --msl-version %MSL_VERSION%
+        )
 
-    :: Incrémentation du compteur de shaders compilés
-    set /A COMPILED_COUNT+=1
+        :: Compilation des fichiers JSON de réflexion des ressources shaders
+        if "%COMPILE_JSON%"=="true" (
+            call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_REFLECTION_DIR%\%%~nf.json"
+        )
+
+        :: Incrémentation du compteur de shaders compilés
+        set /A COMPILED_COUNT+=1
+    )
 )
 
 :: Récupération du répertoire de sortie absolu des shaders compilés
@@ -314,3 +317,11 @@ goto :eof
     echo [32m[SUCCESS] %TEXT%[0m
     endlocal
     goto :eof
+
+:: Vérifie si un fichier shader contient une fonction main
+:check_shader_main
+findstr /C:"main" %1 >nul
+if errorlevel 1 (
+    exit /b 1
+)
+exit /b 0

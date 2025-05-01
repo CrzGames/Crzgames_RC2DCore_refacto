@@ -1,0 +1,41 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct type_UniformBlock
+{
+    float2 resolution;
+    float time;
+};
+
+struct main0_out
+{
+    float4 out_var_SV_Target0 [[color(0)]];
+};
+
+fragment main0_out main0(constant type_UniformBlock& UniformBlock [[buffer(0)]], float4 gl_FragCoord [[position]])
+{
+    main0_out out = {};
+    float _51 = UniformBlock.time * 0.5;
+    float _52 = sin(_51);
+    float _53 = cos(_51);
+    float2 _58 = (((gl_FragCoord.xy * 2.0) - UniformBlock.resolution) / float2(UniformBlock.resolution.y)) * float2x2(float2(_53, -_52), float2(_52, _53));
+    float2 _61;
+    float _64;
+    _61 = _58;
+    _64 = length(_58);
+    for (int _66 = 0; _66 < 4; )
+    {
+        float2 _70 = abs(_61);
+        float _71 = dot(_61, _61);
+        float2 _62 = (_70 / float2(_71)) - float2(0.800000011920928955078125);
+        _61 = _62;
+        _64 = precise::min(_64, length(_62));
+        _66++;
+        continue;
+    }
+    out.out_var_SV_Target0 = float4((float3(0.5) + (float3(0.5) * cos(((float3(1.0) * (_64 + (UniformBlock.time * 0.100000001490116119384765625))) + float3(0.0, 0.3300000131130218505859375, 0.670000016689300537109375)) * 6.28318023681640625))) * exp((-5.0) * _64), 1.0);
+    return out;
+}
+
