@@ -15,6 +15,9 @@ set(CMAKE_C_STANDARD 99)
 # Cela signifie que le compilateur doit respecter la version C standard spécifiée
 set(CMAKE_C_STANDARD_REQUIRED True)
 
+# Active la compilation des shaders en ligne (hot reload) pour SDL3_shadercross
+option(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED "Enable hot reload with SDL3_shadercross" ON)
+
 # Option Tests unitaires avec Criterion
 option(RC2D_BUILD_TESTS "Build unit tests with Criterion" OFF)
 
@@ -108,6 +111,36 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
+
+# Fonction pour configurer SDL3_shadercross
+function(rc2d_configure_shadercross target_name)
+  if(WIN32)
+    set(SHADERCROSS_ROOT "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows")
+
+    # TODO: Récupérer automatiquement l'architecture (x64 ou ARM64) de la plateforme qui compile
+    set(SHADERCROSS_ARCH "x64")
+
+    # Includes + libs
+    target_include_directories(${target_name} PRIVATE "${SHADERCROSS_ROOT}/include")
+    target_link_directories(${target_name} PRIVATE "${SHADERCROSS_ROOT}/lib/SDL3_shadercross/${SHADERCROSS_ARCH}")
+    target_link_libraries(${target_name} PRIVATE SDL3_shadercross.lib)
+
+    # Optionnel : copier les DLLs nécessaires dans examples/shaders/tools/
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+      file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
+      foreach(FILENAME IN LISTS
+        "shadercross.exe"
+        "dxcompiler.dll"
+        "dxil.dll"
+        "SDL3.dll"
+        "SDL3_shadercross.dll"
+        "spirv-cross-c-shared.dll"
+      )
+        file(COPY "${SHADERCROSS_ROOT}/bin/SDL3_shadercross/${FILENAME}" DESTINATION "${PROJECT_SOURCE_DIR}/examples/shaders/tools/")
+      endforeach()
+    endif()
+  endif()
+endfunction()
 
 # Fonction pour OpenSSL :
 # - Sur les plateformes Apple (macOS, iOS, tvOS) : utilise XCFramework, on télécharge et extrait OpenSSL.xcframework
@@ -244,6 +277,11 @@ if(RC2D_BUILD_EXAMPLES)
   # Linker la dépendance OpenSSL non commune à toutes les plateformes
   # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
   rc2d_configure_openssl(rc2d_example)
+
+  # Linker SDL3_shadercross pour le hot reload des shaders
+  if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    rc2d_configure_shadercross(rc2d_example)
+  endif()
 
   # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
   target_link_libraries(rc2d_example PRIVATE
