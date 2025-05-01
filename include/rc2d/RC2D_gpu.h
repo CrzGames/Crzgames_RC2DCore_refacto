@@ -283,7 +283,7 @@ typedef enum RC2D_GPUShaderFormat {
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo);
+//void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo);
 
 /**
  * \brief Récupère le périphérique GPU utilisé par RC2D.

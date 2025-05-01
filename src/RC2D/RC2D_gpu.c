@@ -360,7 +360,7 @@ void rc2d_gpu_hotReloadShaders(void)
 #endif
 }
 
-void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
+/*void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
 {
     // Vérification des paramètres d'entrée
     RC2D_assert_release(gpuInfo != NULL, RC2D_LOG_CRITICAL, "GPU info is NULL.");
@@ -379,7 +379,7 @@ void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo)
 
     // Destruction des propriétés du GPU
     SDL_DestroyProperties(propsGPU);
-}
+}*/
 
 static RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats()
 {
