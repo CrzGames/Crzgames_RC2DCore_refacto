@@ -16,7 +16,10 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Active la compilation des shaders en ligne (hot reload) pour SDL3_shadercross
-option(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED "Enable hot reload with SDL3_shadercross" ON)
+option(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED "Enable hot reload shaders with SDL3_shadercross" ON)
+
+# Niveau d'assertions
+option(RC2D_ASSERT_LEVEL "Niveau des assertions (0=none, 1=release, 2=debug, 3=paranoid)" 3)
 
 # Option Tests unitaires avec Criterion
 option(RC2D_BUILD_TESTS "Build unit tests with Criterion" OFF)
@@ -276,6 +279,8 @@ else()
   target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
 endif()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_ASSERT_LEVEL=${RC2D_ASSERT_LEVEL})
+
 # Inclure les répertoires d'en-tête (headers)
 rc2d_include_headers(${PROJECT_NAME})
 
@@ -322,6 +327,8 @@ if(RC2D_BUILD_EXAMPLES)
   else()
     target_compile_definitions(rc2d_example PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
   endif()
+
+  target_compile_definitions(rc2d_example PRIVATE RC2D_ASSERT_LEVEL=${RC2D_ASSERT_LEVEL})
 
   # Les fichiers d'en-tête (headers) de l'exemple sont dans le répertoire "examples/include"
   target_include_directories(rc2d_example PRIVATE
