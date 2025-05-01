@@ -3,9 +3,24 @@
 #include <RC2D/RC2D_internal.h>
 
 #include <SDL3/SDL_properties.h>
+#include <SDL3/SDL_filesystem.h>
 #ifdef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
 #include <SDL3_shadercross/SDL_shadercross.h>
 #endif
+
+static SDL_Time get_file_modification_time(const char* path) 
+{
+    SDL_PathInfo info;
+    if (SDL_GetPathInfo(path, &info)) 
+    {
+        // Retourne le timestamp de la dernière modification
+        return info.modify_time;
+    }
+
+    // Si l'appel échoue, on log l'erreur et on retourne 0
+    RC2D_log(RC2D_LOG_ERROR, "Failed to get modification time for %s: %s", path, SDL_GetError());
+    return 0;
+}
 
 SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
     // Vérification des paramètres d'entrée
@@ -14,14 +29,19 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
 #ifdef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     // Vérifier si le shader est déjà dans le cache
     SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
-    for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) {
-        if (SDL_strcmp(rc2d_engine_state.gpu_shaders[i].filename, filename) == 0) {
+
+    for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) 
+    {
+        if (SDL_strcmp(rc2d_engine_state.gpu_shaders[i].filename, filename) == 0) 
+        {
             SDL_GPUShader* shader = rc2d_engine_state.gpu_shaders[i].shader;
             SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
+            
             RC2D_log(RC2D_LOG_INFO, "Shader already loaded from cache: %s", filename);
             return shader;
         }
     }
+
     SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
 #endif
 
@@ -184,8 +204,7 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
      * Charger le fichier HLSL source
      * On utilise SDL_LoadFile pour charger le fichier HLSL source.
      */
-    size_t codeHLSLSize = 0;
-    char* codeHLSLSource = SDL_LoadFile(fullPath, &codeHLSLSize);
+    char* codeHLSLSource = SDL_LoadFile(fullPath, NULL);
     if (!codeHLSLSource) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source: %s", fullPath);
@@ -225,30 +244,22 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
         (rc2d_engine_state.gpu_shader_count + 1) * sizeof(RC2D_ShaderEntry)
     );
     RC2D_assert_release(newShaders != NULL, RC2D_LOG_CRITICAL, "Failed to realloc shader cache");
-    rc2d_engine_state.shaders = newShaders;
+    rc2d_engine_state.gpu_shaders = newShaders;
 
     RC2D_ShaderEntry* entry = &rc2d_engine_state.gpu_shaders[rc2d_engine_state.gpu_shader_count++];
     entry->filename = SDL_strdup(filename);
     entry->shader = shader;
     entry->lastModified = get_file_modification_time(fullPath);
     SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
+#endif
 
     RC2D_log(RC2D_LOG_INFO, "Shader loaded and cached: %s", filename);
     return shader;
-#endif
-}
-
-static Sint64 get_file_modification_time(const char* path) 
-{
-    SDL_IOStream* file = SDL_OpenIO(path, "r");
-    if (!file) return 0;
-    Sint64 mtime = SDL_GetIOProperties(file, SDL_PROP_IOSTREAM_MODIFICATION_TIME_NUMBER, 0);
-    SDL_CloseIO(file);
-    return mtime;
 }
 
 void rc2d_gpu_checkShaderUpdates(void) 
 {
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     if (!rc2d_engine_state.gpu_shader_mutex) return;
 
     const char* basePath = SDL_GetBasePath();
@@ -290,9 +301,9 @@ void rc2d_gpu_checkShaderUpdates(void)
             }
 
             // Charger le fichier HLSL
-            size_t codeHLSLSize = 0;
-            char* codeHLSLSource = SDL_LoadFile(fullPath, &codeHLSLSize);
-            if (!codeHLSLSource) {
+            char* codeHLSLSource = SDL_LoadFile(fullPath, NULL);
+            if (!codeHLSLSource) 
+            {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source: %s", fullPath);
                 continue;
             }
@@ -317,7 +328,8 @@ void rc2d_gpu_checkShaderUpdates(void)
             );
             SDL_free(codeHLSLSource);
 
-            if (newShader) {
+            if (newShader) 
+            {
                 // Attendre que le GPU ait fini d'utiliser l'ancien shader
                 SDL_GPUSubmitAndReleaseCommandBuffer(rc2d_engine_state.gpu_current_command_buffer);
                 rc2d_engine_state.gpu_current_command_buffer = SDL_AcquireGPUCommandBuffer(rc2d_engine_state.gpu_device);
@@ -327,12 +339,15 @@ void rc2d_gpu_checkShaderUpdates(void)
                 entry->shader = newShader;
                 entry->lastModified = currentModified;
                 RC2D_log(RC2D_LOG_INFO, "Shader reloaded: %s", entry->filename);
-            } else {
+            } 
+            else 
+            {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to reload shader: %s", entry->filename);
             }
         }
     }
-    SDL_UnlockMutex(rc2d_engine_state.shader_mutex);
+    SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
+#endif
 }
 
 void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 

@@ -34,7 +34,7 @@ extern "C" {
 typedef struct RC2D_ShaderEntry {
     char* filename;              // Nom du fichier shader (e.g., "test.fragment")
     SDL_GPUShader* shader;       // Pointeur vers le shader chargé
-    Sint64 lastModified;         // Timestamp de la dernière modification du fichier
+    SDL_Time lastModified;       // Timestamp de la dernière modification du fichier
 } RC2D_ShaderEntry;
 
 /**
