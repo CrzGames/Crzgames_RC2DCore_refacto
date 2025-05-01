@@ -91,6 +91,8 @@ set OUT_REFLECTION_DIR=..\reflection
 
 :: Variable pour le compteur de shaders compilés
 set COMPILED_COUNT=0
+set TOTAL_HLSL_COUNT=0
+set SKIPPED_COUNT=0
 
 :: Résoudre le chemin absolu du binaire shadercross
 pushd "%~dp0%RELATIVE_SHADERCROSS%\.."
@@ -142,35 +144,37 @@ if "%COMPILE_JSON%"=="true" (
 :: Compilation des shaders HLSL vers SPIR-V (Vulkan), Metal (MSL), DXIL (Direct3D12) et JSON (réflexion des ressources shaders)
 :: Via le binaire SDL_shadercross
 for %%f in (%SRC_DIR%\*.hlsl) do (
+    set /A TOTAL_HLSL_COUNT+=1
     set "filename=%%~nf"
 
-    :: Vérifier que le fichier contient une fonction main en tant que point d'entrée dans le shader
-    :: Si le fichier ne contient pas de point d'entrée "main", l'ignorer et passer au suivant
+    REM Vérifier que le fichier contient une fonction main en tant que point d'entrée dans le shader
+    REM Si le fichier ne contient pas de point d'entrée "main", l'ignorer et passer au suivant
     call :check_shader_main "%%f"
     if errorlevel 1 (
-        echo [33m[SKIP] Ignore le shader %%~nxf : aucun point d'entrer "main"[0m
+        echo [33m[SKIP] Ignore le shader source %%~nxf : aucun point d'entrer "main"[0m
+        set /A SKIPPED_COUNT+=1
     ) else (
-        :: Compilation des shaders HLSL vers SPIR-V (Vulkan)
+        REM Compilation des shaders HLSL vers SPIR-V (Vulkan)
         if "%COMPILE_SPIRV%"=="true" (
             call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\spirv\%%~nf.spv"
         )
 
-        :: Compilation des shaders HLSL vers DXIL (Direct3D12)
+        REM Compilation des shaders HLSL vers DXIL (Direct3D12)
         if "%COMPILE_DXIL%"=="true" (
             call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\dxil\%%~nf.dxil"
         )
 
-        :: Compilation des shaders HLSL vers MSL (Metal)
+        REM Compilation des shaders HLSL vers MSL (Metal)
         if "%COMPILE_MSL%"=="true" (
             call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\msl\%%~nf.msl" --msl-version %MSL_VERSION%
         )
 
-        :: Compilation des fichiers JSON de réflexion des ressources shaders
+        REM Compilation des fichiers JSON de réflexion des ressources shaders
         if "%COMPILE_JSON%"=="true" (
             call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_REFLECTION_DIR%\%%~nf.json"
         )
 
-        :: Incrémentation du compteur de shaders compilés
+        REM Incrémentation du compteur de shaders compilés
         set /A COMPILED_COUNT+=1
     )
 )
@@ -185,51 +189,14 @@ pushd "%OUT_REFLECTION_DIR%"
 set ABS_OUT_REFLECTION_DIR=%CD%
 popd
 
-:: Affichage des logs pour information
 echo.
-call :print_success "%COMPILED_COUNT% shader(s) compile(s) avec succes"
-echo.
-
-if "%COMPILE_SPIRV%"=="true" (
-    echo Compilation des shaders source HLSL vers SPIR-V (Vulkan) terminer.
-)
-if "%COMPILE_MSL%"=="true" (
-    echo Compilation des shaders source HLSL vers Metal (MSL) terminer.
-)
-if "%COMPILE_DXIL%"=="true" (
-    echo Compilation des shaders source HLSL vers DXIL (Direct3D12) terminer.
-)
-if "%COMPILE_JSON%"=="true" (
-    echo Compilation des fichiers JSON de reflexion des ressources shaders terminer.
-)
-
-echo.
-echo Les shaders compiler sont disponibles dans les repertoires de sortie :
+call :print_summary
 echo.
 
-if "%COMPILE_SPIRV%"=="true" (
-    echo SPIR-V (Vulkan) :
-    call :print_green "%ABS_OUT_COMPILED_DIR%\spirv"
-    echo.
-)
-
-if "%COMPILE_MSL%"=="true" (
-    echo MSL (Metal) :
-    call :print_green "%ABS_OUT_COMPILED_DIR%\msl"
-    echo.
-)
-
-if "%COMPILE_DXIL%"=="true" (
-    echo DXIL (Direct3D12) :
-    call :print_green "%ABS_OUT_COMPILED_DIR%\dxil"
-    echo.
-)
-
-if "%COMPILE_JSON%"=="true" (
-    echo JSON (reflexion des ressources shaders) :
-    call :print_green "%ABS_OUT_REFLECTION_DIR%"
-    echo.
-)
+if "%COMPILE_SPIRV%"=="true" call :print_green "SPIR-V (Vulkan) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\spirv"
+if "%COMPILE_MSL%"=="true" call :print_green "MSL (Metal) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\msl"
+if "%COMPILE_DXIL%"=="true" call :print_green "DXIL (Direct3D12) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\dxil"
+if "%COMPILE_JSON%"=="true" call :print_green "JSON (Informations de reflexion sur les ressources shaders) :" & call :print_cyan "%ABS_OUT_REFLECTION_DIR%"
 
 endlocal
 goto :eof
@@ -294,6 +261,18 @@ echo     Sinon, il compile tous les fichiers .hlsl trouves.
 echo.
 goto :eof
 
+:print_summary
+    setlocal
+    echo [93m[SUMMARY] Compilation[0m
+    echo [37m  Total shader source .hlsl traiter : %TOTAL_HLSL_COUNT%[0m
+    echo [33m  Total shader source .hlsl ignorer : %SKIPPED_COUNT%[0m
+    echo [32m  Total shader compiler avec succes : %COMPILED_COUNT%[0m
+    if "%COMPILE_JSON%"=="true" (
+        echo [32m  Total fichiers JSON generer : %COMPILED_COUNT%[0m
+    )
+    endlocal
+    goto :eof
+
 :: ---------------------------------------
 :: Fonctions d'affichage coloré avec préfixes
 :: ---------------------------------------
@@ -307,7 +286,7 @@ goto :eof
 :print_green
     setlocal
     set "TEXT=%~1"
-    echo [32m[INFO] %TEXT%[0m
+    echo [93m[INFO] %TEXT%[0m
     endlocal
     goto :eof
 
@@ -315,6 +294,13 @@ goto :eof
     setlocal
     set "TEXT=%~1"
     echo [32m[SUCCESS] %TEXT%[0m
+    endlocal
+    goto :eof
+
+:print_cyan
+    setlocal
+    set "TEXT=%~1"
+    echo [36m[PATH] %TEXT%[0m
     endlocal
     goto :eof
 
