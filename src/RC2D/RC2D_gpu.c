@@ -11,6 +11,7 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
     // Vérification des paramètres d'entrée
     RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader filename is NULL");
 
+#ifdef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     // Vérifier si le shader est déjà dans le cache
     SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
     for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) {
@@ -22,6 +23,7 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
         }
     }
     SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
+#endif
 
     // Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
     const char* basePath = SDL_GetBasePath();

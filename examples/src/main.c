@@ -10,8 +10,13 @@ const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
 #endif
 
     RC2D_EngineConfig* config = rc2d_engine_getDefaultConfig();
+#ifdef NDEBUG // Release mode
+    config->gpuOptions->debugMode = false;
+    config->gpuOptions->verbose = false;
+#else // Debug mode
     config->gpuOptions->debugMode = true;
     config->gpuOptions->verbose = true;
+#endif
     config->gpuOptions->preferLowPower = false;
     config->gpuOptions->driver = RC2D_GPU_DRIVER_DEFAULT;
     config->callbacks->rc2d_draw = rc2d_draw;
