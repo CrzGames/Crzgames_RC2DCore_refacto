@@ -261,8 +261,8 @@ echo Requis :
 echo     SDL3_shadercross CLI (binaire shadercross) doit être présent dans le répertoire ../tools.
 echo.
 echo Documentation :
-echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)
-echo     et JSON (reflexion des ressources shaders) en utilisant le binaire shadercross de SDL3_shadercross.
+echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal).
+echo     Les fichiers JSON de reflexion des ressources shaders sont generes pour chaque shader source HLSL.
 echo.
 echo     Les shaders source HLSL doivent etre places dans le repertoire ../src.
 echo     Les shaders compiles seront places dans le repertoire ../compiled.
