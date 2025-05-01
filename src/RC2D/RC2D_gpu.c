@@ -162,7 +162,7 @@ SDL_GPUShader* rc2d_shader_loadCompiled(const char* filename)
         &metadata
     );
 
-    SDL_free(hlslSource);
+    SDL_free(codeHLSLSource);
     return shader;
 #endif
 
