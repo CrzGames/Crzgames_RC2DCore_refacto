@@ -4,7 +4,7 @@ setlocal
 :: ==================================================
 :: Configuration par défaut
 :: ==================================================
-set MSL_VERSION=2.1
+set MSL_VERSION=2.1.0
 set COMPILE_SPIRV=false
 set COMPILE_DXIL=false
 set COMPILE_MSL=false
@@ -144,6 +144,14 @@ if "%COMPILE_JSON%"=="true" (
 for %%f in (%SRC_DIR%\*.hlsl) do (
     set "filename=%%~nf"
 
+    :: Vérifier que le fichier contient une fonction main en tant que point d'entrée dans le shader
+    :: Si le fichier ne contient pas de point d'entrée "main", l'ignorer et passer au suivant
+    findstr /C:"main" "%%f" >nul
+    if errorlevel 1 (
+        echo [SKIP] Ignoré %%~nxf : aucun point d'entrée "main"
+        goto :skip_shader
+    )
+
     :: Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal)
     if "%COMPILE_SPIRV%"=="true" (
         call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\spirv\%%~nf.spv"
@@ -176,7 +184,7 @@ popd
 
 :: Affichage des logs pour information
 echo.
-call :print_success "%COMPILED_COUNT% shader(s) compile(s) avec succes ✅"
+call :print_success "%COMPILED_COUNT% shader(s) compile(s) avec succes"
 echo.
 
 if "%COMPILE_SPIRV%"=="true" (
@@ -247,18 +255,18 @@ echo     --no-json                 Desactiver la generation des fichiers JSON (r
 echo     --help                    Afficher cette aide
 echo.
 echo Comportement par defaut :
-echo     Compile les shaders source HLSL en : SPIR-V, DXIL et MSL.
-echo     Genere les fichiers JSON : Les informations de reflexion automatique sur les ressources utilisées par un shader.
-echo     Version MSL par defaut : 2.1
+echo     Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal).
+echo     Genere les fichiers JSON : Les informations de reflexion automatique sur les ressources utiliser par un shader.
+echo     Version MSL par defaut : 2.1.0
 echo.
 echo Exemples :
 echo     compile_shaders.bat --only-dxil
-echo     compile_shaders.bat --only-msl --msl-version 2.3 --no-json
+echo     compile_shaders.bat --only-msl --msl-version 2.3.0 --no-json
 echo     compile_shaders.bat --only-spirv --only-msl
 echo     compile_shaders.bat
 echo.
 echo Requis :
-echo     SDL3_shadercross CLI (binaire shadercross) doit être présent dans le répertoire ../tools.
+echo     SDL3_shadercross CLI (binaire shadercross) doit etre present dans le repertoire : ../tools.
 echo.
 echo Documentation :
 echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal).

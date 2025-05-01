@@ -7,7 +7,7 @@
 #include <SDL3_shadercross/SDL_shadercross.h>
 #endif
 
-SDL_GPUShader* rc2d_shader_loadCompiled(const char* filename)
+SDL_GPUShader* rc2d_gpu_loadShader(const char* filename)
 {
     // Vérification des paramètres d'entrée
     RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader name is NULL");
