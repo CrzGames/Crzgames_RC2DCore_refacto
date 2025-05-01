@@ -19,6 +19,10 @@
 
 //#include <SDL3_mixer/SDL_mixer.h>
 
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+#include <SDL3_shadercross/SDL_shadercross.h>
+#endif
+
 RC2D_EngineState rc2d_engine_state = {0};
 
 RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
@@ -163,6 +167,51 @@ static void rc2d_engine_stateInit(void) {
     rc2d_engine_state.letterbox_textures.mode = RC2D_LETTERBOX_NONE;
     // rc2d_engine_state.rc2d_letterbox_areas : est déjà zéro-initialisé
     rc2d_engine_state.letterbox_count = 0;
+}
+
+/**
+ * \brief Initialise la bibliothèque SDL3_shadercross.
+ * 
+ * Cette fonction initialise la bibliothèque SDL3_shadercross pour le rechargement à chaud des shaders.
+ * Elle doit être appelée avant d'utiliser les fonctionnalités de rechargement à chaud des shaders.
+ * 
+ * \return true si l'initialisation a réussi, false sinon.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static bool rc2d_engine_init_sdlshadercross(void)
+{
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+    if (!SDL_ShaderCross_Init()) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Erreur lors de l'initialisation de SDL_shadercross.");
+        return false;
+    }
+    else 
+    {
+        RC2D_log(RC2D_LOG_INFO, "SDL_shadercross initialisé avec succès.");
+        return true;
+    }
+#endif
+
+    // Si le rechargement à chaud des shaders n'est pas activé, on retourne true par défaut
+    return true;
+}
+
+/**
+ * \brief Libère les ressources SDL3_shadercross.
+ * 
+ * Cette fonction libère les ressources allouées par SDL3_shadercross.
+ * Elle doit être appelée avant de quitter l'application pour éviter les fuites de mémoire.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static void rc2d_engine_cleanup_shadercross(void)
+{
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+    SDL_ShaderCross_Quit();
+    RC2D_log(RC2D_LOG_INFO, "SDL_shadercross nettoyé avec succès.");
+#endif
 }
 
 /**
@@ -931,6 +980,14 @@ static bool rc2d_engine(void)
     }
 
     /**
+     * Initialiser la librairie SDL3_shadercross
+     */
+    if (!rc2d_engine_init_sdlshadercross())
+    {
+        return false;
+    }
+
+    /**
      * Vérifier si le GPU de l'utilisateur est supporté par l'API SDL3_GPU.
      * 
      * Cela permet de s'assurer que le GPU est compatible avec au 
@@ -1018,6 +1075,9 @@ void rc2d_engine_quit(void)
 
     // Lib SDL3_mixer Deinitialize
     rc2d_engine_cleanup_sdlmixer();
+
+    // Lib SDL3_shadercross Deinitialize
+    rc2d_engine_cleanup_sdlshadercross();
     
     // Destroy GPU device
     if (rc2d_engine_state.gpu_device != NULL)

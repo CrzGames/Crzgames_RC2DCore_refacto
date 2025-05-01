@@ -112,6 +112,18 @@ add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
+# Désactiver le hot reload des shaders en ligne pour certaines plateformes
+if(APPLE)
+  if(CMAKE_OSX_SYSROOT MATCHES "iphoneos" OR
+     CMAKE_OSX_SYSROOT MATCHES "appletvos" OR
+     CMAKE_OSX_SYSROOT MATCHES "iphonesimulator" OR
+     CMAKE_OSX_SYSROOT MATCHES "appletvsimulator")
+    set(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED OFF CACHE BOOL "Hot reload is not supported on mobile Apple platforms" FORCE)
+  endif()
+elseif(ANDROID)
+  set(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED OFF CACHE BOOL "Hot reload is not supported on Android" FORCE)
+endif()
+
 # Fonction pour configurer SDL3_shadercross
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
@@ -165,6 +177,10 @@ function(rc2d_configure_shadercross target_name)
         )
       endforeach()
     endif()
+  elseif(APPLE)
+  
+  elseif (UNIX AND NOT APPLE)
+
   endif()
 endfunction()
 
@@ -269,6 +285,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
 rc2d_configure_openssl(${PROJECT_NAME})
 
+# Linker SDL3_shadercross selon la plateforme
+rc2d_configure_shadercross(${PROJECT_NAME})
+
 # Génération des sorties pour RC2D
 if(APPLE)
   # Pour Apple (macOS, iOS, tvOS) générer un bundle cross-platform : XCFramework
@@ -304,10 +323,8 @@ if(RC2D_BUILD_EXAMPLES)
   # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
   rc2d_configure_openssl(rc2d_example)
 
-  # Linker SDL3_shadercross pour le hot reload des shaders
-  if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-    rc2d_configure_shadercross(rc2d_example)
-  endif()
+  # Linker SDL3_shadercross selon la plateforme
+  rc2d_configure_shadercross(rc2d_example)
 
   # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
   target_link_libraries(rc2d_example PRIVATE
@@ -333,6 +350,9 @@ if(RC2D_BUILD_TESTS)
 
   # Inclure les répertoires d'en-tête (headers)
   rc2d_include_headers(rc2d_tests)
+
+  # Linker SDL3_shadercross selon la plateforme
+  rc2d_configure_shadercross(rc2d_tests)
 
   # Linker la dépendance OpenSSL non commune à toutes les plateformes
   # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
