@@ -1,15 +1,3 @@
-/**
- * Les macro de préprocesseur doivent être définies avant d'inclure le fichier RC2D.h
- * pour que les options de configuration soient prises en compte.
- */
-#ifdef NDEBUG // Release mode
-#define RC2D_ASSERT_LEVEL 1
-#define RC2D_GPU_SHADER_HOT_RELOAD_ENABLED 0
-#else // Debug mode
-#define RC2D_ASSERT_LEVEL 3
-#define RC2D_GPU_SHADER_HOT_RELOAD_ENABLED 1
-#endif
-
 #include <mygame/game.h>
 #include <RC2D/RC2D.h>
 

@@ -270,6 +270,12 @@ else()
   set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
 endif()
 
+if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=1)
+else()
+  target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
+endif()
+
 # Inclure les répertoires d'en-tête (headers)
 rc2d_include_headers(${PROJECT_NAME})
 
@@ -310,6 +316,12 @@ if(RC2D_BUILD_EXAMPLES)
 
   # Créer un exécutable pour l'exemple
   add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
+
+  if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    target_compile_definitions(rc2d_example PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=1)
+  else()
+    target_compile_definitions(rc2d_example PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
+  endif()
 
   # Les fichiers d'en-tête (headers) de l'exemple sont dans le répertoire "examples/include"
   target_include_directories(rc2d_example PRIVATE
