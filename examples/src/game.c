@@ -14,7 +14,6 @@ void rc2d_load(void)
 void rc2d_update(double dt)
 {
     RC2D_log(RC2D_LOG_INFO, "My game is updating... Delta time: %f\n", dt);
-    // Update game logic here
 }
 
 void rc2d_draw(void)

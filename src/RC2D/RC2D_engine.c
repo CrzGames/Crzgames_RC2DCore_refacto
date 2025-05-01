@@ -867,7 +867,7 @@ static void rc2d_engine_update_fps_based_on_monitor(void)
     } 
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "Set SDL_HINT_MAIN_CALLBACK_RATE to %s Hz with OVERRIDE priority", fps_str);
+        RC2D_log(RC2D_LOG_INFO, "Game loop FPS set to %s Hz", fps_str);
     }
 }
 
