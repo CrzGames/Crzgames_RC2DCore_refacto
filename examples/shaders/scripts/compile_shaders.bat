@@ -229,7 +229,7 @@ goto :eof
 :print_help
 echo.
 echo ===========================================
-echo Compilation de shaders hors ligne - RC2D
+echo RC2D - Compilation de shaders hors ligne
 echo ===========================================
 echo.
 echo Compatibilite : 
@@ -247,8 +247,8 @@ echo     --no-json                 Desactiver la generation des fichiers JSON (r
 echo     --help                    Afficher cette aide
 echo.
 echo Comportement par defaut :
-echo     Compile les shaders source HLSL en SPIR-V, DXIL et MSL.
-echo     Genere les fichiers JSON de la réflexion automatique sur les ressources utilisées par un shader.
+echo     Compile les shaders source HLSL en : SPIR-V, DXIL et MSL.
+echo     Genere les fichiers JSON : Reflexion automatique sur les ressources utilisées par un shader.
 echo     Version MSL par defaut : 2.1
 echo.
 echo Exemples :
@@ -256,6 +256,9 @@ echo     compile_shaders.bat --only-dxil
 echo     compile_shaders.bat --only-msl --msl-version 2.3 --no-json
 echo     compile_shaders.bat --only-spirv --only-msl
 echo     compile_shaders.bat
+echo.
+echo Requis :
+echo     SDL3_shadercross CLI (binaire shadercross) doit être présent dans le répertoire ../tools.
 echo.
 echo Documentation :
 echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)
