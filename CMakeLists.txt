@@ -115,28 +115,54 @@ add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 # Fonction pour configurer SDL3_shadercross
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
+    # Le répertoire de Shadercross est dans le répertoire "vendored" du projet
     set(SHADERCROSS_ROOT "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows")
 
-    # TODO: Récupérer automatiquement l'architecture (x64 ou ARM64) de la plateforme qui compile
+    # TODO: Il faudra detecter la version de Windows (x64 ou ARM64) et choisir le bon répertoire
+    # En attendant, on force le répertoire x64
     set(SHADERCROSS_ARCH "x64")
 
-    # Includes + libs
+    # Link include et lib de Shadercross
     target_include_directories(${target_name} PRIVATE "${SHADERCROSS_ROOT}/include")
     target_link_directories(${target_name} PRIVATE "${SHADERCROSS_ROOT}/lib/SDL3_shadercross/${SHADERCROSS_ARCH}")
     target_link_libraries(${target_name} PRIVATE SDL3_shadercross.lib)
 
-    # Optionnel : copier les DLLs nécessaires dans examples/shaders/tools/
+    # Le répertoire de sortie pour les fichiers de Shadercross pour la compilation hors ligne
+    set(TOOLS_OUT "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
+    # Créer si le répertoire n'existe pas
+    file(MAKE_DIRECTORY "${TOOLS_OUT}")
+
+    # Tous les fichiers à copier dans examples/shaders/tools/ pour la compilation hors ligne
+    set(SHADERCROSS_TOOLS_ALL
+      "shadercross.exe"
+      "dxcompiler.dll"
+      "dxil.dll"
+      "SDL3.dll"
+      "SDL3_shadercross.dll"
+      "spirv-cross-c-shared.dll"
+    )
+
+    # Fichiers à copier aussi dans le dossier de build, uniquement pour le hot reload de la compilation en ligne
+    set(SHADERCROSS_TO_RUNTIME
+      "dxcompiler.dll"
+      "dxil.dll"
+      "SDL3_shadercross.dll"
+      "spirv-cross-c-shared.dll"
+    )
+
+    # Copie dans examples/shaders/tools/ tous les fichiers de Shadercross
+    foreach(F IN LISTS SHADERCROSS_TOOLS_ALL)
+      file(COPY "${SHADERCROSS_ROOT}/bin/SDL3_shadercross/${F}" DESTINATION "${TOOLS_OUT}")
+    endforeach()
+
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-      file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
-      foreach(FILENAME IN LISTS
-        "shadercross.exe"
-        "dxcompiler.dll"
-        "dxil.dll"
-        "SDL3.dll"
-        "SDL3_shadercross.dll"
-        "spirv-cross-c-shared.dll"
-      )
-        file(COPY "${SHADERCROSS_ROOT}/bin/SDL3_shadercross/${FILENAME}" DESTINATION "${PROJECT_SOURCE_DIR}/examples/shaders/tools/")
+      # Copie dans le dossier de build tous les fichiers de Shadercross pour la compilation en ligne
+      foreach(F IN LISTS SHADERCROSS_TO_RUNTIME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${SHADERCROSS_ROOT}/bin/SDL3_shadercross/${F}"
+            "$<TARGET_FILE_DIR:${target_name}>/${F}"
+        )
       endforeach()
     endif()
   endif()
