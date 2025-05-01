@@ -193,9 +193,9 @@ echo.
 call :print_summary
 echo.
 
-if "%COMPILE_SPIRV%"=="true" call :print_green "SPIR-V (Vulkan) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\spirv"
-if "%COMPILE_MSL%"=="true" call :print_green "MSL (Metal) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\msl"
-if "%COMPILE_DXIL%"=="true" call :print_green "DXIL (Direct3D12) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\dxil"
+if "%COMPILE_SPIRV%"=="true" call :print_green "SPIR-V (Shaders Vulkan) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\spirv"
+if "%COMPILE_MSL%"=="true" call :print_green "MSL (Shaders Metal) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\msl"
+if "%COMPILE_DXIL%"=="true" call :print_green "DXIL (Shaders Direct3D12) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\dxil"
 if "%COMPILE_JSON%"=="true" call :print_green "JSON (Informations de reflexion sur les ressources shaders) :" & call :print_cyan "%ABS_OUT_REFLECTION_DIR%"
 
 endlocal
