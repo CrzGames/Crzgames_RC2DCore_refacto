@@ -263,14 +263,16 @@ void rc2d_gpu_hotReloadShaders(void)
     if (!rc2d_engine_state.gpu_shader_mutex) return;
 
     const char* basePath = SDL_GetBasePath();
-    if (!basePath) {
+    if (!basePath) 
+    {
         RC2D_log(RC2D_LOG_ERROR, "Failed to get base path for shader updates");
         return;
     }
 
     SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
 
-    for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) {
+    for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) 
+    {
         RC2D_ShaderEntry* entry = &rc2d_engine_state.gpu_shaders[i];
 
         // Construire le chemin complet
@@ -279,23 +281,30 @@ void rc2d_gpu_hotReloadShaders(void)
 
         // Vérifier le timestamp
         SDL_Time currentModified = get_file_modification_time(fullPath);
-        if (currentModified > entry->lastModified) {
+        if (currentModified > entry->lastModified) 
+        {
             RC2D_log(RC2D_LOG_INFO, "Shader file modified: %s", entry->filename);
 
             // Déterminer le stage
             SDL_GPUShaderStage stage;
-            if (SDL_strstr(entry->filename, ".vertex")) {
+            if (SDL_strstr(entry->filename, ".vertex")) 
+            {
                 stage = SDL_GPU_SHADERSTAGE_VERTEX;
-            } else if (SDL_strstr(entry->filename, ".fragment")) {
+            } 
+            else if (SDL_strstr(entry->filename, ".fragment")) 
+            {
                 stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
-            } else {
+            } 
+            else 
+            {
                 RC2D_log(RC2D_LOG_ERROR, "Unknown shader stage for %s during reload", entry->filename);
                 continue;
             }
 
             // Charger le fichier HLSL
             char* codeHLSLSource = SDL_LoadFile(fullPath, NULL);
-            if (!codeHLSLSource) {
+            if (!codeHLSLSource) 
+            {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source: %s", fullPath);
                 continue;
             }
@@ -320,16 +329,20 @@ void rc2d_gpu_hotReloadShaders(void)
             );
             SDL_free(codeHLSLSource);
 
-            if (newShader) {
+            if (newShader) 
+            {
                 // Soumettre le buffer de commandes actuel et obtenir une fence
                 SDL_GPUFence* fence = NULL;
-                if (rc2d_engine_state.gpu_current_command_buffer) {
+                if (rc2d_engine_state.gpu_current_command_buffer) 
+                {
                     fence = SDL_SubmitGPUCommandBufferAndAcquireFence(rc2d_engine_state.gpu_current_command_buffer);
-                    if (!fence) {
+                    if (!fence) 
+                    {
                         RC2D_log(RC2D_LOG_ERROR, "Failed to submit command buffer and acquire fence");
                         SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), newShader);
                         continue;
                     }
+
                     // Attendre que le GPU ait fini de traiter le buffer
                     SDL_WaitForGPUFences(rc2d_engine_state.gpu_device, true, &fence, 1);
                     SDL_ReleaseGPUFence(rc2d_gpu_getDevice(), fence);
@@ -337,20 +350,24 @@ void rc2d_gpu_hotReloadShaders(void)
 
                 // Acquérir un nouveau buffer de commandes
                 rc2d_engine_state.gpu_current_command_buffer = SDL_AcquireGPUCommandBuffer(rc2d_engine_state.gpu_device);
-                if (!rc2d_engine_state.gpu_current_command_buffer) {
+                if (!rc2d_engine_state.gpu_current_command_buffer) 
+                {
                     RC2D_log(RC2D_LOG_ERROR, "Failed to acquire new command buffer after shader reload");
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), newShader);
                     continue;
                 }
 
                 // Libérer l'ancien shader et remplacer
-                if (entry->shader) {
+                if (entry->shader) 
+                {
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), entry->shader);
                 }
                 entry->shader = newShader;
                 entry->lastModified = currentModified;
                 RC2D_log(RC2D_LOG_INFO, "Shader reloaded: %s", entry->filename);
-            } else {
+            } 
+            else 
+            {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to reload shader: %s", entry->filename);
             }
         }
