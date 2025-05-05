@@ -273,6 +273,19 @@ typedef enum RC2D_GPUShaderFormat {
     RC2D_GPU_SHADERFORMAT_METALLIB   = 1 << 5
 } RC2D_GPUShaderFormat;
 
+
+typedef struct SDL_GPUShader RC2D_GPUShader;
+typedef struct SDL_GPUGraphicsPipeline RC2D_GPUGraphicsPipelineHandle; 
+typedef struct SDL_GPUGraphicsPipelineCreateInfo RC2D_GPUGraphicsPipelineCreateInfo;
+
+typedef struct RC2D_GPUGraphicsPipeline {
+    RC2D_GPUGraphicsPipelineHandle* pipeline;
+    RC2D_GPUGraphicsPipelineCreateInfo create_info;
+    const char* debug_name;
+    char* vertex_shader_filename;
+    char* fragment_shader_filename;
+} RC2D_GPUGraphicsPipeline;
+
 /**
  * \brief Remplit une structure RC2D_GPUInfo avec les métadonnées du GPU utilisé.
  * 
@@ -320,6 +333,9 @@ RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 SDL_GPUShader* rc2d_gpu_loadShader(const char* filename);
+
+bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline);
+void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus

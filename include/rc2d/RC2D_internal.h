@@ -3,6 +3,7 @@
 
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_math.h>
+#include <RC2D/RC2D_gpu.h>
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
@@ -37,6 +38,12 @@ typedef struct RC2D_ShaderEntry {
     SDL_Time lastModified;       // Timestamp de la dernière modification du fichier
 } RC2D_ShaderEntry;
 
+typedef struct RC2D_PipelineEntry {
+    char* vertex_shader_filename;
+    char* fragment_shader_filename;
+    RC2D_GPUGraphicsPipeline graphicsPipeline;
+} RC2D_PipelineEntry;
+
 /**
  * \brief Structure regroupant l'état global du moteur RC2D.
  *
@@ -62,9 +69,13 @@ typedef struct RC2D_EngineState {
     SDL_GPUViewport* gpu_current_viewport;
     SDL_GPUGraphicsPipeline* gpu_pipeline;
 
-    RC2D_ShaderEntry* gpu_shaders;   // Tableau dynamique des shaders chargés
+    RC2D_ShaderEntry* gpu_shaders_cache;   // Tableau dynamique des shaders chargés
     int gpu_shader_count;            // Nombre de shaders chargés
     SDL_Mutex* gpu_shader_mutex;     // Mutex pour protéger l'accès aux shaders
+
+    RC2D_PipelineEntry* gpu_pipelines_cache; // cache Tableau dynamique des pipelines
+    int gpu_pipeline_count;
+    SDL_Mutex* gpu_pipeline_mutex;
 
     // RC2D : État d'exécution
     int fps;

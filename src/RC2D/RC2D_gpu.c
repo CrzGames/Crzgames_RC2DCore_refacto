@@ -22,7 +22,7 @@ static SDL_Time get_file_modification_time(const char* path)
     return 0;
 }
 
-SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
+RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
     // Vérification des paramètres d'entrée
     RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader filename is NULL");
 
@@ -32,9 +32,9 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
 
     for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) 
     {
-        if (SDL_strcmp(rc2d_engine_state.gpu_shaders[i].filename, filename) == 0) 
+        if (SDL_strcmp(rc2d_engine_state.gpu_shaders_cache[i].filename, filename) == 0) 
         {
-            SDL_GPUShader* shader = rc2d_engine_state.gpu_shaders[i].shader;
+            SDL_GPUShader* shader = rc2d_engine_state.gpu_shaders_cache[i].shader;
             SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
 
             RC2D_log(RC2D_LOG_INFO, "Shader already loaded from cache: %s", filename);
@@ -240,13 +240,13 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
     // Ajouter le shader au cache
     SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
     RC2D_ShaderEntry* newShaders = SDL_realloc(
-        rc2d_engine_state.gpu_shaders,
+        rc2d_engine_state.gpu_shaders_cache,
         (rc2d_engine_state.gpu_shader_count + 1) * sizeof(RC2D_ShaderEntry)
     );
     RC2D_assert_release(newShaders != NULL, RC2D_LOG_CRITICAL, "Failed to realloc shader cache");
-    rc2d_engine_state.gpu_shaders = newShaders;
+    rc2d_engine_state.gpu_shaders_cache = newShaders;
 
-    RC2D_ShaderEntry* entry = &rc2d_engine_state.gpu_shaders[rc2d_engine_state.gpu_shader_count++];
+    RC2D_ShaderEntry* entry = &rc2d_engine_state.gpu_shaders_cache[rc2d_engine_state.gpu_shader_count++];
     entry->filename = SDL_strdup(filename);
     entry->shader = shader;
     entry->lastModified = get_file_modification_time(fullPath);
@@ -260,7 +260,12 @@ SDL_GPUShader* rc2d_gpu_loadShader(const char* filename) {
 void rc2d_gpu_hotReloadShaders(void)
 {
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
-    if (!rc2d_engine_state.gpu_shader_mutex) return;
+    if (!rc2d_engine_state.gpu_shader_mutex)
+        RC2D_log(RC2D_LOG_ERROR, "gpu_shader_mutex is NULL");
+
+    if (!rc2d_engine_state.gpu_pipeline_mutex)
+        RC2D_log(RC2D_LOG_ERROR, "gpu_pipeline_mutex is NULL");
+
 
     const char* basePath = SDL_GetBasePath();
     if (basePath == NULL) 
@@ -270,10 +275,11 @@ void rc2d_gpu_hotReloadShaders(void)
     }
 
     SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
+    SDL_LockMutex(rc2d_engine_state.gpu_pipeline_mutex);
 
     for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) 
     {
-        RC2D_ShaderEntry* entry = &rc2d_engine_state.gpu_shaders[i];
+        RC2D_ShaderEntry* entry = &rc2d_engine_state.gpu_shaders_cache[i];
 
         // Construire le chemin complet
         char fullPath[512];
@@ -372,12 +378,43 @@ void rc2d_gpu_hotReloadShaders(void)
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), entry->shader);
                 }
 
-                // Remplacer l'ancien shader par le nouveau dass le cache de RC2D
+                // Remplacer l'ancien shader par le nouveau dans le cache de RC2D
                 entry->shader = newShader;
                 entry->lastModified = currentModified;
 
                 // Log la réussite du rechargement du shader
                 RC2D_log(RC2D_LOG_INFO, "Shader %s reloaded in %.2f ms", entry->filename, compileTimeMs);
+
+                //  Mettre à jour tous les pipelines qui utilisent ce shader
+                for (int j = 0; j < rc2d_engine_state.gpu_pipeline_count; j++) 
+                {
+                    RC2D_PipelineEntry* pipeline = &rc2d_engine_state.gpu_pipelines_cache[j];
+
+                    bool needsRebuild = false;
+
+                    if ((stage == SDL_GPU_SHADERSTAGE_VERTEX && SDL_strcmp(pipeline->vertex_shader_filename, entry->filename) == 0) ||
+                        (stage == SDL_GPU_SHADERSTAGE_FRAGMENT && SDL_strcmp(pipeline->fragment_shader_filename, entry->filename) == 0)) 
+                    {
+                        RC2D_log(RC2D_LOG_INFO, "Rebuilding pipeline using shader: %s", entry->filename);
+                        SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), pipeline->graphicsPipeline.pipeline);
+                        pipeline->graphicsPipeline.pipeline = NULL; // Libérer le pipeline existant
+
+                        if (stage == SDL_GPU_SHADERSTAGE_VERTEX) 
+                        {
+                            pipeline->graphicsPipeline.create_info.vertex_shader = newShader;
+                        } 
+                        else if (stage == SDL_GPU_SHADERSTAGE_FRAGMENT) 
+                        {
+                            pipeline->graphicsPipeline.create_info.fragment_shader = newShader;
+                        }
+
+                        // Recréer le pipeline avec les mêmes infos
+                        bool ok = rc2d_gpu_createGraphicsPipeline(&pipeline->graphicsPipeline);
+                        if (!ok) {
+                            RC2D_log(RC2D_LOG_ERROR, "Failed to rebuild pipeline for shader: %s", entry->filename);
+                        }
+                    }
+                }
             } 
             else 
             {
@@ -386,8 +423,67 @@ void rc2d_gpu_hotReloadShaders(void)
         }
     }
 
+    SDL_UnlockMutex(rc2d_engine_state.gpu_pipeline_mutex);
     SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
 #endif
+}
+
+bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline)
+{
+    RC2D_assert_release(pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
+
+    SDL_PropertiesID props = 0;
+    if (pipeline->debug_name) 
+    {
+        props = SDL_CreateProperties();
+        SDL_SetStringProperty(props, SDL_PROP_GPU_GRAPHICSPIPELINE_CREATE_NAME_STRING, pipeline->debug_name);
+    }
+
+    // Copie la structure pour injection, en modifiant uniquement props
+    RC2D_GPUGraphicsPipelineCreateInfo info = pipeline->create_info;
+    info.props = props;
+
+    pipeline->pipeline = SDL_CreateGPUGraphicsPipeline(rc2d_gpu_getDevice(), &info);
+
+    SDL_DestroyProperties(props);
+
+    if (pipeline->pipeline == NULL) 
+    {
+        // Si la création du pipeline échoue, on log l'erreur
+        RC2D_log(RC2D_LOG_ERROR, "Failed to create graphics pipeline: %s", SDL_GetError());
+        return false;
+    }
+
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+    // Ajouter dans le cache des pipelines
+    SDL_LockMutex(rc2d_engine_state.gpu_pipeline_mutex);
+
+    RC2D_PipelineEntry* newPipelines = SDL_realloc(
+        rc2d_engine_state.gpu_pipelines_cache,
+        (rc2d_engine_state.gpu_pipeline_count + 1) * sizeof(RC2D_PipelineEntry)
+    );
+    RC2D_assert_release(newPipelines != NULL, RC2D_LOG_CRITICAL, "Failed to realloc pipeline cache");
+    rc2d_engine_state.gpu_pipelines_cache = newPipelines;
+
+    RC2D_PipelineEntry* entry = &rc2d_engine_state.gpu_pipelines_cache[rc2d_engine_state.gpu_pipeline_count++];
+    entry->graphicsPipeline = *pipeline;
+
+    entry->vertex_shader_filename = SDL_strdup(pipeline->vertex_shader_filename);
+    entry->fragment_shader_filename = SDL_strdup(pipeline->fragment_shader_filename);
+
+    SDL_UnlockMutex(rc2d_engine_state.gpu_pipeline_mutex);
+#endif
+
+    return true;
+}
+
+void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
+{
+    RC2D_assert_release(graphicsPipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
+    RC2D_assert_release(graphicsPipeline->pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline->pipeline is NULL");
+
+    // Bind le pipeline graphique
+    SDL_BindGPUGraphicsPipeline(rc2d_engine_state.gpu_current_render_pass, graphicsPipeline->pipeline);
 }
 
 /*void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
