@@ -263,7 +263,7 @@ void rc2d_gpu_hotReloadShaders(void)
     if (!rc2d_engine_state.gpu_shader_mutex) return;
 
     const char* basePath = SDL_GetBasePath();
-    if (!basePath) 
+    if (basePath == NULL) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to get base path for shader updates");
         return;
@@ -281,10 +281,9 @@ void rc2d_gpu_hotReloadShaders(void)
 
         // Vérifier le timestamp
         SDL_Time currentModified = get_file_modification_time(fullPath);
+        
         if (currentModified > entry->lastModified) 
         {
-            RC2D_log(RC2D_LOG_INFO, "Shader file modified: %s", entry->filename);
-
             // Déterminer le stage
             SDL_GPUShaderStage stage;
             if (SDL_strstr(entry->filename, ".vertex")) 
@@ -357,7 +356,7 @@ void rc2d_gpu_hotReloadShaders(void)
                     continue;
                 }
 
-                // Libérer l'ancien shader et remplacer
+                // Libérer l'ancien shader et remplacer par le nouveau shader
                 if (entry->shader) 
                 {
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), entry->shader);

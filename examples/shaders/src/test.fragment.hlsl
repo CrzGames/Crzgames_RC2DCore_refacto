@@ -9,7 +9,7 @@ float3 palette(float t)
     float3 a = float3(0.5, 0.5, 0.5);
     float3 b = float3(0.5, 0.5, 0.5);
     float3 c = float3(1.0, 1.0, 1.0);
-    float3 d = float3(0.00, 0.33, 0.67); // <<< Modifie cette ligne pour tester !
+    float3 d = float3(0.00, 0.33, 0.89); // <<< Modifie cette ligne pour tester !
 
     return a + b * cos(6.28318 * (c * t + d));
 }
