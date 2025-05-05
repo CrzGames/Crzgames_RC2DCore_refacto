@@ -13,7 +13,7 @@ static SDL_Time get_file_modification_time(const char* path)
     SDL_PathInfo info;
     if (SDL_GetPathInfo(path, &info)) 
     {
-        // Retourne le timestamp de la dernière modification
+        // Retourne le timestamp de la dernière modification du fichier
         return info.modify_time;
     }
 

@@ -28,16 +28,15 @@ void rc2d_graphics_clear(void)
      *
      * Attention : la texture peut être NULL (par exemple si la fenêtre est minimisée).
      */
-    Uint32 swapchain_texture_width = 0;
-	Uint32 swapchain_texture_height = 0;
-    bool ok = SDL_WaitAndAcquireGPUSwapchainTexture(
+    Uint32 swapchainTextureWidth = 0;
+	Uint32 swapchainTextureHeight = 0;
+    SDL_WaitAndAcquireGPUSwapchainTexture(
         rc2d_engine_state.gpu_current_command_buffer,
         rc2d_engine_state.window,
         &rc2d_engine_state.gpu_current_swapchain_texture,
-        &swapchain_texture_width,
-        &swapchain_texture_height
+        &swapchainTextureWidth,
+        &swapchainTextureHeight
     );
-    RC2D_assert_release(ok, RC2D_LOG_CRITICAL, "SDL_WaitAndAcquireGPUSwapchainTexture failed");
     RC2D_assert_release(rc2d_engine_state.gpu_current_swapchain_texture != NULL, RC2D_LOG_CRITICAL, "Swapchain texture is NULL (window may be minimized)");
 
     /**
@@ -62,21 +61,20 @@ void rc2d_graphics_clear(void)
      * - resolve_layer : L'indice de couche de la texture à utiliser pour l'opération de résolution. 
      *                   Ignoré si un RESOLVE* store_op n'est pas utilisé.
      */
-    SDL_GPUColorTargetInfo color_target = {
-        .texture = rc2d_engine_state.gpu_current_swapchain_texture,
-        .mip_level = 0,
-        .layer_or_depth_plane = 0,
-        .clear_color = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f },
-        .load_op = SDL_GPU_LOADOP_CLEAR,
-        .store_op = SDL_GPU_STOREOP_STORE,
-        .resolve_texture = NULL,
-        .resolve_mip_level = 0,
-        .resolve_layer = 0,
-        .cycle = true,
-        .cycle_resolve_texture = false,
-        .padding1 = 0,
-        .padding2 = 0
-    };
+    SDL_GPUColorTargetInfo colorTargetInfo = {0};
+    colorTargetInfo.texture = rc2d_engine_state.gpu_current_swapchain_texture;
+    colorTargetInfo.mip_level = 0;
+    colorTargetInfo.layer_or_depth_plane = 0;
+    colorTargetInfo.clear_color = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
+    colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
+    colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+    colorTargetInfo.resolve_texture = NULL;
+    colorTargetInfo.resolve_mip_level = 0;
+    colorTargetInfo.resolve_layer = 0;
+    colorTargetInfo.cycle = true;
+    colorTargetInfo.cycle_resolve_texture = false;
+    colorTargetInfo.padding1 = 0;
+    colorTargetInfo.padding2 = 0;
 
     /**
      * \brief Étape 4 : Début d’un Render Pass
@@ -87,7 +85,9 @@ void rc2d_graphics_clear(void)
      */
     rc2d_engine_state.gpu_current_render_pass = SDL_BeginGPURenderPass(
         rc2d_engine_state.gpu_current_command_buffer,
-        &color_target, 1, NULL
+        &colorTargetInfo, 
+        1, 
+        NULL
     );
     RC2D_assert_release(rc2d_engine_state.gpu_current_render_pass != NULL, RC2D_LOG_CRITICAL, "Failed to begin GPU render pass");
 
