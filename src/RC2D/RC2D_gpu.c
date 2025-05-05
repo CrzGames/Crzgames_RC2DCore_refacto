@@ -356,13 +356,17 @@ void rc2d_gpu_hotReloadShaders(void)
                     continue;
                 }
 
-                // Libérer l'ancien shader et remplacer par le nouveau shader
+                // Libérer l'ancien shader
                 if (entry->shader) 
                 {
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), entry->shader);
                 }
+
+                // Remplacer l'ancien shader par le nouveau dass le cache de RC2D
                 entry->shader = newShader;
                 entry->lastModified = currentModified;
+
+                // Log la réussite du rechargement du shader
                 RC2D_log(RC2D_LOG_INFO, "Shader reloaded: %s", entry->filename);
             } 
             else 

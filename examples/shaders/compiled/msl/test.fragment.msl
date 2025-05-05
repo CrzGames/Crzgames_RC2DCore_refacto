@@ -35,7 +35,7 @@ fragment main0_out main0(constant type_UniformBlock& UniformBlock [[buffer(0)]],
         _66++;
         continue;
     }
-    out.out_var_SV_Target0 = float4((float3(0.5) + (float3(0.5) * cos(((float3(1.0) * (_64 + (UniformBlock.time * 0.100000001490116119384765625))) + float3(0.0, 0.3300000131130218505859375, 0.670000016689300537109375)) * 6.28318023681640625))) * exp((-5.0) * _64), 1.0);
+    out.out_var_SV_Target0 = float4((float3(0.5) + (float3(0.5) * cos(((float3(1.0) * (_64 + (UniformBlock.time * 0.100000001490116119384765625))) + float3(0.0, 0.3300000131130218505859375, 0.88999998569488525390625)) * 6.28318023681640625))) * exp((-5.0) * _64), 1.0);
     return out;
 }
 
