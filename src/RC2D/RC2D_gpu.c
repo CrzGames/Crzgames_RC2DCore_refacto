@@ -308,7 +308,7 @@ void rc2d_gpu_hotReloadShaders(void)
                 continue;
             }
 
-            // Recompiler le shader
+            // Données du shader
             SDL_ShaderCross_GraphicsShaderMetadata metadata = {0};
             SDL_ShaderCross_HLSL_Info hlslInfo = {
                 .source = codeHLSLSource,
@@ -321,11 +321,21 @@ void rc2d_gpu_hotReloadShaders(void)
                 .props = 0
             };
 
+            // Temps de début pour le rechargement pour connaitre le temps de compilation
+            Uint64 t0 = SDL_GetPerformanceCounter();
+
+            // Compiler le shader HLSL
             SDL_GPUShader* newShader = SDL_ShaderCross_CompileGraphicsShaderFromHLSL(
                 rc2d_gpu_getDevice(),
                 &hlslInfo,
                 &metadata
             );
+
+            // Temps de fin pour le rechargement pour connaitre le temps de compilation
+            Uint64 t1 = SDL_GetPerformanceCounter();
+            double compileTimeMs = (double)(t1 - t0) * 1000.0 / SDL_GetPerformanceFrequency();
+
+            // Free le code source HLSL
             SDL_free(codeHLSLSource);
 
             if (newShader) 
@@ -367,7 +377,7 @@ void rc2d_gpu_hotReloadShaders(void)
                 entry->lastModified = currentModified;
 
                 // Log la réussite du rechargement du shader
-                RC2D_log(RC2D_LOG_INFO, "Shader reloaded: %s", entry->filename);
+                RC2D_log(RC2D_LOG_INFO, "Shader %s reloaded in %.2f ms", entry->filename, compileTimeMs);
             } 
             else 
             {
