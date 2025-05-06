@@ -41,7 +41,7 @@ typedef struct RC2D_ShaderEntry {
 typedef struct RC2D_PipelineEntry {
     char* vertex_shader_filename;
     char* fragment_shader_filename;
-    RC2D_GPUGraphicsPipeline graphicsPipeline;
+    RC2D_GPUGraphicsPipeline* graphicsPipeline;
 } RC2D_PipelineEntry;
 
 /**

@@ -400,38 +400,33 @@ void rc2d_gpu_hotReloadShaders(void)
                 // Log la réussite du rechargement du shader
                 RC2D_log(RC2D_LOG_INFO, "Shader %s reloaded in %.2f ms", entry->filename, compileTimeMs);
 
-                //  Mettre à jour tous les pipelines qui utilisent ce shader
+                // Mettre à jour tous les pipelines qui utilisent ce shader
                 for (int j = 0; j < rc2d_engine_state.gpu_pipeline_count; j++) 
                 {
                     RC2D_PipelineEntry* pipeline = &rc2d_engine_state.gpu_pipelines_cache[j];
 
-                    bool needsRebuild = false;
-
                     if ((stage == SDL_GPU_SHADERSTAGE_VERTEX && SDL_strcmp(pipeline->vertex_shader_filename, entry->filename) == 0) ||
                         (stage == SDL_GPU_SHADERSTAGE_FRAGMENT && SDL_strcmp(pipeline->fragment_shader_filename, entry->filename) == 0)) 
                     {
-                        RC2D_log(RC2D_LOG_INFO, "Rebuilding pipeline using shader: %s", entry->filename);
-                        SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), pipeline->graphicsPipeline.pipeline);
-                        pipeline->graphicsPipeline.pipeline = NULL; // Libérer le pipeline existant
+                        RC2D_log(RC2D_LOG_INFO, "Rebuilding graphics pipeline using shader: %s", entry->filename);
+                        SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), pipeline->graphicsPipeline->pipeline);
+                        pipeline->graphicsPipeline->pipeline = NULL;
 
                         if (stage == SDL_GPU_SHADERSTAGE_VERTEX) 
                         {
-                            pipeline->graphicsPipeline.create_info.vertex_shader = newShader;
+                            pipeline->graphicsPipeline->create_info.vertex_shader = newShader;
                         } 
                         else if (stage == SDL_GPU_SHADERSTAGE_FRAGMENT) 
                         {
-                            pipeline->graphicsPipeline.create_info.fragment_shader = newShader;
+                            pipeline->graphicsPipeline->create_info.fragment_shader = newShader;
                         }
 
-                        // Recréer le pipeline avec les mêmes infos
-                        bool ok = rc2d_gpu_createGraphicsPipeline(&pipeline->graphicsPipeline, false);
-
-                        // Vérification de la validité du pipeline après reconstruction
-                        if (!ok || pipeline->graphicsPipeline.pipeline == NULL) {
+                        bool ok = rc2d_gpu_createGraphicsPipeline(pipeline->graphicsPipeline, false);
+                        if (!ok || pipeline->graphicsPipeline->pipeline == NULL) {
                             RC2D_log(RC2D_LOG_CRITICAL, "Failed to rebuild pipeline for shader: %s (resulting pipeline is NULL)", entry->filename);
                             continue;
                         }
-                        
+
                         // Log optionnel pour debug
                         RC2D_log(RC2D_LOG_DEBUG, "Successfully rebuilt pipeline using shader: %s", entry->filename);
                     }
@@ -489,7 +484,7 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool ad
         rc2d_engine_state.gpu_pipelines_cache = newPipelines;
 
         RC2D_PipelineEntry* entry = &rc2d_engine_state.gpu_pipelines_cache[rc2d_engine_state.gpu_pipeline_count++];
-        entry->graphicsPipeline = *pipeline;
+        entry->graphicsPipeline = pipeline;
         entry->vertex_shader_filename = SDL_strdup(pipeline->vertex_shader_filename);
         entry->fragment_shader_filename = SDL_strdup(pipeline->fragment_shader_filename);
 

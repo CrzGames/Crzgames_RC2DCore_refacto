@@ -107,7 +107,6 @@ void rc2d_update(double dt)
 void rc2d_draw(void) 
 {
     rc2d_gpu_bindGraphicsPipeline(&graphicsPipeline);
-
     SDL_DrawGPUPrimitives(
         rc2d_engine_state.gpu_current_render_pass,
         3, 1, 0, 0
