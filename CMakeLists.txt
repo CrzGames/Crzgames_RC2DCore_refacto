@@ -15,10 +15,10 @@ set(CMAKE_C_STANDARD 99)
 # Cela signifie que le compilateur doit respecter la version C standard spécifiée
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-# Active la compilation des shaders en ligne (hot reload) pour SDL3_shadercross
+# Option pour activer la compilation des shaders en ligne (hot reload) pour SDL3_shadercross
 option(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED "Enable hot reload shaders with SDL3_shadercross" ON)
 
-# Niveau d'assertions
+# option pour le niveau d'assertion
 option(RC2D_ASSERT_LEVEL "Niveau des assertions (0=none, 1=release, 2=debug, 3=paranoid)" 3)
 
 # Option Tests unitaires avec Criterion
@@ -48,15 +48,9 @@ elseif(APPLE)
   elseif(CMAKE_OSX_SYSROOT MATCHES "iphoneos")
     set(CMAKE_OSX_ARCHITECTURES "arm64;arm64e" CACHE STRING "iOS Architectures" FORCE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "iOS Deployment Target" FORCE)
-  elseif(CMAKE_OSX_SYSROOT MATCHES "iphonesimulator")
-    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "iOS Simulator Architectures" FORCE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "iOS Simulator Deployment Target" FORCE)
   elseif(CMAKE_OSX_SYSROOT MATCHES "appletvos")
     set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "tvOS Architectures" FORCE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "tvOS Deployment Target" FORCE)
-  elseif(CMAKE_OSX_SYSROOT MATCHES "appletvsimulator")
-    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "tvOS Simulator Architectures" FORCE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "tvOS Simulator Deployment Target" FORCE)
 endif()
 elseif (UNIX AND NOT APPLE)
   # Linux-LIKE utilisera Vulkan
@@ -86,11 +80,21 @@ endif()
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
 # mais de les utiliser à partir du répertoire "vendored", dont également les submodules
 # des repositories de SDL3_ttf, SDL3_mixer et SDL3_image
-set(SDLTTF_VENDORED ON)
-set(SDLIMAGE_VENDORED ON)
-#set(SDLMIXER_VENDORED ON)
+set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)
+set(SDLIMAGE_VENDORED ON CACHE BOOL "" FORCE)
+#set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
+set(SDLSHADERCROSS_VENDORED ON CACHE BOOL "" FORCE)
 
-# SDL3_image : Désactiver explicitement tous les formats qui sont activé par défault, sauf : PNG et SVG
+# SDL3_shadercross :
+set(SDLSHADERCROSS_DXC ON CACHE BOOL "" FORCE)
+set(SDLSHADERCROSS_CLI ON CACHE BOOL "" FORCE)
+set(SDLSHADERCROSS_SHARED ON CACHE BOOL "" FORCE)
+set(SDLSHADERCROSS_STATIC OFF CACHE BOOL "" FORCE)
+set(SDLSHADERCROSS_SPIRVCROSS_SHARED ON CACHE BOOL "" FORCE)
+set(SDLSHADERCROSS_INSTALL OFF CACHE BOOL "" FORCE)
+
+# SDL3_image : Désactiver explicitement tous les formats qui sont activé par défault.
+# Il restera ces formats activé par défault : STB, PNG et SVG
 set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
 set(SDLIMAGE_BMP OFF CACHE BOOL "" FORCE)
 set(SDLIMAGE_GIF OFF CACHE BOOL "" FORCE)
@@ -114,76 +118,95 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_shadercross EXCLUDE_FROM_ALL)
 
-# Désactiver le hot reload des shaders en ligne pour certaines plateformes
-if(APPLE)
-  if(CMAKE_OSX_SYSROOT MATCHES "iphoneos" OR
-     CMAKE_OSX_SYSROOT MATCHES "appletvos" OR
-     CMAKE_OSX_SYSROOT MATCHES "iphonesimulator" OR
-     CMAKE_OSX_SYSROOT MATCHES "appletvsimulator")
-    set(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED OFF CACHE BOOL "Hot reload is not supported on mobile Apple platforms" FORCE)
-  endif()
-elseif(ANDROID)
-  set(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED OFF CACHE BOOL "Hot reload is not supported on Android" FORCE)
-endif()
-
-# Fonction pour configurer SDL3_shadercross
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
-    # Le répertoire de Shadercross est dans le répertoire "vendored" du projet
-    set(SHADERCROSS_ROOT "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows")
+    # Répertoire exact de dxil/dxcompiler générés par DirectXShaderCompiler
+    # en fonction de la configuration de build (Debug/Release)
+    set(DXC_DLL_DIR "${PROJECT_BINARY_DIR}/vendored/SDL_shadercross/external/DirectXShaderCompiler/$<CONFIG>/bin")
 
-    # TODO: Il faudra detecter la version de Windows (x64 ou ARM64) et choisir le bon répertoire
-    # En attendant, on force le répertoire x64
-    set(SHADERCROSS_ARCH "x64")
-
-    # Link include et lib de Shadercross
-    target_include_directories(${target_name} PRIVATE "${SHADERCROSS_ROOT}/include")
-    target_link_directories(${target_name} PRIVATE "${SHADERCROSS_ROOT}/lib/SDL3_shadercross/${SHADERCROSS_ARCH}")
-    target_link_libraries(${target_name} PRIVATE SDL3_shadercross.lib)
-
-    # Le répertoire de sortie pour les fichiers de Shadercross pour la compilation hors ligne
-    set(TOOLS_OUT "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
-    # Créer si le répertoire n'existe pas
-    file(MAKE_DIRECTORY "${TOOLS_OUT}")
-
-    # Tous les fichiers à copier dans examples/shaders/tools/ pour la compilation hors ligne
-    set(SHADERCROSS_TOOLS_ALL
-      "shadercross.exe"
-      "dxcompiler.dll"
-      "dxil.dll"
-      "SDL3.dll"
-      "SDL3_shadercross.dll"
-      "spirv-cross-c-shared.dll"
+    # Il y a une diffénce entre les DLLs de Spirv-Cross selon la configuration de build
+    # En mode Debug : spirv-cross-c-sharedd.dll
+    # En mode Release : spirv-cross-c-shared.dll
+    set(SPIRV_DLL "$<IF:$<CONFIG:Debug>,spirv-cross-c-sharedd.dll,spirv-cross-c-shared.dll>")
+    
+    set(SHADERCROSS_DLLS
+      SDL3_shadercross.dll
+      SDL3.dll
+      ${SPIRV_DLL}
+    )
+  
+    set(DXC_DLLS
+      dxcompiler.dll
+      dxil.dll
     )
 
-    # Fichiers à copier aussi dans le dossier de build, uniquement pour le hot reload de la compilation en ligne
-    set(SHADERCROSS_TO_RUNTIME
-      "dxcompiler.dll"
-      "dxil.dll"
-      "SDL3_shadercross.dll"
-      "spirv-cross-c-shared.dll"
-    )
+    # TODO: Le if ne marche pas, revoir ça
+    # Si on'ai en mode Release on créer le dossier examples/shaders/tools + 
+    # on copie le binaire shadercross et les DLLs dans ce dossier
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+      # Répertoire cible pour les outils shaders
+      set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
 
-    # Copie dans examples/shaders/tools/ tous les fichiers de Shadercross
-    foreach(F IN LISTS SHADERCROSS_TOOLS_ALL)
-      file(COPY "${SHADERCROSS_ROOT}/bin/SDL3_shadercross/${F}" DESTINATION "${TOOLS_OUT}")
-    endforeach()
+      # Crée le dossier "examples/shaders/tools" AVANT toute copie
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
+      )
 
-    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-      # Copie dans le dossier de build tous les fichiers de Shadercross pour la compilation en ligne
-      foreach(F IN LISTS SHADERCROSS_TO_RUNTIME)
+      # Copier le binaire shadercross dans "examples/shaders/tools"
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:shadercross>
+                "${SHADER_TOOLS_DIR}/"
+      )
+
+      # Copier les DLLs de shadercross dans : examples/shaders/tools
+      foreach(DLL IN LISTS SHADERCROSS_DLLS)
         add_custom_command(TARGET ${target_name} POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${SHADERCROSS_ROOT}/bin/SDL3_shadercross/${F}"
-            "$<TARGET_FILE_DIR:${target_name}>/${F}"
+                  "$<TARGET_FILE_DIR:shadercross>/${DLL}"
+                  "${SHADER_TOOLS_DIR}/${DLL}"
+        )
+      endforeach()
+
+      # Copier les DLLs DXC dans : examples/shaders/tools
+      foreach(DLL IN LISTS DXC_DLLS)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${DXC_DLL_DIR}/${DLL}"
+                  "${SHADER_TOOLS_DIR}/${DLL}"
         )
       endforeach()
     endif()
-  elseif(APPLE)
-  
-  elseif (UNIX AND NOT APPLE)
 
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+      # Link le dossier include de shadercross a la target
+      target_include_directories(${target_name} PRIVATE
+        "${PROJECT_SOURCE_DIR}/vendored/SDL_shadercross/include"
+      )
+
+      # Link la lib shadercross a la target
+      target_link_libraries(${target_name} PRIVATE SDL3_shadercross::SDL3_shadercross)
+
+      # Copier aussi les DLLs lié a SDL3_shadercross dans le répertoire de l'exécutable final
+      foreach(DLL IN LISTS SHADERCROSS_DLLS)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "$<TARGET_FILE_DIR:shadercross>/${DLL}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${DLL}"
+        )
+      endforeach()
+
+      # Copier les DLLs DXC lié à SDL3_shadercross dans le répertoire de l'exécutable final
+      foreach(DLL IN LISTS DXC_DLLS)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${DXC_DLL_DIR}/${DLL}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${DLL}"
+        )
+      endforeach()
+    endif()
   endif()
 endfunction()
 
@@ -332,7 +355,7 @@ if(RC2D_BUILD_EXAMPLES)
 
   # Les fichiers d'en-tête (headers) de l'exemple sont dans le répertoire "examples/include"
   target_include_directories(rc2d_example PRIVATE
-  "${PROJECT_SOURCE_DIR}/examples/include"
+    "${PROJECT_SOURCE_DIR}/examples/include"
   )
 
   # Inclure les répertoires d'en-tête (headers)
