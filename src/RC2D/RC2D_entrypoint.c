@@ -1,5 +1,5 @@
 /**
- * IMPORTANT :
+ * IMPORTANT:
  * - Doit être inclus avant tout autre fichier d'en-tête SDL / RC2D.
  * 
  * - SDL_MAIN_USE_CALLBACKS et <SDL3/SDL_main.h> doivent être inclus UNE SEULE FOIS
