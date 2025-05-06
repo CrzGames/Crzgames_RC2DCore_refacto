@@ -952,7 +952,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
  * lorsqu'on recoit l'événement : SDL_EVENT_DID_ENTER_BACKGROUND.
  */
 #if defined(RC2D_PLATFORM_XBOXSERIES) || defined(RC2D_PLATFORM_XBOXONE)
-        SDL_GDKSuspendGPU(rc2d_gpu_getDevice());
+    SDL_GDKSuspendGPU(rc2d_gpu_getDevice());
 #endif
     }
 
