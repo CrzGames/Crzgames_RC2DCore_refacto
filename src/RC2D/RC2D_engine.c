@@ -906,6 +906,7 @@ void rc2d_engine_deltatime_end(void)
     /**
      * Vérifie si la hint SDL_HINT_MAIN_CALLBACK_RATE est active
      * Fallback : utilise SDL_DelayPrecise si la hint n'est pas définie ou définie à 0
+     * puis que c'est possible que SDL_HINT_MAIN_CALLBACK_RATE ne sois pas pris en compte sur certaines plateformes.
      */
     const char* callback_rate = SDL_GetHint(SDL_HINT_MAIN_CALLBACK_RATE);
     if (callback_rate == NULL || SDL_strcmp(callback_rate, "0") == 0)
