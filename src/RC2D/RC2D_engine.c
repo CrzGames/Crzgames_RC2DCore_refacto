@@ -958,7 +958,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     else if (event->type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
     {
         // Met à jour le viewport GPU et le render scale
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
     }
 
     // Window HDR State changed
@@ -1042,7 +1042,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * Quand la zone de sécurité de la fenêtre change,
          * on indique que le viewport du gpu et render scale doit être recalculé.
          */
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
     }
 
     // Window enter fullscreen
@@ -1055,7 +1055,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_update_fps_based_on_monitor();
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         /*if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
@@ -1075,7 +1075,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_update_fps_based_on_monitor();
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         /*if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
@@ -1092,7 +1092,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * En cas de changement de taille de pixels de la fenêtre (ex: changement de DPI), 
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
     }
 
     // Window display scale changed
@@ -1102,7 +1102,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * En cas de changement d'échelle d'affichage de la fenêtre, 
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
     }
 
     // Window resized
@@ -1113,7 +1113,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on met à jour la largeur et la hauteur de la fenêtre 
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
@@ -1144,7 +1144,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_update_fps_based_on_monitor();
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         /*if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
@@ -1184,7 +1184,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on met à jour la largeur et la hauteur de la fenêtre 
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
@@ -1202,7 +1202,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on met à jour la largeur et la hauteur de la fenêtre 
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
