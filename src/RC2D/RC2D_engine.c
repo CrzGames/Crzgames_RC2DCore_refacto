@@ -1054,7 +1054,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on met à jour les FPS en fonction du moniteur actuel
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_update_fps_based_on_monitor();
+        rc2d_engine_update_fps_based_on_monitor();
         rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         /*if (rc2d_engine_state.config != NULL && 
@@ -1074,7 +1074,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on met à jour les FPS en fonction du moniteur actuel
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_update_fps_based_on_monitor();
+        rc2d_engine_update_fps_based_on_monitor();
         rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         /*if (rc2d_engine_state.config != NULL && 
@@ -1143,7 +1143,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on met à jour les FPS en fonction du moniteur actuel
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
-        rc2d_update_fps_based_on_monitor();
+        rc2d_engine_update_fps_based_on_monitor();
         rc2d_engine_calculate_renderscale_and_gpuviewport();
 
         /*if (rc2d_engine_state.config != NULL && 
