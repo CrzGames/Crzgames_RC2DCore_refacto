@@ -398,7 +398,7 @@ void rc2d_gpu_hotReloadShaders(void)
                 entry->lastModified = currentModified;
 
                 // Log la réussite du rechargement du shader
-                RC2D_log(RC2D_LOG_INFO, "Shader %s reloaded in %.2f ms", entry->filename, compileTimeMs);
+                RC2D_log(RC2D_LOG_INFO, "Successfully Shader %s reloaded in %.2f ms", entry->filename, compileTimeMs);
 
                 // Mettre à jour tous les pipelines qui utilisent ce shader
                 for (int j = 0; j < rc2d_engine_state.gpu_pipeline_count; j++) 
@@ -408,7 +408,6 @@ void rc2d_gpu_hotReloadShaders(void)
                     if ((stage == SDL_GPU_SHADERSTAGE_VERTEX && SDL_strcmp(pipeline->vertex_shader_filename, entry->filename) == 0) ||
                         (stage == SDL_GPU_SHADERSTAGE_FRAGMENT && SDL_strcmp(pipeline->fragment_shader_filename, entry->filename) == 0)) 
                     {
-                        RC2D_log(RC2D_LOG_INFO, "Rebuilding graphics pipeline using shader: %s", entry->filename);
                         SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), pipeline->graphicsPipeline->pipeline);
                         pipeline->graphicsPipeline->pipeline = NULL;
 
@@ -428,7 +427,7 @@ void rc2d_gpu_hotReloadShaders(void)
                         }
 
                         // Log optionnel pour debug
-                        RC2D_log(RC2D_LOG_DEBUG, "Successfully rebuilt pipeline using shader: %s", entry->filename);
+                        RC2D_log(RC2D_LOG_DEBUG, "Successfully rebuilt graphics pipeline using shader: %s", entry->filename);
                     }
                 }
             } 
