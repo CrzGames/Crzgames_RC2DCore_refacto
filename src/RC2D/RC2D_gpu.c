@@ -409,10 +409,16 @@ void rc2d_gpu_hotReloadShaders(void)
                         }
 
                         // Recréer le pipeline avec les mêmes infos
-                        bool ok = rc2d_gpu_createGraphicsPipeline(&pipeline->graphicsPipeline);
-                        if (!ok) {
-                            RC2D_log(RC2D_LOG_ERROR, "Failed to rebuild pipeline for shader: %s", entry->filename);
+                        bool ok = rc2d_gpu_createGraphicsPipeline(&pipeline->graphicsPipeline, false);
+
+                        // Vérification de la validité du pipeline après reconstruction
+                        if (!ok || pipeline->graphicsPipeline.pipeline == NULL) {
+                            RC2D_log(RC2D_LOG_CRITICAL, "Failed to rebuild pipeline for shader: %s (resulting pipeline is NULL)", entry->filename);
+                            continue;
                         }
+                        
+                        // Log optionnel pour debug
+                        RC2D_log(RC2D_LOG_DEBUG, "Successfully rebuilt pipeline using shader: %s", entry->filename);
                     }
                 }
             } 
@@ -428,7 +434,7 @@ void rc2d_gpu_hotReloadShaders(void)
 #endif
 }
 
-bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline)
+bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache)
 {
     RC2D_assert_release(pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
 
@@ -455,23 +461,25 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline)
     }
 
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
-    // Ajouter dans le cache des pipelines
-    SDL_LockMutex(rc2d_engine_state.gpu_pipeline_mutex);
+    if (addToCache)
+    {
+        // Ajouter dans le cache des pipelines
+        SDL_LockMutex(rc2d_engine_state.gpu_pipeline_mutex);
 
-    RC2D_PipelineEntry* newPipelines = SDL_realloc(
-        rc2d_engine_state.gpu_pipelines_cache,
-        (rc2d_engine_state.gpu_pipeline_count + 1) * sizeof(RC2D_PipelineEntry)
-    );
-    RC2D_assert_release(newPipelines != NULL, RC2D_LOG_CRITICAL, "Failed to realloc pipeline cache");
-    rc2d_engine_state.gpu_pipelines_cache = newPipelines;
+        RC2D_PipelineEntry* newPipelines = SDL_realloc(
+            rc2d_engine_state.gpu_pipelines_cache,
+            (rc2d_engine_state.gpu_pipeline_count + 1) * sizeof(RC2D_PipelineEntry)
+        );
+        RC2D_assert_release(newPipelines != NULL, RC2D_LOG_CRITICAL, "Failed to realloc pipeline cache");
+        rc2d_engine_state.gpu_pipelines_cache = newPipelines;
 
-    RC2D_PipelineEntry* entry = &rc2d_engine_state.gpu_pipelines_cache[rc2d_engine_state.gpu_pipeline_count++];
-    entry->graphicsPipeline = *pipeline;
+        RC2D_PipelineEntry* entry = &rc2d_engine_state.gpu_pipelines_cache[rc2d_engine_state.gpu_pipeline_count++];
+        entry->graphicsPipeline = *pipeline;
+        entry->vertex_shader_filename = SDL_strdup(pipeline->vertex_shader_filename);
+        entry->fragment_shader_filename = SDL_strdup(pipeline->fragment_shader_filename);
 
-    entry->vertex_shader_filename = SDL_strdup(pipeline->vertex_shader_filename);
-    entry->fragment_shader_filename = SDL_strdup(pipeline->fragment_shader_filename);
-
-    SDL_UnlockMutex(rc2d_engine_state.gpu_pipeline_mutex);
+        SDL_UnlockMutex(rc2d_engine_state.gpu_pipeline_mutex);
+    }
 #endif
 
     return true;
@@ -479,8 +487,8 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline)
 
 void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
 {
-    RC2D_assert_release(graphicsPipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
-    RC2D_assert_release(graphicsPipeline->pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline->pipeline is NULL");
+    RC2D_assert_release(graphicsPipeline != NULL, RC2D_LOG_CRITICAL, "graphicsPipeline is NULL");
+    RC2D_assert_release(graphicsPipeline->pipeline != NULL, RC2D_LOG_CRITICAL, "Attempted to bind NULL graphics pipeline");
 
     // Bind le pipeline graphique
     SDL_BindGPUGraphicsPipeline(rc2d_engine_state.gpu_current_render_pass, graphicsPipeline->pipeline);

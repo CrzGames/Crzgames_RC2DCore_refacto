@@ -334,7 +334,7 @@ RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
  */
 SDL_GPUShader* rc2d_gpu_loadShader(const char* filename);
 
-bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline);
+bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache);
 void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */

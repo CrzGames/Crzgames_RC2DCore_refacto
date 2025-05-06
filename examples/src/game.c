@@ -95,7 +95,7 @@ void rc2d_load(void)
     graphicsPipeline.vertex_shader_filename = SDL_strdup("test.vertex");
     graphicsPipeline.fragment_shader_filename = SDL_strdup("test.fragment");
 
-    bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline);
+    bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline, true);
     RC2D_assert_release(success, RC2D_LOG_CRITICAL, "Failed to create full screen shader pipeline");
 }
 
