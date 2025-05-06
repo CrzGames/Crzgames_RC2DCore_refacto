@@ -934,6 +934,28 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         return SDL_APP_SUCCESS;
     }
 
+    else if (event->type == SDL_EVENT_WILL_ENTER_FOREGROUND) 
+    {
+/**
+ * Appelez SDL_GDKResumeGPU pour reprendre le fonctionnement du GPU sur Xbox 
+ * lorsqu'on recoit l'événement : SDL_EVENT_WILL_ENTER_FOREGROUND.
+ */
+#if defined(RC2D_PLATFORM_XBOXSERIES) || defined(RC2D_PLATFORM_XBOXONE)
+    SDL_GDKResumeGPU(rc2d_gpu_getDevice());
+#endif 
+    }
+
+    else if (event->type == SDL_EVENT_DID_ENTER_BACKGROUND) 
+    {
+/**
+ * Appelez SDL_GDKSuspendGPU pour suspendre le fonctionnement du GPU sur Xbox 
+ * lorsqu'on recoit l'événement : SDL_EVENT_DID_ENTER_BACKGROUND.
+ */
+#if defined(RC2D_PLATFORM_XBOXSERIES) || defined(RC2D_PLATFORM_XBOXONE)
+        SDL_GDKSuspendGPU(rc2d_gpu_getDevice());
+#endif
+    }
+
     // La préférence de la langue locale a changé
     else if (event->type == SDL_EVENT_LOCALE_CHANGED)
     {
