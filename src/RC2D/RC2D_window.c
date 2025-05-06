@@ -35,6 +35,32 @@ SDL_Window* rc2d_window_getWindow(void)
     return rc2d_engine_state.window;
 }
 
+void rc2d_window_setMinimumSize(int width, int height)
+{
+    // Vérifie si la fenêtre est valide
+    if (rc2d_engine_state.window == NULL)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour définir la taille minimale.\n");
+        return;
+    }
+
+    // Définit la taille minimale de la fenêtre
+    SDL_SetWindowMinimumSize(rc2d_engine_state.window, width, height);
+}
+
+void rc2d_window_setMaximumSize(int width, int height)
+{
+    // Vérifie si la fenêtre est valide
+    if (rc2d_engine_state.window == NULL)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour définir la taille maximale.\n");
+        return;
+    }
+
+    // Définit la taille maximale de la fenêtre
+    SDL_SetWindowMaximumSize(rc2d_engine_state.window, width, height);
+}
+
 void rc2d_window_setTitle(const char *title)
 {
     // Vérifie si la fenêtre est valide

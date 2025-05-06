@@ -788,9 +788,35 @@ RC2D_DisplayID rc2d_window_getDisplayForWindow(void);
  *
  * \return {SDL_Window*} - Pointeur vers la fenêtre SDL associée à la fenêtre RC2D.
  * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 SDL_Window* rc2d_window_getWindow(void);
+
+/**
+ * \brief Définit la taille minimale de la fenêtre.
+ *
+ * \param {int} width - La largeur minimale de la fenêtre en pixels.
+ * \param {int} height - La hauteur minimale de la fenêtre en pixels.
+ * 
+ * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_window_setMinimumSize(int width, int height);
+
+/**
+ * \brief Définit la taille maximale de la fenêtre.
+ *
+ * \param {int} width - La largeur maximale de la fenêtre en pixels.
+ * \param {int} height - La hauteur maximale de la fenêtre en pixels.
+ * 
+ * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_window_setMaximumSize(int width, int height);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
