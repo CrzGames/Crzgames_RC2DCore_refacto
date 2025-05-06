@@ -33,14 +33,47 @@ extern "C" {
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_ShaderEntry {
-    char* filename;              // Nom du fichier shader (e.g., "test.fragment")
-    SDL_GPUShader* shader;       // Pointeur vers le shader chargé
-    SDL_Time lastModified;       // Timestamp de la dernière modification du fichier
+    /**
+     * Nom du fichier du shader (e.g., "test.vertex" ou "test.fragment").
+     */
+    char* filename;
+    
+    /**
+     * Pointeur vers le shader chargé.
+     */
+    SDL_GPUShader* shader;
+
+    /**
+     * Timestamp de la dernière modification du fichier shader.
+     */
+    SDL_Time lastModified;
 } RC2D_ShaderEntry;
 
+/**
+ * \brief Structure représentant une entrée de pipeline graphique dans le moteur RC2D.
+ *
+ * Cette structure est utilisée pour gérer les pipelines graphiques chargés par le moteur,
+ * y compris les nom de fichiers des shaders associés et le pointeur vers le pipeline graphique.
+ *
+ * \note Cela est utilisé pour le rechargement à chaud des shaders via RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+ * si défini à 1.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
 typedef struct RC2D_PipelineEntry {
+    /**
+     * Nom du fichier du shader de vertex (e.g., "test.vertex").
+     */
     char* vertex_shader_filename;
+
+    /**
+     * Nom du fichier du shader de fragment (e.g., "test.fragment").
+     */
     char* fragment_shader_filename;
+
+    /**
+     * Pointeur vers le pipeline graphique chargé.
+     */
     RC2D_GPUGraphicsPipeline* graphicsPipeline;
 } RC2D_PipelineEntry;
 
@@ -69,13 +102,13 @@ typedef struct RC2D_EngineState {
     SDL_GPUViewport* gpu_current_viewport;
     SDL_GPUGraphicsPipeline* gpu_pipeline;
 
-    RC2D_ShaderEntry* gpu_shaders_cache;   // Tableau dynamique des shaders chargés
+    RC2D_ShaderEntry* gpu_shaders_cache;   // cache Tableau dynamique des shaders chargés
     int gpu_shader_count;            // Nombre de shaders chargés
     SDL_Mutex* gpu_shader_mutex;     // Mutex pour protéger l'accès aux shaders
 
-    RC2D_PipelineEntry* gpu_pipelines_cache; // cache Tableau dynamique des pipelines
-    int gpu_pipeline_count;
-    SDL_Mutex* gpu_pipeline_mutex;
+    RC2D_PipelineEntry* gpu_pipelines_cache; // cache Tableau dynamique des pipelines graphiques chargés
+    int gpu_pipeline_count;       // Nombre de pipelines graphiques chargés
+    SDL_Mutex* gpu_pipeline_mutex; // Mutex pour protéger l'accès aux pipelines graphiques
 
     // RC2D : État d'exécution
     int fps;

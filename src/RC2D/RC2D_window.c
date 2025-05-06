@@ -22,6 +22,19 @@ static bool rc2d_window_hasFlag(SDL_WindowFlags flag)
     return (flags & flag) != 0;
 }
 
+SDL_Window* rc2d_window_getWindow(void)
+{
+    // Vérifie si la fenêtre est valide
+    if (rc2d_engine_state.window == NULL)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Aucune fenêtre active pour récupérer la fenêtre.\n");
+        return NULL;
+    }
+
+    // Retourne le pointeur vers la fenêtre
+    return rc2d_engine_state.window;
+}
+
 void rc2d_window_setTitle(const char *title)
 {
     // Vérifie si la fenêtre est valide

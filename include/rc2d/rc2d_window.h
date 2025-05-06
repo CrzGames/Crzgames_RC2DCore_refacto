@@ -783,6 +783,15 @@ bool rc2d_window_isNotFocusable(void);
  */
 RC2D_DisplayID rc2d_window_getDisplayForWindow(void);
 
+/**
+ * \brief Récupère le pointeur vers la fenêtre SDL associée à la fenêtre RC2D.
+ *
+ * \return {SDL_Window*} - Pointeur vers la fenêtre SDL associée à la fenêtre RC2D.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+SDL_Window* rc2d_window_getWindow(void);
+
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
 }

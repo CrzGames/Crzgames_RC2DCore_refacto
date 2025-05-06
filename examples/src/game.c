@@ -23,7 +23,6 @@ void rc2d_load(void)
     vertexShader = rc2d_gpu_loadShader("test.vertex");
     RC2D_assert_release(vertexShader != NULL, RC2D_LOG_CRITICAL, "Failed to load vertex shader");
 
-    // Aucune entrée de vertex buffer utilisée ici (full screen quad généré via SV_VertexID)
     SDL_GPUVertexInputState vertexInput = {
         .vertex_buffer_descriptions = NULL,
         .num_vertex_buffers = 0,
@@ -63,8 +62,8 @@ void rc2d_load(void)
     };
 
     SDL_GPUTextureFormat swapchainFormat = SDL_GetGPUSwapchainTextureFormat(
-        rc2d_engine_state.gpu_device,
-        rc2d_engine_state.window
+        rc2d_gpu_getDevice(),
+        rc2d_window_getWindow()
     );
 
     colorTargetDesc = (SDL_GPUColorTargetDescription){
@@ -101,7 +100,7 @@ void rc2d_load(void)
 
 void rc2d_update(double dt) 
 {
-    // Pas de logique de mise à jour pour l'instant
+
 }
 
 void rc2d_draw(void) 
