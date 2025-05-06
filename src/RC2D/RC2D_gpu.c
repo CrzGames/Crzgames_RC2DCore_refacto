@@ -287,9 +287,9 @@ void rc2d_gpu_hotReloadShaders(void)
 
         // Vérifier le timestamp
         SDL_Time currentModified = get_file_modification_time(fullPath);
-        
+
         if (currentModified > entry->lastModified) 
-        {
+        {            
             // Déterminer le stage
             SDL_GPUShaderStage stage;
             if (SDL_strstr(entry->filename, ".vertex")) 
@@ -306,11 +306,26 @@ void rc2d_gpu_hotReloadShaders(void)
                 continue;
             }
 
-            // Charger le fichier HLSL
-            char* codeHLSLSource = SDL_LoadFile(fullPath, NULL);
+            /**
+             * Charger le fichier HLSL
+             * 
+             * Attend un peu que l'os ou l'ide est le temps d'écrire le 
+             * fichier avant de le lire
+             */
+            char* codeHLSLSource = NULL;
+            for (int attempt = 0; attempt < 3; attempt++) {
+                codeHLSLSource = SDL_LoadFile(fullPath, NULL);
+                if (codeHLSLSource != NULL) break;
+                SDL_Delay(20);
+            }
+
+            /**
+             * Si le code HLSL n'a pas pu être chargé après plusieurs tentatives, log l'erreur
+             * et continue avec le prochain shader
+             */
             if (!codeHLSLSource) 
             {
-                RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source: %s", fullPath);
+                RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source after retries: %s", fullPath);
                 continue;
             }
 
