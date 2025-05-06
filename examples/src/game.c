@@ -17,6 +17,10 @@ void rc2d_load(void)
 {
     RC2D_log(RC2D_LOG_INFO, "My game is loading...\n");
 
+    rc2d_window_setTitle("Test jeu");
+
+    rc2d_window_setMinimumSize(1280, 720);
+
     fragmentShader = rc2d_gpu_loadShader("test.fragment");
     RC2D_assert_release(fragmentShader != NULL, RC2D_LOG_CRITICAL, "Failed to load fragment shader");
 

@@ -3,17 +3,13 @@
 
 const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
 {
-#ifdef NDEBUG // Release mode
-    rc2d_logger_set_priority(RC2D_LOG_ERROR);
-#else // Debug mode
-    rc2d_logger_set_priority(RC2D_LOG_TRACE);
-#endif
-
     RC2D_EngineConfig* config = rc2d_engine_getDefaultConfig();
 #ifdef NDEBUG // Release mode
+    rc2d_logger_set_priority(RC2D_LOG_TRACE);
     config->gpuOptions->debugMode = false;
     config->gpuOptions->verbose = false;
 #else // Debug mode
+    rc2d_logger_set_priority(RC2D_LOG_TRACE);
     config->gpuOptions->debugMode = true;
     config->gpuOptions->verbose = true;
 #endif
