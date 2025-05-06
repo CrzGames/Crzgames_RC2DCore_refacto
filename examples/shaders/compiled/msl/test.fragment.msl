@@ -17,25 +17,22 @@ struct main0_out
 fragment main0_out main0(constant type_UniformBlock& UniformBlock [[buffer(0)]], float4 gl_FragCoord [[position]])
 {
     main0_out out = {};
-    float _51 = UniformBlock.time * 0.5;
-    float _52 = sin(_51);
-    float _53 = cos(_51);
-    float2 _58 = (((gl_FragCoord.xy * 2.0) - UniformBlock.resolution) / float2(UniformBlock.resolution.y)) * float2x2(float2(_53, -_52), float2(_52, _53));
-    float2 _61;
-    float _64;
-    _61 = _58;
-    _64 = length(_58);
-    for (int _66 = 0; _66 < 4; )
+    float2 _52 = ((gl_FragCoord.xy * 2.0) - UniformBlock.resolution) / float2(UniformBlock.resolution.y);
+    float2 _54;
+    float3 _57;
+    _54 = _52;
+    _57 = float3(0.0);
+    for (float _59 = 0.0; _59 < 4.0; )
     {
-        float2 _70 = abs(_61);
-        float _71 = dot(_61, _61);
-        float2 _62 = (_70 / float2(_71)) - float2(0.800000011920928955078125);
-        _61 = _62;
-        _64 = precise::min(_64, length(_62));
-        _66++;
+        float2 _63 = _54 * 1.5;
+        float2 _55 = fract(_63) - float2(0.5);
+        float _66 = length(_52);
+        _54 = _55;
+        _57 += ((float3(0.5) + (float3(0.5) * cos(((float3(1.0) * ((_66 + (_59 * 0.4000000059604644775390625)) + (UniformBlock.time * 0.4000000059604644775390625))) + float3(0.263000011444091796875, 0.41600000858306884765625, 0.556999981403350830078125)) * 6.28318023681640625))) * powr(0.00999999977648258209228515625 / abs(sin(((length(_55) * exp(-_66)) * 8.0) + UniformBlock.time) * 0.125), 1.2000000476837158203125));
+        _59 += 1.0;
         continue;
     }
-    out.out_var_SV_Target0 = float4((float3(0.5) + (float3(0.5) * cos(((float3(1.0) * (_64 + (UniformBlock.time * 0.100000001490116119384765625))) + float3(0.0, 0.3300000131130218505859375, 0.88999998569488525390625)) * 6.28318023681640625))) * exp((-5.0) * _64), 1.0);
+    out.out_var_SV_Target0 = float4(_57, 1.0);
     return out;
 }
 

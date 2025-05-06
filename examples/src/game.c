@@ -8,6 +8,12 @@ static RC2D_GPUGraphicsPipeline graphicsPipeline;
 static SDL_GPUColorTargetDescription colorTargetDesc;
 static SDL_GPUGraphicsPipelineTargetInfo targetInfo;
 
+typedef struct UniformBlock {
+    float resolution[2]; // float2
+    float time;          // float
+    float padding;       // align to 16 bytes (std140)
+} UniformBlock;
+
 void rc2d_unload(void) 
 {
     RC2D_log(RC2D_LOG_INFO, "My game is unloading...\n");
@@ -18,7 +24,6 @@ void rc2d_load(void)
     RC2D_log(RC2D_LOG_INFO, "My game is loading...\n");
 
     rc2d_window_setTitle("Test jeu");
-
     rc2d_window_setMinimumSize(1280, 720);
 
     fragmentShader = rc2d_gpu_loadShader("test.fragment");
@@ -74,13 +79,13 @@ void rc2d_load(void)
         .format = swapchainFormat,
         .blend_state = { 0 },
     };
-    
+
     targetInfo = (SDL_GPUGraphicsPipelineTargetInfo){
         .color_target_descriptions = &colorTargetDesc,
         .num_color_targets = 1,
         .depth_stencil_format = 0,
         .has_depth_stencil_target = false
-    };    
+    };
 
     graphicsPipeline.create_info = (RC2D_GPUGraphicsPipelineCreateInfo){
         .vertex_shader = vertexShader,
@@ -104,12 +109,29 @@ void rc2d_load(void)
 
 void rc2d_update(double dt) 
 {
-
+    // rien pour l'instant
 }
 
-void rc2d_draw(void) 
+void rc2d_draw(void)
 {
     rc2d_gpu_bindGraphicsPipeline(&graphicsPipeline);
+
+    UniformBlock ubo = {
+        .resolution = {
+            (float)rc2d_window_getWidth(),
+            (float)rc2d_window_getHeight()
+        },
+        .time = (float)(SDL_GetTicks() / 1000.0f),
+        .padding = 0.0f
+    };
+
+    SDL_PushGPUFragmentUniformData(
+        rc2d_engine_state.gpu_current_command_buffer,
+        0, // slot b0
+        &ubo,
+        sizeof(UniformBlock)
+    );
+
     SDL_DrawGPUPrimitives(
         rc2d_engine_state.gpu_current_render_pass,
         3, 1, 0, 0
