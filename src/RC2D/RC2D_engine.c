@@ -165,7 +165,7 @@ static void rc2d_engine_stateInit(void) {
         return;
     }
 
-    // Initialiser le cache des pipelines
+    // Initialiser le cache des pipelines graphiques
     rc2d_engine_state.gpu_pipeline_count = 0;
     rc2d_engine_state.gpu_pipelines_cache = NULL;
     rc2d_engine_state.gpu_pipeline_mutex = SDL_CreateMutex();
