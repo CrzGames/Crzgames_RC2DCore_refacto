@@ -939,6 +939,9 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
 /**
  * Appelez SDL_GDKResumeGPU pour reprendre le fonctionnement du GPU sur Xbox 
  * lorsqu'on recoit l'événement : SDL_EVENT_WILL_ENTER_FOREGROUND.
+ * 
+ * IMPORTANT: Lors de la reprise, cette fonction (SDL_GDKResumeGPU) DOIT être appelée 
+ * avant d'appeler toute autre fonction SDL_GPU .
  */
 #if defined(RC2D_PLATFORM_XBOXSERIES) || defined(RC2D_PLATFORM_XBOXONE)
     SDL_GDKResumeGPU(rc2d_gpu_getDevice());
@@ -950,6 +953,9 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
 /**
  * Appelez SDL_GDKSuspendGPU pour suspendre le fonctionnement du GPU sur Xbox 
  * lorsqu'on recoit l'événement : SDL_EVENT_DID_ENTER_BACKGROUND.
+ * 
+ * IMPORTANT: N'appelez aucune fonction SDL_GPU après avoir appelé cette fonction (SDL_GDKSuspendGPU) ! 
+ * Celle-ci doit également être appelée avant SDL_GDKSuspendComplete .
  */
 #if defined(RC2D_PLATFORM_XBOXSERIES) || defined(RC2D_PLATFORM_XBOXONE)
     SDL_GDKSuspendGPU(rc2d_gpu_getDevice());
