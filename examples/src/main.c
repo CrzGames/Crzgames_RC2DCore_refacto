@@ -5,7 +5,7 @@ const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
 {
     RC2D_EngineConfig* config = rc2d_engine_getDefaultConfig();
 #ifdef NDEBUG // Release mode
-    rc2d_logger_set_priority(RC2D_LOG_TRACE);
+    rc2d_logger_set_priority(RC2D_LOG_CRITICAL);
     config->gpuOptions->debugMode = false;
     config->gpuOptions->verbose = false;
 #else // Debug mode
