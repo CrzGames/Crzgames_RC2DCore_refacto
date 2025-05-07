@@ -109,17 +109,17 @@ Ce script va :
 ### 📄 Exemple de fichier : `dependencies.txt`
 
 ```txt
-# Format: library=repository:tag
+# Format: library=repository:tag ou library=repository:commit_sha
 
-SDL=https://github.com/libsdl-org/SDL.git:release-3.2.10
+SDL=https://github.com/libsdl-org/SDL.git:release-3.2.12
 SDL_image=https://github.com/libsdl-org/SDL_image.git:release-3.2.4
 SDL_ttf=https://github.com/libsdl-org/SDL_ttf.git:release-3.2.2
 #SDL_mixer=https://github.com/libsdl-org/SDL_mixer.git:release-3.2.0
-Crzgames_LibCpp_Windows=https://github.com/CrzGames/Crzgames_LibCpp_Windows.git:1798df967f4f80c5d9eec7fc92167f7e7dc8b0f6
+SDL_shadercross=https://github.com/libsdl-org/SDL_shadercross.git:378f742d3023f6be7d9278908d0e47bf33fac361
+Crzgames_LibCpp_Windows=https://github.com/CrzGames/Crzgames_LibCpp_Windows.git:16be49eb0b8ea63abc5b22558f660135e0948627
 Crzgames_LibCpp_Linux=https://github.com/CrzGames/Crzgames_LibCpp_Linux.git:393760fa85ee0c46ff5a5a3d894748ecafca4ff9
-Crzgames_LibCpp_Android=https://github.com/CrzGames/Crzgames_LibCpp_Android.git:4c157946ad8e67a4df8c9158b538a0f5d3fa821a
+Crzgames_LibCpp_Android=https://github.com/CrzGames/Crzgames_LibCpp_Android.git:688c153891bfd8eb8adc449f7886ee22711dc4c6
 #OpenSSL_Apple=https://github.com/krzyzanowskim/OpenSSL.git:3.3.3001
-#OpenSSL_Official=https://github.com/openssl/openssl.git:openssl-3.5.0
 ```
 
 <br /><br /><br /><br />
