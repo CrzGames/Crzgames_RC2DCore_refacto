@@ -21,7 +21,7 @@
 ├── 📁 docs
 ├── 📁 include
 ├── 📁 src
-├── 📁 vendored
+├── 📁 dependencies
 │   ├── 📁 Crzgames_LibCpp_Windows
 │   ├── 📁 Crzgames_LibCpp_Linux
 │   └── 📁 Crzgames_LibCpp_Android
@@ -102,7 +102,7 @@ cmake -P cmake/setup_dependencies.cmake
 
 Ce script va :
 - Lire `dependencies.txt`
-- Cloner chaque dépôt dans `vendored/`
+- Cloner chaque dépôt dans `dependencies/`
 - Faire un `git reset --hard` au SHA/tag fourni
 - Initialiser les sous-modules si présents
 

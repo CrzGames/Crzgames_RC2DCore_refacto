@@ -14,4 +14,4 @@ build
 **/app/.cxx/
 
 # Dependency directories
-/vendored/
+/dependencies/

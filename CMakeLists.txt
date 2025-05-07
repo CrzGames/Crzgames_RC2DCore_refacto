@@ -39,7 +39,7 @@ if(WIN32)
   # Windows 10+ pour D3D12 (features level 11_1)
   set(CMAKE_SYSTEM_VERSION 10.0.10240 CACHE STRING "Windows 10 Minimum Version" FORCE)
 elseif(APPLE)
-  # macOS 10.14+ et iOS/tvOS 13.0+ pour Metal
+  # macOS 10.14+ et iOS 13.0+ pour Metal
   message(STATUS "Detected Apple platform with SYSROOT: ${CMAKE_OSX_SYSROOT}")
 
   if(CMAKE_OSX_SYSROOT MATCHES "macosx")
@@ -48,9 +48,6 @@ elseif(APPLE)
   elseif(CMAKE_OSX_SYSROOT MATCHES "iphoneos")
     set(CMAKE_OSX_ARCHITECTURES "arm64;arm64e" CACHE STRING "iOS Architectures" FORCE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "iOS Deployment Target" FORCE)
-  elseif(CMAKE_OSX_SYSROOT MATCHES "appletvos")
-    set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "tvOS Architectures" FORCE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "tvOS Deployment Target" FORCE)
 endif()
 elseif (UNIX AND NOT APPLE)
   # Linux-LIKE utilisera Vulkan
@@ -78,7 +75,7 @@ endif()
 
 # SDL3_ttf, SDL3_image, SDL3_mixer : 
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
-# mais de les utiliser à partir du répertoire "vendored", dont également les submodules
+# mais de les utiliser à partir du répertoire "dependencies", dont également les submodules
 # des repositories de SDL3_ttf, SDL3_mixer et SDL3_image
 set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)
 set(SDLIMAGE_VENDORED ON CACHE BOOL "" FORCE)
@@ -112,19 +109,19 @@ set(SDLIMAGE_XV OFF CACHE BOOL "" FORCE)
 
 # SDL3, SDL3_ttf, SDL3_image, SDL3_mixer : 
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
-# mais de les utiliser à partir du répertoire "vendored", dont également les submodules
+# mais de les utiliser à partir du répertoire "dependencies", dont également les submodules
 # des repositories de SDL3, SDL3_ttf, SDL3_mixer et SDL3_image
-add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
-add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
-add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
-#add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
-add_subdirectory(vendored/SDL_shadercross EXCLUDE_FROM_ALL)
+add_subdirectory(dependencies/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(dependencies/SDL_ttf EXCLUDE_FROM_ALL)
+add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
+#add_subdirectory(dependencies/SDL_mixer EXCLUDE_FROM_ALL)
+add_subdirectory(dependencies/SDL_shadercross EXCLUDE_FROM_ALL)
 
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
     # Répertoire exact de dxil/dxcompiler générés par DirectXShaderCompiler
     # en fonction de la configuration de build (Debug/Release)
-    set(DXC_DLL_DIR "${PROJECT_BINARY_DIR}/vendored/SDL_shadercross/external/DirectXShaderCompiler/$<CONFIG>/bin")
+    set(DXC_DLL_DIR "${PROJECT_BINARY_DIR}/dependencies/SDL_shadercross/external/DirectXShaderCompiler/$<CONFIG>/bin")
 
     # Il y a une diffénce entre les DLLs de Spirv-Cross selon la configuration de build
     # En mode Debug : spirv-cross-c-sharedd.dll
@@ -183,7 +180,7 @@ function(rc2d_configure_shadercross target_name)
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       # Link le dossier include de shadercross a la target
       target_include_directories(${target_name} PRIVATE
-        "${PROJECT_SOURCE_DIR}/vendored/SDL_shadercross/include"
+        "${PROJECT_SOURCE_DIR}/dependencies/SDL_shadercross/include"
       )
 
       # Link la lib shadercross a la target
@@ -256,10 +253,10 @@ function(rc2d_configure_openssl target_name)
     endif()
 
     # Librairies OpenSSL précompilées statiques pour Windows
-    target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/include")
+    target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_LibCpp_Windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/vendored/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
+    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
 
     target_link_libraries(${target_name} PRIVATE
       libssl_static    # OpenSSL
