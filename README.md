@@ -56,7 +56,7 @@
 
 | Plateforme   | Version minimale | Raisons techniques principales |
 |--------------|------------------|-------------------------------|
-| **Windows**  | Windows 10+      | SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1) |
+| **Windows**  | Windows 10+      | SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1), également Windows ARM64 nécessite Windows 10+ |
 | **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ (lors de la transpilation du code HLSL vers MSL via le binaire SDL3_shadercross on lui passe la version 3.0.0) |
 | **iOS/iPadOS** | iOS 16.0+        | SDL3 API GPU supporté depuis iOS/iPadOS 13.0 et --use_coreml pour ONNX Runtime nécessite 13.0+, mais Metal MSL 3.0.0 nécessite iOS/iPadOS 16.0+. Pas de iOS Simulator puisque pas supporté par SDL3 API GPU. iOS/iPadOS 16.0+ supporte les iPhones à partir de l'iPhone 8 (2017) et les iPads de 6e génération (2018) ou plus récents. |
 | **Android**  | Android 7.0+ (API 24+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
