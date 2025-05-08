@@ -61,7 +61,7 @@
 | **SDL3_ttf**           | Rendu de polices TrueType                                    | Intégré                    |
 | **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | Intégré                    |
 | **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL                    | Pas besoin d'intégrer au build du jeu |
-| **RCEnet**             | Fork de ENet (Communication UDP)                             | Optionnel si pas de jeux en multijoueur |
+| **RCENet**             | Fork de ENet (Communication UDP)                             | Optionnel si pas de jeux en multijoueur |
 | **OpenSSL**            | Hashing, Chiffrement..etc                                    | Optionnel si aucun besoin de hasher, chiffrer.. |
 | **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | Optionnel si aucun besoin de faire l'inference en jeu |
 
@@ -73,7 +73,7 @@
 | **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ |
 | **iOS**      | iOS 16.0+        | SDL3 API GPU supporté depuis iOS 13.0, mais Metal MSL 3.0.0 nécessite iOS 16.0+. Pas de iOS Simulator pas supporté par SDL3 API GPU |
 | **Android**  | API 24+ (Android 7.0+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
-| **Linux**    | glibc >= 3.25    | Compatibilité avec les toolchains récents et ONNX Runtime C++20 |
+| **Linux**    | glibc >= ?    |  |
 
 <br /><br /><br /><br />
 
