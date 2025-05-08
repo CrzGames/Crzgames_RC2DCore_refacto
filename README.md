@@ -48,9 +48,9 @@
 | **iOS** | arm64 (iphoneos) | iOS 16.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 7.0+ | ✓ |
 | **Linux** | x86 / x86_64 / arm / arm64 | glibc ?+ | ✓ |
-| **Xbox Série X/S** | x64 | Xbox One+ |  |
-| **Nintendo Switch 1/2** | arm64 | Nintendo Switch+ |  |
-| **Playstation 5** | x64 | Playstation4+ |  |
+| **Xbox** | x64 | Xbox Série X/S+ |  |
+| **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
+| **Playstation** | x64 | Playstation5+ |  |
 
 <br /><br /><br /><br />
 
