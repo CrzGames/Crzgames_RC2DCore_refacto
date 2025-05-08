@@ -73,7 +73,7 @@
 | **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ |
 | **iOS**      | iOS 16.0+        | SDL3 API GPU supporté depuis iOS 13.0, mais Metal MSL 3.0.0 nécessite iOS 16.0+. Pas de iOS Simulator pas supporté par SDL3 API GPU |
 | **Android**  | API 24+ (Android 7.0+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
-| **Linux**    | glibc 3.25+      | On construit dans la CI/CD Github Actions nos dépendences et la lib RC2D avec Ubuntu 22.04 LTS donc glibc 2.35, puis également ONNX Runtime à besoin de C++20 (glibc 3.21 ou +), donc avec glibc à 3.25 compatibles avec les distribution Linux suivantes : Ubuntu 22.04+, Debian 12+, Fedora 36+, Linux Mint 21+, elementary OS 7+, CentOS 10+, RHEL 10+ |
+| **Linux**    | glibc 3.25+      | On construit dans la CI/CD Github Actions nos dépendences et la lib RC2D avec Ubuntu 22.04 LTS donc glibc 3.25, puis également ONNX Runtime à besoin de C++20 (glibc 3.21 ou +), donc avec glibc à 3.25 compatibles avec les distribution Linux suivantes : Ubuntu 22.04+, Debian 12+, Fedora 36+, Linux Mint 21+, elementary OS 7+, CentOS 10+, RHEL 10+ |
 
 <br /><br /><br /><br />
 
