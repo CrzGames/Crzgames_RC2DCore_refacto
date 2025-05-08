@@ -48,6 +48,7 @@
 | **iOS/iPadOS** | arm64 | iOS/iPadOS 16.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 7.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 3.25+ | ✓ |
+| **Steam Deck** | x64 | glibc | |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
