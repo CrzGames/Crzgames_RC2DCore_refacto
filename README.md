@@ -47,7 +47,7 @@
 | **macOS** | Intel x64 / Apple Silicon arm64 | macOS 13.4+ | ✓ |
 | **iOS** | arm64 (iphoneos) | iOS 16.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 7.0+ | ✓ |
-| **Linux** | x64 / arm64 | glibc ?+ | ✓ |
+| **Linux** | x64 / arm64 | glibc 3.25+ | ✓ |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
@@ -73,7 +73,7 @@
 | **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ |
 | **iOS**      | iOS 16.0+        | SDL3 API GPU supporté depuis iOS 13.0, mais Metal MSL 3.0.0 nécessite iOS 16.0+. Pas de iOS Simulator pas supporté par SDL3 API GPU |
 | **Android**  | API 24+ (Android 7.0+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
-| **Linux**    | glibc >= ?    |  |
+| **Linux**    | glibc >= 3.25    | Compatibilité avec les toolchains récents et ONNX Runtime C++20 |
 
 <br /><br /><br /><br />
 
