@@ -52,8 +52,6 @@
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
 
-<br /><br /><br /><br />
-
 ## 📦 Dépendances principales
 
 | Librairie              | Utilisation principale                                       | Intégration                |
