@@ -77,6 +77,9 @@
 | **Android**  | API 24+ (Android 7.0+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
 | **Linux**    | glibc >= 3.25    | Compatibilité avec les toolchains récents et ONNX Runtime C++20 |
 
+<br /><br /><br /><br />
+
+
 ## ⚙️ Setup Environment Development
 1. Cloner le projet ainsi que les submodules en recursive, penser à clone le projet à la racine du disque dur C:/
    sinon il y a un gros risque pendant la compilation de certaines dépendences de se retrouver avec un probleme de chemin trop long :
