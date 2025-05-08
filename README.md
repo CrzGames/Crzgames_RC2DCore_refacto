@@ -40,6 +40,45 @@
 <br /><br /><br /><br />
 
 
+## 📋 Supported platforms :
+| Platform | Architectures | System Version | Compatible |
+|----------|---------------|----------------|------------|
+| **Windows** | x64 / arm64 | Windows 10+   | ✓          |
+| **macOS** | Intel x64 / Apple Silicon arm64 | macOS 13.4+ | ✓ |
+| **iOS/iPadOS** | arm64 | iOS/iPadOS 16.0+ | ✓ |
+| **Android** | arm64-v8a / armeabi-v7a | Android 7.0+ | ✓ |
+| **Linux** | x64 / arm64 | glibc 3.25+ | ✓ |
+| **Steam Deck** | x64 | glibc ?+ | |
+| **Xbox** | x64 | Xbox Série X/S+ |  |
+| **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
+| **Playstation** | x64 | Playstation5+ |  |
+
+## 🎯 Raisons des versions minimales par plateforme
+
+| Plateforme   | Version minimale | Raisons techniques principales |
+|--------------|------------------|-------------------------------|
+| **Windows**  | Windows 10+      | SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1), également Windows ARM64 nécessite Windows 10+ |
+| **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ (lors de la transpilation du code HLSL vers MSL via le binaire SDL3_shadercross on lui passe la version 3.0.0) |
+| **iOS/iPadOS** | iOS 16.0+        | SDL3 API GPU supporté depuis iOS/iPadOS 13.0 et --use_coreml pour ONNX Runtime nécessite 13.0+, mais Metal MSL 3.0.0 nécessite iOS/iPadOS 16.0+. Pas de iOS Simulator puisque pas supporté par SDL3 API GPU. iOS/iPadOS 16.0+ supporte les iPhones à partir de l'iPhone 8 (2017) et les iPads de 6e génération (2018) ou plus récents. |
+| **Android**  | Android 7.0+ (API 24+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
+| **Linux**    | glibc 3.25+      | On construit dans la CI/CD Github Actions nos dépendences et la lib RC2D avec Ubuntu 22.04 LTS donc glibc 3.25, puis également ONNX Runtime à besoin de C++20 (glibc 3.21 ou +), donc avec glibc à 3.25 compatibles avec les distribution Linux suivantes : Ubuntu 22.04+, Debian 12+, Fedora 36+, Linux Mint 21+, elementary OS 7+, CentOS 10+, RHEL 10+ |
+
+## 📦 Dépendances principales
+
+| Librairie              | Utilisation principale                                       | Intégration                |
+|------------------------|--------------------------------------------------------------|----------------------------|
+| **SDL3**               | Moteur principal, gestion entrée/sortie, rendu GPU           | Intégré                    |
+| **SDL3_image**         | Chargement des images                                        | Intégré                    |
+| **SDL3_ttf**           | Rendu de polices TrueType                                    | Intégré                    |
+| **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | Intégré                    |
+| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL                    | Pas besoin d'intégrer au build du jeu |
+| **RCENet**             | Fork de ENet (Communication UDP)                             | Optionnel si pas de jeux en multijoueur |
+| **OpenSSL**            | Hashing, Chiffrement..etc                                    | Optionnel si aucun besoin de hasher, chiffrer.. |
+| **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | Optionnel si aucun besoin de faire l'inference en jeu |
+
+<br /><br /><br /><br />
+
+
 ## ⚙️ Setup Environment Development
 1. Cloner le projet ainsi que les submodules en recursive, penser à clone le projet à la racine du disque dur C:/
    sinon il y a un gros risque pendant la compilation de certaines dépendences de se retrouver avec un probleme de chemin trop long :
