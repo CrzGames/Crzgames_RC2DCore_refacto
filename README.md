@@ -54,6 +54,28 @@
 
 <br /><br /><br /><br />
 
+## 📦 Dépendances principales
+
+| Librairie              | Utilisation principale                                       | Intégration                |
+|------------------------|--------------------------------------------------------------|----------------------------|
+| **SDL3**               | Moteur principal, gestion entrée/sortie, rendu GPU           | Intégré                    |
+| **SDL3_image**         | Chargement des images                                        | Intégré                    |
+| **SDL3_ttf**           | Rendu de polices TrueType                                    | Intégré                    |
+| **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | Intégré                    |
+| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL                    | Pas besoin d'intégrer au build du jeu |
+| **RCEnet**             | Fork de ENet (Communication UDP)                             | Optionnel si pas de jeux en multijoueur |
+| **OpenSSL**            | Hashing, Chiffrement..etc                                    | Optionnel si aucun besoin de hasher, chiffrer.. |
+| **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | Optionnel si aucun besoin de faire l'inference en jeu |
+
+## 🎯 Raisons des versions minimales par plateforme
+
+| Plateforme   | Version minimale | Raisons techniques principales |
+|--------------|------------------|-------------------------------|
+| **Windows**  | Windows 10+      | SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1) |
+| **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ |
+| **iOS**      | iOS 16.0+        | SDL3 API GPU supporté depuis iOS 13.0, mais Metal MSL 3.0.0 nécessite iOS 16.0+ |
+| **Android**  | API 24+ (Android 7.0+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 |
+| **Linux**    | glibc >= 3.25    | Compatibilité avec les toolchains récents et ONNX Runtime C++20 |
 
 ## ⚙️ Setup Environment Development
 1. Cloner le projet ainsi que les submodules en recursive, penser à clone le projet à la racine du disque dur C:/
