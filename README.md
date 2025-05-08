@@ -40,6 +40,21 @@
 <br /><br /><br /><br />
 
 
+## 📋 Supported platforms :
+| Platform | Architectures | System Version | Compatible |
+|----------|---------------|----------------|------------|
+| **Windows** | x64 / arm64 | Windows 10+   | ✓          |
+| **macOS** | Intel x86_64 / Apple Silicon arm64 | macOS 13.4+ | ✓ |
+| **iOS** | arm64 (iphoneos) | iOS 16.0+ | ✓ |
+| **Android** | arm64-v8a / armeabi-v7a | Android 7.0+ | ✓ |
+| **Linux** | x86 / x86_64 / arm / arm64 | glibc ?+ | ✓ |
+| **Xbox Série X/S** | x64 | Xbox One+ |  |
+| **Nintendo Switch 1/2** | arm64 | Nintendo Switch+ |  |
+| **Playstation 5** | x64 | Playstation4+ |  |
+
+<br /><br /><br /><br />
+
+
 ## ⚙️ Setup Environment Development
 1. Cloner le projet ainsi que les submodules en recursive, penser à clone le projet à la racine du disque dur C:/
    sinon il y a un gros risque pendant la compilation de certaines dépendences de se retrouver avec un probleme de chemin trop long :
