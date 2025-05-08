@@ -45,7 +45,7 @@
 |----------|---------------|----------------|------------|
 | **Windows** | x64 / arm64 | Windows 10+   | ✓          |
 | **macOS** | Intel x64 / Apple Silicon arm64 | macOS 13.4+ | ✓ |
-| **iOS/iPadOS** | arm64 (iphoneos) | iOS/iPadOS 16.0+ | ✓ |
+| **iOS/iPadOS** | arm64 | iOS/iPadOS 16.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 7.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 3.25+ | ✓ |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
