@@ -14,20 +14,23 @@
 
 ```
 📦 Crzgames_RC2DCore
+├── 📁 .github
 ├── 📁 android-project
 ├── 📁 build-scripts
 ├── 📁 cmake
 │   └── 📄 setup_dependencies.cmake
-├── 📁 docs
-├── 📁 include
-├── 📁 src
 ├── 📁 dependencies
-│   ├── 📁 Crzgames_LibCpp_Windows
-│   ├── 📁 Crzgames_LibCpp_Linux
-│   └── 📁 Crzgames_LibCpp_Android
+│   ├── 📁 Crzgames_Libraries
 │   ├── 📁 SDL
 │   ├── 📁 SDL_image
 │   ├── 📁 SDL_ttf
+│   ├── 📁 SDL_mixer
+│   ├── 📁 SDL_shadercross
+├── 📁 docs
+├── 📁 example
+├── 📁 include
+├── 📁 src
+├── 📁 tests
 ├── 📄 .gitignore
 ├── 📄 CHANGELOG.md
 ├── 📄 CMakeLists.txt
