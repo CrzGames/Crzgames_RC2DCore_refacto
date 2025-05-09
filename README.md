@@ -104,15 +104,15 @@
 ### **iOS / iPadOS (iOS/iPadOS 17.0+)**
 
 #### iPhones:
-- iPhone XS / XS Max / XR (2018)
-- iPhone SE (2ème génération, 2020) et plus récent
-- iPhone 11 / 12 / 13 / 14 / 15 / 16 (Normal, Pro et Pro Max) / 16e  et plus récent
+- iPhone XR / XS / XS Max
+- iPhone SE (2/3ème génération)
+- iPhone 11 / 12 / 13 / 14 / 15 / 16 (Normal, Mini, Plus, Pro, Pro Max, E) et plus récent
 
 #### iPads:
-- iPad 7ème génération (2019) et plus récent
-- iPad mini 5ème génération (2019) et plus récent
-- iPad Air 4ème génération (2020) et plus récent
-- iPad Pro 11" and 12.9" (2018) et plus récent
+- iPad mini (5/6ème génération, A17 Pro) et plus récent
+- iPad (7/8/9/10ème génération, A16) et plus récent
+- iPad Air (3/4/5ème génération, M2, M3) et plus récent
+- iPad Pro (1/2/3/4/5/6ème génération, M4) et plus récent
 
 ### **macOS (macOS 14.0+)**
 - MacBook Air (2018+ Intel, tout pour Apple Silicon)
