@@ -53,8 +53,6 @@
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
 
----
-
 <br />
 
 ## 🎯 Raisons techniques des versions minimales par plateforme
@@ -92,8 +90,6 @@
   - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendenceS construite sur glibc 2.35)
   - ONNX Runtime nécessite C++20 (glibc 2.31+)
 
----
-
 <br />
 
 ## 📱 Appareils compatibles par plateforme
@@ -111,8 +107,6 @@
 - iPad Air 4ème génération (2020) et plus récent
 - iPad Pro 11" and 12.9" (2018) et plus récent
 
----
-
 ### **macOS (macOS 14.0+)**
 - MacBook Air (2018+ Intel, tout pour Apple Silicon)
 - MacBook Pro (2018+ Intel, tout pour Apple Silicon)
@@ -123,15 +117,11 @@
 
 *Les anciens Mac Intel (antérieurs à 2018) ne sont pas pris en charge.*
 
----
-
 ### **Android (Android 9.0+, API 28+)**
 - Samsung Galaxy S9+ (2018) et plus récent
 - Google Pixel 3 et plus récent
 - OnePlus 6T et plus récent
 - Galaxy Tab S4 (2018) et plus récent
-
----
 
 ### **Linux (glibc 2.35+)**
 - Ubuntu 22.04+
@@ -140,8 +130,6 @@
 - Linux Mint 21+
 - elementary OS 7+
 - CentOS/RHEL 10+
-
----
 
 <br />
 
