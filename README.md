@@ -14,20 +14,24 @@
 
 ```
 📦 Crzgames_RC2DCore
+├── 📁 .github
 ├── 📁 android-project
 ├── 📁 build-scripts
 ├── 📁 cmake
 │   └── 📄 setup_dependencies.cmake
-├── 📁 docs
-├── 📁 include
-├── 📁 src
-├── 📁 dependencies
-│   ├── 📁 Crzgames_LibCpp_Windows
-│   ├── 📁 Crzgames_LibCpp_Linux
-│   └── 📁 Crzgames_LibCpp_Android
+├── 📁 dependencies (git ignored)
+│   ├── 📁 Crzgames_Libraries
+│   ├── 📁 Crzgames_RCENet
 │   ├── 📁 SDL
 │   ├── 📁 SDL_image
 │   ├── 📁 SDL_ttf
+│   ├── 📁 SDL_mixer
+│   ├── 📁 SDL_shadercross
+├── 📁 docs
+├── 📁 example
+├── 📁 include
+├── 📁 src
+├── 📁 tests
 ├── 📄 .gitignore
 ├── 📄 CHANGELOG.md
 ├── 📄 CMakeLists.txt
@@ -40,28 +44,101 @@
 <br /><br /><br /><br />
 
 
-## 📋 Supported platforms :
+## 📋 Plateformes supportées
 | Platform | Architectures | System Version | Compatible |
 |----------|---------------|----------------|------------|
 | **Windows** | x64 / arm64 | Windows 10+   | ✓          |
-| **macOS** | Intel x64 / Apple Silicon arm64 | macOS 13.4+ | ✓ |
-| **iOS/iPadOS** | arm64 | iOS/iPadOS 16.0+ | ✓ |
+| **macOS** | Intel x64 / Apple Silicon arm64 | macOS 14.0+ | ✓ |
+| **iOS/iPadOS** | arm64 | iOS/iPadOS 17.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 9.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 2.35+ | ✓ |
-| **Steam Deck** | x64 | glibc ?+ | |
+| **Steam Linux** | x64 / arm64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
+| **Steam Deck** | x64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
 
-## 🎯 Raisons des versions minimales par plateforme
+<br />
 
-| Plateforme   | Version minimale | Raisons techniques principales |
-|--------------|------------------|-------------------------------|
-| **Windows**  | Windows 10+      | SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1), également Windows ARM64 nécessite Windows 10+ |
-| **macOS**    | macOS 13.4+      | Requis par ONNX Runtime pour C++20 (macOS 13.4+) et Metal MSL 3.0.0 nécessite macOS 13.0+ (lors de la transpilation du code HLSL vers MSL via le binaire SDL3_shadercross on lui passe la version 3.0.0) |
-| **iOS/iPadOS** | iOS 16.0+        | SDL3 API GPU supporté depuis iOS/iPadOS 13.0 et --use_coreml pour ONNX Runtime nécessite 13.0+, mais Metal MSL 3.0.0 nécessite iOS/iPadOS 16.0+. Pas de iOS Simulator puisque pas supporté par SDL3 API GPU. iOS/iPadOS 16.0+ supporte les iPhones à partir de l'iPhone 8 (2017) et les iPads de 6e génération (2018) ou plus récents. |
-| **Android**  | Android 9.0+ (API 28+) | SDL3 GPU utilise Vulkan introduit à partir d'Android 7.0 (API 24+), et surtout ONNX Runtime et le fournisseur d'exécution NNAPI demande au minimum Android 8.1+ (API 27.0+) mais recommande Android 9.0+ (API 28+) |
-| **Linux**    | glibc 2.35+      | On construit dans la CI/CD Github Actions nos dépendences et la lib RC2D avec Ubuntu 22.04 LTS donc glibc 2.35, puis également ONNX Runtime à besoin de C++20 (glibc 2.31 ou +), donc avec glibc à 2.35 compatibles avec les distribution Linux suivantes : Ubuntu 22.04+, Debian 12+, Fedora 36+, Linux Mint 21+, elementary OS 7+, CentOS 10+, RHEL 10+ |
+## 🎯 Raisons techniques des versions minimales et autres par plateforme
+
+### Windows
+- **Version minimale** : Windows 10+
+- **Raison** :
+  - SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1)
+  - Windows ARM64 nécessite également Windows 10+
+
+### macOS
+- **Version minimale** : macOS 14.0+
+- **Raison** :
+  - Requis par ONNX Runtime pour C++20 (macOS 13.4+)
+  - Metal MSL 3.0.0 nécessite macOS 13.0+
+  - DXIL -> METALLIB via `metal-shaderconverter` nécessite macOS 14.0+
+
+### iOS/iPadOS
+- **Version minimale** : iOS/iPadOS 17.0+
+- **Raison** :
+  - SDL3 API GPU supporté depuis iOS 13.0
+  - CoreML pour ONNX Runtime nécessite iOS 13.0+
+  - Metal MSL 3.0.0 nécessite iOS 16.0+
+  - DXIL -> METALLIB via `metal-shaderconverter` nécessite iOS 17.0+
+  - Pas de librairie pour iOS/iPadOS simulator parce que SDL3 GPU ne le supporte pas.
+
+### Android
+- **Version minimale** : Android 9.0 (API 28+)
+- **Raison** :
+  - SDL3 GPU utilise Vulkan (introduit à partir d'Android 7.0)
+  - ONNX Runtime avec NNAPI demande Android 8.1+ et recommande Android 9.0+
+  - Pas d'architecture Android : x86_64 et x86, parce que ONNX Runtime compatible que : arm64-v8a / armeabi-v7a
+
+### Linux
+- **Version minimale** : glibc 2.35+
+- **Raison** :
+  - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendences construite sur glibc 2.35)
+  - ONNX Runtime nécessite C++20 (glibc 2.31+)
+
+<br />
+
+## 📱 Appareils compatibles par plateforme
+
+### **iOS / iPadOS (iOS/iPadOS 17.0+)**
+
+#### iPhones:
+- iPhone XS / XS Max / XR (2018)
+- iPhone SE (2ème génération, 2020) et plus récent
+- iPhone 11 / 12 / 13 / 14 / 15 / 16 (Normal, Pro et Pro Max) / 16e  et plus récent
+
+#### iPads:
+- iPad 7ème génération (2019) et plus récent
+- iPad mini 5ème génération (2019) et plus récent
+- iPad Air 4ème génération (2020) et plus récent
+- iPad Pro 11" and 12.9" (2018) et plus récent
+
+### **macOS (macOS 14.0+)**
+- MacBook Air (2018+ Intel, tout pour Apple Silicon)
+- MacBook Pro (2018+ Intel, tout pour Apple Silicon)
+- Mac mini (2018+ Intel, tout pour Apple Silicon)
+- iMac (2019+ Intel, tout pour Apple Silicon)
+- Mac Studio (tout les models)
+- Mac Pro (2019+ Intel, tout pour Apple Silicon)
+
+*Les anciens Mac Intel (antérieurs à 2018) ne sont pas pris en charge.*
+
+### **Android (Android 9.0+, API 28+)**
+- Samsung Galaxy S9+ (2018) et plus récent
+- Google Pixel 3 et plus récent
+- OnePlus 6T et plus récent
+- Galaxy Tab S4 (2018) et plus récent
+
+### **Linux (glibc 2.35+)**
+- Ubuntu 22.04+
+- Debian 12+
+- Fedora 36+
+- Linux Mint 21+
+- elementary OS 7+
+- CentOS/RHEL 10+
+
+<br />
 
 ## 📦 Dépendances principales
 
