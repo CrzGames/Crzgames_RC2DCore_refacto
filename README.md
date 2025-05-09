@@ -55,6 +55,8 @@
 
 ---
 
+<br />
+
 ## 🎯 Raisons techniques des versions minimales par plateforme
 
 ### Windows
@@ -91,6 +93,8 @@
   - ONNX Runtime nécessite C++20 (glibc 2.31+)
 
 ---
+
+<br />
 
 ## 📱 Appareils compatibles par plateforme
 
@@ -138,6 +142,8 @@
 - CentOS/RHEL 10+
 
 ---
+
+<br />
 
 ## 📦 Dépendances principales
 
