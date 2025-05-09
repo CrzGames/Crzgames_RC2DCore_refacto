@@ -11,6 +11,13 @@ Exigences concernant l'utilisation du binaire `metal-shaderconverter`.
 
 <br /><br />
 
+## Utilisation
+```bash
+metal-shaderconverter shader.fragment.dxil -o ./shader.fragment.metallib
+```
+
+<br /><br />
+
 ## Plateforme compatible avec les fichiers .metallib générer
 - macOS >= 14.0
 - iOS/iPadOS >= 17.0
@@ -21,10 +28,3 @@ Ces fonctions sont `uniquement disponibles` à partir de : macOS 15.0+ et iOS/iP
 
 ## Débogage, profilage et validation des shaders
 Metal Shader Converter >= 2.0 prend en charge le transfert des informations de débogage de l'IR source vers les bibliothèques Metal. Cela vous permet de déboguer, de profiler et d'activer la validation des shaders pour vos pipelines convertis sur Xcode 16, macOS 15 et iOS 18 (ou versions ultérieures).
-
-<br /><br />
-
-## Utilisation
-```bash
-metal-shaderconverter shader.fragment.dxil -o ./shader.fragment.metallib
-```
