@@ -21,7 +21,8 @@ metal-shaderconverter shader.fragment.dxil -o ./shader.fragment.metallib
 ## Plateforme compatible avec les fichiers .metallib générer
 - macOS >= 14.0
 - iOS/iPadOS >= 17.0
-**Note** : Les `.metallib` générés avec `metal-shaderconverter` fonctionneront sur macOS 14.0+ et iOS/iPadOS 17.0+, mais sans support du débogage et du profiling shader. <br />
+
+**Note** : Les fichiers `.metallib` générés avec `metal-shaderconverter` fonctionneront sur macOS 14.0+ et iOS/iPadOS 17.0+, mais sans support du débogage et du profiling shader. <br />
 Ces fonctions sont `uniquement disponibles` à partir de : macOS 15.0+ et iOS/iPadOS 18.0+.
 
 <br /><br />
