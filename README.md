@@ -49,7 +49,7 @@
 |----------|---------------|----------------|------------|
 | **Windows** | x64 / arm64 | Windows 10+   | ✓          |
 | **macOS** | Intel x64 / Apple Silicon arm64 | macOS 15.0+ | ✓ |
-| **iOS/iPadOS** | arm64 | iOS/iPadOS 18.0+ | ✓ |
+| **iOS/iPadOS** | arm64 (iphoneos) - not iphonesimulator | iOS/iPadOS 18.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 9.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 2.35+ | ✓ |
 | **Steam Linux** | x64 / arm64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
