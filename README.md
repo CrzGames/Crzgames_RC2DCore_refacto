@@ -60,7 +60,7 @@
 
 <br />
 
-## 🎯 Raisons techniques des versions minimales par plateforme
+## 🎯 Raisons techniques des versions minimales et autres par plateforme
 
 ### Windows
 - **Version minimale** : Windows 10+
