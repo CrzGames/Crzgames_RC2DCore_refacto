@@ -106,7 +106,7 @@
 #### iPhones:
 - iPhone XS / XS Max / XR (2018)
 - iPhone SE (2ème génération, 2020) et plus récent
-- iPhone 11 / 12 / 13 / 14 / 15 / 16 (Normal, Pro et Pro Max) et plus récent
+- iPhone 11 / 12 / 13 / 14 / 15 / 16 (Normal, Pro et Pro Max) / 16e  et plus récent
 
 #### iPads:
 - iPad 7ème génération (2019) et plus récent
