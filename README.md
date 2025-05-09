@@ -87,7 +87,7 @@
 ### Linux
 - **Version minimale** : glibc 2.35+
 - **Raison** :
-  - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendenceS construite sur glibc 2.35)
+  - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendences construite sur glibc 2.35)
   - ONNX Runtime nécessite C++20 (glibc 2.31+)
 
 <br />
