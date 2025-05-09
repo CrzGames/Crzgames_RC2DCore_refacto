@@ -117,9 +117,10 @@
 - iPad Pro (1/2/3/4/5/6ème génération, M4) et plus récent
 
 ### **macOS (macOS 15.0+)**
+Apple Silicon :
 - Tous les modèles macOS Apple Silicon (M1, M2, M3, M4) et plus récent
 
-Intel (encore compatibles macOS Sequoia 15.0) :
+Intel :
 - MacBook Pro 2018+
 - MacBook Air 2020 Retina
 - iMac 2019+
