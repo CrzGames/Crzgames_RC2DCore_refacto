@@ -48,8 +48,8 @@
 | Platform | Architectures | System Version | Compatible |
 |----------|---------------|----------------|------------|
 | **Windows** | x64 / arm64 | Windows 10+   | ✓          |
-| **macOS** | Intel x64 / Apple Silicon arm64 | macOS 14.0+ | ✓ |
-| **iOS/iPadOS** | arm64 | iOS/iPadOS 17.0+ | ✓ |
+| **macOS** | Intel x64 / Apple Silicon arm64 | macOS 15.0+ | ✓ |
+| **iOS/iPadOS** | arm64 | iOS/iPadOS 18.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 9.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 2.35+ | ✓ |
 | **Steam Linux** | x64 / arm64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
@@ -69,19 +69,21 @@
   - Windows ARM64 nécessite également Windows 10+
 
 ### macOS
-- **Version minimale** : macOS 14.0+
+- **Version minimale** : macOS 15.0+
 - **Raison** :
   - Requis par ONNX Runtime pour C++20 (macOS 13.4+)
   - Metal MSL 3.0.0 nécessite macOS 13.0+
-  - DXIL -> METALLIB via `metal-shaderconverter` nécessite macOS 14.0+
+  - DXIL -> METALLIB via `metal-shaderconverter` nécessite macOS 14.0+ pour executer les binaire .metallib
+  - metal-shaderconverter pour avoir accès au debugger, profiling..etc il faut target macOS 15.0+
 
 ### iOS/iPadOS
-- **Version minimale** : iOS/iPadOS 17.0+
+- **Version minimale** : iOS/iPadOS 18.0+
 - **Raison** :
   - SDL3 API GPU supporté depuis iOS 13.0
   - CoreML pour ONNX Runtime nécessite iOS 13.0+
   - Metal MSL 3.0.0 nécessite iOS 16.0+
   - DXIL -> METALLIB via `metal-shaderconverter` nécessite iOS 17.0+
+  - metal-shaderconverter pour avoir accès au debugger, profiling..etc il faut target iOS/iPadOS 18.0+
   - Pas de librairie pour iOS/iPadOS simulator parce que SDL3 GPU ne le supporte pas.
 
 ### Android
@@ -101,7 +103,7 @@
 
 ## 📱 Appareils compatibles par plateforme
 
-### **iOS / iPadOS (iOS/iPadOS 17.0+)**
+### **iOS / iPadOS (iOS/iPadOS 18.0+)**
 
 #### iPhones:
 - iPhone XR / XS / XS Max
