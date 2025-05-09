@@ -19,7 +19,7 @@
 ├── 📁 build-scripts
 ├── 📁 cmake
 │   └── 📄 setup_dependencies.cmake
-├── 📁 dependencies
+├── 📁 dependencies (git ignored)
 │   ├── 📁 Crzgames_Libraries
 │   ├── 📁 Crzgames_RCENet
 │   ├── 📁 SDL
