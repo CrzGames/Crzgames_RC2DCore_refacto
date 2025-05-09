@@ -79,10 +79,10 @@
 ### iOS/iPadOS
 - **Version minimale** : iOS/iPadOS 18.0+
 - **Raison** :
-  - SDL3 API GPU supporté depuis iOS 13.0
-  - CoreML pour ONNX Runtime nécessite iOS 13.0+
-  - Metal MSL 3.0.0 nécessite iOS 16.0+
-  - DXIL -> METALLIB via `metal-shaderconverter` nécessite iOS 17.0+
+  - SDL3 API GPU supporté depuis iOS/iPadOS 13.0
+  - CoreML pour ONNX Runtime nécessite iOS/iPadOS 13.0+
+  - Metal MSL 3.0.0 nécessite iOS/iPadOS 16.0+
+  - DXIL -> METALLIB via `metal-shaderconverter` nécessite iOS/iPadOS 17.0+
   - metal-shaderconverter pour avoir accès au debugger, profiling..etc il faut target iOS/iPadOS 18.0+
   - Pas de librairie pour iOS/iPadOS simulator parce que SDL3 GPU ne le supporte pas.
 
