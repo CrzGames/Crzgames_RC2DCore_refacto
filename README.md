@@ -116,15 +116,16 @@
 - iPad Air (3/4/5ème génération, M2, M3) et plus récent
 - iPad Pro (1/2/3/4/5/6ème génération, M4) et plus récent
 
-### **macOS (macOS 14.0+)**
-- MacBook Air (2018+ Intel, tout pour Apple Silicon)
-- MacBook Pro (2018+ Intel, tout pour Apple Silicon)
-- Mac mini (2018+ Intel, tout pour Apple Silicon)
-- iMac (2019+ Intel, tout pour Apple Silicon)
-- Mac Studio (tout les models)
-- Mac Pro (2019+ Intel, tout pour Apple Silicon)
+### **macOS (macOS 15.0+)**
+- Tous les modèles macOS Apple Silicon (M1, M2, M3, M4) et plus récent
 
-*Les anciens Mac Intel (antérieurs à 2018) ne sont pas pris en charge.*
+Intel (encore compatibles macOS Sequoia 15.0) :
+- MacBook Pro 2018+
+- MacBook Air 2020 Retina
+- iMac 2019+
+- Mac mini 2018+
+- Mac Pro 2019
+- iMac Pro 2017
 
 ### **Android (Android 9.0+, API 28+)**
 - Samsung Galaxy S9+ (2018) et plus récent
