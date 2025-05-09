@@ -52,8 +52,8 @@
 | **iOS/iPadOS** | arm64 | iOS/iPadOS 17.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 9.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 2.35+ | ✓ |
-| **Steam Linux** | x64 / arm64 | Steam Runtime 3.0 (Sniper) | ✓ |
-| **Steam Deck** | x64 | Steam Runtime 3.0 (Sniper) | ✓ |
+| **Steam Linux** | x64 / arm64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
+| **Steam Deck** | x64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
