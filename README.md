@@ -82,12 +82,14 @@
   - CoreML pour ONNX Runtime nécessite iOS 13.0+
   - Metal MSL 3.0.0 nécessite iOS 16.0+
   - DXIL -> METALLIB via `metal-shaderconverter` nécessite iOS 17.0+
+  - Pas de librairie pour iOS/iPadOS simulator parce que SDL3 GPU ne le supporte pas.
 
 ### Android
 - **Version minimale** : Android 9.0 (API 28+)
 - **Raison** :
   - SDL3 GPU utilise Vulkan (introduit à partir d'Android 7.0)
   - ONNX Runtime avec NNAPI demande Android 8.1+ et recommande Android 9.0+
+  - Pas d'architecture Android : x86_64 et x86, parce que ONNX Runtime compatible que : arm64-v8a / armeabi-v7a
 
 ### Linux
 - **Version minimale** : glibc 2.35+
