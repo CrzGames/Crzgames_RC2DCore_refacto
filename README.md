@@ -148,7 +148,7 @@ Intel :
 | **SDL3_image**         | Chargement des images                                        | Intégré                    |
 | **SDL3_ttf**           | Rendu de polices TrueType                                    | Intégré                    |
 | **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | Intégré                    |
-| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL/METALLIB           | Pas besoin de linker utiliser SDL3_shadercross en mode CLI, sauf si le rechargement à chaud des shaders est activé via RC2D_GPU_SHADER_HOT_RELOAD_ENABLED alors il faudra linker le temps du développement du jeu pour le mode Debug |
+| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL/METALLIB           | Pas besoin de linker, utiliser SDL3_shadercross en mode CLI, sauf si le rechargement à chaud des shaders est activé via RC2D_GPU_SHADER_HOT_RELOAD_ENABLED alors il faudra linker le temps du développement du jeu pour le mode Debug |
 | **RCENet**             | Fork de ENet (Communication UDP)                             | Optionnel, mais le module "RC2D_net" ne sera pas utilisable |
 | **OpenSSL**            | Hashing, Chiffrement, Compression..etc                       | Optionnel, mais le module "RC2D_data" ne sera pas utilisable |
 | **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | Optionnel, mais le module "RC2D_onnx" ne sera pas utilisable |
