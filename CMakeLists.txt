@@ -285,12 +285,18 @@ file(GLOB_RECURSE SOURCES
 )
 
 # Choisir entre bibliothèque dynamique/partagées ou statique pour RC2D
-if(RC2D_BUILD_SHARED_LIBS)
-  add_library(${PROJECT_NAME} SHARED ${SOURCES})
+if(ANDROID)
+  # Pour Android, il faut obligatoirement mettre "main" comme nom de la lib et SHARED
+  # car c'est le point d'entrée de l'application Android
+  add_library(main SHARED ${SOURCES})
 else()
-  add_library(${PROJECT_NAME} STATIC ${SOURCES})
-  # Rajouter le suffixe "_static" au nom de la bibliothèque statique, pour éviter les conflits
-  set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
+  if(RC2D_BUILD_SHARED_LIBS)
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+  else()
+    add_library(${PROJECT_NAME} STATIC ${SOURCES})
+    # Rajouter le suffixe "_static" au nom de la bibliothèque statique, pour éviter les conflits
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
+  endif()
 endif()
 
 if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
