@@ -6,7 +6,9 @@
 #include <RC2D/RC2D_audio.h>
 #include <RC2D/RC2D_collision.h>
 #include <RC2D/RC2D_config.h>
+#ifdef RC2D_DATA_MODULE_ENABLED
 #include <RC2D/RC2D_data.h>
+#endif // RC2D_DATA_MODULE_ENABLED
 #include <RC2D/RC2D_engine.h>
 #include <RC2D/RC2D_event.h>
 #include <RC2D/RC2D_filedialog.h>
@@ -24,6 +26,12 @@
 #include <RC2D/RC2D_messagebox.h>
 #include <RC2D/RC2D_mouse.h>
 // #include <RC2D/RC2D_rres.h>
+#ifdef RC2D_NET_MODULE_ENABLED
+#include <RC2D/RC2D_net.h>
+#endif // RC2D_NET_MODULE_ENABLED
+#ifdef RC2D_ONNX_MODULE_ENABLED
+#include <RC2D/RC2D_onnx.h>
+#endif // RC2D_ONNX_MODULE_ENABLED
 #include <RC2D/RC2D_pixels.h>
 #include <RC2D/RC2D_platform.h>
 #include <RC2D/RC2D_power.h>

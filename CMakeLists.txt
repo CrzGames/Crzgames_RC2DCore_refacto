@@ -283,6 +283,38 @@ function(rc2d_include_headers target_name)
   )
 endfunction()
 
+# Fonction pour les target_compile_definitions par target
+function(rc2d_target_compile_definitions target_name)
+  # Définitions de compilation pour le rechargement à chaud des shaders
+  if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    target_compile_definitions(${target_name} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=1)
+  else()
+    target_compile_definitions(${target_name} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
+  endif()
+
+  # Définitions de compilation pour le niveau d'assertion
+  target_compile_definitions(${target_name} PRIVATE RC2D_ASSERT_LEVEL=${RC2D_ASSERT_LEVEL})
+
+  # Les définitions de compilation pour les modules RC2D
+  if(RC2D_DATA_MODULE_ENABLED)
+    target_compile_definitions(${target_name} PRIVATE RC2D_DATA_MODULE_ENABLED=1)
+  else()
+    target_compile_definitions(${target_name} PRIVATE RC2D_DATA_MODULE_ENABLED=0)
+  endif()
+
+  if(RC2D_NET_MODULE_ENABLED)
+    target_compile_definitions(${target_name} PRIVATE RC2D_NET_MODULE_ENABLED=1)
+  else()
+    target_compile_definitions(${target_name} PRIVATE RC2D_NET_MODULE_ENABLED=0)
+  endif()
+
+  if(RC2D_ONNX_MODULE_ENABLED)
+    target_compile_definitions(${target_name} PRIVATE RC2D_ONNX_MODULE_ENABLED=1)
+  else()
+    target_compile_definitions(${target_name} PRIVATE RC2D_ONNX_MODULE_ENABLED=0)
+  endif()
+endfunction()
+
 # Sources du projet RC2D
 file(GLOB_RECURSE SOURCES
   "${PROJECT_SOURCE_DIR}/src/*.c"
@@ -302,13 +334,8 @@ else()
   endif()
 endif()
 
-if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-  target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=1)
-else()
-  target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
-endif()
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE RC2D_ASSERT_LEVEL=${RC2D_ASSERT_LEVEL})
+# Compiler les définitions pour la target RC2D
+rc2d_target_compile_definitions(${PROJECT_NAME})
 
 # Inclure les répertoires d'en-tête (headers)
 rc2d_include_headers(${PROJECT_NAME})
@@ -351,13 +378,8 @@ if(RC2D_BUILD_EXAMPLES)
   # Créer un exécutable pour l'exemple
   add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
 
-  if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-    target_compile_definitions(rc2d_example PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=1)
-  else()
-    target_compile_definitions(rc2d_example PRIVATE RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=0)
-  endif()
-
-  target_compile_definitions(rc2d_example PRIVATE RC2D_ASSERT_LEVEL=${RC2D_ASSERT_LEVEL})
+  # Compiler les définitions pour la target rc2d_example
+  rc2d_target_compile_definitions(rc2d_example)
 
   # Les fichiers d'en-tête (headers) de l'exemple sont dans le répertoire "examples/include"
   target_include_directories(rc2d_example PRIVATE
@@ -395,6 +417,9 @@ if(RC2D_BUILD_TESTS)
 
   # Créer un exécutable pour les tests
   add_executable(rc2d_tests ${RC2D_TEST_SOURCES})
+
+  # Compiler les définitions pour la target rc2d_tests
+  rc2d_target_compile_definitions(rc2d_tests)
 
   # Inclure les répertoires d'en-tête (headers)
   rc2d_include_headers(rc2d_tests)

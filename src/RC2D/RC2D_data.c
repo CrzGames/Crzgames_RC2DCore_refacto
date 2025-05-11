@@ -1,3 +1,5 @@
+#ifdef RC2D_DATA_MODULE_ENABLED
+
 #include <RC2D/RC2D_data.h>
 #include <RC2D/RC2D_logger.h>
 
@@ -1037,3 +1039,5 @@ unsigned char* rc2d_data_decrypt(const RC2D_EncryptedData* encryptedData)
         return NULL;
     }
 }
+
+#endif // RC2D_DATA_MODULE_ENABLED
