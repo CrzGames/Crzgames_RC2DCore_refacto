@@ -45,24 +45,19 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 # Configuration multi-plateforme avec versions minimales
 if(WIN32)
-  # Windows 10+ pour D3D12 (features level 11_1)
   set(CMAKE_SYSTEM_VERSION 10.0.10240 CACHE STRING "Windows 10 Minimum Version" FORCE)
 elseif(APPLE)
-  # macOS 10.14+ et iOS 13.0+ pour Metal
-  message(STATUS "Detected Apple platform with SYSROOT: ${CMAKE_OSX_SYSROOT}")
-
   if(CMAKE_OSX_SYSROOT MATCHES "macosx")
     set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "macOS Architectures" FORCE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "macOS Deployment Target" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "15.0" CACHE STRING "macOS Deployment Target" FORCE)
   elseif(CMAKE_OSX_SYSROOT MATCHES "iphoneos")
-    set(CMAKE_OSX_ARCHITECTURES "arm64;arm64e" CACHE STRING "iOS Architectures" FORCE)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "iOS Deployment Target" FORCE)
+    set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "iOS Architectures" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "18.0" CACHE STRING "iOS Deployment Target" FORCE)
 endif()
 elseif (UNIX AND NOT APPLE)
   # Linux-LIKE utilisera Vulkan
 elseif(ANDROID)
-  # API 24 (Android 7.0+) pour Vulkan
-  set(CMAKE_ANDROID_API 24 CACHE STRING "Android API Level" FORCE)
+  set(CMAKE_ANDROID_API 28 CACHE STRING "Android API Level" FORCE)
 endif()
 
 # Configuration des drapeaux du compilateur
