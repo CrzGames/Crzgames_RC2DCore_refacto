@@ -18,7 +18,16 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 # Option pour activer la compilation des shaders en ligne (hot reload) pour SDL3_shadercross
 option(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED "Enable hot reload shaders with SDL3_shadercross" ON)
 
-# option pour le niveau d'assertion
+# Option pour activer le module RC2D_data
+option(RC2D_DATA_MODULE_ENABLED "Enable RC2D_data module" ON)
+
+# Option pour activer le module RC2D_net (via RCEnet, fork de ENet)
+option(RC2D_NET_MODULE_ENABLED "Enable RC2D_net module" ON)
+
+# Option pour activer le module RC2D_onnx (via ONNX Runtime)
+option(RC2D_ONNX_MODULE_ENABLED "Enable RC2D_onnx module" ON)
+
+# Option pour le niveau d'assertion
 option(RC2D_ASSERT_LEVEL "Niveau des assertions (0=none, 1=release, 2=debug, 3=paranoid)" 3)
 
 # Option Tests unitaires avec Criterion
