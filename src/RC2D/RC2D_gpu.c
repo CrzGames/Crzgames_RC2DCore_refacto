@@ -91,8 +91,18 @@ RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/spirv/%s.spv", basePath, filename);
         format = SDL_GPU_SHADERFORMAT_SPIRV;
         entrypoint = "main";
-    } 
-    else if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_MSL) 
+    }
+    /**
+     * Priorisé dans l'ordre des conditions le format : METALLIB avant MSL pour les appareils Apple.
+     * METALLIB est le format précompilé pour Metal, tandis que MSL pour Metal est compilé à l'exécution.
+     */
+    else if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_METALLIB)
+    {
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metallib/%s.metallib", basePath, filename);
+        format = SDL_GPU_SHADERFORMAT_METALLIB;
+        entrypoint = "main";
+    }
+    else if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_MSL)
     {
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/msl/%s.msl", basePath, filename);
         format = SDL_GPU_SHADERFORMAT_MSL;

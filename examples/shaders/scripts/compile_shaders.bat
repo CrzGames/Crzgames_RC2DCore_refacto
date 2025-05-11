@@ -5,7 +5,7 @@ setlocal
 :: Configuration par défaut
 :: ==================================================
 :: Documentation version MSL : https://developer.apple.com/documentation/metal/mtllanguageversion
-set MSL_VERSION=3.0.0
+set MSL_VERSION=3.2.0
 set COMPILE_SPIRV=false
 set COMPILE_DXIL=false
 set COMPILE_MSL=false
@@ -228,7 +228,7 @@ echo.
 echo Comportement par defaut :
 echo     Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal).
 echo     Genere les fichiers JSON : Les informations de reflexion automatique sur les ressources utiliser par un shader.
-echo     Version MSL par defaut : 3.0.0 (macOS 13.0+, iOS 16.0+, iPadOS 16.0+).
+echo     Version MSL par defaut : 3.2.0 (macOS 13.0+, iOS 16.0+, iPadOS 16.0+).
 echo.
 echo Exemples :
 echo     compile_shaders.bat --only-dxil

@@ -13,7 +13,11 @@ Exigences concernant l'utilisation du binaire `metal-shaderconverter`.
 
 ## Utilisation
 ```bash
-metal-shaderconverter shader.fragment.dxil -o ./shader.fragment.metallib
+# macOS
+metal-shaderconverter shader.fragment.dxil -o ./shader.fragment.metallib --minimum-os-build-version 15.0
+
+# iOS
+metal-shaderconverter shader.fragment.dxil -o ./shader.fragment.metallib --minimum-os-build-version 18.0
 ```
 
 <br /><br />
