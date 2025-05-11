@@ -148,7 +148,7 @@ Intel :
 | **SDL3_image**         | Chargement des images                                        | Intégré                    |
 | **SDL3_ttf**           | Rendu de polices TrueType                                    | Intégré                    |
 | **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | Intégré                    |
-| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL                    | Pas besoin d'intégrer au build du jeu |
+| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL/METALLIB           | Pas besoin d'intégrer au build du jeu |
 | **RCENet**             | Fork de ENet (Communication UDP)                             | Optionnel si pas de jeux en multijoueur |
 | **OpenSSL**            | Hashing, Chiffrement..etc                                    | Optionnel si aucun besoin de hasher, chiffrer.. |
 | **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | Optionnel si aucun besoin de faire l'inference en jeu |
