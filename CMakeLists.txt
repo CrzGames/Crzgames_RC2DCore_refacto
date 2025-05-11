@@ -286,9 +286,8 @@ file(GLOB_RECURSE SOURCES
 
 # Choisir entre bibliothèque dynamique/partagées ou statique pour RC2D
 if(ANDROID)
-  # Pour Android, il faut obligatoirement mettre "main" comme nom de la lib et SHARED
-  # car c'est le point d'entrée de l'application Android
-  add_library(main SHARED ${SOURCES})
+  # Pour Android, il faut obligatoirement mettre SHARED
+  add_library(${PROJECT_NAME} SHARED ${SOURCES})
 else()
   if(RC2D_BUILD_SHARED_LIBS)
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
