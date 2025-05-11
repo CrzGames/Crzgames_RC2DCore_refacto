@@ -149,8 +149,8 @@ Intel :
 | **SDL3_ttf**           | Rendu de polices TrueType                                    | Obligatoire                |
 | **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | Obligatoire                |
 | **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL/METALLIB           | Activé par défault mais optionnel. Passé à CMake: RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=OFF/ON. Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est à ON alors SDL3_shadercross sera link avec ces dépendences pour le rechargement à chaud des shaders à l'execution pour le temps du développement, sinon pour la production passé RC2D_GPU_SHADER_HOT_RELOAD_ENABLED à OFF et utilisé SDL3_shadercross en mode CLI pour la compilation hors ligne des shaders |
-| **RCENet**             | Fork de ENet (Communication UDP)                             | Activé par défault mais optionnel, mais le module "RC2D_net" ne sera pas utilisable si désactiver. Passé à CMake : RC2D_DATA_MODULE_ENABLED=OFF/ON |
-| **OpenSSL**            | Hashing, Chiffrement, Compression..etc                       | Activé par défault mais optionnel, mais le module "RC2D_data" ne sera pas utilisable si désactiver. Passé à CMake : RC2D_NET_MODULE_ENABLED=OFF/ON |
+| **RCENet**             | Fork de ENet (Communication UDP)                             | Activé par défault mais optionnel, mais le module "RC2D_net" ne sera pas utilisable si désactiver. Passé à CMake : RC2D_NET_MODULE_ENABLED=OFF/ON |
+| **OpenSSL**            | Hashing, Chiffrement, Compression..etc                       | Activé par défault mais optionnel, mais le module "RC2D_data" ne sera pas utilisable si désactiver. Passé à CMake : RC2D_DATA_MODULE_ENABLED=OFF/ON |
 | **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | Activé par défault mais optionnel, mais le module "RC2D_onnx" ne sera pas utilisable si désactiver. Passé à CMake : RC2D_ONNX_MODULE_ENABLED=OFF/ON |
 
 <br /><br /><br /><br />
