@@ -124,9 +124,18 @@
 - **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
 - **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être construire/compilées avec le même compilateur (GCC par exemple) et la même version du compilateur, ainsi que les mêmes versions des images Docker du SDK. Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper). Et pour finir lors de la compilation du jeu (dépendences + binaire du jeu) il faut également faire cela dans l'image Docker du SDK de Sniper.
 
-### Execution des jeux via le runtime : Steam Linux Runtime 3.0 (Sniper)
-Pour Steam Linux et Steam Deck, tous les jeux exécutés sous Steam Linux Runtime 3.0 (Sniper) (et d'autres versions comme Soldier ou Scout dans certains cas) sont lancés dans un conteneur géré par ***pressure-vessel***.
-
+### Execution pour Steam Linux et Steam Deck
+Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Runtime 3.0 (Sniper)*** (et d'autres versions comme Soldier ou Scout dans certains cas) sont lancés dans un conteneur géré par : ***pressure-vessel***.
+- Pressure-vessel est l'outil de conteneurisation utilisé par Steam Linux Runtime (SLR) pour exécuter les jeux dans un environnement isolé, que ce soit sur Steam Linux (distributions Linux classiques) ou sur Steam Deck (qui utilise SteamOS, basé sur Linux).
+- Tous les jeux sous Steam Linux Runtime 3.0 (Sniper), qu'ils soient natifs Linux ou Windows (via Proton), sont exécutés dans un conteneur créé par pressure-vessel. Cela inclut :
+  - Les jeux natifs Linux ciblant Sniper.
+  - Les jeux Windows exécutés via Proton (Proton 8.0+ utilise Sniper, versions antérieures utilisent Soldier).
+  - Les jeux natifs Linux ciblant SLR 1.0 (Scout) lorsqu'ils sont exécutés via le mode "scout-on-soldier", qui utilise également un conteneur.
+- Rôle de ***pressure-vessel*** :
+  - Il isole le jeu dans un environnement prévisible, basé sur les bibliothèques du runtime (par exemple, Debian 11 pour Sniper).
+  - Il intègre les pilotes graphiques du système hôte (GPU) pour des performances optimales.
+  - Il gère l'accès aux fichiers (comme le répertoire personnel privé) et aux périphériques (comme les contrôleurs).
+  
 <br />
 
 ## 📱 Appareils compatibles par plateforme
