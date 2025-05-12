@@ -108,8 +108,8 @@
 
 ### Compilation pour Steam Linux et Steam Deck
 - **Images Docker recommandées** :
-  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. Évitez le tag `latest` pour arm64, car ils sont encore indisponible pour le SDK arm64.
-  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag `latest`, qui est stable pour cette architecture.
+  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. <br /> Évitez le tag `latest` pour arm64, car ils sont encore indisponible pour le SDK arm64.
+  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag : `latest`, qui est stable pour cette architecture. Mais conseiller de figée le tag sur une version spécifique.
   - **Listes des tags disponibles pour Docker (SDK - Steam Linux Runtime 3.0)** : https://repo.steampowered.com/steamrt3/images/
 - **Processus de compilation** :
   - Construisez toutes les dépendances (SDL3, SDL3_image, etc.) et le binaire du jeu à l'intérieur du conteneur Docker du SDK Sniper correspondant à l'architecture cible (arm64 ou x64). Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper).
