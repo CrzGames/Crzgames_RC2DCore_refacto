@@ -121,11 +121,11 @@
   - **Listes des tags disponibles pour Docker** : https://repo.steampowered.com/steamrt3/images/
 
 - **Conseils pour les bibliothèques partagées/dynamique** :
-  1. Évitez d'intégrer des bibliothèques partagées à votre jeu si elles sont également disponibles dans Steam Linux Runtime 3.0 (Sniper). Cela peut entraîner des problèmes de compatibilité.
-  2. Si vous chargez une bibliothèque partagées, assurez-vous d'utiliser son nom `SONAME versionné`, tel que libvulkan.so.1 ou libgtk-3.so.0, comme nom à rechercher. Évitez d'utiliser un lien symbolique de développement tel que libvulkan.soou libgtk-3.so, qui ne sera pas disponible dans le conteneur Steam Linux Runtime 3.0 (Sniper) et ne garantit pas la compatibilité ABI, même s'il fonctionne. Évitez également d'utiliser un nom entièrement versionné tel que libvulkan.so.1.2.189
+  - Évitez d'intégrer des bibliothèques partagées à votre jeu si elles sont également disponibles dans Steam Linux Runtime 3.0 (Sniper). Cela peut entraîner des problèmes de compatibilité.
+  - Si vous chargez une bibliothèque partagées, assurez-vous d'utiliser son nom `SONAME versionné`, tel que libvulkan.so.1 ou libgtk-3.so.0, comme nom à rechercher. Évitez d'utiliser un lien symbolique de développement tel que libvulkan.soou libgtk-3.so, qui ne sera pas disponible dans le conteneur Steam Linux Runtime 3.0 (Sniper) et ne garantit pas la compatibilité ABI, même s'il fonctionne. Évitez également d'utiliser un nom entièrement versionné tel que libvulkan.so.1.2.189
 ou libgtk-3.so.0.2404.26, car il ne fonctionnera plus si la bibliothèque est mise à niveau vers une version plus récente et compatible.
-  3. Utilisez les versions des bibliothèques partagées incluses dans Steam Linux Runtime, si possible.
-  4. (Recommandé) Si vous devez inclure une bibliothèque dans votre jeu, envisagez d'utiliser la liaison statique. Si vous utilisez la liaison statique, l'utilisation de : `-Wl,-Bsymbolic` comme option de compilation peut éviter les problèmes de compatibilité.
+  - Utilisez les versions des bibliothèques partagées incluses dans Steam Linux Runtime, si possible.
+  - (Recommandé) Si vous devez inclure une bibliothèque dans votre jeu, envisagez d'utiliser la liaison statique. Si vous utilisez la liaison statique, l'utilisation de : `-Wl,-Bsymbolic` comme option de compilation peut éviter les problèmes de compatibilité.
 
 - **Conseils pour la compatibilité** :
   - **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
