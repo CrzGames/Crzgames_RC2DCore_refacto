@@ -144,8 +144,8 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
   - Il intègre les pilotes graphiques du système hôte (GPU) pour des performances optimales.
   - Il gère l'accès aux fichiers (comme le répertoire personnel privé) et aux périphériques (comme les contrôleurs).
 
-#### Lancer un jeu non-Steam avec pressure-vessel
-Reproduit exactement l'environnement d'execution de Steam Linux / Steam Deck, avant d'envoyer en production réellement sur le store de Steam.
+#### Tester un jeu non-Steam avec pressure-vessel
+Pour tester un jeu encore non distribué sur Steam dans un conteneur pressure-vessel, afin de valider sa compatibilité avec l'environnement Steam Linux Runtime 3.0 (Sniper) qui est l'environnement d'execution de Steam Linux et du Steam Deck.
 1. Télécharger et Installer Steam.
 2. Téléchargez le runtime Steam Linux Runtime 3.0 (Sniper) via Steam :
 ```bash
