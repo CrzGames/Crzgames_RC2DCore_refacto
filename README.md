@@ -124,6 +124,9 @@
 - **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
 - **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être construire/compilées avec le même compilateur (GCC par exemple) et la même version du compilateur, ainsi que les mêmes versions des images Docker du SDK. Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper). Et pour finir lors de la compilation du jeu (dépendences + binaire du jeu) il faut également faire cela dans l'image Docker du SDK de Sniper.
 
+### Execution des jeux via le runtime : Steam Linux Runtime 3.0 (Sniper)
+Pour Steam Linux et Steam Deck, tous les jeux exécutés sous Steam Linux Runtime 3.0 (Sniper) (et d'autres versions comme Soldier ou Scout dans certains cas) sont lancés dans un conteneur géré par ***pressure-vessel***.
+
 <br />
 
 ## 📱 Appareils compatibles par plateforme
