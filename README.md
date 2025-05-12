@@ -116,8 +116,8 @@
   
 ### Compilation pour Steam Linux et Steam Deck
 - **Images Docker recommandées** :
-  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. <br /> Le tag `latest` pour le SDK arm64, n'ai pas encore disponible.
-  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk:3.0.20250408.124536`, ou `latest` qui est stable pour cette architecture. Mais conseiller de figée le tag sur une version spécifique.
+  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. Le tag `latest` pour `arm64` n'est pas encore disponible et doit être évité, car le SDK arm64 est encore en version bêta/expérimentale.
+  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk:3.0.20250408.124536`. Le tag `latest` est `stable pour x64`, mais il est recommandé de figer une version spécifique pour éviter des changements imprévus.
   - **Listes des tags disponibles pour Docker** : https://repo.steampowered.com/steamrt3/images/
 
 ### Conseils pour la compatibilité
