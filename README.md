@@ -185,12 +185,19 @@ cd /chemin/vers/votre/jeu
 
 #### Tester un jeu non-Steam avec pressure-vessel - Steam Deck
 Pour tester un jeu encore non distribué sur Steam dans un conteneur pressure-vessel, afin de valider sa compatibilité avec l'environnement Steam Linux Runtime 3.0 (Sniper) qui est l'environnement d'execution de Steam Linux et du Steam Deck. <br />
-1. Télécharger et Installer Steam. (sur le PC de développement)
-2. Téléchargez et Installer `SteamOS Devkit Client` via Steam (sur le PC de développement) :
+
+Configuration du client (sur le PC de développement) : <br />
+1. Télécharger et Installer Steam.
+2. Téléchargez et Installer `SteamOS Devkit Client` via Steam :
 ```bash
 # Sur Windows mettres cela dans un onglet de navigateur est faire "ENTER"
 steam://install/943760
 ```
+3. Vous pouvez lancer l'outil (SteamOS Devkit Client) depuis votre bibliothèque Steam, dans la catégorie « Logiciels ». 
+
+Configuration du serveur (sur Steam Deck) : <br />
+1. 
+
 <br /><br /><br /><br />
 
 
