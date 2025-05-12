@@ -225,8 +225,8 @@ Configuration du serveur (sur Steam Deck) : <br />
      - Coché la case "Delete extranenous remote files" : Cela garantit que seuls les fichiers de la nouvelle version de votre jeu sont présents sur le Steam Deck, évitant les interférences avec des fichiers obsolètes ou inutiles précédemment déployer.
      - Coché la case "Verify checksums" : Cela garantit que les fichiers transférés sur le Steam Deck sont identiques à ceux sur votre PC, en comparant leurs sommes de contrôle (généralement via un algorithme comme MD5 ou SHA). Si un fichier est corrompu ou modifié pendant le transfert, l'outil le détectera et pourra le retransférer.
     - Start Command: rc2d_example.exe (le binaire du jeu)
-    - Steam Play : cochez cette case si vous chargez des exécutables binaires Windows qui doivent être lancés par Steam Play via Proton.
-    - Auto upload: Coché la case `Auto upload upon build success notification`, est une fonctionnalité avancée qui permet de déclencher automatiquement le déploiement de votre jeu sur le Steam Deck dès que votre build est réussie.
+    - Steam Play : Cochez cette case si vous chargez des exécutables binaires Windows qui doivent être lancés par Steam Play via Proton.
+    - Auto upload: Cochez cette case `Auto upload upon build success notification`, une fonctionnalité avancée qui permet de déclencher automatiquement le déploiement de votre jeu sur le Steam Deck dès que votre build est réussie.
 
 <br /><br /><br /><br />
 
