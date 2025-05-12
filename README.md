@@ -125,15 +125,16 @@
   - Si vous chargez une bibliothèque partagées, assurez-vous d'utiliser son nom `SONAME versionné`, tel que libvulkan.so.1 ou libgtk-3.so.0, comme nom à rechercher. Évitez d'utiliser un lien symbolique de développement tel que libvulkan.soou libgtk-3.so, qui ne sera pas disponible dans le conteneur Steam Linux Runtime 3.0 (Sniper) et ne garantit pas la compatibilité ABI, même s'il fonctionne. Évitez également d'utiliser un nom entièrement versionné tel que libvulkan.so.1.2.189
 ou libgtk-3.so.0.2404.26, car il ne fonctionnera plus si la bibliothèque est mise à niveau vers une version plus récente et compatible.
   - Utilisez les versions des bibliothèques partagées incluses dans Steam Linux Runtime, si possible.
-  - (Recommandé) Si vous devez inclure une bibliothèque dans votre jeu, envisagez d'utiliser la liaison statique. Si vous utilisez la liaison statique, l'utilisation de : `-Wl,-Bsymbolic` comme option de compilation peut éviter les problèmes de compatibilité.
-
+  - (Recommandé) Si vous devez inclure une bibliothèque dans votre jeu, envisagez d'utiliser la liaison statique. Si vous utilisez la liaison statique, l'utilisation de : `-Wl,-Bsymbolic` comme option de compilation peut éviter les problèmes de compatibilité (pour éviter les conflits de symboles).
+  
 - **Conseils pour la compatibilité** :
   - **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
   - **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être construire/compilées avec le même compilateur (GCC par exemple) et la même version du compilateur, ainsi que les mêmes versions des images Docker du SDK. Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper). Et pour finir lors de la compilation du jeu (dépendences + binaire du jeu) il faut également faire cela dans l'image Docker du SDK de Sniper.
 
 ### Execution pour Steam Linux et Steam Deck
+#### Explications
 Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Runtime 3.0 (Sniper)*** (et d'autres versions comme Soldier ou Scout dans certains cas) sont lancés dans un conteneur géré par : ***pressure-vessel***.
-- Pressure-vessel est l'outil de conteneurisation utilisé par Steam Linux Runtime (SLR) pour exécuter les jeux dans un environnement isolé, que ce soit sur Steam Linux (distributions Linux classiques) ou sur Steam Deck (qui utilise SteamOS, basé sur Linux).
+- Pressure-vessel est l'outil de conteneurisation utilisé par Steam pour exécuter les jeux dans un environnement isolé, que ce soit sur Steam Linux (distributions Linux classiques) ou sur Steam Deck (qui utilise SteamOS, basé sur Linux).
 - Tous les jeux sous Steam Linux Runtime 3.0 (Sniper), qu'ils soient natifs Linux ou Windows (via Proton), sont exécutés dans un conteneur créé par pressure-vessel. Cela inclut :
   - Les jeux natifs Linux ciblant Steam Linux Runtime 3.0 (Sniper).
   - Les jeux Windows exécutés via Proton (Proton 8.0+ utilise Steam Linux Runtime 3.0 (Sniper), versions antérieures utilisent Steam Linux Runtime 2.0 (Soldier)).
@@ -142,7 +143,27 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
   - Il isole le jeu dans un environnement prévisible, basé sur les bibliothèques du runtime (par exemple, Debian 11 pour Steam Linux Runtime 3.0 (Sniper)).
   - Il intègre les pilotes graphiques du système hôte (GPU) pour des performances optimales.
   - Il gère l'accès aux fichiers (comme le répertoire personnel privé) et aux périphériques (comme les contrôleurs).
-  
+
+#### Lancer un jeu non-Steam avec pressure-vessel
+1. Télécharger et Installer Steam.
+2. Téléchargez le runtime Steam Linux Runtime 3.0 (Sniper) via Steam :
+```bash
+steam steam://install/1628350
+```
+Cela installe Sniper dans votre bibliothèque Steam, généralement dans : `~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/`
+3. Lancer le jeu avec le script run de Steam Linux Runtime 3.0 (Sniper)
+```bash
+cd /chemin/vers/votre/jeu
+~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/run \
+    -- \
+    ./votre_jeu_executable
+```
+- Le `--` sépare les options de pressure-vessel des arguments du jeu. Vous pouvez ajouter des options comme :
+  - `--shell=instead` : Pour ouvrir un shell interactif dans le conteneur avant de lancer le jeu.
+  - `--devel` : Pour activer le mode développeur (utile pour le débogage).
+  - `--terminal=tty` : Pour connecter l'entrée standard au terminal.
+
+
 <br />
 
 ## 📱 Appareils compatibles par plateforme
