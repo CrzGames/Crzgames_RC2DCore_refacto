@@ -198,6 +198,9 @@ steam://install/943760
 Configuration du serveur (sur Steam Deck) : <br />
 1. Activer le mode développeur : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Système -> "Activer le mode développement" cocher le.
 2. Mettre à jour le système SteamOS avec la dernière version : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Système -> Rechercher une mise à jour.
+3. Récupérer l'IP du Steam Deck : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Internet -> Cliquer sur le réseau ou nous somme actuellement connecté, puis dans adresse IPV4 il y a "Adresse IP", noté là pour la rentrée dans l'outil SteamOS Devkit Client côté PC.
+4. Appuyer sur le boutton "Steam" sur la console puis "Développement" tout en bas de la console, cliquer sur "Association à la machine de développement", puis côté PC dans l'outil SteamOS Devkit Client il faut déjà avoir préremplie l'IP du Steam Deck et laisser le port 32000 par défault, puis cliquer sur "Connect", la on reçois un message sur le Steam Deck il faut confirmer pour appareiler le PC de développement et le Steam Deck ensembles.
+
 
 <br /><br /><br /><br />
 
