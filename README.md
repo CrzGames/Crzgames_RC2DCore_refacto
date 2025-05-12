@@ -151,7 +151,7 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
 steam steam://install/1628350
 ```
 Cela installe Sniper dans votre bibliothèque Steam, généralement dans : `~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/`
-3. Lancer le jeu avec le script run de Steam Linux Runtime 3.0 (Sniper)
+3. Lancer le jeu avec le script run de Steam Linux Runtime 3.0 (Sniper) :
 ```bash
 cd /chemin/vers/votre/jeu
 ~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/run \
@@ -159,9 +159,9 @@ cd /chemin/vers/votre/jeu
     ./votre_jeu_executable
 ```
 - Le `--` sépare les options de pressure-vessel des arguments du jeu. Vous pouvez ajouter des options comme :
-  - `--shell=instead` : Pour ouvrir un shell interactif dans le conteneur avant de lancer le jeu.
-  - `--devel` : Pour activer le mode développeur (utile pour le débogage).
-  - `--terminal=tty` : Pour connecter l'entrée standard au terminal.
+- `--shell=instead` : Pour ouvrir un shell interactif dans le conteneur avant de lancer le jeu.
+- `--devel` : Pour activer le mode développeur (utile pour le débogage).
+- `--terminal=tty` : Pour connecter l'entrée standard au terminal.
 
 
 <br />
