@@ -97,6 +97,32 @@
 
 <br />
 
+## 🕹️ Plateformes spécifiques : Steam Linux et Steam Deck
+
+### Prérequis techniques pour Steam Linux Runtime 3.0 (Sniper)
+- **Runtime recommandé** : Steam Linux Runtime 3.0 (Sniper) est la version stable à utiliser en 2025 pour **Steam Linux** et **Steam Deck**. Les versions Steam Linux Runtime 4.0 / 5.0 existent mais sont expérimentales et ne doivent pas être utilisées pour la production. Mais cela est à surveiller, cela pourrais devenir la nouvelle version à utiliser.
+- **Système de base** : Sniper est basé sur **Debian 11** et utilise **glibc 2.31** sous le capot.
+- **Compilateur recommandé** : Utilisez **GCC 14** (ou une version spécifique cohérente) pour compiler **toutes** les dépendances et le binaire du jeu. Il est crucial de maintenir le même compilateur et la même version du compilateur pour éviter des incompatibilités.
+  - **Note importante** : Steam Linux Runtime 3.0 utilise par défaut **GCC 10**, mais cette version est trop ancienne pour supporter un C++20 moderne. Préférez **GCC 12** ou supérieur.
+  - À partir de **GCC 12** (et versions ultérieures), les options `-static-libgcc` et `-static-libstdc++` sont appliquées par défaut pour éviter des mises à jour inattendues de la bibliothèque C++ standard. Cela garantit une meilleure stabilité pour la distribution.
+
+### Compilation pour Steam Linux et Steam Deck
+- **Images Docker recommandées** :
+  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. Évitez les tags `latest` pour arm64, car ils sont encore indisponible pour le SDK arm64.
+  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag `latest`, qui est stable pour cette architecture.
+  - **Listes des tags disponibles pour Docker (SDK - Steam Linux Runtime 3.0)** : https://repo.steampowered.com/steamrt3/images/
+- **Processus de compilation** :
+  1. Construisez toutes les dépendances (SDL3, SDL3_image, etc.) et le binaire du jeu à l'intérieur du conteneur Docker correspondant à l'architecture cible (arm64 ou x64).
+  2. Assurez-vous que le compilateur (GCC 14 recommandé) est cohérent pour toutes les étapes de la compilation.
+  3. Utilisez le SDK fourni par SteamRT pour garantir la compatibilité avec le runtime Sniper.
+
+### Conseils pour la compatibilité
+- **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
+- **Testez sur Steam Deck** : Assurez-vous de tester le binaire final sur un Steam Deck pour vérifier la compatibilité avec l'architecture x64 et le runtime Sniper.
+- **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être compilées avec les mêmes options et le même compilateur pour garantir une intégration fluide.
+
+<br />
+
 ## 📱 Appareils compatibles par plateforme
 
 ### **iOS / iPadOS (iOS/iPadOS 18.0+)**
