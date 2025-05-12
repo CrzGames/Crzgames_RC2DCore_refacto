@@ -103,7 +103,7 @@
 - **Runtime recommandé** : `Steam Linux Runtime 3.0 (Sniper)` est la version stable à utiliser en 2025 pour **Steam Linux** et **Steam Deck**. Les versions `Steam Linux Runtime 4.0 / 5.0` existent mais sont expérimentales et ne doivent pas être utilisées pour la production. Mais cela est à surveiller, cela pourrais devenir la nouvelle version à utiliser.
 - **Système de base** : Sniper est basé sur **Debian 11** et utilise **glibc 2.31** sous le capot.
 - **Compilateur recommandé** : Utilisez **GCC 14** (ou une version spécifique cohérente) pour compiler **toutes** les dépendances et le binaire du jeu. Il est crucial de maintenir le même compilateur et la même version du compilateur pour éviter des incompatibilités.
-  - **Note importante** : Steam Linux Runtime 3.0 utilise par défaut **GCC 10**, mais cette version est trop ancienne pour supporter un C++20 moderne. Préférez **GCC 12** ou supérieur.
+  - **Note importante** : Steam Linux Runtime 3.0 utilise par défaut **GCC 10**.
   - À partir de **GCC 12** (et versions ultérieures), les options `-static-libgcc` et `-static-libstdc++` sont appliquées par défaut pour éviter des mises à jour inattendues de la bibliothèque C++ standard. Cela garantit une meilleure stabilité pour la distribution.
 
 ### Compilation pour Steam Linux et Steam Deck
