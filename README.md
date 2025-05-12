@@ -102,6 +102,7 @@
 ### Documentation officiel de Valve
 - Documentation général : https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/tree/main/docs
 - Documentation du SDK : https://gitlab.steamos.cloud/steamrt/sniper/sdk
+<br />
 
 ### Prérequis techniques pour Steam Linux Runtime 3.0 (Sniper)
 - **Runtime recommandé** : `Steam Linux Runtime 3.0 (Sniper)` est la version stable à utiliser en 2025 pour **Steam Linux** et **Steam Deck**. Les versions `Steam Linux Runtime 4.0 / 5.0` existent mais sont expérimentales et ne doivent pas être utilisées pour la production. Cependant, surveillez les mises à jour, car elles pourraient devenir les versions recommandées à l'avenir.
@@ -117,7 +118,8 @@
   # GCC 14
   apt-get install gcc-14-monolithic
   ```
-  
+<br />
+
 ### Compilation pour Steam Linux et Steam Deck
 - **Images Docker recommandées** :
   - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. Le tag `latest` pour `arm64` n'est pas encore disponible et doit être évité, car le SDK arm64 est encore en version bêta/expérimentale.
@@ -147,6 +149,7 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
   - Il isole le jeu dans un environnement prévisible, basé sur les bibliothèques du runtime (par exemple, Debian 11 pour Steam Linux Runtime 3.0 (Sniper)).
   - Il intègre les pilotes graphiques du système hôte (GPU) pour des performances optimales.
   - Il gère l'accès aux fichiers (comme le répertoire personnel privé) et aux périphériques (comme les contrôleurs).
+<br />
 
 #### Tester un jeu non-Steam avec pressure-vessel
 Pour tester un jeu encore non distribué sur Steam dans un conteneur pressure-vessel, afin de valider sa compatibilité avec l'environnement Steam Linux Runtime 3.0 (Sniper) qui est l'environnement d'execution de Steam Linux et du Steam Deck.
