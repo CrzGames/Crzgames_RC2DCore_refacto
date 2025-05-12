@@ -195,7 +195,15 @@ Configuration du client (sur le PC de développement) : <br />
 # Sur Windows mettres cela dans un onglet de navigateur est faire "ENTER"
 steam://install/943760
 ```
-4. Vous pouvez lancer l'outil (SteamOS Devkit Client) depuis votre bibliothèque Steam, dans la catégorie « Logiciels ». 
+4. Vous pouvez lancer l'outil (SteamOS Devkit Client) depuis votre bibliothèque Steam, dans la catégorie « Logiciels ». <br />
+   Si vous préférez l'exécuter sous forme de ligne de commande, suivez ces étapes :
+   ```bash
+   # Windows - Executer
+   windows-client/devkit-gui.exe
+   
+   # Linux - Dans le répertoire linux-client.
+   python3.9 ./devkit-gui-cp39.pyz
+   ```
 
 Configuration du serveur (sur Steam Deck) : <br />
 1. Activer le mode développeur : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Système -> "Activer le mode développement" cocher le.
