@@ -108,15 +108,13 @@
 
 ### Compilation pour Steam Linux et Steam Deck
 - **Images Docker recommandées** :
-  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. <br /> Évitez le tag `latest` pour arm64, car ils sont encore indisponible pour le SDK arm64.
-  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag : `latest`, qui est stable pour cette architecture. Mais conseiller de figée le tag sur une version spécifique.
-  - **Listes des tags disponibles pour Docker (SDK - Steam Linux Runtime 3.0)** : https://repo.steampowered.com/steamrt3/images/
-- **Processus de compilation** :
-  - Construisez toutes les dépendances (SDL3, SDL3_image, etc.) et le binaire du jeu à l'intérieur du conteneur Docker du SDK Sniper correspondant à l'architecture cible (arm64 ou x64). Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper).
+  - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. <br /> Le tag `latest` pour le SDK arm64, n'ai pas encore disponible.
+  - **Pour x64 (Steam Linux / Steam Deck)** : Utilisez l'image Docker avec le tag : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk:3.0.20250408.124536`, ou `latest` qui est stable pour cette architecture. Mais conseiller de figée le tag sur une version spécifique.
+  - **Listes des tags disponibles pour Docker** : https://repo.steampowered.com/steamrt3/images/
 
 ### Conseils pour la compatibilité
 - **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
-- **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être construire/compilées avec le même compilateur et la même version du compilateur.
+- **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être construire/compilées avec le même compilateur (GCC par exemple) et la même version du compilateur, ainsi que les mêmes versions des images Docker du SDK. Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper).
 
 <br />
 
