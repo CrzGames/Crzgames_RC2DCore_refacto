@@ -58,7 +58,8 @@
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation5+ |  |
 
-<br />
+<br /><br /><br /><br />
+
 
 ## 🎯 Raisons techniques des versions minimales et autres par plateforme
 
@@ -95,7 +96,8 @@
   - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendences construite sur glibc 2.35)
   - ONNX Runtime nécessite C++20 (glibc 2.31+)
 
-<br />
+<br /><br /><br /><br />
+
 
 ## 🕹️ Plateformes spécifiques : Steam Linux et Steam Deck
 
@@ -172,7 +174,8 @@ cd /chemin/vers/votre/jeu
 - `--terminal=tty` : Pour connecter l'entrée standard au terminal.
 
 
-<br />
+<br /><br /><br /><br />
+
 
 ## 📱 Appareils compatibles par plateforme
 
@@ -215,7 +218,8 @@ Intel :
 - elementary OS 7+
 - CentOS/RHEL 10+
 
-<br />
+<br /><br /><br /><br />
+
 
 ## 📦 Dépendances principales
 
