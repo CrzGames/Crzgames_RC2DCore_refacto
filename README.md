@@ -136,6 +136,7 @@ ou libgtk-3.so.0.2404.26, car il ne fonctionnera plus si la bibliothèque est mi
 - **Conseils pour la compatibilité** :
   - **Évitez les mises à jour automatiques** : Les images Docker doivent être figées sur des versions spécifiques (comme indiqué ci-dessus) pour éviter des changements imprévus dans l'environnement de compilation.
   - **Dépendances** : Toutes les dépendances listées dans la section **Dépendances principales** (SDL3, SDL3_image, etc.) doivent être construire/compilées avec le même compilateur (GCC par exemple) et la même version du compilateur, ainsi que les mêmes versions des images Docker du SDK. Toute les librairies doivent être obligatoirement construit depuis les sources pour être en phase avec le runtime : Steam Linux Runtime 3.0 (Sniper). Et pour finir lors de la compilation du jeu (dépendences + binaire du jeu) il faut également faire cela dans l'image Docker du SDK de Sniper.
+<br />
 
 ### Execution pour Steam Linux et Steam Deck
 #### Explications
@@ -149,7 +150,6 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
   - Il isole le jeu dans un environnement prévisible, basé sur les bibliothèques du runtime (par exemple, Debian 11 pour Steam Linux Runtime 3.0 (Sniper)).
   - Il intègre les pilotes graphiques du système hôte (GPU) pour des performances optimales.
   - Il gère l'accès aux fichiers (comme le répertoire personnel privé) et aux périphériques (comme les contrôleurs).
-<br />
 
 #### Tester un jeu non-Steam avec pressure-vessel
 Pour tester un jeu encore non distribué sur Steam dans un conteneur pressure-vessel, afin de valider sa compatibilité avec l'environnement Steam Linux Runtime 3.0 (Sniper) qui est l'environnement d'execution de Steam Linux et du Steam Deck.
