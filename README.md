@@ -105,7 +105,14 @@
 - **Compilateur recommandé** : Utilisez **GCC 14** (ou une version spécifique cohérente) pour compiler **toutes** les dépendances et le binaire du jeu. Il est crucial de maintenir le même compilateur et la même version du compilateur pour éviter des incompatibilités.
   - **Note importante** : Steam Linux Runtime 3.0 utilise par défaut **GCC 10**.
   - À partir de **GCC 12** (et versions ultérieures), les options `-static-libgcc` et `-static-libstdc++` sont appliquées par défaut pour éviter des mises à jour inattendues de la bibliothèque C++ standard. Cela garantit une meilleure stabilité pour la distribution.
+  - Installation de GCC 12 ou 14 :
+  ```bash
+  # GCC 12
+  apt-get install gcc-12-monolithic
 
+  # GCC 14
+  apt-get install gcc-14-monolithic
+  ```
 ### Compilation pour Steam Linux et Steam Deck
 - **Images Docker recommandées** :
   - **Pour arm64 (Steam Linux)** : Utilisez l'image Docker : `registry.gitlab.steamos.cloud/steamrt/sniper/sdk/arm64:3.0.20250408.124536`. <br /> Le tag `latest` pour le SDK arm64, n'ai pas encore disponible.
