@@ -196,7 +196,8 @@ steam://install/943760
 3. Vous pouvez lancer l'outil (SteamOS Devkit Client) depuis votre bibliothèque Steam, dans la catégorie « Logiciels ». 
 
 Configuration du serveur (sur Steam Deck) : <br />
-1. 
+1. Activer le mode développeur : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Système -> "Activer le mode développement" cocher le.
+2. Mettre à jour le système SteamOS avec la dernière version : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Système -> Rechercher une mise à jour.
 
 <br /><br /><br /><br />
 
