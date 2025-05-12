@@ -99,6 +99,10 @@
 
 ## 🕹️ Plateformes spécifiques : Steam Linux et Steam Deck
 
+### Documentation officiel de Valve
+- Documentation général : https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/tree/main/docs
+- Documentation du SDK : https://gitlab.steamos.cloud/steamrt/sniper/sdk
+
 ### Prérequis techniques pour Steam Linux Runtime 3.0 (Sniper)
 - **Runtime recommandé** : `Steam Linux Runtime 3.0 (Sniper)` est la version stable à utiliser en 2025 pour **Steam Linux** et **Steam Deck**. Les versions `Steam Linux Runtime 4.0 / 5.0` existent mais sont expérimentales et ne doivent pas être utilisées pour la production. Cependant, surveillez les mises à jour, car elles pourraient devenir les versions recommandées à l'avenir.
 - **Système de base** : Steam Linux Runtime 3.0 (Sniper) est basé sur **Debian 11** et utilise **glibc 2.31** sous le capot.
