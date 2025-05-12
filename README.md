@@ -150,7 +150,7 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
 ```bash
 steam steam://install/1628350
 ```
-Cela installe Sniper dans votre bibliothèque Steam, généralement dans : `~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/`
+Cela installe Sniper dans votre bibliothèque Steam, généralement dans : `~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/`. <br />
 3. Lancer le jeu avec le script run de Steam Linux Runtime 3.0 (Sniper) :
 ```bash
 cd /chemin/vers/votre/jeu
