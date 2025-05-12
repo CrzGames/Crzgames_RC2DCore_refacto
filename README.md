@@ -164,14 +164,15 @@ Pour Steam Linux et Steam Deck, tous les jeux exécutés sous ***Steam Linux Run
 
 #### Tester un jeu non-Steam avec pressure-vessel - Steam Linux
 Pour tester un jeu encore non distribué sur Steam dans un conteneur pressure-vessel, afin de valider sa compatibilité avec l'environnement Steam Linux Runtime 3.0 (Sniper) qui est l'environnement d'execution de Steam Linux et du Steam Deck.
-1. Télécharger et Installer Steam.
-2. Téléchargez le runtime Steam Linux Runtime 3.0 (Sniper) via Steam :
+1. Il faut un PC de développement Linux.
+2. Télécharger et Installer Steam.
+3. Téléchargez le runtime Steam Linux Runtime 3.0 (Sniper) via Steam :
 ```bash
 # Sur Windows mettres cela dans un onglet de navigateur est faire "ENTER"
 steam steam://install/1628350
 ```
 Cela installe Sniper dans votre bibliothèque Steam, généralement dans : `~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/`. <br />
-3. Lancer le jeu avec le script run de Steam Linux Runtime 3.0 (Sniper) :
+4. Lancer le jeu avec le script run de Steam Linux Runtime 3.0 (Sniper) :
 ```bash
 cd /chemin/vers/votre/jeu
 ~/.steam/steam/steamapps/common/SteamLinuxRuntime_sniper/run \
@@ -187,13 +188,14 @@ cd /chemin/vers/votre/jeu
 Pour tester un jeu encore non distribué sur Steam dans un conteneur pressure-vessel, afin de valider sa compatibilité avec l'environnement Steam Linux Runtime 3.0 (Sniper) qui est l'environnement d'execution de Steam Linux et du Steam Deck. <br />
 
 Configuration du client (sur le PC de développement) : <br />
-1. Télécharger et Installer Steam.
-2. Téléchargez et Installer `SteamOS Devkit Client` via Steam :
+1. Il faut un PC de développement sois Linux ou Windows.
+2. Télécharger et Installer Steam.
+3. Téléchargez et Installer `SteamOS Devkit Client` via Steam :
 ```bash
 # Sur Windows mettres cela dans un onglet de navigateur est faire "ENTER"
 steam://install/943760
 ```
-3. Vous pouvez lancer l'outil (SteamOS Devkit Client) depuis votre bibliothèque Steam, dans la catégorie « Logiciels ». 
+4. Vous pouvez lancer l'outil (SteamOS Devkit Client) depuis votre bibliothèque Steam, dans la catégorie « Logiciels ». 
 
 Configuration du serveur (sur Steam Deck) : <br />
 1. Activer le mode développeur : Appuyer sur le boutton "Steam" sur la console puis "Paramètres" à l'écran -> Système -> "Activer le mode développement" cocher le.
