@@ -168,33 +168,7 @@ endfunction()
 # Puis lors de l'appel de la fonction, on link les librairies OpenSSL avec le target_name
 function(rc2d_configure_openssl target_name)
   if(APPLE)
-    if(NOT DEFINED OPENSSL_APPLE_VERSION)
-      set(OPENSSL_APPLE_VERSION "3.3.3001" CACHE STRING "OpenSSL version" FORCE)
-    endif()
-
-    set(OPENSSL_XCFRAMEWORK_URL "https://github.com/krzyzanowskim/OpenSSL/releases/download/${OPENSSL_APPLE_VERSION}/OpenSSL.xcframework.zip")
-    set(OPENSSL_XCFRAMEWORK_ZIP "${CMAKE_BINARY_DIR}/OpenSSL.xcframework.zip")
-    set(OPENSSL_XCFRAMEWORK_DIR "${CMAKE_BINARY_DIR}/OpenSSL.xcframework")
-
-    if(NOT EXISTS "${OPENSSL_XCFRAMEWORK_DIR}")
-        file(DOWNLOAD "${OPENSSL_XCFRAMEWORK_URL}" "${OPENSSL_XCFRAMEWORK_ZIP}"
-          SHOW_PROGRESS
-          STATUS OPENSSL_DOWNLOAD_STATUS)
-        list(GET OPENSSL_DOWNLOAD_STATUS 0 STATUS_CODE)
-        if(NOT STATUS_CODE EQUAL 0)
-            message(FATAL_ERROR "Failed to download OpenSSL.xcframework.zip: ${OPENSSL_DOWNLOAD_STATUS}")
-        endif()
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar xzf "${OPENSSL_XCFRAMEWORK_ZIP}"
-            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-            RESULT_VARIABLE EXTRACT_RESULT
-        )
-        if(NOT EXTRACT_RESULT EQUAL 0)
-            message(FATAL_ERROR "Failed to extract OpenSSL.xcframework.zip")
-        endif()
-    endif()
-
-    target_link_libraries(${target_name} PRIVATE "${OPENSSL_XCFRAMEWORK_DIR}")
+    
   elseif(WIN32)
     string(TOLOWER "${CMAKE_GENERATOR_PLATFORM}" GENERATOR_PLATFORM_LOWER)
 
@@ -206,16 +180,16 @@ function(rc2d_configure_openssl target_name)
     endif()
 
     # Librairies OpenSSL précompilées statiques pour Windows
-    target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_LibCpp_Windows/include")
+    target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_LibCpp_Windows/lib/openssl/${WINDOWS_ARCH_DIR}/Release")
+    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/openssl/${WINDOWS_ARCH_DIR}")
 
     target_link_libraries(${target_name} PRIVATE
-      libssl_static    # OpenSSL
-      libcrypto_static # OpenSSL
-      Crypt32          # OpenSSL Windows CryptoAPI
-      ws2_32           # OpenSSL Windows Winsock2
+      libssl    # OpenSSL
+      libcrypto # OpenSSL
+      Crypt32   # OpenSSL CryptoAPI (Librarie native de Windows, obligatoire)
+      ws2_32    # OpenSSL Winsock2  (Librarie native de Windows, obligatoire)
     )
   elseif(ANDROID)
 
