@@ -80,21 +80,12 @@ endif()
 # SDL3_ttf, SDL3_image, SDL3_mixer : 
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
 # mais de les utiliser à partir du répertoire "dependencies", dont également les submodules
-# des repositories de SDL3_ttf, SDL3_mixer et SDL3_image
+# des repositories de SDL3_ttf, SDL3_mixer, SDL3_image
 set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)
 set(SDLIMAGE_VENDORED ON CACHE BOOL "" FORCE)
 #set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
-set(SDLSHADERCROSS_VENDORED ON CACHE BOOL "" FORCE)
 
-# SDL3_shadercross :
-set(SDLSHADERCROSS_DXC ON CACHE BOOL "" FORCE)
-set(SDLSHADERCROSS_CLI ON CACHE BOOL "" FORCE)
-set(SDLSHADERCROSS_SHARED ON CACHE BOOL "" FORCE)
-set(SDLSHADERCROSS_STATIC OFF CACHE BOOL "" FORCE)
-set(SDLSHADERCROSS_SPIRVCROSS_SHARED ON CACHE BOOL "" FORCE)
-set(SDLSHADERCROSS_INSTALL OFF CACHE BOOL "" FORCE)
-
-# SDL3_image : Désactiver explicitement tous les formats qui sont activé par défault.
+# SDL3_image : Désactiver explicitement tous les formats d'image qui sont activé par défault.
 # Il restera ces formats activé par défault : STB, PNG et SVG
 set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
 set(SDLIMAGE_BMP OFF CACHE BOOL "" FORCE)
@@ -114,99 +105,57 @@ set(SDLIMAGE_XV OFF CACHE BOOL "" FORCE)
 # SDL3, SDL3_ttf, SDL3_image, SDL3_mixer : 
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
 # mais de les utiliser à partir du répertoire "dependencies", dont également les submodules
-# des repositories de SDL3, SDL3_ttf, SDL3_mixer et SDL3_image
+# des repositories de SDL3, SDL3_ttf, SDL3_mixer, SDL3_image
 add_subdirectory(dependencies/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(dependencies/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(dependencies/SDL_mixer EXCLUDE_FROM_ALL)
-add_subdirectory(dependencies/SDL_shadercross EXCLUDE_FROM_ALL)
 
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
-    # Répertoire exact de dxil/dxcompiler générés par DirectXShaderCompiler
-    # en fonction de la configuration de build (Debug/Release)
-    set(DXC_DLL_DIR "${PROJECT_BINARY_DIR}/dependencies/SDL_shadercross/external/DirectXShaderCompiler/$<CONFIG>/bin")
+    # Repertoire des dll + binaire de shadercross pour "examples/shaders/tools"
+    set(SHADERCROSS_DLL_BINARY_DIR "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross")
 
-    # Il y a une diffénce entre les DLLs de Spirv-Cross selon la configuration de build
-    # En mode Debug : spirv-cross-c-sharedd.dll
-    # En mode Release : spirv-cross-c-shared.dll
-    set(SPIRV_DLL "$<IF:$<CONFIG:Debug>,spirv-cross-c-sharedd.dll,spirv-cross-c-shared.dll>")
-    
-    set(SHADERCROSS_DLLS
-      SDL3_shadercross.dll
-      SDL3.dll
-      ${SPIRV_DLL}
-    )
-  
-    set(DXC_DLLS
-      dxcompiler.dll
-      dxil.dll
+    # Répertoire cible pour les outils de shaders, pour la compilation hors ligne des shaders
+    set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
+
+    # Crée le dossier "examples/shaders/tools" AVANT toute copie
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
     )
 
-    # TODO: Le if ne marche pas, revoir ça
-    # Si on'ai en mode Release on créer le dossier examples/shaders/tools + 
-    # on copie le binaire shadercross et les DLLs dans ce dossier
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-      # Répertoire cible pour les outils shaders
-      set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
-
-      # Crée le dossier "examples/shaders/tools" AVANT toute copie
-      add_custom_command(TARGET ${target_name} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
-      )
-
-      # Copier le binaire shadercross dans "examples/shaders/tools"
+    # Copier les DLLs et binaires de shadercross dans le répertoire "examples/shaders/tools"
+    file(GLOB_RECURSE SHADERCROSS_DLLS_BINARY
+      "${SHADERCROSS_DLL_BINARY_DIR}/*.dll"
+      "${SHADERCROSS_DLL_BINARY_DIR}/*.exe"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_DLLS_BINARY)
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_FILE:shadercross>
-                "${SHADER_TOOLS_DIR}/"
-      )
-
-      # Copier les DLLs de shadercross dans : examples/shaders/tools
-      foreach(DLL IN LISTS SHADERCROSS_DLLS)
-        add_custom_command(TARGET ${target_name} POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  "$<TARGET_FILE_DIR:shadercross>/${DLL}"
-                  "${SHADER_TOOLS_DIR}/${DLL}"
-        )
-      endforeach()
-
-      # Copier les DLLs DXC dans : examples/shaders/tools
-      foreach(DLL IN LISTS DXC_DLLS)
-        add_custom_command(TARGET ${target_name} POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  "${DXC_DLL_DIR}/${DLL}"
-                  "${SHADER_TOOLS_DIR}/${DLL}"
-        )
-      endforeach()
-    endif()
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE}"
+    )
 
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       # Link le dossier include de shadercross a la target
       target_include_directories(${target_name} PRIVATE
-        "${PROJECT_SOURCE_DIR}/dependencies/SDL_shadercross/include"
+        "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include"
       )
 
       # Link la lib shadercross a la target
       target_link_libraries(${target_name} PRIVATE SDL3_shadercross::SDL3_shadercross)
 
-      # Copier aussi les DLLs lié a SDL3_shadercross dans le répertoire de l'exécutable final
-      foreach(DLL IN LISTS SHADERCROSS_DLLS)
+      # Copier aussi les DLLs de SDL3_shadercross dans le répertoire de l'exécutable, mais pas le binaire
+      # de shadercross, car il est déjà copié dans le répertoire "examples/shaders/tools"
+      file(GLOB_RECURSE SHADERCROSS_DLLS
+        "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross/*.dll"
+      )
+      foreach(FILE IN LISTS SHADERCROSS_DLLS)
         add_custom_command(TARGET ${target_name} POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  "$<TARGET_FILE_DIR:shadercross>/${DLL}"
-                  "$<TARGET_FILE_DIR:${target_name}>/${DLL}"
-        )
-      endforeach()
-
-      # Copier les DLLs DXC lié à SDL3_shadercross dans le répertoire de l'exécutable final
-      foreach(DLL IN LISTS DXC_DLLS)
-        add_custom_command(TARGET ${target_name} POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                  "${DXC_DLL_DIR}/${DLL}"
-                  "$<TARGET_FILE_DIR:${target_name}>/${DLL}"
-        )
-      endforeach()
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE}"
+      )
     endif()
   endif()
 endfunction()
@@ -376,7 +325,13 @@ if(RC2D_BUILD_EXAMPLES)
   )
 
   # Créer un exécutable pour l'exemple
-  add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
+  add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+
+  # Définir des flags de compilation pour le mode Release (NDEBUG = No Debug, donc Release)
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
+
+  # Définir le projet de démarrage dans Visual Studio
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
   # Compiler les définitions pour la target rc2d_example
   rc2d_target_compile_definitions(rc2d_example)
