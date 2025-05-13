@@ -170,20 +170,11 @@ function(rc2d_configure_openssl target_name)
   if(APPLE)
     
   elseif(WIN32)
-    string(TOLOWER "${CMAKE_GENERATOR_PLATFORM}" GENERATOR_PLATFORM_LOWER)
-
-    # Détection dynamique architecture (x64 ou ARM64)
-    if(GENERATOR_PLATFORM_LOWER STREQUAL "arm64")
-      set(WINDOWS_ARCH_DIR "arm64")
-    else()
-      set(WINDOWS_ARCH_DIR "x64")
-    endif()
-
     # Librairies OpenSSL précompilées statiques pour Windows
     target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/openssl/${WINDOWS_ARCH_DIR}")
+    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/openssl/${CMAKE_SYSTEM_PROCESSOR}")
 
     target_link_libraries(${target_name} PRIVATE
       libssl    # OpenSSL
@@ -194,7 +185,7 @@ function(rc2d_configure_openssl target_name)
   elseif(ANDROID)
 
   elseif(UNIX AND NOT APPLE)
-
+  
   endif()
 endfunction()
 
