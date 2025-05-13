@@ -114,7 +114,7 @@ add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
     # Repertoire des dll + binaire de shadercross pour "examples/shaders/tools"
-    set(SHADERCROSS_DLL_BINARY_DIR "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross")
+    set(SHADERCROSS_DLL_BINARY_DIR "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross/${CMAKE_SYSTEM_PROCESSOR}")
 
     # Répertoire cible pour les outils de shaders, pour la compilation hors ligne des shaders
     set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
@@ -148,7 +148,7 @@ function(rc2d_configure_shadercross target_name)
       # Copier aussi les DLLs de SDL3_shadercross dans le répertoire de l'exécutable, mais pas le binaire
       # de shadercross, car il est déjà copié dans le répertoire "examples/shaders/tools"
       file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross/*.dll"
+        "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross/${CMAKE_SYSTEM_PROCESSOR}/*.dll"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
         add_custom_command(TARGET ${target_name} POST_BUILD
@@ -174,7 +174,7 @@ function(rc2d_configure_openssl target_name)
     target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/openssl/${CMAKE_SYSTEM_PROCESSOR}")
+    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/OpenSSL/${CMAKE_SYSTEM_PROCESSOR}")
 
     target_link_libraries(${target_name} PRIVATE
       libssl    # OpenSSL
@@ -185,7 +185,7 @@ function(rc2d_configure_openssl target_name)
   elseif(ANDROID)
 
   elseif(UNIX AND NOT APPLE)
-  
+
   endif()
 endfunction()
 
