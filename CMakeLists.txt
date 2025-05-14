@@ -143,20 +143,21 @@ function(rc2d_configure_shadercross target_name)
       "${SHADERCROSS_DLL_BINARY_DIR}/*.exe"
     )
     foreach(FILE IN LISTS SHADERCROSS_DLLS_BINARY)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${FILE}"
-                "${SHADER_TOOLS_DIR}/${FILE}"
-    )
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
     endforeach()
 
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-      # Link le dossier include de shadercross a la target
+      # Link le dossier include de shadercross à la target
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/windows/include"
       )
 
-      # Link la lib shadercross a la target
+      # Link la lib shadercross à la target
       find_library(SHADERCROSS_LIBRARY
         NAMES SDL3_shadercross
         PATHS "${CRZGAMES_LIBRARIES}/windows/lib/SDL3_shadercross/${RC2D_ARCH}"
@@ -165,17 +166,17 @@ function(rc2d_configure_shadercross target_name)
         ${SHADERCROSS_LIBRARY}
       )
 
-      # Copier aussi les DLLs de SDL3_shadercross dans le répertoire de l'exécutable, mais pas le binaire
-      # de shadercross, car il est déjà copié dans le répertoire "examples/shaders/tools"
+      # Copier aussi les DLLs dans le répertoire de l'exécutable
       file(GLOB_RECURSE SHADERCROSS_DLLS
         "${CRZGAMES_LIBRARIES}/windows/bin/SDL3_shadercross/${RC2D_ARCH}/*.dll"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
         add_custom_command(TARGET ${target_name} POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different
                   "${FILE}"
-                  "$<TARGET_FILE_DIR:${target_name}>/${FILE}"
-      )
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
       endforeach()
     endif()
   endif()
