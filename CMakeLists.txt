@@ -390,17 +390,12 @@ file(GLOB_RECURSE SOURCES
 )
 
 # Choisir entre bibliothèque dynamique/partagées ou statique pour RC2D
-if(ANDROID)
-  # Pour Android, il faut obligatoirement mettre SHARED
+if(RC2D_BUILD_SHARED_LIBS)
   add_library(${PROJECT_NAME} SHARED ${SOURCES})
 else()
-  if(RC2D_BUILD_SHARED_LIBS)
-    add_library(${PROJECT_NAME} SHARED ${SOURCES})
-  else()
-    add_library(${PROJECT_NAME} STATIC ${SOURCES})
-    # Rajouter le suffixe "_static" au nom de la bibliothèque statique, pour éviter les conflits
-    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
-  endif()
+  add_library(${PROJECT_NAME} STATIC ${SOURCES})
+  # Rajouter le suffixe "_static" au nom de la bibliothèque statique, pour éviter les conflits
+  set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_static")
 endif()
 
 # Compiler les définitions pour la target RC2D
@@ -445,7 +440,13 @@ if(RC2D_BUILD_EXAMPLES)
   )
 
   # Créer un exécutable pour l'exemple
-  add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+  if(ANDROID)
+    # Pour Android, il faut obligatoirement mettre SHARED et "main" comme nom de target, quand
+    # c'est un exécutable
+    add_library(main SHARED ${RC2D_EXAMPLE_SOURCES})
+  else()
+    add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+  endif()
 
   # Définir des flags de compilation pour le mode Release (NDEBUG = No Debug, donc Release)
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
