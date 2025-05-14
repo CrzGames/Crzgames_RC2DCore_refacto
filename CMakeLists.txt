@@ -54,8 +54,6 @@ elseif(APPLE)
     set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "iOS Architectures" FORCE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "18.0" CACHE STRING "iOS Deployment Target" FORCE)
   endif()
-elseif (UNIX AND NOT APPLE)
-  # Linux-LIKE utilisera Vulkan
 elseif(ANDROID)
   set(CMAKE_ANDROID_API 28 CACHE STRING "Android API Level" FORCE)
 endif()
@@ -131,6 +129,36 @@ endif()
 # Chemin vers les dépendances
 set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
+
+function(rc2d_configure_onnxruntime target_name)
+  if(RC2D_ONNX_MODULE_ENABLED)
+    if(WIN32)
+      # Link le dossier include de ONNX Runtime à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
+
+      # Rajouter le répertoire de la lib ONNX Runtime (onnxruntime_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/lib/onnxruntime/${RC2D_ARCH}")
+
+      # Link les librairies ONNX Runtime
+      target_link_libraries(${target_name} PRIVATE
+        onnxruntime
+      )
+
+      # Copier aussi les DLLs dans le répertoire de l'exécutable
+      file(GLOB_RECURSE ONNX_DLLS
+        "${CRZGAMES_LIBRARIES}/windows/bin/onnxruntime/${RC2D_ARCH}/*.dll"
+      )
+      foreach(FILE IN LISTS ONNX_DLLS)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
+    endif()
+  endif()
+endfunction()
 
 function(rc2d_configure_shadercross target_name)
   if (APPLE AND CMAKE_OSX_SYSROOT MATCHES "macosx")
@@ -299,55 +327,65 @@ endfunction()
 # - Sur Linux : à faire
 # Puis lors de l'appel de la fonction, on link les librairies OpenSSL avec le target_name
 function(rc2d_configure_openssl target_name)
-  if(APPLE)
-    # Link le dossier include de OpenSSL à la target
-    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include")
+  if(RC2D_DATA_MODULE_ENABLED)
+    if(APPLE)
+      # Link le dossier include de OpenSSL à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include")
 
-    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/OpenSSL/X64_arm64")
+      # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/OpenSSL/X64_arm64")
 
-    # Link les librairies OpenSSL
+      # Link les librairies OpenSSL
+      target_link_libraries(${target_name} PRIVATE
+        ssl    # OpenSSL
+        crypto # OpenSSL
+      )
+    elseif(WIN32)
+      # Link le dossier include de OpenSSL à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
+
+      # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/lib/OpenSSL/${RC2D_ARCH}")
+
+      # Link les librairies OpenSSL
+      target_link_libraries(${target_name} PRIVATE
+        libssl    # OpenSSL
+        libcrypto # OpenSSL
+        Crypt32   # OpenSSL CryptoAPI (Librarie native de Windows, obligatoire)
+        ws2_32    # OpenSSL Winsock2  (Librarie native de Windows, obligatoire)
+      )
+    elseif (UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+      # Link le dossier include de OpenSSL à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include")
+
+      # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/lib/OpenSSL/${RC2D_ARCH}")
+
+      # Link les librairies OpenSSL
+      target_link_libraries(${target_name} PRIVATE
+        ssl    # OpenSSL
+        crypto # OpenSSL
+      )
+    elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+      # Link le dossier include de OpenSSL à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include")
+
+      # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/OpenSSL/${RC2D_ARCH}")
+
+      # Link les librairies OpenSSL
+      target_link_libraries(${target_name} PRIVATE
+        ssl    # OpenSSL
+        crypto # OpenSSL
+      )
+    endif()
+  endif()
+endfunction()
+
+function(rc2d_force_link_linux target_name)
+  if(UNIX AND NOT APPLE)
     target_link_libraries(${target_name} PRIVATE
-      ssl    # OpenSSL
-      crypto # OpenSSL
-    )
-  elseif(WIN32)
-    # Link le dossier include de OpenSSL à la target
-    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
-
-    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/lib/OpenSSL/${RC2D_ARCH}")
-
-    # Link les librairies OpenSSL
-    target_link_libraries(${target_name} PRIVATE
-      libssl    # OpenSSL
-      libcrypto # OpenSSL
-      Crypt32   # OpenSSL CryptoAPI (Librarie native de Windows, obligatoire)
-      ws2_32    # OpenSSL Winsock2  (Librarie native de Windows, obligatoire)
-    )
-  elseif (UNIX AND NOT APPLE)
-    # Link le dossier include de OpenSSL à la target
-    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include")
-
-    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/lib/OpenSSL/${RC2D_ARCH}")
-
-    # Link les librairies OpenSSL
-    target_link_libraries(${target_name} PRIVATE
-      ssl    # OpenSSL
-      crypto # OpenSSL
-    )
-  elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
-    # Link le dossier include de OpenSSL à la target
-    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include")
-
-    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/OpenSSL/${RC2D_ARCH}")
-
-    # Link les librairies OpenSSL
-    target_link_libraries(${target_name} PRIVATE
-      ssl    # OpenSSL
-      crypto # OpenSSL
+      "-Wl,--no-as-needed" m pthread dl "-Wl,--as-needed"
     )
   endif()
 endfunction()
@@ -392,14 +430,6 @@ function(rc2d_target_compile_definitions target_name)
   endif()
 endfunction()
 
-function(rc2d_force_link_linux_base target_name)
-  if(UNIX AND NOT APPLE)
-    target_link_libraries(${target_name} PRIVATE
-      "-Wl,--no-as-needed" m pthread dl "-Wl,--as-needed"
-    )
-  endif()
-endfunction()
-
 # Sources du projet RC2D
 file(GLOB_RECURSE SOURCES
   "${PROJECT_SOURCE_DIR}/src/*.c"
@@ -428,15 +458,15 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   SDL3::SDL3
 )
 
-# Linker les dépendances natives selon la plateforme
-rc2d_force_link_linux_base(${PROJECT_NAME})
-
 # Linker la dépendance OpenSSL non commune à toutes les plateformes
 # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
 rc2d_configure_openssl(${PROJECT_NAME})
 
 # Linker SDL3_shadercross selon la plateforme
 rc2d_configure_shadercross(${PROJECT_NAME})
+
+# Linker les dépendances natives selon la plateforme
+rc2d_force_link_linux(${PROJECT_NAME})
 
 # Génération des sorties pour RC2D
 if(APPLE)
@@ -496,7 +526,7 @@ if(RC2D_BUILD_EXAMPLES)
     ${PROJECT_NAME} # RC2D
   )
 
-  rc2d_force_link_linux_base(${PROJECT_NAME})
+  rc2d_force_link_linux(${PROJECT_NAME})
 endif()
 
 # Pour les tests unitaires RC2D
