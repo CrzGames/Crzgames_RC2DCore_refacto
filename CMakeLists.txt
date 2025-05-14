@@ -158,13 +158,12 @@ function(rc2d_configure_shadercross target_name)
         "${CRZGAMES_LIBRARIES}/windows/include"
       )
 
-      # Link la lib shadercross à la target
-      find_library(SHADERCROSS_LIBRARY
-        NAMES SDL3_shadercross
-        PATHS "${CRZGAMES_LIBRARIES}/windows/lib/SDL3_shadercross/${RC2D_ARCH}"
-      )
+      # Récupérer le dossier de la lib shadercross
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/lib/SDL3_shadercross/${RC2D_ARCH}")
+
+      # Link la lib shadercross
       target_link_libraries(${target_name} PRIVATE
-        ${SHADERCROSS_LIBRARY}
+        SDL3_shadercross
       )
 
       # Copier aussi les DLLs dans le répertoire de l'exécutable
@@ -179,7 +178,55 @@ function(rc2d_configure_shadercross target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
-    endif()
+  elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
+    # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
+    set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/slr3-sniper/bin/SDL3_shadercross/${RC2D_ARCH}")
+    
+    # Repertoire cible des dll + binaire de shadercross pour "examples/shaders/tools"
+    set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
+
+    # Crée le dossier "examples/shaders/tools" AVANT toute copie
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
+    )
+
+    file(GLOB_RECURSE SHADERCROSS_BINARY
+      "${SHADERCROSS_BINARY_DIR}/*"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_BINARY)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
+    endforeach()
+
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+      target_include_directories(${target_name} PRIVATE
+        "${CRZGAMES_LIBRARIES}/slr3-sniper/include"
+      )
+
+      # Récupérer le dossier de la lib shadercross
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}")
+
+      # Link la lib shadercross
+      target_link_libraries(${target_name} PRIVATE
+        SDL3_shadercross
+      )
+
+      file(GLOB_RECURSE SHADERCROSS_DLLS
+        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*"
+      )
+      foreach(FILE IN LISTS SHADERCROSS_DLLS)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
+    endif() 
   endif()
 endfunction()
 
@@ -193,12 +240,13 @@ function(rc2d_configure_openssl target_name)
   if(APPLE)
     
   elseif(WIN32)
-    # Librairies OpenSSL précompilées statiques pour Windows
+    # Link le dossier include de OpenSSL à la target
     target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
     target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/OpenSSL/${RC2D_ARCH}")
 
+    # Link les librairies OpenSSL
     target_link_libraries(${target_name} PRIVATE
       libssl    # OpenSSL
       libcrypto # OpenSSL
