@@ -458,6 +458,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   SDL3::SDL3
 )
 
+# Link onnxruntime si le module RC2D_onnx est activé
+rc2d_configure_onnxruntime(${PROJECT_NAME})
+
 # Linker la dépendance OpenSSL non commune à toutes les plateformes
 # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
 rc2d_configure_openssl(${PROJECT_NAME})
@@ -518,6 +521,9 @@ if(RC2D_BUILD_EXAMPLES)
   # Linker SDL3_shadercross selon la plateforme
   rc2d_configure_shadercross(rc2d_example)
 
+  # Link onnxruntime si le module RC2D_onnx est activé
+  rc2d_configure_onnxruntime(rc2d_example)
+
   # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
   target_link_libraries(rc2d_example PRIVATE
     SDL3_image::SDL3_image
@@ -554,6 +560,9 @@ if(RC2D_BUILD_TESTS)
   # Linker la dépendance OpenSSL non commune à toutes les plateformes
   # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
   rc2d_configure_openssl(rc2d_tests)
+
+  # Link onnxruntime si le module RC2D_onnx est activé
+  rc2d_configure_onnxruntime(rc2d_tests)
 
   # Linker Criterion selon la plateforme
   if(APPLE)
