@@ -15,3 +15,5 @@ build
 
 # Dependency directories
 /dependencies/
+
+docker-build-output

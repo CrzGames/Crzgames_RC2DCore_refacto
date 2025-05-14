@@ -133,7 +133,7 @@ void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType 
                 break;
 
             // Mode plein écran exclusif : utiliser le meilleur mode disponible
-            case RC2D_FULLSCREEN_EXCLUSIVE:
+            case RC2D_FULLSCREEN_EXCLUSIVE: {
                 /**
                  * Récupérer l'index du moniteur qui contient la fenêtre
                  */
@@ -187,7 +187,8 @@ void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType 
                     return;
                 }
                 break;
-
+            }
+            
             default:
                 RC2D_log(RC2D_LOG_ERROR, "rc2d_window_setFullscreen: Type de plein ecran invalide.\n");
                 return;

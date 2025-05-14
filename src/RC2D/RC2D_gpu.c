@@ -26,7 +26,7 @@ RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
     // Vérification des paramètres d'entrée
     RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Shader filename is NULL");
 
-#ifdef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     // Vérifier si le shader est déjà dans le cache
     SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
 
@@ -73,7 +73,7 @@ RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
      */
     char fullPath[512];
 
-#ifndef RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders HLSL
+#if !RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders HLSL
     /**
      * entrypoint : Point d'entrée du shader (main pour SPIR-V, DXIL et main0 pour MSL).
      */
@@ -102,7 +102,7 @@ RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metallib/ios/%s.metallib", basePath, filename);
 #else
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metallib/macos/%s.metallib", basePath, filename);
-#endif
+#endif // RC2D_PLATFORM_IOS
         format = SDL_GPU_SHADERFORMAT_METALLIB;
         entrypoint = "main";
     }
@@ -232,7 +232,7 @@ RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
         .entrypoint = "main",
         .include_dir = NULL,
         .defines = NULL,
-        .shader_stage = stage,
+        .shader_stage = (SDL_ShaderCross_ShaderStage)stage,
         .enable_debug = true,
         .name = filename,
         .props = 0
@@ -350,7 +350,7 @@ void rc2d_gpu_hotReloadShaders(void)
                 .entrypoint = "main",
                 .include_dir = NULL,
                 .defines = NULL,
-                .shader_stage = stage,
+                .shader_stage = (SDL_ShaderCross_ShaderStage)stage,
                 .enable_debug = true,
                 .name = entry->filename,
                 .props = 0
@@ -538,7 +538,7 @@ void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
     SDL_DestroyProperties(propsGPU);
 }*/
 
-static RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats()
+RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats()
 {
     // Récupération des formats de shaders supportés par le GPU via SDL_GPU
     SDL_GPUShaderFormat formats = SDL_GetGPUShaderFormats(rc2d_gpu_getDevice());

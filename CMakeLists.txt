@@ -300,8 +300,8 @@ function(rc2d_configure_openssl target_name)
 
     # Link les librairies OpenSSL
     target_link_libraries(${target_name} PRIVATE
-      libssl    # OpenSSL
-      libcrypto # OpenSSL
+      ssl    # OpenSSL
+      crypto # OpenSSL
     )
   elseif(WIN32)
     # Link le dossier include de OpenSSL à la target
@@ -326,8 +326,8 @@ function(rc2d_configure_openssl target_name)
 
     # Link les librairies OpenSSL
     target_link_libraries(${target_name} PRIVATE
-      libssl    # OpenSSL
-      libcrypto # OpenSSL
+      ssl    # OpenSSL
+      crypto # OpenSSL
     )
   elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
     # Link le dossier include de OpenSSL à la target
@@ -338,8 +338,8 @@ function(rc2d_configure_openssl target_name)
 
     # Link les librairies OpenSSL
     target_link_libraries(${target_name} PRIVATE
-      libssl    # OpenSSL
-      libcrypto # OpenSSL
+      ssl    # OpenSSL
+      crypto # OpenSSL
     )
   endif()
 endfunction()
@@ -384,6 +384,14 @@ function(rc2d_target_compile_definitions target_name)
   endif()
 endfunction()
 
+function(rc2d_force_link_linux_base target_name)
+  if(UNIX AND NOT APPLE)
+    target_link_libraries(${target_name} PRIVATE
+      "-Wl,--no-as-needed" m pthread dl "-Wl,--as-needed"
+    )
+  endif()
+endfunction()
+
 # Sources du projet RC2D
 file(GLOB_RECURSE SOURCES
   "${PROJECT_SOURCE_DIR}/src/*.c"
@@ -411,6 +419,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   SDL3_ttf::SDL3_ttf
   SDL3::SDL3
 )
+
+# Linker les dépendances natives selon la plateforme
+rc2d_force_link_linux_base(${PROJECT_NAME})
 
 # Linker la dépendance OpenSSL non commune à toutes les plateformes
 # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
@@ -476,6 +487,8 @@ if(RC2D_BUILD_EXAMPLES)
     SDL3::SDL3
     ${PROJECT_NAME} # RC2D
   )
+
+  rc2d_force_link_linux_base(${PROJECT_NAME})
 endif()
 
 # Pour les tests unitaires RC2D
