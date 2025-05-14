@@ -364,6 +364,22 @@ static void rc2d_engine_cleanup_sdlmixer(void)
 static bool rc2d_engine_init_sdl(void)
 {
     /**
+     * Obligation pour le Steam Deck, sans le getenv("WAYLAND_DISPLAY") ou getenv("DISPLAY"),
+     * l'application ne démarre pas.
+     * On doit choisir le bon driver vidéo en fonction de l'environnement d'exécution.
+     * On utilise SDL_SetHint pour définir le driver vidéo approprié.
+     * Si on est sur Wayland, on utilise "wayland", sinon on utilise "x11".
+     */
+    if (getenv("WAYLAND_DISPLAY")) 
+    {
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
+    } 
+    else if (getenv("DISPLAY")) 
+    {
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
+    }
+
+    /**
      * Liste des sous-systèmes SDL3 à initialiser.
      */
     int subsystems[] = {

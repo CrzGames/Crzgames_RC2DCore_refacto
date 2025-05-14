@@ -10,8 +10,18 @@ services:
       - CMAKE_BUILD_TYPE=Release
       - RC2D_PLATFORM=SLR3-SNIPER
     command: >
-      bash -c "mkdir -p build && cd build &&
+      bash -c "apt update && apt install -y patchelf &&
+      mkdir -p build && cd build &&
       cmake .. -DRC2D_BUILD_EXAMPLES=ON -DRC2D_GPU_SHADER_HOT_RELOAD_ENABLED=OFF
       -DRC2D_DATA_MODULE_ENABLED=ON -DRC2D_NET_MODULE_ENABLED=ON -DRC2D_ONNX_MODULE_ENABLED=ON
       -DRC2D_ASSERT_LEVEL=3 -DCMAKE_BUILD_TYPE=Release &&
-      cmake --build . --config Release --parallel"
+      cmake --build . --config Release --parallel &&
+
+      # Patch RPATH pour que les .so soient cherchés à côté de l'exécutable
+      patchelf --set-rpath '\$ORIGIN' --force-rpath build/rc2d_example &&
+      patchelf --set-rpath '\$ORIGIN' --force-rpath build/libSDL3.so &&
+      patchelf --set-rpath '\$ORIGIN' --force-rpath build/libSDL3_image.so &&
+      patchelf --set-rpath '\$ORIGIN' --force-rpath build/libSDL3_ttf.so &&
+
+      echo '✔️ patchelf applied, checking ldd:' &&
+      ldd Release/rc2d_example"
