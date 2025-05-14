@@ -77,6 +77,14 @@ else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-error=strict-prototypes -Wno-newline-eof")
 endif()
 
+if(UNIX AND NOT APPLE)
+  # Active les backends vidéo nécessaires pour Linux (Steam Deck, Distribution Linux, Raspberry PI 5 etc.)
+  set(SDL_WAYLAND ON CACHE BOOL "Enable Wayland backend for SDL3" FORCE)
+  set(SDL_X11 ON CACHE BOOL "Enable X11 backend for SDL3" FORCE)
+  set(SDL_KMSDRM ON CACHE BOOL "Enable KMS/DRM backend for SDL3" FORCE)
+  set(SDL_DUMMYVIDEO ON CACHE BOOL "Enable dummy video backend for SDL3" FORCE)
+endif()
+
 # SDL3_ttf, SDL3_image, SDL3_mixer : 
 # Permet de dire à CMake de ne pas chercher les dépendances dans le système,
 # mais de les utiliser à partir du répertoire "dependencies", dont également les submodules
