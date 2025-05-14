@@ -125,7 +125,59 @@ set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
 
 function(rc2d_configure_shadercross target_name)
-  if(WIN32)
+  if (APPLE AND CMAKE_OSX_SYSROOT MATCHES "macosx")
+    # Repertoire cible des binaires de shadercross pour "examples/shaders/tools"
+    set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/macos/bin/SDL3_shadercross/x64_arm64")
+
+    # Répertoire cible pour les outils de shaders, pour la compilation hors ligne des shaders
+    set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
+
+    # Crée le dossier "examples/shaders/tools" AVANT toute copie
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
+    )
+
+    # Copier les binaires de shadercross dans le répertoire "examples/shaders/tools"
+    file(GLOB_RECURSE SHADERCROSS_BINARY
+      "${SHADERCROSS_BINARY_DIR}/*"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_BINARY)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
+    endforeach()
+
+    # Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+      # Link le dossier include de shadercross à la target
+      target_include_directories(${target_name} PRIVATE
+        "${CRZGAMES_LIBRARIES}/macos/include"
+      )
+
+      # Récupérer le dossier de la lib shadercross
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/x64_arm64")
+
+      # Link la lib shadercross
+      target_link_libraries(${target_name} PRIVATE
+        SDL3_shadercross
+      )
+
+      # Copier aussi les DLLs dans le répertoire de l'exécutable
+      file(GLOB_RECURSE SHADERCROSS_DLLS
+        "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/x64_arm64/*"
+      )
+      foreach(FILE IN LISTS SHADERCROSS_DLLS)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
+  elseif(WIN32)
     # Repertoire cible des dll + binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_DLL_BINARY_DIR "${CRZGAMES_LIBRARIES}/windows/bin/SDL3_shadercross/${RC2D_ARCH}")
 
@@ -239,7 +291,17 @@ endfunction()
 # Puis lors de l'appel de la fonction, on link les librairies OpenSSL avec le target_name
 function(rc2d_configure_openssl target_name)
   if(APPLE)
-    
+    # Link le dossier include de OpenSSL à la target
+    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include")
+
+    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/OpenSSL/X64_arm64")
+
+    # Link les librairies OpenSSL
+    target_link_libraries(${target_name} PRIVATE
+      libssl    # OpenSSL
+      libcrypto # OpenSSL
+    )
   elseif(WIN32)
     # Link le dossier include de OpenSSL à la target
     target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
@@ -254,8 +316,18 @@ function(rc2d_configure_openssl target_name)
       Crypt32   # OpenSSL CryptoAPI (Librarie native de Windows, obligatoire)
       ws2_32    # OpenSSL Winsock2  (Librarie native de Windows, obligatoire)
     )
-  elseif(ANDROID)
+  elseif (UNIX AND NOT APPLE)
+    # Link le dossier include de OpenSSL à la target
+    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include")
 
+    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/lib/OpenSSL/${RC2D_ARCH}")
+
+    # Link les librairies OpenSSL
+    target_link_libraries(${target_name} PRIVATE
+      libssl    # OpenSSL
+      libcrypto # OpenSSL
+    )
   elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
     # Link le dossier include de OpenSSL à la target
     target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include")
