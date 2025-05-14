@@ -177,6 +177,7 @@ function(rc2d_configure_shadercross target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
+    endif()
   elseif(WIN32)
     # Repertoire cible des dll + binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_DLL_BINARY_DIR "${CRZGAMES_LIBRARIES}/windows/bin/SDL3_shadercross/${RC2D_ARCH}")
