@@ -242,10 +242,10 @@ function(rc2d_configure_openssl target_name)
     
   elseif(WIN32)
     # Link le dossier include de OpenSSL à la target
-    target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include")
+    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/OpenSSL/${RC2D_ARCH}")
+    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/lib/OpenSSL/${RC2D_ARCH}")
 
     # Link les librairies OpenSSL
     target_link_libraries(${target_name} PRIVATE
@@ -256,8 +256,18 @@ function(rc2d_configure_openssl target_name)
     )
   elseif(ANDROID)
 
-  elseif(UNIX AND NOT APPLE)
+  elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+    # Link le dossier include de OpenSSL à la target
+    target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include")
 
+    # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+    target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/OpenSSL/${RC2D_ARCH}")
+
+    # Link les librairies OpenSSL
+    target_link_libraries(${target_name} PRIVATE
+      libssl    # OpenSSL
+      libcrypto # OpenSSL
+    )
   endif()
 endfunction()
 
