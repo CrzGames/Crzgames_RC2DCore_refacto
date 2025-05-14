@@ -232,6 +232,21 @@ Configuration du serveur (sur Steam Deck) : <br />
 - Chercher : Child Process Debugging Power Tool
 - Installer
 - Redémarrer VS
+10. Prochaines étapes pour que ça fonctionne :
+Dans le Devkit Tool : <br />
+- Steam Play (coché ✅)
+- Steam Play Debug (coché ✅)
+- Version : 2022 <br /> <br />
+
+Lance ton jeu via Steam Deck. <br />
+- Il va se mettre en attente du débogueur. <br /> <br />
+
+Ouvrir Visual Studio 2022 sur ton PC :
+- Debug > Attach to Process
+- Cible : Remote (no authentication)
+- Cliquer sur le boutton "Find" -> Steam Deck
+- Tu devrais voir ton rc2d_example.exe dans la liste.
+- Clique sur "Attach"
 
 <br /><br /><br /><br />
 
