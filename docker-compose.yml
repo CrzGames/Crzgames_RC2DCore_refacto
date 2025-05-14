@@ -17,11 +17,9 @@ services:
       -DRC2D_ASSERT_LEVEL=3 -DCMAKE_BUILD_TYPE=Release &&
       cmake --build . --config Release --parallel &&
 
-      # Patch RPATH pour que les .so soient cherchés à côté de l'exécutable
-      patchelf --set-rpath '\$ORIGIN' --force-rpath build/rc2d_example &&
-      patchelf --set-rpath '\$ORIGIN' --force-rpath build/libSDL3.so &&
-      patchelf --set-rpath '\$ORIGIN' --force-rpath build/libSDL3_image.so &&
-      patchelf --set-rpath '\$ORIGIN' --force-rpath build/libSDL3_ttf.so &&
+      # Patch RPATH pour que l'executable cherche les bibliothèques dans le même répertoire
+      # que lui-même, et non dans le répertoire de l'exécutable de la commande
+      patchelf --set-rpath '$ORIGIN' --force-rpath Release/rc2d_example &&
 
-      echo '✔️ patchelf applied, checking ldd:' &&
+      echo 'patchelf applied, checking ldd:' &&
       ldd Release/rc2d_example"
