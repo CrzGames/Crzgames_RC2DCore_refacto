@@ -444,7 +444,7 @@ if(RC2D_BUILD_EXAMPLES)
   )
 
   # Créer un exécutable pour l'exemple
-  add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
+  add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
 
   # Définir des flags de compilation pour le mode Release (NDEBUG = No Debug, donc Release)
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
