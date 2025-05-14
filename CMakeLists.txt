@@ -178,6 +178,7 @@ function(rc2d_configure_shadercross target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
+    endif()
   elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
     # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/slr3-sniper/bin/SDL3_shadercross/${RC2D_ARCH}")
@@ -361,13 +362,10 @@ if(RC2D_BUILD_EXAMPLES)
   )
 
   # Créer un exécutable pour l'exemple
-  add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+  add_executable(rc2d_example WIN32 ${RC2D_EXAMPLE_SOURCES})
 
   # Définir des flags de compilation pour le mode Release (NDEBUG = No Debug, donc Release)
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
-
-  # Définir le projet de démarrage dans Visual Studio
-  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
   # Compiler les définitions pour la target rc2d_example
   rc2d_target_compile_definitions(rc2d_example)
