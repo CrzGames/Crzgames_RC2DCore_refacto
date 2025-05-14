@@ -111,7 +111,7 @@ add_subdirectory(dependencies/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(dependencies/SDL_mixer EXCLUDE_FROM_ALL)
 
-# Normalisation de l'architecture (ex: AMD64, x86_64 => x64)
+# Determiner l'architecture de la plateforme
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(AMD64|x86_64)$")
   set(RC2D_ARCH "x64")
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(ARM64|aarch64|arm64)$")
@@ -120,10 +120,14 @@ else()
   set(RC2D_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
+# Chemin vers les dépendances
+set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
+set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
+
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
     # Repertoire des dll + binaire de shadercross pour "examples/shaders/tools"
-    set(SHADERCROSS_DLL_BINARY_DIR "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross/${CMAKE_SYSTEM_PROCESSOR}")
+    set(SHADERCROSS_DLL_BINARY_DIR "${CRZGAMES_LIBRARIES}/windows/bin/SDL3_shadercross/${RC2D_ARCH}")
 
     # Répertoire cible pour les outils de shaders, pour la compilation hors ligne des shaders
     set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
@@ -149,16 +153,22 @@ function(rc2d_configure_shadercross target_name)
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       # Link le dossier include de shadercross a la target
       target_include_directories(${target_name} PRIVATE
-        "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include"
+        "${CRZGAMES_LIBRARIES}/windows/include"
       )
 
       # Link la lib shadercross a la target
-      target_link_libraries(${target_name} PRIVATE SDL3_shadercross::SDL3_shadercross)
+      find_library(SHADERCROSS_LIBRARY
+        NAMES SDL3_shadercross
+        PATHS "${CRZGAMES_LIBRARIES}/windows/lib/SDL3_shadercross/${RC2D_ARCH}"
+      )
+      target_link_libraries(${target_name} PRIVATE
+        ${SHADERCROSS_LIBRARY}
+      )
 
       # Copier aussi les DLLs de SDL3_shadercross dans le répertoire de l'exécutable, mais pas le binaire
       # de shadercross, car il est déjà copié dans le répertoire "examples/shaders/tools"
       file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/bin/SDL3_shadercross/${CMAKE_SYSTEM_PROCESSOR}/*.dll"
+        "${CRZGAMES_LIBRARIES}/windows/bin/SDL3_shadercross/${RC2D_ARCH}/*.dll"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
         add_custom_command(TARGET ${target_name} POST_BUILD
@@ -185,7 +195,7 @@ function(rc2d_configure_openssl target_name)
     target_include_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/include")
 
     # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/OpenSSL/${CMAKE_SYSTEM_PROCESSOR}")
+    target_link_directories(${target_name} PRIVATE "${PROJECT_SOURCE_DIR}/dependencies/Crzgames_Libraries/windows/lib/OpenSSL/${RC2D_ARCH}")
 
     target_link_libraries(${target_name} PRIVATE
       libssl    # OpenSSL
