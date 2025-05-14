@@ -129,7 +129,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         rc2d_engine_state.config->callbacks->rc2d_update(rc2d_engine_state.delta_time);
     }
     rc2d_graphics_clear();
-    if (rc2d_engine_state.config != NULL && 
+    if (!rc2d_engine_state.skip_rendering &&
+        rc2d_engine_state.config != NULL && 
         rc2d_engine_state.config->callbacks != NULL && 
         rc2d_engine_state.config->callbacks->rc2d_draw != NULL) 
     {

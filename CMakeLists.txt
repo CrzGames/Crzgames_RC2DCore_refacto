@@ -126,7 +126,7 @@ set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
 
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
-    # Repertoire des dll + binaire de shadercross pour "examples/shaders/tools"
+    # Repertoire cible des dll + binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_DLL_BINARY_DIR "${CRZGAMES_LIBRARIES}/windows/bin/SDL3_shadercross/${RC2D_ARCH}")
 
     # Répertoire cible pour les outils de shaders, pour la compilation hors ligne des shaders
@@ -151,6 +151,7 @@ function(rc2d_configure_shadercross target_name)
       )
     endforeach()
 
+    # Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       # Link le dossier include de shadercross à la target
       target_include_directories(${target_name} PRIVATE

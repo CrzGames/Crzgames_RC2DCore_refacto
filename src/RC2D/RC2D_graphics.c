@@ -37,7 +37,17 @@ void rc2d_graphics_clear(void)
         &swapchainTextureWidth,
         &swapchainTextureHeight
     );
-    RC2D_assert_release(rc2d_engine_state.gpu_current_swapchain_texture != NULL, RC2D_LOG_CRITICAL, "Swapchain texture is NULL (window may be minimized)");
+
+    // Si la swapchain texture est NULL, définir skip_rendering et retourner
+    if (rc2d_engine_state.gpu_current_swapchain_texture == NULL)
+    {
+        RC2D_log(RC2D_LOG_WARN, "Swapchain texture is NULL (window may be minimized). Skipping frame rendering.");
+        rc2d_engine_state.skip_rendering = true;
+        return;
+    }
+
+    // Si nous sommes ici, le rendu peut continuer
+    rc2d_engine_state.skip_rendering = false;
 
     /**
      * \brief Étape 3 : Création du ColorTargetInfo pour le render pass
@@ -123,7 +133,7 @@ void rc2d_graphics_present(void)
      * C’est ici que le GPU exécute réellement toutes les commandes encodées pendant cette frame.
      * SDL_SubmitGPUCommandBuffer() envoie le tout pour traitement asynchrone.
      */
-    if (rc2d_engine_state.gpu_current_command_buffer)
+    if (rc2d_engine_state.gpu_current_command_buffer && !rc2d_engine_state.skip_rendering)
     {
         SDL_SubmitGPUCommandBuffer(rc2d_engine_state.gpu_current_command_buffer);
         rc2d_engine_state.gpu_current_command_buffer = NULL;

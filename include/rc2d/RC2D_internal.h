@@ -110,6 +110,8 @@ typedef struct RC2D_EngineState {
     int gpu_pipeline_count;       // Nombre de pipelines graphiques chargés
     SDL_Mutex* gpu_pipeline_mutex; // Mutex pour protéger l'accès aux pipelines graphiques
 
+    bool skip_rendering; // Ajout du drapeau pour indiquer si le rendu doit être sauté
+    
     // RC2D : État d'exécution
     int fps;
     double delta_time;
