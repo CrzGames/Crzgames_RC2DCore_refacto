@@ -227,6 +227,26 @@ Configuration du serveur (sur Steam Deck) : <br />
     - Start Command: rc2d_example.exe (le binaire du jeu)
     - Steam Play : Cochez cette case si vous chargez des exécutables binaires Windows qui doivent être lancés par Steam Play via Proton.
     - Auto upload: Cochez cette case `Auto upload upon build success notification`, une fonctionnalité avancée qui permet de déclencher automatiquement le déploiement de votre jeu sur le Steam Deck dès que votre build est réussie.
+9. Déboguer avec Visual Studio, Installer l'extension manuellement :
+- Ouvrir Visual Studio > Extensions > "Manage Extensions"
+- Chercher : Child Process Debugging Power Tool
+- Installer
+- Redémarrer VS
+10. Prochaines étapes pour que ça fonctionne :
+Dans le Devkit Tool : <br />
+- Steam Play (coché ✅)
+- Steam Play Debug (coché ✅)
+- Version : 2022 <br /> <br />
+
+Lance ton jeu via Steam Deck. <br />
+- Il va se mettre en attente du débogueur. <br /> <br />
+
+Ouvrir Visual Studio 2022 sur ton PC :
+- Debug > Attach to Process
+- Cible : Remote (no authentication)
+- Cliquer sur le boutton "Find" -> Steam Deck
+- Tu devrais voir ton rc2d_example.exe dans la liste.
+- Clique sur "Attach"
 
 <br /><br /><br /><br />
 
