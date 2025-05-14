@@ -53,7 +53,7 @@ elseif(APPLE)
   elseif(CMAKE_OSX_SYSROOT MATCHES "iphoneos")
     set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "iOS Architectures" FORCE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "18.0" CACHE STRING "iOS Deployment Target" FORCE)
-endif()
+  endif()
 elseif (UNIX AND NOT APPLE)
   # Linux-LIKE utilisera Vulkan
 elseif(ANDROID)
@@ -111,6 +111,15 @@ add_subdirectory(dependencies/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(dependencies/SDL_mixer EXCLUDE_FROM_ALL)
 
+# Normalisation de l'architecture (ex: AMD64, x86_64 => x64)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(AMD64|x86_64)$")
+  set(RC2D_ARCH "x64")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(ARM64|aarch64|arm64)$")
+  set(RC2D_ARCH "arm64")
+else()
+  set(RC2D_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
 function(rc2d_configure_shadercross target_name)
   if(WIN32)
     # Repertoire des dll + binaire de shadercross pour "examples/shaders/tools"
@@ -135,6 +144,7 @@ function(rc2d_configure_shadercross target_name)
                 "${FILE}"
                 "${SHADER_TOOLS_DIR}/${FILE}"
     )
+    endforeach()
 
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       # Link le dossier include de shadercross a la target
@@ -156,6 +166,7 @@ function(rc2d_configure_shadercross target_name)
                   "${FILE}"
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE}"
       )
+      endforeach()
     endif()
   endif()
 endfunction()
