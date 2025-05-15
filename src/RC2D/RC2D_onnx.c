@@ -51,7 +51,7 @@ bool rc2d_onnx_init(void)
 
     /**
      * Sélection automatique des Execution Providers (EPs) disponibles, 
-     * du meilleur au pire donc : GPU -> NPU -> CPU
+     * du meilleur au pire donc : GPU/NPU -> CPU SIMD -> CPU
      */
     status = ort->SessionOptionsSetEpSelectionPolicy(g_session_options, OrtExecutionProviderDevicePolicy_MAX_PERFORMANCE);
     if (status != NULL) 
