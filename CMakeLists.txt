@@ -134,7 +134,7 @@ function(rc2d_configure_onnxruntime target_name)
   if(RC2D_ONNX_MODULE_ENABLED)
     if(WIN32)
       # Link le dossier include de ONNX Runtime à la target
-      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include/onnxruntime")
 
       # Rajouter le répertoire de la lib ONNX Runtime (onnxruntime_static), pour le linker ensuite
       target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/lib/onnxruntime/${RC2D_ARCH}")
