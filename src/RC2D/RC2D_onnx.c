@@ -1,6 +1,7 @@
 #if RC2D_ONNX_MODULE_ENABLED
 
 #include <RC2D/RC2D_onnx.h>
+#include <RC2D/RC2D_logger.h>
 
 // Variables globales pour l’environnement ONNX Runtime et les options de session
 static OrtEnv* g_ort_env = NULL;
@@ -64,6 +65,26 @@ bool rc2d_onnx_init(void)
         g_ort_env = NULL;
 
         return false;
+    }
+
+    // Liste les Execution Providers disponibles et les log
+    const char** available_providers = NULL;
+    int num_providers = 0;
+    status = ort->GetAvailableProviders(&available_providers, &num_providers);
+    if (status == NULL) 
+    {
+        RC2D_log(RC2D_LOG_INFO, "Available ONNX Execution Providers:");
+
+        for (int i = 0; i < num_providers; ++i) 
+        {
+            RC2D_log(RC2D_LOG_INFO, "  - %s", available_providers[i]);
+        }
+
+        ort->ReleaseAvailableProviders(available_providers, num_providers);
+    } 
+    else 
+    {
+        RC2D_log(RC2D_LOG_WARN, "Failed to get available EPs");
     }
 
     // Tout s'est bien passé
