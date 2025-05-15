@@ -1,7 +1,6 @@
 #if RC2D_ONNX_MODULE_ENABLED
 
 #include <RC2D/RC2D_onnx.h>
-#include <RC2D/RC2D_assert.h>
 
 // Variables globales pour l’environnement ONNX Runtime et les options de session
 static OrtEnv* g_ort_env = NULL;
