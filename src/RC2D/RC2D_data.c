@@ -1,4 +1,4 @@
-#ifdef RC2D_DATA_MODULE_ENABLED
+#if RC2D_DATA_MODULE_ENABLED
 
 #include <RC2D/RC2D_data.h>
 #include <RC2D/RC2D_logger.h>

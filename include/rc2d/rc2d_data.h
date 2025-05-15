@@ -1,6 +1,8 @@
 #ifndef RC2D_DATA_H
 #define RC2D_DATA_H
 
+#if RC2D_DATA_MODULE_ENABLED
+
 #include <stddef.h> // Required for : size_t
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
@@ -454,5 +456,7 @@ void rc2d_data_freeSecurity(RC2D_EncryptedData* encryptedData);
 #ifdef __cplusplus
 }
 #endif  
+
+#endif // RC2D_DATA_MODULE_ENABLED
 
 #endif //RC2D_DATA_H
