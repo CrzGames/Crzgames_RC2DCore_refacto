@@ -1675,6 +1675,10 @@ static bool rc2d_engine(void)
      */
 	//rc2d_keyboard_init();
     rc2d_timer_init();
+    if (!rc2d_onnx_init())
+    {
+        return false;
+    }
 
     RC2D_log(RC2D_LOG_INFO, "RC2D Engine initialisé avec succès.\n");
 
@@ -1699,6 +1703,7 @@ void rc2d_engine_quit(void)
      */
 	//rc2d_filesystem_quit();
     //rc2d_touch_freeTouchState();
+    rc2d_onnx_cleanup();
 
     // Lib OpenSSL Deinitialize
     rc2d_engine_cleanup_openssl();
