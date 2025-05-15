@@ -48,7 +48,7 @@
 | Platform | Architectures | System Version | Compatible |
 |----------|---------------|----------------|------------|
 | **Windows** | x64 / arm64 | Windows 10+   | ✓          |
-| **macOS** | Intel x64 / Apple Silicon arm64 | macOS 15.0+ | ✓ |
+| **macOS** | Apple Silicon arm64 | macOS 15.0+ | ✓ |
 | **iOS/iPadOS** | arm64 (iphoneos) - not iphonesimulator | iOS/iPadOS 18.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 9.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 2.35+ | ✓ |
@@ -269,14 +269,6 @@ Ouvrir Visual Studio 2022 sur ton PC :
 ### **macOS (macOS 15.0+)**
 Apple Silicon :
 - Tous les modèles macOS Apple Silicon (M1, M2, M3, M4) et plus récent
-
-Intel :
-- MacBook Pro 2018+
-- MacBook Air 2020 Retina
-- iMac 2019+
-- Mac mini 2018+
-- Mac Pro 2019
-- iMac Pro 2017
 
 ### **Android (Android 9.0+, API 28+)**
 - Samsung Galaxy S9+ (2018) et plus récent
