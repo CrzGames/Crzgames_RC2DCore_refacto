@@ -36,13 +36,23 @@ bool rc2d_onnx_init(void)
         return false;
     }
 
-    // Active la gestion de la mémoire CPU pour améliorer les performances
+    /**
+     * Active la gestion de la mémoire CPU pour améliorer les performances
+     * 
+     * Au lieu de faire plein de petits malloc()/free() pendant l’exécution d’un modèle, 
+     * ONNX Runtime utilise une "arena allocator" :
+     * 
+     * Une grande zone mémoire préallouée (l'arène) qui est réutilisée efficacement pendant l’inférence.
+     */
     ort->EnableCpuMemArena(g_session_options);
 
     // Définit le niveau d’optimisation graphique au maximum (fusion, simplification, etc.)
     ort->SetSessionGraphOptimizationLevel(g_session_options, ORT_ENABLE_ALL);
 
-    // Infrastructure de sélection automatique des Execution Providers
+    /**
+     * Sélection automatique des Execution Providers (EPs) disponibles, 
+     * du meilleur au pire donc : GPU -> NPU -> CPU
+     */
     status = ort->SessionOptionsSetEpSelectionPolicy(g_session_options, OrtExecutionProviderDevicePolicy_MAX_PERFORMANCE);
     if (status != NULL) 
     {
