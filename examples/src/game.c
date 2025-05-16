@@ -105,6 +105,29 @@ void rc2d_load(void)
 
     bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline, true);
     RC2D_assert_release(success, RC2D_LOG_CRITICAL, "Failed to create full screen shader pipeline");
+
+    /**
+     * Test de l'API ONNX Runtime, pour l'inférence d'un modèle ONNX.
+     */
+    RC2D_OnnxTensor input[] = {
+        { "input_tensor_1", my_input_data, ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, {1, 3}, 2 },
+        { "input_tensor_2", my_bool_flag,  ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL,  {1}, 1 }
+    };
+    RC2D_OnnxTensor output[] = {
+        { "output_tensor", my_output_data, ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, {1, 10}, 2 }
+    };
+
+    RC2D_OnnxModel myModel = {
+        .path = "models-onnx/my_model.onnx",
+        .session = NULL
+    };
+    if (!rc2d_onnx_loadModel(&myModel)) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model");
+        return;
+    }
+
+    rc2d_onnx_run(&myModel, input, output);
 }
 
 void rc2d_update(double dt) 

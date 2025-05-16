@@ -147,4 +147,177 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
     return true;
 }
 
+static size_t rc2d_onnx_getTypeSize(ONNXTensorElementDataType type)
+{
+    switch (type) {
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:   return sizeof(float);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8:   return sizeof(uint8_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8:    return sizeof(int8_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16:  return sizeof(uint16_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16:   return sizeof(int16_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32:   return sizeof(int32_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64:   return sizeof(int64_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE:  return sizeof(double);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL:    return sizeof(bool);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32:  return sizeof(uint32_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64:  return sizeof(uint64_t);
+        default: return 0; // STRING / autres types = non supportés ici
+    }
+}
+
+static size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims)
+{
+    size_t count = 1;
+    for (size_t i = 0; i < dims; ++i) count *= (size_t)shape[i];
+    return count;
+}
+
+bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTensor* outputs)
+{
+    /**
+     * Récupère l’API ONNX Runtime (interface principale vers les fonctions)
+     */
+    const OrtApi* ort = OrtGetApiBase()->GetApi(ORT_API_VERSION);
+
+    /**
+     * Récupère l'allocateur par défaut d'ONNX Runtime
+     * 
+     * L'allocateur est utilisé ici pour allouer les noms d’entrées/sorties
+     * via `SessionGetInputName()` / `SessionGetOutputName()`, qui renvoient
+     * une chaîne allouée dynamiquement que l’on doit libérer avec `allocator->Free()`.
+     */
+    OrtAllocator* allocator = NULL;
+    ort->GetAllocatorWithDefaultOptions(&allocator);
+
+    /**
+     * Récupère dynamiquement le nombre d’entrées et de sorties attendus par le modèle.
+     *
+     * Cela permet de s’adapter à n’importe quel modèle ONNX sans coder en dur
+     * le nombre d’inputs/outputs.
+     */
+    size_t input_count = 0;
+    ort->SessionGetInputCount(model->session, &input_count);
+    size_t output_count = 0;
+    ort->SessionGetOutputCount(model->session, &output_count);
+
+    /**
+     * Crée une description de la mémoire CPU utilisée pour les tensors.
+     * 
+     * Cette info est requise par `CreateTensorWithDataAsOrtValue` pour indiquer
+     * que les données sont en mémoire CPU standard (non GPU).
+     */
+    OrtMemoryInfo* memory_info = NULL;
+    ort->CreateCpuMemoryInfo(OrtArenaAllocator, OrtMemTypeDefault, &memory_info);
+
+    /**
+     * Alloue les buffers nécessaires pour stocker :
+     * - les noms des entrées (`input_names`)
+     * - les OrtValue* représentant les entrées (`input_values`)
+     * 
+     * Chaque `OrtValue*` représente un tensor à passer au moteur d’inférence.
+     */
+    OrtValue** input_values = SDL_malloc(sizeof(OrtValue*) * input_count);
+    const char** input_names = SDL_malloc(sizeof(const char*) * input_count);
+    for (size_t i = 0; i < input_count; ++i)
+    {
+        // Récupère le nom de l’entrée (input) i depuis le modèle ONNX
+        char* name = NULL;
+        ort->SessionGetInputName(model->session, i, allocator, &name);
+        input_names[i] = name;
+
+        // Calcule la taille mémoire du tensor en bytes
+        size_t total_size = rc2d_onnx_getTypeSize(inputs[i].type) * rc2d_onnx_computeElementCount(inputs[i].shape, inputs[i].dims);
+
+        if (inputs[i].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
+        {
+            // Pour les chaînes de caractères, on crée un tensor vide, puis on le remplit
+            ort->CreateTensorAsOrtValue(memory_info, inputs[i].shape, inputs[i].dims, inputs[i].type, &input_values[i]);
+            ort->FillStringTensor(input_values[i], (const char* const*)inputs[i].data, 1); // TODO: gérer plusieurs strings si besoin
+        }
+        else
+        {
+            /**
+             * Pour les types scalaires (float, int, bool, etc.), on crée directement 
+             * le tensor avec les données utilisateur
+             */
+            ort->CreateTensorWithDataAsOrtValue(memory_info,
+                inputs[i].data, total_size,
+                inputs[i].shape, inputs[i].dims,
+                inputs[i].type, &input_values[i]);
+        }
+    }
+
+    /**
+     * Même logique que pour les entrées, mais pour les sorties :
+     * - Alloue les noms des sorties (`output_names`)
+     * - Prépare les `OrtValue*` pour recevoir les résultats de l’inférence
+     *
+     * Ici, les buffers de sorties sont supposés pré-alloués par l'utilisateur
+     * et associés dans `outputs[i].data`.
+     */
+    OrtValue** output_values = SDL_malloc(sizeof(OrtValue*) * output_count);
+    const char** output_names = SDL_malloc(sizeof(const char*) * output_count);
+    for (size_t i = 0; i < output_count; ++i)
+    {
+        // Récupère le nom de la sortie (ouput) i depuis le modèle ONNX
+        char* name = NULL;
+        ort->SessionGetOutputName(model->session, i, allocator, &name);
+        output_names[i] = name;
+
+        // Calcule la taille nécessaire pour les données de sortie
+        size_t total_size = rc2d_onnx_getTypeSize(outputs[i].type) * rc2d_onnx_computeElementCount(outputs[i].shape, outputs[i].dims);
+
+        // Crée un tensor pointant vers le buffer utilisateur
+        ort->CreateTensorWithDataAsOrtValue(memory_info,
+            outputs[i].data, total_size,
+            outputs[i].shape, outputs[i].dims,
+            outputs[i].type, &output_values[i]);
+    }
+
+    /**
+     * Lance l’inférence avec :
+     * - la session modèle (`model->session`)
+     * - les entrées (noms + OrtValue*)
+     * - les sorties attendues (noms + OrtValue* à remplir)
+     */
+    OrtStatus* status = ort->Run(model->session, NULL,
+        input_names, input_values, input_count,
+        output_names, output_count, output_values);
+
+    /**
+     * Libère toutes les ressources utilisées :
+     * - les OrtValue* (inputs / outputs)
+     * - les noms alloués dynamiquement
+     * - les tableaux SDL_malloc
+     * - l'objet memory_info
+     */
+    for (size_t i = 0; i < input_count; ++i)
+    {
+        ort->ReleaseValue(input_values[i]);
+        allocator->Free(allocator, (void*)input_names[i]);
+    }
+    for (size_t i = 0; i < output_count; ++i)
+    {
+        ort->ReleaseValue(output_values[i]);
+        allocator->Free(allocator, (void*)output_names[i]);
+    }
+    SDL_free(input_values);
+    SDL_free(input_names);
+    SDL_free(output_values);
+    SDL_free(output_names);
+    ort->ReleaseMemoryInfo(memory_info);
+
+    /**
+     * Vérifie si une erreur est survenue pendant l’inférence
+     */
+    if (status != NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed");
+        return false;
+    }
+
+    // Succès
+    return true;
+}
+
 #endif // RC2D_ONNX_MODULE_ENABLED

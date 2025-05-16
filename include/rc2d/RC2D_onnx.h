@@ -34,6 +34,21 @@ typedef struct RC2D_OnnxModel {
 } RC2D_OnnxModel;
 
 /**
+ * \brief Représente une entrée ou une sortie pour une inférence ONNX.
+ *
+ * \note Le type, les dimensions et le buffer doivent être correctement renseignés par l’appelant.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_OnnxTensor {
+    const char* name;                         ///< Nom de l’entrée ou de la sortie (doit correspondre à celui du modèle)
+    void* data;                               ///< Pointeur vers les données
+    ONNXTensorElementDataType type;           ///< Type ONNX (ex : FLOAT, INT32, BOOL, STRING…)
+    int64_t shape[8];                         ///< Shape du tensor (max 8 dimensions supportées ici)
+    size_t dims;                              ///< Nombre de dimensions
+} RC2D_OnnxTensor;
+
+/**
  * \brief Charge un modèle ONNX et initialise une session à partir d’un chemin.
  *
  * \param {RC2D_OnnxModel*} model - Pointeur vers la structure à remplir.
@@ -42,6 +57,19 @@ typedef struct RC2D_OnnxModel {
  * \since Disponible depuis RC2D 1.0.0.
  */
 bool rc2d_onnx_loadModel(RC2D_OnnxModel* model);
+
+/**
+ * \brief Lance une inférence avec un modèle ONNX et un tableau d’entrées/sorties dynamiques.
+ *
+ * \param {RC2D_OnnxModel*} model - Modèle ONNX chargé
+ * \param {RC2D_OnnxTensor*} inputs - Tableau d’entrées
+ * \param {RC2D_OnnxTensor*} outputs - Tableau de sorties
+ *
+ * \return true si l’inférence a réussi, false sinon
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTensor* outputs);
 
 #ifdef __cplusplus
 }
