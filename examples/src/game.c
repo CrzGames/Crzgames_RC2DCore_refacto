@@ -131,21 +131,15 @@ void rc2d_load(void)
 
     // Charge le modèle
     RC2D_OnnxModel model = {
-        .path = "models/game_ai_model.onnx",
+        .path = "game_ai_model.onnx",
         .session = NULL
     };
 
-    if (!rc2d_onnx_loadModel(&model)) 
-    {
-        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model");
-        return;
-    }
+    // Charge le modèle ONNX
+    if (!rc2d_onnx_loadModel(&model)) return;
 
     // Inférence
-    if (!rc2d_onnx_run(&model, &input, &output)) {
-        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed");
-        return;
-    }
+    if (!rc2d_onnx_run(&model, &input, &output)) return;
 
     // Détermine l’action à partir des scores
     int best_action = 0;
@@ -159,9 +153,6 @@ void rc2d_load(void)
 
     // Affiche le résultat
     RC2D_log(RC2D_LOG_INFO, "Predicted action: %d (0=left, 1=right, 2=jump)", best_action);
-
-    // Libère la session
-    rc2d_onnx_unloadModel(&model);
 }
 
 void rc2d_update(double dt) 

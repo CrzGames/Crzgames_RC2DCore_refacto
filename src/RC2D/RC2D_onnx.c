@@ -3,6 +3,9 @@
 #include <RC2D/RC2D_onnx.h>
 #include <RC2D/RC2D_logger.h>
 
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_filesystem.h>
+
 /**
  * Contexte global ONNX Runtime (logger, thread pool partagé, etc.)
  */
@@ -118,6 +121,25 @@ void rc2d_onnx_cleanup(void)
 
 bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
 {
+    /**
+     * Vérifie que le modèle est valide
+     * 
+     * Le modèle doit avoir un chemin valide (non NULL)
+     */
+    if (model == NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Model pointer is NULL");
+        return false;
+    }
+    if (model->path == NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Model path is NULL");
+        return false;
+    }
+
+    /**
+     * Récupère l’API ONNX Runtime (interface principale vers les fonctions)
+     */
     const OrtApi* ort = OrtGetApiBase()->GetApi(ORT_API_VERSION);
 
     /**
@@ -125,21 +147,32 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
      * SDL_GetBasePath() renvoie le chemin du répertoire de l’exécutable
      */
     const char* base_path = SDL_GetBasePath();
-    if (!base_path) 
+    if (base_path == NULL)
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "SDL_GetBasePath() failed");
+        RC2D_log(RC2D_LOG_CRITICAL, "SDL_GetBasePath() failed to get base path %s", SDL_GetError());
         return false;
     }
+    
+#if defined(_WIN32) || defined(_WIN64)
+#define RC2D_PATH_SEPARATOR '\\'
+#else
+#define RC2D_PATH_SEPARATOR '/'
+#endif
 
     // Construit le chemin complet vers le modèle ONNX
     char full_path[1024];
-    SDL_snprintf(full_path, sizeof(full_path), "%s%s", base_path, model->path);
+        SDL_snprintf(full_path, sizeof(full_path), "%s%s",
+        base_path,
+        model->path);
+    RC2D_log(RC2D_LOG_INFO, "Loading ONNX model from %s", full_path);
 
     // Crée la session avec le modèle ONNX
-    OrtStatus* status = ort->CreateSession(g_ort_env, full_path, g_session_options, &model->session);
+    OrtStatus* status = ort->CreateSession(g_ort_env, (const ORTCHAR_T*)full_path, g_session_options, &model->session);
     if (status != NULL) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model: %s", model->path);
+        const char* msg = ort->GetErrorMessage(status);
+        RC2D_log(RC2D_LOG_CRITICAL, "Message from ONNX Runtime: %s", msg);
+        ort->ReleaseStatus(status);
         return false;
     }
 
