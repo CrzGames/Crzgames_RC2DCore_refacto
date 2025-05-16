@@ -149,6 +149,15 @@ typedef struct RC2D_OnnxTensor {
 bool rc2d_onnx_loadModel(RC2D_OnnxModel* model);
 
 /**
+ * \brief Libère la session ONNX associée à un modèle précédemment chargé.
+ *
+ * \param model Le modèle dont la session doit être libérée.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_onnx_unloadModel(RC2D_OnnxModel* model);
+
+/**
  * \brief Lance une inférence avec un modèle ONNX et un tableau d’entrées/sorties dynamiques.
  *
  * \param {RC2D_OnnxModel*} model - Modèle ONNX chargé

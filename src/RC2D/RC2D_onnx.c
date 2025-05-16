@@ -147,6 +147,18 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
     return true;
 }
 
+void rc2d_onnx_unloadModel(RC2D_OnnxModel* model)
+{
+    if (!model || !model->session)
+        return;
+
+    const OrtApi* ort = OrtGetApiBase()->GetApi(ORT_API_VERSION);
+    ort->ReleaseSession(model->session);
+    model->session = NULL;
+
+    RC2D_log(RC2D_LOG_INFO, "ONNX model session unloaded.");
+}
+
 static size_t rc2d_onnx_getTypeSize(ONNXTensorElementDataType type)
 {
     switch (type) {
