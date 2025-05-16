@@ -3,10 +3,15 @@
 #include <RC2D/RC2D_onnx.h>
 #include <RC2D/RC2D_logger.h>
 
-// Variables globales pour l’environnement ONNX Runtime et les options de session
+/**
+ * Contexte global ONNX Runtime (logger, thread pool partagé, etc.)
+ */
 static OrtEnv* g_ort_env = NULL;
+
+/**
+ * Configuration de la session (optimisation, EPs, threads, etc.)
+ */
 static OrtSessionOptions* g_session_options = NULL;
-static OrtSession* g_onnx_session = NULL;
 
 bool rc2d_onnx_init(void) 
 {
@@ -111,7 +116,7 @@ void rc2d_onnx_cleanup(void)
     }
 }
 
-bool rc2d_onnx_loadModel(const char* path)
+bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
 {
     const OrtApi* ort = OrtGetApiBase()->GetApi(ORT_API_VERSION);
 
@@ -128,14 +133,13 @@ bool rc2d_onnx_loadModel(const char* path)
 
     // Construit le chemin complet vers le modèle ONNX
     char full_path[1024];
-    SDL_snprintf(full_path, sizeof(full_path), "%s%s", base_path, path);
-    SDL_free((void*)base_path);
+    SDL_snprintf(full_path, sizeof(full_path), "%s%s", base_path, model->path);
 
     // Crée la session avec le modèle ONNX
-    OrtStatus* status = ort->CreateSession(g_ort_env, full_path, g_session_options, &g_onnx_session);
+    OrtStatus* status = ort->CreateSession(g_ort_env, full_path, g_session_options, &model->session);
     if (status != NULL) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model: %s", path);
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model: %s", model->path);
         return false;
     }
 
