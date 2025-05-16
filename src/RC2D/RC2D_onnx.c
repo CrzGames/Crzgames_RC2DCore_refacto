@@ -6,6 +6,10 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_filesystem.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif 
+
 /**
  * Contexte global ONNX Runtime (logger, thread pool partagé, etc.)
  */
@@ -152,22 +156,28 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
         RC2D_log(RC2D_LOG_CRITICAL, "SDL_GetBasePath() failed to get base path %s", SDL_GetError());
         return false;
     }
-    
-#if defined(_WIN32) || defined(_WIN64)
-#define RC2D_PATH_SEPARATOR '\\'
-#else
-#define RC2D_PATH_SEPARATOR '/'
-#endif
 
     // Construit le chemin complet vers le modèle ONNX
     char full_path[1024];
         SDL_snprintf(full_path, sizeof(full_path), "%s%s",
         base_path,
         model->path);
-    RC2D_log(RC2D_LOG_INFO, "Loading ONNX model from %s", full_path);
 
+    /**
+     * IMPORTANT:
+     * Pour Windows, on doit convertir le chemin en UTF-16
+     * Le type de chemin attendu par ONNX Runtime est wchar_t* (UTF-16)
+     * Le chemin est converti avec MultiByteToWideChar()
+     */
+#ifdef _WIN32
+    wchar_t full_path_w[1024];
+    MultiByteToWideChar(CP_UTF8, 0, full_path, -1, full_path_w, 1024);
     // Crée la session avec le modèle ONNX
-    OrtStatus* status = ort->CreateSession(g_ort_env, (const ORTCHAR_T*)full_path, g_session_options, &model->session);
+    OrtStatus* status = ort->CreateSession(g_ort_env, full_path_w, g_session_options, &model->session);
+#else
+    // Crée la session avec le modèle ONNX
+    OrtStatus* status = ort->CreateSession(g_ort_env, full_path, g_session_options, &model->session);
+#endif
     if (status != NULL) 
     {
         const char* msg = ort->GetErrorMessage(status);
