@@ -1675,13 +1675,26 @@ static bool rc2d_engine(void)
      */
 	//rc2d_keyboard_init();
     rc2d_timer_init();
+
     if (!rc2d_onnx_init())
     {
         return false;
     }
 
-    RC2D_log(RC2D_LOG_INFO, "RC2D Engine initialisé avec succès.\n");
+    /**
+     * IMPORTANT:
+     * 
+     * Appel de SDL_GetPath() explicitement, la raison : 
+     * 
+     * SDL met en cache le résultat de cet appel en interne, mais le premier appel à cette fonction 
+     * n'est pas nécessairement rapide, alors planifiez en conséquence.
+     */
+    SDL_GetBasePath();
 
+    // Log pour indiquer que tout le moteur a été initialisé avec succès
+    RC2D_log(RC2D_LOG_INFO, "RC2D Engine initialized successfully.\n");
+
+    // Retourne true pour indiquer que l'initialisation a réussi
 	return true;
 }
 
