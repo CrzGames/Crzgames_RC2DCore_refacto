@@ -265,6 +265,24 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
         ort->SessionGetOutputName(model->session, i, allocator, &name);
         output_names[i] = name;
 
+        // Récupère dynamiquement type, shape et dims de la sortie
+        OrtTypeInfo* type_info = NULL;
+        ort->SessionGetOutputTypeInfo(model->session, i, &type_info);
+
+        const OrtTensorTypeAndShapeInfo* tensor_info = NULL;
+        ort->CastTypeInfoToTensorInfo(type_info, &tensor_info);
+
+        ONNXTensorElementDataType type;
+        ort->GetTensorElementType(tensor_info, &type);
+        outputs[i].type = type;
+
+        size_t num_dims = 0;
+        ort->GetDimensionsCount(tensor_info, &num_dims);
+        outputs[i].dims = num_dims;
+
+        ort->GetDimensions(tensor_info, outputs[i].shape, num_dims);
+        ort->ReleaseTypeInfo(type_info);
+
         if (outputs[i].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
         {
             // Crée un tensor vide : ONNX Runtime va le remplir après inference
@@ -377,6 +395,39 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
 
     // Succès
     return true;
+}
+
+void rc2d_onnx_freeTensors(RC2D_OnnxTensor* tensors, size_t count)
+{
+    if (!tensors) return;
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        RC2D_OnnxTensor* tensor = &tensors[i];
+
+        if (!tensor->data) continue;
+
+        if (tensor->type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
+        {
+            size_t element_count = rc2d_onnx_computeElementCount(tensor->shape, tensor->dims);
+            char** strings = (char**)tensor->data;
+
+            for (size_t j = 0; j < element_count; ++j)
+            {
+                if (strings[j]) {
+                    SDL_free(strings[j]);
+                    strings[j] = NULL;
+                }
+            }
+        }
+
+        // Nettoie complètement la structure pour éviter toute réutilisation incorrecte
+        tensor->name = NULL;
+        tensor->data = NULL;
+        tensor->type = ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
+        tensor->dims = 0;
+        SDL_memset(tensor->shape, 0, sizeof(tensor->shape));
+    }
 }
 
 #endif // RC2D_ONNX_MODULE_ENABLED
