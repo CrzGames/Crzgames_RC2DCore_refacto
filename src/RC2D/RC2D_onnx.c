@@ -228,7 +228,32 @@ size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims)
 }
 
 bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTensor* outputs)
-{
+{   
+    // Vérifier les paramètres d'entrée
+    if (model == NULL || model->session == NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Model is not loaded");
+        return false;
+    }
+
+    if (inputs == NULL || outputs == NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Inputs or outputs are NULL");
+        return false;
+    }
+
+    if (inputs->data == NULL || outputs->data == NULL)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Input or output data is NULL");
+        return false;
+    }
+
+    if (inputs->type == ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Input type is undefined");
+        return false;
+    }
+
     /**
      * Récupère l’API ONNX Runtime (interface principale vers les fonctions)
      */
@@ -354,6 +379,42 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 outputs[i].data, total_size,
                 outputs[i].shape, outputs[i].dims,
                 outputs[i].type, &output_values[i]);
+        }
+    }
+
+    // Check si les OrtValue* ont été créées correctement (input/output values)
+    for (size_t i = 0; i < input_count; ++i)
+    {
+        if (input_values[i] == NULL)
+        {
+            RC2D_log(RC2D_LOG_CRITICAL, "Failed to create OrtValue for input %zu", i);
+            return false;
+        }
+    }
+    for (size_t i = 0; i < output_count; ++i)
+    {
+        if (output_values[i] == NULL)
+        {
+            RC2D_log(RC2D_LOG_CRITICAL, "Failed to create OrtValue for output %zu", i);
+            return false;
+        }
+    }
+
+    // Check si les noms des OrtValue* ont été créés correctement (input/output names)
+    for (size_t i = 0; i < input_count; ++i)
+    {
+        if (input_names[i] == NULL)
+        {
+            RC2D_log(RC2D_LOG_CRITICAL, "Failed to create name for input %zu", i);
+            return false;
+        }
+    }
+    for (size_t i = 0; i < output_count; ++i)
+    {
+        if (output_names[i] == NULL)
+        {
+            RC2D_log(RC2D_LOG_CRITICAL, "Failed to create name for output %zu", i);
+            return false;
         }
     }
 

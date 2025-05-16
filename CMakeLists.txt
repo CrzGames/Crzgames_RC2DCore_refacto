@@ -491,10 +491,8 @@ if(RC2D_BUILD_EXAMPLES)
     "${PROJECT_SOURCE_DIR}/examples/src/*.c"
   )
 
-  if (WIN32)
-    # Définir le projet de démarrage dans Visual Studio
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT rc2d_example)
-  endif()
+  # Définir des flags de compilation pour le mode Release (NDEBUG = No Debug, donc Release)
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
 
   # Créer un exécutable pour l'exemple
   if(ANDROID)
@@ -505,8 +503,10 @@ if(RC2D_BUILD_EXAMPLES)
     add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
   endif()
 
-  # Définir des flags de compilation pour le mode Release (NDEBUG = No Debug, donc Release)
-  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG")
+  if (WIN32)
+    # Définir le projet de démarrage dans Visual Studio
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT rc2d_example)
+  endif()
 
   # Compiler les définitions pour la target rc2d_example
   rc2d_target_compile_definitions(rc2d_example)
