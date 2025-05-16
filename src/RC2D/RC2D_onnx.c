@@ -320,6 +320,17 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 ort->GetStringTensorElement(output_values[i], j, dest[j], len + 1, &len);
             }
         }
+        else
+        {
+            // Copie les données scalaires depuis le tensor vers le buffer utilisateur
+            void* src = NULL;
+            ort->GetTensorMutableData(output_values[i], &src);
+
+            size_t total_size = rc2d_onnx_getTypeSize(outputs[i].type) *
+                                rc2d_onnx_computeElementCount(outputs[i].shape, outputs[i].dims);
+
+            SDL_memcpy(outputs[i].data, src, total_size);
+        }
     }
 
     /**

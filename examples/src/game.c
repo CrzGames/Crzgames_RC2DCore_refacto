@@ -109,25 +109,61 @@ void rc2d_load(void)
     /**
      * Test de l'API ONNX Runtime, pour l'inférence d'un modèle ONNX.
      */
-    RC2D_OnnxTensor input[] = {
-        { "input_tensor_1", my_input_data, ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, {1, 3}, 2 },
-        { "input_tensor_2", my_bool_flag,  ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL,  {1}, 1 }
-    };
-    RC2D_OnnxTensor output[] = {
-        { "output_tensor", my_output_data, ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, {1, 10}, 2 }
+    RC2D_OnnxTensor inputs[] = {
+        {
+            .name = "input_tensor_1",
+            .data = my_input_data,
+            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            .shape = {1, 3},
+            .dims = 2
+        },
+        {
+            .name = "input_tensor_2",
+            .data = my_bool_flag,
+            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL,
+            .shape = {1},
+            .dims = 1
+        },
+        {
+            .name = "input_tensor_3",
+            .data = (void*)my_strings,
+            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
+            .shape = {1, 2},
+            .dims = 2
+        }
     };
 
-    RC2D_OnnxModel myModel = {
+    RC2D_OnnxTensor outputs[] = {
+        {
+            .name = "output_tensor_scores",
+            .data = my_output_scores,
+            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            .shape = {1, 10},
+            .dims = 2
+        },
+        {
+            .name = "output_tensor_labels",
+            .data = my_output_labels, // tableau de `char*` alloué dynamiquement
+            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
+            .shape = {1, 2},
+            .dims = 2
+        }
+    };
+
+    RC2D_OnnxModel model = {
         .path = "models-onnx/my_model.onnx",
         .session = NULL
     };
-    if (!rc2d_onnx_loadModel(&myModel)) 
-    {
+
+    if (!rc2d_onnx_loadModel(&model)) {
         RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model");
         return;
     }
 
-    rc2d_onnx_run(&myModel, input, output);
+    if (!rc2d_onnx_run(&model, inputs, outputs)) {
+        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed");
+        return;
+    }
 }
 
 void rc2d_update(double dt) 
