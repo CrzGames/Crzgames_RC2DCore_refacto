@@ -128,14 +128,14 @@ bool rc2d_onnx_loadModel(const char* path)
 
     // Construit le chemin complet vers le modèle ONNX
     char full_path[1024];
-    SDL_snprintf(full_path, sizeof(full_path), "%s%s", base_path, path_relative_to_base);
+    SDL_snprintf(full_path, sizeof(full_path), "%s%s", base_path, path);
     SDL_free((void*)base_path);
 
     // Crée la session avec le modèle ONNX
     OrtStatus* status = ort->CreateSession(g_ort_env, full_path, g_session_options, &g_onnx_session);
     if (status != NULL) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model: %s", path_relative_to_base);
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model: %s", path);
         return false;
     }
 
