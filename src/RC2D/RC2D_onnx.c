@@ -316,8 +316,11 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 size_t len = 0;
                 ort->GetStringTensorElementLength(output_values[i], j, &len);
 
-                dest[j] = SDL_malloc(len + 1); // +1 pour le '\0'
-                ort->GetStringTensorElement(output_values[i], j, dest[j], len + 1, &len);
+                dest[j] = SDL_malloc(len + 1); // Pour ajouter un \0 manuellement si besoin
+                ort->GetStringTensorElement(output_values[i], len, j, dest[j]);
+
+                // Ajoute un nul terminal pour compatibilité C si nécessaire
+                dest[j][len] = '\0';
             }
         }
         else
