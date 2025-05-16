@@ -232,7 +232,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
         {
             // Pour les chaînes de caractères, on crée un tensor vide, puis on le remplit
             ort->CreateTensorAsOrtValue(memory_info, inputs[i].shape, inputs[i].dims, inputs[i].type, &input_values[i]);
-            ort->FillStringTensor(input_values[i], (const char* const*)inputs[i].data, 1); // TODO: gérer plusieurs strings si besoin
+            size_t string_count = rc2d_onnx_computeElementCount(inputs[i].shape, inputs[i].dims);
+            ort->FillStringTensor(input_values[i], (const char* const*)inputs[i].data, string_count);
         }
         else
         {
@@ -264,14 +265,23 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
         ort->SessionGetOutputName(model->session, i, allocator, &name);
         output_names[i] = name;
 
-        // Calcule la taille nécessaire pour les données de sortie
-        size_t total_size = rc2d_onnx_getTypeSize(outputs[i].type) * rc2d_onnx_computeElementCount(outputs[i].shape, outputs[i].dims);
-
-        // Crée un tensor pointant vers le buffer utilisateur
-        ort->CreateTensorWithDataAsOrtValue(memory_info,
-            outputs[i].data, total_size,
-            outputs[i].shape, outputs[i].dims,
-            outputs[i].type, &output_values[i]);
+        if (outputs[i].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
+        {
+            // Crée un tensor vide : ONNX Runtime va le remplir après inference
+            ort->CreateTensorAsOrtValue(memory_info, outputs[i].shape, outputs[i].dims, outputs[i].type, &output_values[i]);
+        }
+        else
+        {
+            // Calcule la taille nécessaire pour les données de sortie
+            size_t total_size = rc2d_onnx_getTypeSize(outputs[i].type) * rc2d_onnx_computeElementCount(outputs[i].shape, outputs[i].dims);
+    
+            // Cas classique pour float, int, etc.
+            ort->CreateTensorWithDataAsOrtValue(
+                memory_info,
+                outputs[i].data, total_size,
+                outputs[i].shape, outputs[i].dims,
+                outputs[i].type, &output_values[i]);
+        }
     }
 
     /**
@@ -283,6 +293,34 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
     OrtStatus* status = ort->Run(model->session, NULL,
         input_names, input_values, input_count,
         output_names, output_count, output_values);
+
+    /**
+     * Récupère les résultats de l’inférence dans les OrtValue* de sortie
+     * et les copie dans les buffers utilisateurs (outputs[i].data).
+     *
+     * Pour les types scalaires (float, int, bool, etc.), on copie directement
+     * les données.
+     *
+     * Pour les chaînes de caractères, on doit d’abord récupérer la longueur
+     * de chaque chaîne, puis allouer un buffer pour la stocker.
+     */
+    for (size_t i = 0; i < output_count; ++i)
+    {
+        if (outputs[i].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
+        {
+            size_t count = rc2d_onnx_computeElementCount(outputs[i].shape, outputs[i].dims);
+            char** dest = (char**)outputs[i].data;
+
+            for (size_t j = 0; j < count; ++j)
+            {
+                size_t len = 0;
+                ort->GetStringTensorElementLength(output_values[i], j, &len);
+
+                dest[j] = SDL_malloc(len + 1); // +1 pour le '\0'
+                ort->GetStringTensorElement(output_values[i], j, dest[j], len + 1, &len);
+            }
+        }
+    }
 
     /**
      * Libère toutes les ressources utilisées :
@@ -312,8 +350,15 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
      */
     if (status != NULL)
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed");
+        const char* err_msg = ort->GetErrorMessage(status);
+        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed: %s", err_msg);
+        ort->ReleaseStatus(status);
         return false;
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "ONNX inference succeeded");
+        ort->ReleaseStatus(status);
     }
 
     // Succès
