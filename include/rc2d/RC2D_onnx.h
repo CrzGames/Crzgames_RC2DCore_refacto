@@ -12,8 +12,6 @@ extern "C" {
 /**
  * \brief Structure représentant un modèle ONNX chargé en mémoire.
  *
- * \note Cette session est persistante et permet de faire plusieurs inférences sans recharger le modèle.
- *
  * \since Disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_OnnxModel {
