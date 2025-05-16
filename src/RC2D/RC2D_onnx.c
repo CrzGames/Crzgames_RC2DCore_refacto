@@ -6,6 +6,7 @@
 // Variables globales pour l’environnement ONNX Runtime et les options de session
 static OrtEnv* g_ort_env = NULL;
 static OrtSessionOptions* g_session_options = NULL;
+static OrtSession* g_onnx_session = NULL;
 
 bool rc2d_onnx_init(void) 
 {
@@ -108,6 +109,38 @@ void rc2d_onnx_cleanup(void)
         ort->ReleaseEnv(g_ort_env);
         g_ort_env = NULL;
     }
+}
+
+bool rc2d_onnx_loadModel(const char* path)
+{
+    const OrtApi* ort = OrtGetApiBase()->GetApi(ORT_API_VERSION);
+
+    /**
+     * Récupère le chemin de base de l’application
+     * SDL_GetBasePath() renvoie le chemin du répertoire de l’exécutable
+     */
+    const char* base_path = SDL_GetBasePath();
+    if (!base_path) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "SDL_GetBasePath() failed");
+        return false;
+    }
+
+    // Construit le chemin complet vers le modèle ONNX
+    char full_path[1024];
+    SDL_snprintf(full_path, sizeof(full_path), "%s%s", base_path, path_relative_to_base);
+    SDL_free((void*)base_path);
+
+    // Crée la session avec le modèle ONNX
+    OrtStatus* status = ort->CreateSession(g_ort_env, full_path, g_session_options, &g_onnx_session);
+    if (status != NULL) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model: %s", path_relative_to_base);
+        return false;
+    }
+
+    RC2D_log(RC2D_LOG_INFO, "ONNX model loaded: %s", full_path);
+    return true;
 }
 
 #endif // RC2D_ONNX_MODULE_ENABLED
