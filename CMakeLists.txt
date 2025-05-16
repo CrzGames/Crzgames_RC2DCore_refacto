@@ -491,6 +491,11 @@ if(RC2D_BUILD_EXAMPLES)
     "${PROJECT_SOURCE_DIR}/examples/src/*.c"
   )
 
+  if (WIN32)
+    # Définir le projet de démarrage dans Visual Studio
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT rc2d_example)
+  endif()
+
   # Créer un exécutable pour l'exemple
   if(ANDROID)
     # Pour Android, il faut obligatoirement mettre SHARED et "main" comme nom de target, quand
