@@ -25,7 +25,8 @@ typedef struct RC2D_OnnxModel {
     const char* path;
 
     /**
-     * Session ONNX Runtime créée à partir du modèle.
+     * Session ONNX Runtime créée à partir du modèle ONNX, qui à été spécifiée par la propriété path.
+     * 
      * Cette session peut être utilisée plusieurs fois pour effectuer des inférences sans avoir
      * à recharger le modèle depuis le disque.
      * 
