@@ -109,66 +109,59 @@ void rc2d_load(void)
     /**
      * Test de l'API ONNX Runtime, pour l'inférence d'un modèle ONNX.
      */
-    RC2D_OnnxTensor inputs[] = {
-        {
-            .name = "input_tensor_1",
-            .data = my_input_data,
-            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
-            .shape = {1, 3},
-            .dims = 2
-        },
-        {
-            .name = "input_tensor_2",
-            .data = my_bool_flag,
-            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL,
-            .shape = {1},
-            .dims = 1
-        },
-        {
-            .name = "input_tensor_3",
-            .data = (void*)my_strings,
-            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
-            .shape = {1, 2},
-            .dims = 2
-        }
+    // Données simulées : position x, y et santé (comme pendant l'entraînement)
+    float player_state[3] = { 0.5f, 0.5f, 0.2f }; // milieu, faible santé → devrait "sauter" (classe 2)
+
+    // Prépare le tenseur d'entrée
+    RC2D_OnnxTensor input = {
+        .name = "player_state",
+        .data = player_state,
+        .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+        .shape = {1, 3},
+        .dims = 2
     };
 
-    RC2D_OnnxTensor outputs[] = {
-        {
-            .name = "output_tensor_scores", // Pour te repérer dans outputs[0]
-            .data = my_output_scores        // float[10] déjà alloué
-            // type / shape / dims seront remplis automatiquement
-        },
-        {
-            .name = "output_tensor_labels", // Pour te repérer dans outputs[1]
-            .data = my_output_labels        // char* labels[2]; initialisé mais non alloué
-            // type / shape / dims seront remplis automatiquement
-        }
+    // Prépare le tenseur de sortie (1 vecteur de 3 scores logits)
+    float output_logits[3];
+    RC2D_OnnxTensor output = {
+        .name = "action_logits",
+        .data = output_logits
+        // type/shape/dims remplis automatiquement
     };
 
+    // Charge le modèle
     RC2D_OnnxModel model = {
-        .path = "models-onnx/my_model.onnx",
+        .path = "models/game_ai_model.onnx",
         .session = NULL
     };
 
-    if (!rc2d_onnx_loadModel(&model)) {
+    if (!rc2d_onnx_loadModel(&model)) 
+    {
         RC2D_log(RC2D_LOG_CRITICAL, "Failed to load ONNX model");
         return;
     }
 
-    if (!rc2d_onnx_run(&model, inputs, outputs)) {
+    // Inférence
+    if (!rc2d_onnx_run(&model, &input, &output)) {
         RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed");
         return;
     }
 
-    // Affiche les résultats de l'inférence
-    RC2D_log(RC2D_LOG_INFO, "Output scores:");
-    size_t count = rc2d_onnx_computeElementCount(outputs[0].shape, outputs[0].dims);
-    float* scores = (float*)outputs[0].data;
-
-    for (size_t i = 0; i < count; ++i) {
-        RC2D_log(RC2D_LOG_INFO, "%f", scores[i]);
+    // Détermine l’action à partir des scores
+    int best_action = 0;
+    float max_score = output_logits[0];
+    for (int i = 1; i < 3; ++i) {
+        if (output_logits[i] > max_score) {
+            max_score = output_logits[i];
+            best_action = i;
+        }
     }
+
+    // Affiche le résultat
+    RC2D_log(RC2D_LOG_INFO, "Predicted action: %d (0=left, 1=right, 2=jump)", best_action);
+
+    // Libère la session
+    rc2d_onnx_unloadModel(&model);
 }
 
 void rc2d_update(double dt) 
