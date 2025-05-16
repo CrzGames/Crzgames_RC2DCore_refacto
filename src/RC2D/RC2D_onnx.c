@@ -286,7 +286,7 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
         if (inputs[i].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
         {
             // Pour les chaînes de caractères, on crée un tensor vide, puis on le remplit
-            ort->CreateTensorAsOrtValue(memory_info, inputs[i].shape, inputs[i].dims, inputs[i].type, &input_values[i]);
+            ort->CreateTensorAsOrtValue(allocator, inputs[i].shape, inputs[i].dims, inputs[i].type, &input_values[i]);
             size_t string_count = rc2d_onnx_computeElementCount(inputs[i].shape, inputs[i].dims);
             ort->FillStringTensor(input_values[i], (const char* const*)inputs[i].data, string_count);
         }
@@ -341,7 +341,7 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
         if (outputs[i].type == ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING)
         {
             // Crée un tensor vide : ONNX Runtime va le remplir après inference
-            ort->CreateTensorAsOrtValue(memory_info, outputs[i].shape, outputs[i].dims, outputs[i].type, &output_values[i]);
+            ort->CreateTensorAsOrtValue(allocator, outputs[i].shape, outputs[i].dims, outputs[i].type, &output_values[i]);
         }
         else
         {

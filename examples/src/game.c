@@ -131,7 +131,7 @@ void rc2d_load(void)
 
     // Charge le modèle
     RC2D_OnnxModel model = {
-        .path = "game_ai_model.onnx",
+        .path = "models-onnx/game_ai_model.onnx",
         .session = NULL
     };
 
