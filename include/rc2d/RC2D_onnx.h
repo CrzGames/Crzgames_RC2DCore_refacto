@@ -18,7 +18,7 @@ extern "C" {
  */
 typedef struct RC2D_OnnxModel {
     /**
-     * Chemin relatif vers le fichier ONNX à charger, par exemple : "models/modele.onnx"
+     * Chemin relatif vers le fichier ONNX à charger, par exemple : "models-onnx/my_model.onnx"
      * 
      * \note Le path doit être rempli par l'utilisateur avant d'appeler rc2d_onnx_loadModel().
      */
