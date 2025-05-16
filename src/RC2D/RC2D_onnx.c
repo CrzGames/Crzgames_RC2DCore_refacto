@@ -177,7 +177,7 @@ static size_t rc2d_onnx_getTypeSize(ONNXTensorElementDataType type)
     }
 }
 
-static size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims)
+size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims)
 {
     size_t count = 1;
     for (size_t i = 0; i < dims; ++i) count *= (size_t)shape[i];

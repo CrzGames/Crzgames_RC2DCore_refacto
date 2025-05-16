@@ -135,18 +135,14 @@ void rc2d_load(void)
 
     RC2D_OnnxTensor outputs[] = {
         {
-            .name = "output_tensor_scores",
-            .data = my_output_scores,
-            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
-            .shape = {1, 10},
-            .dims = 2
+            .name = "output_tensor_scores", // Pour te repérer dans outputs[0]
+            .data = my_output_scores        // float[10] déjà alloué
+            // type / shape / dims seront remplis automatiquement
         },
         {
-            .name = "output_tensor_labels",
-            .data = my_output_labels, // tableau de `char*` alloué dynamiquement
-            .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
-            .shape = {1, 2},
-            .dims = 2
+            .name = "output_tensor_labels", // Pour te repérer dans outputs[1]
+            .data = my_output_labels        // char* labels[2]; initialisé mais non alloué
+            // type / shape / dims seront remplis automatiquement
         }
     };
 
@@ -163,6 +159,15 @@ void rc2d_load(void)
     if (!rc2d_onnx_run(&model, inputs, outputs)) {
         RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed");
         return;
+    }
+
+    // Affiche les résultats de l'inférence
+    RC2D_log(RC2D_LOG_INFO, "Output scores:");
+    size_t count = rc2d_onnx_computeElementCount(outputs[0].shape, outputs[0].dims);
+    float* scores = (float*)outputs[0].data;
+
+    for (size_t i = 0; i < count; ++i) {
+        RC2D_log(RC2D_LOG_INFO, "%f", scores[i]);
     }
 }
 

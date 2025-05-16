@@ -214,6 +214,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
  */
 void rc2d_onnx_freeTensors(RC2D_OnnxTensor* tensors, size_t count);
 
+size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims);
+
 #ifdef __cplusplus
 }
 #endif
