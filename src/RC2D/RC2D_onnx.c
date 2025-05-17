@@ -180,8 +180,9 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
 #endif
     if (status != NULL) 
     {
+        const char* err_code = ort->GetErrorCode(status);
         const char* msg = ort->GetErrorMessage(status);
-        RC2D_log(RC2D_LOG_CRITICAL, "Message from ONNX Runtime: %s", msg);
+        RC2D_log(RC2D_LOG_CRITICAL, "Message from ONNX Runtime: %s (%s)", err_code, msg);
         ort->ReleaseStatus(status);
         return false;
     }
@@ -427,6 +428,22 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
     OrtStatus* status = ort->Run(model->session, NULL,
         input_names, input_values, input_count,
         output_names, output_count, output_values);
+    /**
+     * Vérifie si une erreur est survenue pendant l’inférence
+     */
+    if (status != NULL)
+    {
+        const char* err_code = ort->GetErrorCode(status);
+        const char* err_msg = ort->GetErrorMessage(status);
+        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed: %s (%s)", err_code, err_msg);
+        ort->ReleaseStatus(status);
+        return false;
+    }
+    else
+    {
+        RC2D_log(RC2D_LOG_INFO, "ONNX inference succeeded");
+        ort->ReleaseStatus(status);
+    }
 
     /**
      * Récupère les résultats de l’inférence dans les OrtValue* de sortie
@@ -492,22 +509,6 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
     SDL_free(output_values);
     SDL_free(output_names);
     ort->ReleaseMemoryInfo(memory_info);
-
-    /**
-     * Vérifie si une erreur est survenue pendant l’inférence
-     */
-    if (status != NULL)
-    {
-        const char* err_msg = ort->GetErrorMessage(status);
-        RC2D_log(RC2D_LOG_CRITICAL, "ONNX inference failed: %s", err_msg);
-        ort->ReleaseStatus(status);
-        return false;
-    }
-    else
-    {
-        RC2D_log(RC2D_LOG_INFO, "ONNX inference succeeded");
-        ort->ReleaseStatus(status);
-    }
 
     // Succès
     return true;
