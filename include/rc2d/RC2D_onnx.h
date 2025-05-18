@@ -23,7 +23,7 @@ typedef struct RC2D_OnnxModel {
     const char* path;
 
     /**
-     * Session ONNX Runtime créée à partir du modèle ONNX, qui à été spécifiée par la propriété path.
+     * Session ONNX Runtime créée à partir du modèle ONNX, spécifié par la propriété path.
      * 
      * Cette session peut être utilisée plusieurs fois pour effectuer des inférences sans avoir
      * à recharger le modèle depuis le disque.
@@ -31,6 +31,19 @@ typedef struct RC2D_OnnxModel {
      * \note La session sera remplie par la fonction rc2d_onnx_loadModel().
      */
     OrtSession* session;
+
+    /**
+     * Indique si le modèle utilise des formes dynamiques pour la dimension de batch.
+     * 
+     * Si true, la première dimension des tenseurs d'entrée et de sortie peut varier
+     * (par exemple, [N, 3] où N est le nombre de PNJ pour lesquels on effectue une inférence).
+     * Si false, la forme est statique (par exemple, [1, 3] pour une seule inférence).
+     * 
+     * \note Doit être défini par l'utilisateur avant d'appeler rc2d_onnx_loadModel().
+     *       Utilisez true pour des inférences sur plusieurs PNJ simultanément, comme dans un batch
+     *       de 150 PNJ avec des états [x, y, santé] pour optimiser les performances.
+     */
+    bool dynamic_batch;
 } RC2D_OnnxModel;
 
 /**
@@ -49,12 +62,14 @@ typedef struct RC2D_OnnxModel {
  *
  * - `data`  : Pointeur vers les données brutes à fournir au modèle.
  *             Cela peut être un tableau de `float`, `int32_t`, `bool`, ou un tableau de `char*` pour les chaînes.
+ *             Pour un batch dynamique, le buffer doit être dimensionné pour N * M éléments
+ *             (par exemple, N * 3 floats pour un tenseur [N, 3] représentant N PNJ avec [x, y, santé]).
  *
  * - `type`  : Type des éléments ONNX (ex : `ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT`, `..._STRING`, etc.).
  *
- * - `shape` : Tableau d'entiers 64 bits définissant la forme du tenseur (ex : `{1, 3}` pour un `float[1][3]`).
+ * - `shape` : Tableau d'entiers 64 bits définissant la forme du tenseur (ex : `{N, 3}` pour un batch de N PNJ).
  *
- * - `dims`  : Nombre de dimensions (ex : `2` pour `{1, 3}`).
+ * - `dims`  : Nombre de dimensions (ex : `2` pour `{N, 3}`).
  *
  * ❗ En cas d’erreur de type, de taille, ou de shape, le modèle peut échouer à l'exécution.
  *
@@ -69,31 +84,49 @@ typedef struct RC2D_OnnxModel {
  *
  * - `data`  : 
  *   - Si le type est scalaire (`FLOAT`, `INT32`, `BOOL`, etc.) :
- *     le buffer pointé par `data` doit être **pré-alloué**.
+ *     le buffer pointé par `data` doit être **pré-alloué** avec une taille suffisante
+ *     (par exemple, N * M floats pour un tenseur [N, M], comme N * 3 pour les scores d'action de N PNJ).
  *   - Si le type est `STRING`, `data` doit être un tableau de `char*` initialisé,
  *     et chaque `char*` sera automatiquement alloué après l’inférence.
  *
  * **Les champs suivants sont automatiquement remplis après `rc2d_onnx_run()` :**
  *
  * - `type`  : Détecté dynamiquement à partir du modèle.
- * - `shape` : Déterminée automatiquement via `GetDimensions()`.
+ * - `shape` : Déterminée automatiquement via `GetDimensions()`. Pour un batch dynamique,
+ *             `shape[0]` sera égal à l'entrée `shape[0]` (par exemple, N pour [N, 3]).
  * - `dims`  : Rempli à partir du nombre de dimensions du modèle.
  *
  *
  * === Exemples ===
  *
- * ➤ **Entrée float :**  
+ * ➤ **Entrée float pour un PNJ (statique) :**
  * ```c
- * float my_input[3] = {1.0f, 2.0f, 3.0f};
+ * float my_input[3] = {0.5f, 0.5f, 0.2f}; // x, y, santé pour un PNJ
  * RC2D_OnnxTensor input = {
- *     .name = "input_tensor",
+ *     .name = "player_state",
  *     .data = my_input,
  *     .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
  *     .shape = {1, 3},
  *     .dims = 2
  * };
  * ```
- * 
+ *
+ * ➤ **Entrée float pour 150 PNJ (dynamique) :**
+ * ```c
+ * float npc_states[150 * 3]; // 150 PNJ, chaque état = [x, y, santé]
+ * // Remplir npc_states avec les états des PNJ, par exemple :
+ * // npc_states[0] = 0.5f; npc_states[1] = 0.5f; npc_states[2] = 0.2f; // PNJ 1
+ * // npc_states[3] = 0.1f; npc_states[4] = 0.9f; npc_states[5] = 0.8f; // PNJ 2
+ * // ...
+ * RC2D_OnnxTensor input = {
+ *     .name = "player_state",
+ *     .data = npc_states,
+ *     .type = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+ *     .shape = {150, 3}, // 150 PNJ, 3 valeurs par PNJ
+ *     .dims = 2
+ * };
+ * ```
+ *
  * ➤ **Entrée string :**
  * ```c
  * const char* my_strings[] = {"hello", "world"};
@@ -105,18 +138,32 @@ typedef struct RC2D_OnnxModel {
  *     .dims = 2
  * };
  * ```
- * 
- * ➤ **Sortie float :**  
+ *
+ * ➤ **Sortie float pour un PNJ (statique) :**
  * ```c
- * float scores[10];
+ * float scores[3]; // Scores pour left, right, jump
  * RC2D_OnnxTensor output = {
- *     .name = "output_scores",
- *     .data = scores // Doit être alloué,
+ *     .name = "action_logits",
+ *     .data = scores // Doit être alloué
  *     // type / shape / dims seront remplis par rc2d_onnx_run()
  * };
  * ```
  *
- * ➤ **Sortie string :**  
+ * ➤ **Sortie float pour 150 PNJ (dynamique) :**
+ * ```c
+ * float npc_actions[150 * 3]; // Scores pour 150 PNJ, chaque PNJ a [left, right, jump]
+ * RC2D_OnnxTensor output = {
+ *     .name = "action_logits",
+ *     .data = npc_actions // Doit être alloué
+ *     // type / shape / dims seront remplis par rc2d_onnx_run()
+ * };
+ * // Après rc2d_onnx_run(), npc_actions contient :
+ * // npc_actions[0..2] = scores pour PNJ 1
+ * // npc_actions[3..5] = scores pour PNJ 2
+ * // ...
+ * ```
+ *
+ * ➤ **Sortie string :**
  * ```c
  * char* labels[2]; // Non alloués, mais initialisés (pointeurs nuls ok)
  * RC2D_OnnxTensor output = {
@@ -137,11 +184,10 @@ typedef struct RC2D_OnnxTensor {
     size_t dims;                              ///< Nombre de dimensions (détecté automatiquement pour les sorties)
 } RC2D_OnnxTensor;
 
-
 /**
  * \brief Charge un modèle ONNX et initialise une session à partir d’un chemin.
  *
- * \param {RC2D_OnnxModel*} model - Pointeur vers la structure à remplir.
+ * \param model Pointeur vers la structure à remplir.
  * \return true en cas de succès, false sinon.
  *
  * \since Disponible depuis RC2D 1.0.0.
@@ -158,20 +204,25 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model);
 void rc2d_onnx_unloadModel(RC2D_OnnxModel* model);
 
 /**
- * \brief Lance une inférence avec un modèle ONNX et un tableau d’entrées/sorties dynamiques.
+ * \brief Lance une inférence avec un modèle ONNX et un tableau d’entrées/sorties.
  *
- * \param {RC2D_OnnxModel*} model - Modèle ONNX chargé
- * \param {RC2D_OnnxTensor*} inputs - Tableau d’entrées
- * \param {RC2D_OnnxTensor*} outputs - Tableau de sorties
+ * \param model Modèle ONNX chargé.
+ * \param inputs Tableau d’entrées.
+ * \param outputs Tableau de sorties.
  *
- * \return true si l’inférence a réussi, false sinon
+ * \return true si l’inférence a réussi, false sinon.
+ *
+ * \note Si model->dynamic_batch est true, la première dimension des tenseurs peut varier
+ *       (par exemple, [N, 3] pour N PNJ, où chaque PNJ a un état [x, y, santé]).
+ *       Les buffers d'entrée et de sortie doivent être dimensionnés pour N * M éléments
+ *       (par exemple, N * 3 floats pour [N, 3]).
  *
  * \since Disponible depuis RC2D 1.0.0.
  */
 bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTensor* outputs);
 
 /**
- * \brief Libère les ressources associées à un ou plusieurs tensors ONNX.
+ * \brief Libère les ressources associées à un ou plusieurs tenseurs ONNX.
  *
  * Cette fonction permet de libérer proprement les données associées à une ou plusieurs
  * structures `RC2D_OnnxTensor`, en particulier lorsqu’il s’agit de sorties de type `STRING`.
@@ -185,11 +236,11 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
  *
  * Tous les champs de la structure sont ensuite réinitialisés à zéro.
  *
- * \param tensors Tableau de `RC2D_OnnxTensor` à libérer (ou pointeur vers un seul tensor)
- * \param count Nombre de tensors à libérer (1 pour une structure unique)
+ * \param tensors Tableau de `RC2D_OnnxTensor` à libérer (ou pointeur vers un seul tenseur)
+ * \param count Nombre de tenseurs à libérer (1 pour une structure unique)
  *
  * === Exemple : sortie scalaire ===
- * \code
+ * ```c
  * float result[10];
  * RC2D_OnnxTensor out = {
  *     .name = "output",
@@ -197,10 +248,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
  * };
  * rc2d_onnx_run(&model, inputs, &out);
  * rc2d_onnx_freeTensors(&out, 1); // OK, ne libère pas result
- * \endcode
+ * ```
  *
  * === Exemple : sortie string ===
- * \code
+ * ```c
  * char* labels[2];
  * RC2D_OnnxTensor out = {
  *     .name = "labels",
@@ -208,13 +259,11 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
  * };
  * rc2d_onnx_run(&model, inputs, &out);
  * rc2d_onnx_freeTensors(&out, 1); // Libère labels[0], labels[1], puis nettoie la structure
- * \endcode
+ * ```
  *
  * \since Disponible depuis RC2D 1.0.0.
  */
 void rc2d_onnx_freeTensors(RC2D_OnnxTensor* tensors, size_t count);
-
-size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims);
 
 #ifdef __cplusplus
 }
