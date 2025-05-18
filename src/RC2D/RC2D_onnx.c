@@ -298,7 +298,28 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
      * Chaque `OrtValue*` représente un tensor à passer au moteur d’inférence.
      */
     OrtValue** input_values = SDL_malloc(sizeof(OrtValue*) * input_count);
+    if (!input_values) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to allocate input_values");
+        ort->ReleaseMemoryInfo(memory_info);
+        return false;
+    }
+
     const char** input_names = SDL_malloc(sizeof(const char*) * input_count);
+    if (!input_names) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to allocate input_names");
+        SDL_free(input_values);
+        ort->ReleaseMemoryInfo(memory_info);
+        return false;
+    }
+
+    /**
+     * Prépare les OrtValue* pour chaque entrée (input) :
+     * - Récupère le nom de l’entrée depuis le modèle ONNX
+     * - Crée un tensor vide avec `CreateTensorAsOrtValue()`
+     * - Remplit le tensor avec les données utilisateur
+     */
     for (size_t i = 0; i < input_count; ++i)
     {
         // Récupère le nom de l’entrée (input) i depuis le modèle ONNX
@@ -338,7 +359,32 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
      * et associés dans `outputs[i].data`.
      */
     OrtValue** output_values = SDL_malloc(sizeof(OrtValue*) * output_count);
+    if (!output_values) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to allocate output_values");
+        SDL_free(input_values);
+        SDL_free(input_names);
+        ort->ReleaseMemoryInfo(memory_info);
+        return false;
+    }
+
     const char** output_names = SDL_malloc(sizeof(const char*) * output_count);
+    if (!output_names) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Failed to allocate output_names");
+        SDL_free(input_values);
+        SDL_free(input_names);
+        SDL_free(output_values);
+        ort->ReleaseMemoryInfo(memory_info);
+        return false;
+    }
+
+    /**
+     * Prépare les OrtValue* pour chaque sortie (output) :
+     * - Récupère le nom de la sortie depuis le modèle ONNX
+     * - Crée un tensor vide avec `CreateTensorAsOrtValue()`
+     * - Remplit le tensor avec les données utilisateur
+     */
     for (size_t i = 0; i < output_count; ++i)
     {
         // Récupère le nom de la sortie (ouput) i depuis le modèle ONNX
