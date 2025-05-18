@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_system.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_platform_defines.h>
 
 #include <SDL3/SDL_haptic.h>
 #include <SDL3/SDL_system.h>

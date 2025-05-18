@@ -2,11 +2,12 @@
 
 #include <RC2D/RC2D_onnx.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_platform_defines.h>
 
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_filesystem.h>
 
-#ifdef _WIN32
+#ifdef RC2D_PLATFORM_WIN32
 #include <windows.h>
 #endif 
 
@@ -169,7 +170,7 @@ bool rc2d_onnx_loadModel(RC2D_OnnxModel* model)
      * Le type de chemin attendu par ONNX Runtime est wchar_t* (UTF-16)
      * Le chemin est converti avec MultiByteToWideChar()
      */
-#ifdef _WIN32
+#ifdef RC2D_PLATFORM_WIN32
     wchar_t full_path_w[1024];
     MultiByteToWideChar(CP_UTF8, 0, full_path, -1, full_path_w, 1024);
     // Crée la session avec le modèle ONNX

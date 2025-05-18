@@ -1,6 +1,7 @@
 #include <RC2D/RC2D_gpu.h>
 #include <RC2D/RC2D_assert.h>
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_platform_defines.h>
 
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_filesystem.h>

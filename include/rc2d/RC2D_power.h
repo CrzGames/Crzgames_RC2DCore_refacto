@@ -25,7 +25,6 @@ typedef enum RC2D_PowerState {
 	RC2D_POWERSTATE_CHARGED
 } RC2D_PowerState;
 
-
 typedef struct RC2D_PowerInfo {
 	RC2D_PowerState state;
 	int batteryLevel; // En pourcentage (0-100)

@@ -1,6 +1,7 @@
 #include <RC2D/RC2D_mouse.h>
 #include <RC2D/RC2D_internal.h> // Required for : rc2d_engine_state.window (SDL_Window*)
 #include <RC2D/RC2D_logger.h> // Required for : RC2D_log
+#include <RC2D/RC2D_platform_defines.h>
 
 #include <SDL3/SDL_mouse.h>
 #include <SDL3_image/SDL_image.h>
