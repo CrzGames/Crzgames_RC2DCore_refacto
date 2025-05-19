@@ -156,6 +156,27 @@ function(rc2d_configure_onnxruntime target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
+    elseif (APPLE)
+      # Link le dossier include de ONNX Runtime à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include/onnxruntime")
+
+      # Link les librairies ONNX Runtime
+      target_link_libraries(${target_name} PRIVATE
+        "-framework CoreML"
+      )
+
+      # Copier aussi les libraries dynamique dans le répertoire de l'exécutable
+      file(GLOB_RECURSE ONNX_DYLIBS
+        "${CRZGAMES_LIBRARIES}/macos/lib/onnxruntime/*.dylib"
+      )
+      foreach(FILE IN LISTS ONNX_DYLIBS)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
     endif()
   endif()
 endfunction()
@@ -163,7 +184,7 @@ endfunction()
 function(rc2d_configure_shadercross target_name)
   if (APPLE AND CMAKE_OSX_SYSROOT MATCHES "macosx")
     # Repertoire cible des binaires de shadercross pour "examples/shaders/tools"
-    set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/macos/bin/SDL3_shadercross/x64_arm64")
+    set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/macos/bin/SDL3_shadercross")
 
     # Répertoire cible pour les outils de shaders, pour la compilation hors ligne des shaders
     set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
@@ -194,7 +215,7 @@ function(rc2d_configure_shadercross target_name)
       )
 
       # Récupérer le dossier de la lib shadercross
-      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/x64_arm64")
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross")
 
       # Link la lib shadercross
       target_link_libraries(${target_name} PRIVATE
@@ -203,7 +224,7 @@ function(rc2d_configure_shadercross target_name)
 
       # Copier aussi les DLLs dans le répertoire de l'exécutable
       file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/x64_arm64/*"
+        "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/*"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
         get_filename_component(FILE_NAME "${FILE}" NAME)
@@ -333,7 +354,7 @@ function(rc2d_configure_openssl target_name)
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include")
 
       # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
-      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/OpenSSL/X64_arm64")
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/lib/OpenSSL")
 
       # Link les librairies OpenSSL
       target_link_libraries(${target_name} PRIVATE
