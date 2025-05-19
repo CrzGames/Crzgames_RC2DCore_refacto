@@ -90,7 +90,7 @@ RC2D_Thread *rc2d_thread_newWithOptions(RC2D_ThreadFunction fn, const char *name
         SDL_ThreadID thread_id = SDL_GetThreadID(thread);
         if (thread_id && !SDL_SetCurrentThreadPriority(rc2d_thread_convert_priority(options->priority))) 
         {
-            RC2D_LOG_WARNING("echec de la définition de la priorité pour le thread %s : %s", name ? name : "sans nom", SDL_GetError());
+            RC2D_log(RC2D_LOG_WARN, "echec de la définition de la priorité pour le thread %s : %s", name ? name : "sans nom", SDL_GetError());
         }
     }
 
