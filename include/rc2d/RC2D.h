@@ -4,6 +4,7 @@
 #include <RC2D/RC2D_assert.h>
 #include <RC2D/RC2D_asyncio.h>
 #include <RC2D/RC2D_audio.h>
+#include <RC2D/RC2D_camera.h>
 #include <RC2D/RC2D_collision.h>
 #include <RC2D/RC2D_config.h>
 #include <RC2D/RC2D_data.h>
