@@ -47,7 +47,7 @@ RC2D_Thread *rc2d_thread_new(RC2D_ThreadFunction fn, const char *name, void *dat
      * Taille de pile par défaut, priorité normale, non détaché
      */
     RC2D_ThreadOptions options = {0};
-    return rc2d_thread_new_with_options(fn, name, data, &options);
+    return rc2d_thread_newWithOptions(fn, name, data, &options);
 }
 
 RC2D_Thread *rc2d_thread_newWithOptions(RC2D_ThreadFunction fn, const char *name, void *data, const RC2D_ThreadOptions *options) 
@@ -107,7 +107,7 @@ void rc2d_thread_wait(RC2D_Thread *thread, int *status)
 {
     if (!thread) 
     {
-        RC2D_LOG_WARNING("le thread est NULL");
+        RC2D_log(RC2D_LOG_WARN, "le thread est NULL");
         if (status) *status = -1;
         return;
     }
@@ -120,7 +120,7 @@ void rc2d_thread_detach(RC2D_Thread *thread)
 {
     if (!thread) 
     {
-        RC2D_LOG_WARNING("le thread est NULL");
+        RC2D_log(RC2D_LOG_WARN, "le thread est NULL");
         return;
     }
 
@@ -132,7 +132,7 @@ RC2D_ThreadState rc2d_thread_getState(RC2D_Thread *thread)
 {
     if (!thread) 
     {
-        RC2D_LOG_WARNING("le thread est NULL");
+        RC2D_log(RC2D_LOG_WARN, "le thread est NULL");
         return RC2D_THREAD_STATE_UNKNOWN;
     }
 

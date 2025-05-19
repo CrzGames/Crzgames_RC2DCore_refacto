@@ -1,6 +1,7 @@
 #include <mygame/game.h>
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_time.h>
+#include <RC2D/RC2D_thread.h>
 #include <RC2D/RC2D_internal.h>
 
 static RC2D_GPUShader* fragmentShader;
@@ -9,15 +10,51 @@ static RC2D_GPUGraphicsPipeline graphicsPipeline;
 static SDL_GPUColorTargetDescription colorTargetDesc;
 static SDL_GPUGraphicsPipelineTargetInfo targetInfo;
 
+// Variable globale pour le thread de test
+static RC2D_Thread* testThread = NULL;
+static bool threadDetached = false;
+
 typedef struct UniformBlock {
     float resolution[2]; // float2
     float time;          // float
     float padding;       // align to 16 bytes (std140)
 } UniformBlock;
 
+// Fonction exécutée par le thread de test
+static int testThreadFunction(void *data) {
+    RC2D_log(RC2D_LOG_INFO, "Thread de test démarré\n");
+
+    // Définit une priorité haute pour simuler une tâche critique
+    if (!rc2d_thread_setPriority(RC2D_THREAD_PRIORITY_HIGH)) {
+        RC2D_log(RC2D_LOG_WARN, "Échec de la définition de la priorité haute pour le thread\n");
+    }
+
+    // Simule un chargement de ressources (attente de 5 secondes)
+    RC2D_DateTime startTime;
+    rc2d_time_getCurrentTime(&startTime);
+    for (int i = 0; i < 5; i++) {
+        SDL_Delay(1000); // Attend 1 seconde
+        RC2D_log(RC2D_LOG_INFO, "Thread de test : progression %d/5\n", i + 1);
+    }
+
+    RC2D_DateTime endTime;
+    rc2d_time_getCurrentTime(&endTime);
+    RC2D_log(RC2D_LOG_INFO, "Thread de test terminé en %d secondes\n", endTime.second - startTime.second);
+
+    return 42; // Code de retour arbitraire
+}
+
 void rc2d_unload(void) 
 {
     RC2D_log(RC2D_LOG_INFO, "My game is unloading...\n");
+
+    // Nettoie le thread s'il n'est pas détaché
+    if (testThread && !threadDetached) {
+        int status;
+        rc2d_thread_wait(testThread, &status);
+        RC2D_log(RC2D_LOG_INFO, "Thread de test terminé avec le code de retour : %d\n", status);
+    }
+    testThread = NULL;
 }
 
 void rc2d_load(void) 
@@ -106,11 +143,53 @@ void rc2d_load(void)
 
     bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline, true);
     RC2D_assert_release(success, RC2D_LOG_CRITICAL, "Failed to create full screen shader pipeline");
+
+    // Crée un thread de test avec des options personnalisées
+    RC2D_ThreadOptions options = {
+        .stack_size = 0, // Taille par défaut
+        .priority = RC2D_THREAD_PRIORITY_NORMAL,
+        .auto_detach = false // Ne pas détacher automatiquement pour tester rc2d_thread_wait
+    };
+    testThread = rc2d_thread_newWithOptions(testThreadFunction, "TestLoadingThread", NULL, &options);
+    if (!testThread) {
+        RC2D_log(RC2D_LOG_CRITICAL, "Échec de la création du thread de test\n");
+    } else {
+        RC2D_log(RC2D_LOG_INFO, "Thread de test créé avec succès\n");
+    }
 }
 
 void rc2d_update(double dt) 
 {
+    // Surveille l'état du thread
+    if (testThread) {
+        RC2D_ThreadState state = rc2d_thread_getState(testThread);
+        const char *stateStr;
+        switch (state) {
+            case RC2D_THREAD_STATE_UNKNOWN:
+                stateStr = "Inconnu";
+                break;
+            case RC2D_THREAD_STATE_ALIVE:
+                stateStr = "En cours";
+                break;
+            case RC2D_THREAD_STATE_DETACHED:
+                stateStr = "Détaché";
+                break;
+            case RC2D_THREAD_STATE_COMPLETE:
+                stateStr = "Terminé";
+                break;
+            default:
+                stateStr = "Erreur";
+        }
+        RC2D_log(RC2D_LOG_DEBUG, "État du thread de test : %s\n", stateStr);
 
+        // Teste le détachement si le thread est terminé
+        if (state == RC2D_THREAD_STATE_COMPLETE && !threadDetached) {
+            RC2D_log(RC2D_LOG_INFO, "Détachement du thread de test\n");
+            rc2d_thread_detach(testThread);
+            threadDetached = true;
+            testThread = NULL;
+        }
+    }
 }
 
 void rc2d_draw(void)
