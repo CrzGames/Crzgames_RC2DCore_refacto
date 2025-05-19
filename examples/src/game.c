@@ -1,15 +1,17 @@
 #include <mygame/game.h>
 #include <RC2D/RC2D.h>
-#include <RC2D/RC2D_time.h>
-#include <RC2D/RC2D_thread.h>
-#include <RC2D/RC2D_messagebox.h>
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_camera.h>
 
 static RC2D_GPUShader* fragmentShader;
 static RC2D_GPUShader* vertexShader;
 static RC2D_GPUGraphicsPipeline graphicsPipeline;
 static SDL_GPUColorTargetDescription colorTargetDesc;
 static SDL_GPUGraphicsPipelineTargetInfo targetInfo;
+
+// Variables globales pour le test de la caméra
+static RC2D_Camera* test_camera = NULL;
+static bool camera_permission_granted = false;
 
 typedef struct UniformBlock {
     float resolution[2]; // float2
@@ -20,6 +22,12 @@ typedef struct UniformBlock {
 void rc2d_unload(void) 
 {
     RC2D_log(RC2D_LOG_INFO, "My game is unloading...\n");
+
+    // Ferme la caméra si ouverte
+    if (test_camera) {
+        rc2d_camera_close(test_camera);
+        test_camera = NULL;
+    }
 }
 
 void rc2d_load(void) 
@@ -109,54 +117,76 @@ void rc2d_load(void)
     bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline, true);
     RC2D_assert_release(success, RC2D_LOG_CRITICAL, "Failed to create full screen shader pipeline");
 
-    // Test de rc2d_messagebox_showSimple
-    success = rc2d_messagebox_showSimple(
-        RC2D_MESSAGEBOX_INFORMATION,
-        "Bienvenue",
-        "Le jeu a démarré avec succès !",
-        rc2d_window_getWindow()
-    );
-    if (success) {
-        RC2D_log(RC2D_LOG_INFO, "Boîte de dialogue simple affichée avec succès\n");
+    // Test du module RC2D_camera
+    // Liste les caméras disponibles
+    int count;
+    RC2D_CameraID *devices = rc2d_camera_getDevices(&count);
+    if (devices && count > 0) {
+        RC2D_log(RC2D_LOG_INFO, "Caméras détectées : %d", count);
+        for (int i = 0; devices[i]; i++) {
+            const char *name = rc2d_camera_getName(devices[i]);
+            RC2D_log(RC2D_LOG_INFO, "Caméra %d : %s (ID %u)", i, name ? name : "Inconnu", devices[i]);
+        }
+
+        // Ouvre la première caméra
+        RC2D_CameraOptions options = {
+            .spec = &(RC2D_CameraSpec){
+                .format = SDL_PIXELFORMAT_RGB24,
+                .width = 1280,
+                .height = 720,
+                .framerate = 30
+            },
+            .position = RC2D_CAMERA_POSITION_BACK_FACING
+        };
+        test_camera = rc2d_camera_open(devices[0], &options);
+        if (test_camera) {
+            RC2D_log(RC2D_LOG_INFO, "Caméra ouverte avec succès, en attente de permission");
+            // Récupère et logue la spécification
+            RC2D_CameraSpec spec;
+            if (rc2d_camera_getSpec(test_camera, &spec)) {
+                RC2D_log(RC2D_LOG_INFO, "Spécification : %dx%d, format %u, %d FPS", 
+                         spec.width, spec.height, spec.format, spec.framerate);
+            }
+        } else {
+            RC2D_log(RC2D_LOG_ERROR, "Échec de l'ouverture de la caméra");
+        }
+        SDL_free(devices);
     } else {
-        RC2D_log(RC2D_LOG_ERROR, "Échec de l'affichage de la boîte de dialogue simple\n");
+        RC2D_log(RC2D_LOG_WARN, "Aucune caméra détectée");
+        if (devices) SDL_free(devices);
     }
 
-    // Test de rc2d_messagebox_show avec boutons personnalisés
-    static const RC2D_MessageBoxButton buttons[] = {
-        { "Oui", 1, true, false },
-        { "Non", 2, false, true },
-        { "Annuler", 3, false, false }
-    };
-    static const Uint8 color_scheme[SDL_MESSAGEBOX_COLOR_COUNT][3] = {
-        { 255, 0, 255 }, // Fond
-        { 0, 0, 0 },       // Texte
-        { 100, 100, 100 }, // Bordure bouton
-        { 200, 200, 200 }, // Fond bouton
-        { 0, 255, 0 }      // Bouton sélectionné
-    };
-    RC2D_MessageBoxOptions options = {
-        .type = RC2D_MESSAGEBOX_WARNING,
-        .window = rc2d_window_getWindow(),
-        .title = "Confirmation",
-        .message = "Voulez-vous commencer une nouvelle partie ?",
-        .buttons = buttons,
-        .num_buttons = 3,
-        .buttons_left_to_right = true,
-        .color_scheme = color_scheme
-    };
-    int button_id = 0;
-    success = rc2d_messagebox_show(&options, &button_id);
-    if (success) {
-        RC2D_log(RC2D_LOG_INFO, "Boîte de dialogue personnalisée affichée, bouton sélectionné : %d\n", button_id);
-    } else {
-        RC2D_log(RC2D_LOG_ERROR, "Échec de l'affichage de la boîte de dialogue personnalisée\n");
+    // Test de cas d'erreur : ID invalide
+    test_camera = rc2d_camera_open(0, NULL);
+    if (!test_camera) {
+        RC2D_log(RC2D_LOG_INFO, "Échec attendu de l'ouverture avec ID invalide");
     }
 }
 
 void rc2d_update(double dt) 
 {
-    // Pas besoin de SDL_PumpEvents ici, car les boîtes de dialogue sont modales (bloquantes)
+    // Vérifie la permission et capture une image si approuvé
+    if (test_camera && !camera_permission_granted) {
+        int permission = rc2d_camera_getPermission(test_camera);
+        if (permission == 1) {
+            camera_permission_granted = true;
+            RC2D_log(RC2D_LOG_INFO, "Permission caméra accordée");
+        } else if (permission == -1) {
+            RC2D_log(RC2D_LOG_ERROR, "Permission caméra refusée");
+            rc2d_camera_close(test_camera);
+            test_camera = NULL;
+        }
+    }
+
+    // Capture une image si la permission est accordée
+    if (test_camera && camera_permission_granted) {
+        Uint64 timestamp_ns;
+        SDL_Surface *frame = rc2d_camera_getFrame(test_camera, &timestamp_ns);
+        if (frame) {
+            RC2D_log(RC2D_LOG_INFO, "Image capturée : %dx%d à %llu ns", frame->w, frame->h, timestamp_ns);
+            rc2d_camera_releaseFrame(test_camera, frame);
+        }
+    }
 }
 
 void rc2d_draw(void)

@@ -945,6 +945,56 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         return SDL_APP_SUCCESS;
     }
 
+    // Le presse-papiers ou la sélection principale a changé
+    else if (event->type == SDL_EVENT_CLIPBOARD_UPDATE)
+    {
+        /*if (rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_clipboardupdated != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_clipboardupdated();
+        }*/
+    }
+
+    // Un nouvel appareil photo est disponible
+    /*else if (event->type == SDL_EVENT_CAMERA_DEVICE_ADDED)
+    {
+        if (rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_cameraadded != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_cameraadded(event->camera.deviceID);
+        }
+    }
+
+    // Un appareil photo a été retiré
+    else if (event->type == SDL_EVENT_CAMERA_DEVICE_REMOVED)
+    {
+        if (rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_cameraremoved != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_cameraremoved(event->camera.deviceID);
+        }
+    }
+
+    // Un appareil photo a été approuvé pour être utilisé par l'utilisateur.
+    else if (event->type == SDL_EVENT_CAMERA_DEVICE_APPROVED)
+    {
+        if (rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_cameraapproved != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_cameraapproved(event->camera.deviceID);
+        }
+    }
+
+    // L'utilisation d'un appareil photo a été refusée à l'utilisateur.
+    else if (event->type == SDL_EVENT_CAMERA_DEVICE_DENIED)
+    {
+        if (rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_cameradenied != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_cameradenied(event->camera.deviceID);
+        }
+    }*/
+
     else if (event->type == SDL_EVENT_WILL_ENTER_FOREGROUND) 
     {
 /**
