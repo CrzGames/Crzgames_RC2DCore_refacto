@@ -37,7 +37,6 @@
 #include <RC2D/RC2D_time.h>
 #include <RC2D/RC2D_timer.h>
 #include <RC2D/RC2D_touch.h>
-#include <RC2D/RC2D_tray.h>
 #include <RC2D/RC2D_tweening.h>
 #include <RC2D/RC2D_version.h>
 #include <RC2D/RC2D_window.h>
