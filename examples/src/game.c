@@ -27,11 +27,6 @@ void rc2d_load(void)
     rc2d_window_setTitle("Test jeu");
     rc2d_window_setMinimumSize(1280, 720);
 
-    RC2D_DateFormat *dateFormat;
-    RC2D_TimeFormat *timeFormat;
-    rc2d_time_getDateTimeLocalePreferences(&dateFormat, &timeFormat);
-    RC2D_log(RC2D_LOG_INFO, "Date format: %d, Time format: %d", dateFormat, timeFormat);
-
     fragmentShader = rc2d_gpu_loadShader("test.fragment");
     RC2D_assert_release(fragmentShader != NULL, RC2D_LOG_CRITICAL, "Failed to load fragment shader");
 
