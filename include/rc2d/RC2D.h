@@ -2,7 +2,6 @@
 #define RC2D_H
 
 #include <RC2D/RC2D_assert.h>
-#include <RC2D/RC2D_asyncio.h>
 #include <RC2D/RC2D_audio.h>
 #include <RC2D/RC2D_camera.h>
 #include <RC2D/RC2D_collision.h>
@@ -12,11 +11,10 @@
 #include <RC2D/RC2D_event.h>
 #include <RC2D/RC2D_filedialog.h>
 #include <RC2D/RC2D_filesystem.h>
+// #include <RC2D/RC2D_gamepad.h>
 #include <RC2D/RC2D_gpu.h>
 #include <RC2D/RC2D_graphics.h>
 #include <RC2D/RC2D_guid.h>
-#include <RC2D/RC2D_iostream.h>
-// #include <RC2D/RC2D_joystick.h>
 #include <RC2D/RC2D_keyboard.h>
 #include <RC2D/RC2D_keycode.h>
 #include <RC2D/RC2D_local.h>
@@ -32,7 +30,6 @@
 #include <RC2D/RC2D_power.h>
 #include <RC2D/RC2D_scancode.h>
 // #include <RC2D/RC2D_spine.h>
-#include <RC2D/RC2D_storage.h>
 #include <RC2D/RC2D_system.h>
 #include <RC2D/RC2D_thread.h>
 #include <RC2D/RC2D_time.h>
