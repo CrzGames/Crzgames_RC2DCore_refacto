@@ -2,9 +2,9 @@
 #define RC2D_TIME_H
 
 #include <SDL3/SDL_time.h> // Required for : SDL_Time, SDL_DateTime, SDL_DateFormat, SDL_TimeFormat
-
 #include <stdbool.h>       // Required for : bool
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -105,17 +105,36 @@ typedef enum RC2D_TimeFormat {
 } RC2D_TimeFormat;
 
 /**
- * \brief Obtient la valeur actuelle de l'horloge temps réel du système en nanosecondes depuis le 1er janvier 1970.
+ * \brief Obtient la valeur actuelle de l'horloge temps réel du système.
  *
- * \param TODO: AFAIRE
+ * Obtient la valeur actuelle de l'horloge temps réel du système en nanosecondes depuis 
+ * le 1er janvier 1970 en temps universel coordonné (UTC).
+ *
+ * \param datetime Pointeur vers la structure RC2D_DateTime à remplir.
  * \return true en cas de succès, false sinon.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-bool rc2d_time_getCurrent(RC2D_DateTime *datetime);
+bool rc2d_time_getCurrentTime(RC2D_DateTime *datetime);
 
+/**
+ * \brief Obtient le format de date et d'heure préféré actuel pour les paramètres régionaux du système.
+ *
+ * Remplit les pointeurs fournis avec les formats de date et d'heure préférés selon la configuration de la locale système.
+ *
+ * \param dateFormat Pointeur vers RC2D_DateFormat pour stocker le format de date (peut être NULL).
+ * \param timeFormat Pointeur vers RC2D_TimeFormat pour stocker le format d'heure (peut être NULL).
+ * \return true en cas de succès, false sinon.
+ *
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+bool rc2d_time_getDateTimeLocalePreferences(RC2D_DateFormat *dateFormat, RC2D_TimeFormat *timeFormat);
+
+/* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
 }
 #endif
