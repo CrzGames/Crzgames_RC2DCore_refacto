@@ -5,6 +5,9 @@
 #include <SDL3/SDL_haptic.h>
 #include <SDL3/SDL_system.h>
 #include <SDL3/SDL_timer.h>
+#include <SDL3/SDL_clipboard.h>
+#include <SDL3/SDL_cpuinfo.h>
+#include <SDL3/SDL_misc.h>
 
 
 /**
@@ -50,68 +53,7 @@ static Uint32 stopVibration(Uint32 interval, void *param)
 
 void rc2d_system_vibrate(const double seconds, const float strength) 
 {
-    if (seconds <= 0 || strength < 0 || strength > 1)
-    {
-        RC2D_log(RC2D_LOG_WARN, "Impossible de jouer la vibration : paramètres invalides dans rc2d_system_vibrate().");
-        return;
-    }
 
-    // Convertir la durée de la vibration en millisecondes
-    Uint32 milliseconds = (Uint32)(seconds * 1000);
-
-    // Si la plateforme est iOS, ajuster la durée de vibration
-    #ifdef RC2D_PLATFORM_IOS
-        milliseconds = 500; // 0.5 seconde en millisecondes (durée fixe sur iOS)
-    #endif
-
-    // Ouvrir un périphérique haptique
-    SDL_Haptic *haptic = SDL_HapticOpen(0);
-
-    // Vérifier si le périphérique haptique a été ouvert avec succès
-    if (haptic != NULL) 
-    {
-        // Vérifier si le périphérique prend en charge la vibration
-        if (SDL_HapticQuery(haptic) & SDL_HAPTIC_CONSTANT) 
-        {
-            // Initialiser la vibration
-            int result = SDL_HapticRumbleInit(haptic);
-            if (result != 0)
-            {
-                // Afficher un message d'erreur si la vibration n'a pas pu être initialisée
-                RC2D_log(RC2D_LOG_ERROR, "Impossible d'initialiser la vibration %s.", SDL_GetError());
-            }
-            else
-            {
-                // Jouer la vibration
-                result = SDL_HapticRumblePlay(haptic, strength, milliseconds);
-                if (result != 0)
-                {
-                    // Afficher un message d'erreur si la vibration n'a pas pu être jouée
-                    RC2D_log(RC2D_LOG_ERROR, "Impossible de jouer la vibration %s.", SDL_GetError());
-                }
-                else
-                {
-                    // Planifier l'arrêt de la vibration après la durée spécifiée
-                    SDL_TimerID timerID = SDL_AddTimer(milliseconds, stopVibration, haptic);
-                    if (timerID == 0)
-                    {
-                        // Afficher un message d'erreur si la temporisation a échoué
-                        RC2D_log(RC2D_LOG_ERROR, "Impossible de planifier l'arrêt de la vibration %s.", SDL_GetError());
-                    }
-                }
-            }
-        }
-        else 
-        {
-            // Afficher un message d'erreur si le périphérique ne prend pas en charge la vibration
-            RC2D_log(RC2D_LOG_ERROR, "Le périphérique ne prend pas en charge la vibration.");
-        }
-    } 
-    else 
-    {
-        // Afficher un message d'erreur si le périphérique haptique n'a pas pu être ouvert
-        RC2D_log(RC2D_LOG_ERROR, "Impossible d'ouvrir le dispositif haptique %s.", SDL_GetError());
-    }
 }
 
 bool rc2d_system_hasClipboardText(void)
