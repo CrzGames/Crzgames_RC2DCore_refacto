@@ -7,6 +7,8 @@
 #include <limits.h> // Require for : UINT_MAX
 #include <stdlib.h> // Require for : RAND_MAX
 
+#include <math.h>
+
 /**
  * Calcule le produit vectoriel de trois points pour déterminer la convexité.
  */

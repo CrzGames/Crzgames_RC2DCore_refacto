@@ -4,6 +4,8 @@
 
 #include <SDL3/SDL_stdinc.h>
 
+#include <math.h>
+
 // Définir la valeur du nombre d'Euler si elle n'est pas déjà définie
 #ifndef M_E
 #define M_E 2.71828182845904523536

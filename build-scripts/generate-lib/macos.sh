@@ -9,7 +9,7 @@ mkdir -p dist/lib/macos/outputs/x64-arm64/Release
 cd dist/lib/macos/arm64/
 
 echo -e "\e[32m \n Generate project with CMake for macOS Apple Silicon arm64...\e[0m"
-cmake ../../../.. -G "Xcode" CMAKE_OSX_SYSROOT="macosx"
+cmake ../../../.. -G "Xcode" -DCMAKE_OSX_SYSROOT="macosx"
 echo -e "\e[32m \n Build project for Release...\e[0m"
 cmake --build . --config Release
 echo -e "\e[32m \n Build project for Debug...\e[0m"

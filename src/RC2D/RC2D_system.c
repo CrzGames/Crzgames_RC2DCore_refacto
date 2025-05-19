@@ -36,14 +36,14 @@ static Uint32 stopVibration(Uint32 interval, void *param)
 
     SDL_Haptic *haptic = (SDL_Haptic *)param; // Convertit le paramètre en un pointeur vers un périphérique haptique
 
-    int result = SDL_HapticRumbleStop(haptic); // Arrête la vibration du périphérique haptique
+    int result = SDL_StopHapticRumble(haptic); // Arrête la vibration du périphérique haptique
     if (result != 0)
     {
         // Affiche un message d'erreur si la vibration n'a pas pu être arrêtée
         RC2D_log(RC2D_LOG_ERROR, "Impossible d'arrêter la vibration : %s.", SDL_GetError());
     }
 
-    SDL_HapticClose(haptic); // Ferme le gestionnaire haptique
+    SDL_CloseHaptic(haptic); // Ferme le gestionnaire haptique
 
     return 0; // Retourner 0 pour que le timer ne se replanifie pas automatiquement
 }
