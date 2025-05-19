@@ -234,8 +234,10 @@ void rc2d_timer_init(void);
 
 void rc2d_gpu_hotReloadShaders(void);
 
+#if RC2D_ONNX_MODULE_ENABLED
 bool rc2d_onnx_init(void);
 void rc2d_onnx_cleanup(void);
+#endif
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
