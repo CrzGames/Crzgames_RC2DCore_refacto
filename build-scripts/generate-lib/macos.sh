@@ -2,14 +2,14 @@
 
 # Generate lib for macOS to Intel x64 and Apple Silicon arm64 architectures
 
-mkdir -p dist/lib/macos/x64-arm64/
+mkdir -p dist/lib/macos/arm64/
 mkdir -p dist/lib/macos/outputs/x64-arm64/Debug
 mkdir -p dist/lib/macos/outputs/x64-arm64/Release
 
-cd dist/lib/macos/x64-arm64/
+cd dist/lib/macos/arm64/
 
-echo -e "\e[32m \n Generate project with CMake for macOS Intel x86_64 and Apple Silicon arm64...\e[0m"
-cmake ../../../.. -G "Xcode" -DCMAKE_SYSTEM_NAME=Darwin
+echo -e "\e[32m \n Generate project with CMake for macOS Apple Silicon arm64...\e[0m"
+cmake ../../../.. -G "Xcode" CMAKE_OSX_SYSROOT="macosx"
 echo -e "\e[32m \n Build project for Release...\e[0m"
 cmake --build . --config Release
 echo -e "\e[32m \n Build project for Debug...\e[0m"
