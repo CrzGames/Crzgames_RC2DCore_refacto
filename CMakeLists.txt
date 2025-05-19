@@ -182,7 +182,7 @@ function(rc2d_configure_onnxruntime target_name)
 endfunction()
 
 function(rc2d_configure_shadercross target_name)
-  if (APPLE AND CMAKE_OSX_SYSROOT MATCHES "macosx")
+  if (APPLE)
     # Repertoire cible des binaires de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/macos/bin/SDL3_shadercross")
 
@@ -196,7 +196,7 @@ function(rc2d_configure_shadercross target_name)
 
     # Copier les binaires de shadercross dans le répertoire "examples/shaders/tools"
     file(GLOB_RECURSE SHADERCROSS_BINARY
-      "${SHADERCROSS_BINARY_DIR}/*"
+      "${SHADERCROSS_BINARY_DIR}/*.dylib"
     )
     foreach(FILE IN LISTS SHADERCROSS_BINARY)
       get_filename_component(FILE_NAME "${FILE}" NAME)
@@ -224,7 +224,7 @@ function(rc2d_configure_shadercross target_name)
 
       # Copier aussi les DLLs dans le répertoire de l'exécutable
       file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/*"
+        "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/*.dylib"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
         get_filename_component(FILE_NAME "${FILE}" NAME)
