@@ -1,125 +1,300 @@
 #!/bin/bash
 
-# Compatibilité : 
-# Ce script est conçu pour fonctionner sur les systèmes Unix (Linux/macOS).
+# ==================================================
+# Configuration par défaut
+# ==================================================
+# Documentation version MSL : https://developer.apple.com/documentation/metal/mtllanguageversion
+MSL_VERSION="3.2.0"
+COMPILE_SPIRV=false
+COMPILE_DXIL=false
+COMPILE_MSL=false
+COMPILE_JSON=true
+HAS_ONLY_OPTION=false
 
-# Documentation :
-# Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal) et JSON (réflexion des ressources shaders).
-# Il utilise le binaire shadercross de SDL3_shadercross pour effectuer la compilation des shaders.
-# Les shaders source HLSL doivent être placés dans le répertoire ../src.
-# Les shaders compilés seront placés dans le répertoire ../compiled.
-# Les répertoires de sortie pour les shaders compilés sont organisés comme suit :
-# - ../compiled/spirv : pour les shaders SPIR-V (Vulkan)
-# - ../compiled/msl : pour les shaders MSL (Metal)
-# - ../compiled/dxil : pour les shaders DXIL (Direct3D12)
-# Le répertoire ../reflection contiendra les fichiers JSON de réflexion des ressources shaders.
-# Le script vérifie d'abord si le binaire shadercross de SDL3_shadercross est présent dans le répertoire ../tools.
-# Si le binaire n'est pas trouvé, le script affiche un message d'erreur et se termine.
-# Ensuite, il vérifie s'il existe des fichiers HLSL à compiler dans le répertoire ../src.
-# Si aucun fichier HLSL n'est trouvé, le script affiche un message d'erreur et se termine.
-# Si des fichiers HLSL sont trouvés, le script crée les répertoires de sortie nécessaires pour les shaders compilés.
-# Il compile chaque fichier HLSL dans le répertoire source en utilisant SDL_shadercross et génère les fichiers de sortie correspondants.
+# ==================================================
+# Gestion des arguments en ligne de commande
+# ==================================================
+parse_args() {
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --help)
+                print_help
+                exit 0
+                ;;
+            --msl-version)
+                if [ -z "$2" ]; then
+                    print_red "--msl-version requiert un argument."
+                    print_red "Usage : compile_shaders.sh --msl-version [version]"
+                    print_red "Exemple : compile_shaders.sh --msl-version 2.3.0"
+                    exit 1
+                fi
+                MSL_VERSION="$2"
+                shift 2
+                ;;
+            --only-spirv)
+                COMPILE_SPIRV=true
+                HAS_ONLY_OPTION=true
+                shift
+                ;;
+            --only-dxil)
+                COMPILE_DXIL=true
+                HAS_ONLY_OPTION=true
+                shift
+                ;;
+            --only-msl)
+                COMPILE_MSL=true
+                HAS_ONLY_OPTION=true
+                shift
+                ;;
+            --no-json)
+                COMPILE_JSON=false
+                shift
+                ;;
+            *)
+                print_red "Argument inconnu : $1"
+                print_red "Utilisez --help pour afficher la liste des options disponibles."
+                exit 1
+                ;;
+        esac
+    done
+}
 
-# Utilisation :
-# 1. Rendez le script exécutable :
-# chmod +x ./shaders/scripts/compile_shaders.sh
-# 2. Exécutez le script :
-# ./shaders/scripts/compile_shaders.sh
+# Appeler la fonction de parsing des arguments
+parse_args "$@"
 
+# Si une option --only-* a été utilisée, désactiver les formats non spécifiés
+if [ "$HAS_ONLY_OPTION" = true ]; then
+    [ "$COMPILE_SPIRV" != true ] && COMPILE_SPIRV=false
+    [ "$COMPILE_DXIL" != true ] && COMPILE_DXIL=false
+    [ "$COMPILE_MSL" != true ] && COMPILE_MSL=false
+else
+    # Si aucune option --only-* n'a été utilisée, activer tous les formats par défaut
+    COMPILE_SPIRV=true
+    COMPILE_DXIL=true
+    COMPILE_MSL=true
+fi
+
+# ==================================================
+# Variables de chemins
+# ==================================================
 RELATIVE_SHADERCROSS="../tools/shadercross"
 SRC_DIR="../src"
 OUT_COMPILED_DIR="../compiled"
 OUT_REFLECTION_DIR="../reflection"
 
+# Variable pour le compteur de shaders compilés
 COMPILED_COUNT=0
-
-# ------------------------------------------------
-# Fonctions d'affichage coloré avec préfixes
-# ------------------------------------------------
-print_red() {
-    echo -e "\033[31m[ERROR] $1\033[0m"
-}
-
-print_green() {
-    echo -e "\033[32m[INFO] $1\033[0m"
-}
-
-print_success() {
-    echo -e "\033[32m[SUCCESS] $1 ✅\033[0m"
-}
+TOTAL_HLSL_COUNT=0
+SKIPPED_COUNT=0
 
 # Résoudre le chemin absolu du binaire shadercross
-ABS_SHADERCROSS="$(cd "$(dirname "$RELATIVE_SHADERCROSS")" && pwd)/$(basename "$RELATIVE_SHADERCROSS")"
+ABS_SHADERCROSS=$(cd "$(dirname "$0")/$RELATIVE_SHADERCROSS/.." && pwd)/shadercross
 
 # Résoudre le chemin absolu du répertoire source des shaders
-ABS_SRC_DIR="$(cd "$(dirname "$SRC_DIR")" && pwd)/$(basename "$SRC_DIR")"
+ABS_SRC_DIR=$(cd "$SRC_DIR" && pwd)
 
 # Vérification de l'existence du binaire shadercross local
 if [ ! -f "$ABS_SHADERCROSS" ]; then
-    print_red "Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouver à l'emplacement suivant :"
+    print_red "Le binaire 'shadercross' (SDL3_shadercross) n'est pas trouvé à l'emplacement suivant :"
     print_red "$ABS_SHADERCROSS"
-    print_red "Veuillez vous assurer que le binaire et ses dependances sont presents dans le repertoire specifier."
+    print_red "Veuillez vous assurer que le binaire et ses dépendances sont présents dans le répertoire spécifié."
     exit 1
 fi
 
-# Vérification s'il existe des fichiers .hlsl à compiler
-shopt -s nullglob
-HLSL_FILES=("$SRC_DIR"/*.hlsl)
-shopt -u nullglob
+# Vérification s'il existe des fichiers .hlsl à compiler dans le répertoire source
+FOUND_HLSL=false
+for f in "$SRC_DIR"/*.hlsl; do
+    if [ -f "$f" ]; then
+        FOUND_HLSL=true
+        break
+    fi
+done
 
-if [ ${#HLSL_FILES[@]} -eq 0 ]; then
-    print_red "Aucun shader HLSL (.hlsl) trouvé dans le répertoire suivant :"
+# Si aucun fichier .hlsl n'est trouvé, le script affiche un message d'erreur et se termine
+if [ "$FOUND_HLSL" = false ]; then
+    print_red "Aucun shader source HLSL (.hlsl) trouvé dans le répertoire :"
     print_red "$ABS_SRC_DIR"
     exit 0
 fi
 
 # Création des répertoires de sortie si nécessaire
-mkdir -p "$OUT_COMPILED_DIR/spirv" "$OUT_COMPILED_DIR/dxil" "$OUT_COMPILED_DIR/msl" "$OUT_REFLECTION_DIR"
+if [ "$COMPILE_SPIRV" = true ]; then
+    mkdir -p "$OUT_COMPILED_DIR/spirv"
+fi
+if [ "$COMPILE_DXIL" = true ]; then
+    mkdir -p "$OUT_COMPILED_DIR/dxil"
+fi
+if [ "$COMPILE_MSL" = true ]; then
+    mkdir -p "$OUT_COMPILED_DIR/msl"
+fi
+if [ "$COMPILE_JSON" = true ]; then
+    mkdir -p "$OUT_REFLECTION_DIR"
+fi
 
-# Concernant la version MSL (Metal), il est recommandé de spécifier explicitement le modèle de version cible.
-# SDL_shadercross utilise par défaut MSL 1.2 pour garantir une compatibilité maximale avec d'anciens appareils.
-# Cependant, l'API GPU SDL3 impose des exigences matérielles minimales (macOS 10.14+, iOS/tvOS 13.0+, A9 ou Intel Mac2 GPU minimum),
-# MSL 2.1 ou supérieur systématiquement disponible sur ces appareils.
-# Garder la version 1.2 par défaut n'est donc pas cohérent avec les exigences de SDL3.
-# Il est fortement conseillé d'utiliser --msl-version 2.1 (ou supérieur) pour compiler les shaders Metal destinés à SDL3 GPU API.
-MSL_VERSION="2.1"
-# A voir pour la version 2.3 : iOS 14.0+ iPadOS 14.0+ macOS 11.0+ tvOS 14.0+
-
-# Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal) et JSON (réflexion des ressources shaders)
+# Compilation des shaders HLSL vers SPIR-V (Vulkan), Metal (MSL), DXIL (Direct3D12) et JSON (réflexion des ressources shaders)
 # Via le binaire SDL_shadercross
-for file in "$SRC_DIR"/*.hlsl; do
-    filename=$(basename "$file" .hlsl)
+for f in "$SRC_DIR"/*.hlsl; do
+    if [ -f "$f" ]; then
+        ((TOTAL_HLSL_COUNT++))
+        filename=$(basename "$f" .hlsl)
 
-    # Compilation des shaders HLSL vers SPIR-V (Vulkan), DXIL (Direct3D12) et MSL (Metal)
-    "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/spirv/$filename.spv"
-    "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/dxil/$filename.dxil"
-    "$ABS_SHADERCROSS" "$file" -o "$OUT_COMPILED_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
+        # Vérifier que le fichier contient une fonction main en tant que point d'entrée dans le shader
+        # Si le fichier ne contient pas de point d'entrée "main", l'ignorer et passer au suivant
+        if ! check_shader_main "$f"; then
+            echo -e "\033[33m[SKIP] Ignore le shader source $(basename "$f") : aucun point d'entrée \"main\"\033[0m"
+            ((SKIPPED_COUNT++))
+        else
+            # Compilation des shaders HLSL vers SPIR-V (Vulkan)
+            if [ "$COMPILE_SPIRV" = true ]; then
+                "$ABS_SHADERCROSS" "$f" -o "$OUT_COMPILED_DIR/spirv/$filename.spv"
+            fi
 
-    # Compilation du fichier JSON de réflexion des ressources shaders
-    "$ABS_SHADERCROSS" "$file" -o "$OUT_REFLECTION_DIR/$filename.json"
+            # Compilation des shaders HLSL vers DXIL (Direct3D12)
+            if [ "$COMPILE_DXIL" = true ]; then
+                "$ABS_SHADERCROSS" "$f" -o "$OUT_COMPILED_DIR/dxil/$filename.dxil"
+            fi
 
-    # Incrémentation du compteur de shaders compilés
-    COMPILED_COUNT=$((COMPILED_COUNT + 1))
+            # Compilation des shaders HLSL vers MSL (Metal)
+            if [ "$COMPILE_MSL" = true ]; then
+                "$ABS_SHADERCROSS" "$f" -o "$OUT_COMPILED_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
+            fi
+
+            # Compilation des fichiers JSON de réflexion des ressources shaders
+            if [ "$COMPILE_JSON" = true ]; then
+                "$ABS_SHADERCROSS" "$f" -o "$OUT_REFLECTION_DIR/$filename.json"
+            fi
+
+            # Incrémentation du compteur de shaders compilés
+            ((COMPILED_COUNT++))
+        fi
+    fi
 done
 
 # Récupération du répertoire de sortie absolu des shaders compilés
-ABS_COMPILED_DIR="$(cd "$OUT_COMPILED_DIR" && pwd)"
+ABS_OUT_COMPILED_DIR=$(cd "$OUT_COMPILED_DIR" && pwd)
 
 # Récupération du répertoire de sortie absolu des fichiers JSON de réflexion des ressources shaders
-ABS_REFLECTION_DIR="$(cd "$OUT_REFLECTION_DIR" && pwd)"
+ABS_OUT_REFLECTION_DIR=$(cd "$OUT_REFLECTION_DIR" && pwd)
 
-# Affichage des logs pour information
-echo ""
-print_success "$COMPILED_COUNT shader(s) compile(s) avec succes ✅"
-echo ""
-echo "Compilation des shaders source HLSL vers SPIR-V (Vulkan), MSL (Metal) et DXIL (Direct3D12) terminer."
-echo "Compilation des fichiers JSON de reflexion des ressources shaders terminer."
-echo "Les shaders compiler sont disponibles dans les repertoires de sortie :"
-echo "SPIR-V (Vulkan) :" 
-print_green "$ABS_COMPILED_DIR/spirv"
-echo "MSL (Metal) :" 
-print_green "$ABS_COMPILED_DIR/msl"
-echo "DXIL (Direct3D12) :"
-print_green "$ABS_COMPILED_DIR/dxil"
-echo "Les fichiers JSON de reflexion des ressources shaders sont disponibles dans le repertoire de sortie :"
-print_green "$ABS_REFLECTION_DIR"
+echo
+print_summary
+echo
+
+if [ "$COMPILE_SPIRV" = true ]; then
+    print_green "SPIR-V (Shaders Vulkan) :"
+    print_cyan "$ABS_OUT_COMPILED_DIR/spirv"
+fi
+if [ "$COMPILE_MSL" = true ]; then
+    print_green "MSL (Shaders Metal) :"
+    print_cyan "$ABS_OUT_COMPILED_DIR/msl"
+fi
+if [ "$COMPILE_DXIL" = true ]; then
+    print_green "DXIL (Shaders Direct3D12) :"
+    print_cyan "$ABS_OUT_COMPILED_DIR/dxil"
+fi
+if [ "$COMPILE_JSON" = true ]; then
+    print_green "JSON (Informations de réflexion sur les ressources shaders) :"
+    print_cyan "$ABS_OUT_REFLECTION_DIR"
+fi
+
+exit 0
+
+# ==================================================
+# Fonction pour afficher l'aide détaillée
+# ==================================================
+print_help() {
+    echo
+    echo "==========================================="
+    echo "RC2D - Compilation de shaders hors ligne"
+    echo "==========================================="
+    echo
+    echo "Compatibilité :"
+    echo "    Ce script est conçu pour fonctionner sur les systèmes UNIX (macOS/Linux)."
+    echo
+    echo "Utilisation :"
+    echo "    compile_shaders.sh [options]"
+    echo
+    echo "Options disponibles :"
+    echo "    --msl-version [version]   Spécifie la version de MSL pour Metal"
+    echo "    --only-spirv              Compiler uniquement pour SPIR-V (Vulkan)"
+    echo "    --only-dxil               Compiler uniquement pour DXIL (Direct3D12)"
+    echo "    --only-msl                Compiler uniquement pour MSL (Metal)"
+    echo "    --no-json                 Désactiver la génération des fichiers JSON (réflexion des ressources shaders)"
+    echo "    --help                    Afficher cette aide"
+    echo
+    echo "Comportement par défaut :"
+    echo "    Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)."
+    echo "    Génère les fichiers JSON : Les informations de réflexion automatique sur les ressources utilisées par un shader."
+    echo "    Version MSL par défaut : 3.2.0 (macOS 15.0+, iOS/iPadOS 18.0+)."
+    echo
+    echo "Exemples :"
+    echo "    compile_shaders.sh --only-dxil"
+    echo "    compile_shaders.sh --only-msl --msl-version 2.3.0 --no-json"
+    echo "    compile_shaders.sh --only-spirv --only-msl"
+    echo "    compile_shaders.sh"
+    echo
+    echo "Requis :"
+    echo "    SDL3_shadercross CLI (binaire shadercross) doit être présent dans le répertoire : ../tools."
+    echo
+    echo "Documentation :"
+    echo "    Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)."
+    echo "    Les fichiers JSON de réflexion des ressources shaders sont générés pour chaque shader source HLSL."
+    echo
+    echo "    Les shaders source HLSL doivent être placés dans le répertoire ../src."
+    echo "    Les shaders compilés seront placés dans le répertoire ../compiled."
+    echo "    Les fichiers JSON de réflexion des ressources shaders seront placés dans le répertoire ../reflection."
+    echo
+    echo "    Répertoires de sortie :"
+    echo "        ../compiled/spirv : shaders SPIR-V (Vulkan)"
+    echo "        ../compiled/msl   : shaders MSL (Metal)"
+    echo "        ../compiled/dxil  : shaders DXIL (Direct3D12)"
+    echo "        ../reflection     : fichiers JSON de réflexion des ressources shaders"
+    echo
+    echo "    Le script vérifie si le binaire shadercross est présent dans ../tools."
+    echo "    S'il est absent, un message d'erreur est affiché et le script se termine."
+    echo
+    echo "    Ensuite, il vérifie s'il existe des fichiers HLSL à compiler dans ../src."
+    echo "    S'il n'y en a pas, le script affiche un message et termine proprement."
+    echo "    Sinon, il compile tous les fichiers .hlsl trouvés."
+    echo
+}
+
+# ---------------------------------------
+# Fonction pour afficher le résumé
+# ---------------------------------------
+print_summary() {
+    echo -e "\033[93m[SUMMARY] Compilation\033[0m"
+    echo -e "\033[37m  Total shader source .hlsl traité : $TOTAL_HLSL_COUNT\033[0m"
+    echo -e "\033[33m  Total shader source .hlsl ignoré : $SKIPPED_COUNT\033[0m"
+    echo -e "\033[32m  Total shader compilé avec succès : $COMPILED_COUNT\033[0m"
+    if [ "$COMPILE_JSON" = true ]; then
+        echo -e "\033[32m  Total fichiers JSON généré : $COMPILED_COUNT\033[0m"
+    fi
+}
+
+# ---------------------------------------
+# Fonctions d'affichage coloré avec préfixes
+# ---------------------------------------
+print_red() {
+    echo -e "\033[31m[ERROR] $1\033[0m"
+}
+
+print_green() {
+    echo -e "\033[93m[INFO] $1\033[0m"
+}
+
+print_success() {
+    echo -e "\033[32m[SUCCESS] $1\033[0m"
+}
+
+print_cyan() {
+    echo -e "\033[36m[PATH] $1\033[0m"
+}
+
+# Vérifie si un fichier shader contient une fonction main
+check_shader_main() {
+    if ! grep -q "main" "$1"; then
+        return 1
+    fi
+    return 0
+}
