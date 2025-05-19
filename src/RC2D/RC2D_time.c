@@ -23,7 +23,7 @@ static void rc2d_time_convert_sdl_datetime(const SDL_DateTime *sdl_dt, RC2D_Date
     rc2d_dt->utc_offset = sdl_dt->utc_offset;
 }
 
-bool rc2d_time_getCurrent(RC2D_DateTime *datetime) 
+bool rc2d_time_getCurrentTime(RC2D_DateTime *datetime) 
 {
     if (!datetime) 
     {
@@ -49,7 +49,7 @@ bool rc2d_time_getCurrent(RC2D_DateTime *datetime)
     return true;
 }
 
-bool rc2d_time_getLocalePreferences(RC2D_DateFormat *dateFormat, RC2D_TimeFormat *timeFormat) 
+bool rc2d_time_getDateTimeLocalePreferences(RC2D_DateFormat *dateFormat, RC2D_TimeFormat *timeFormat) 
 {
     SDL_DateFormat sdl_date_format;
     SDL_TimeFormat sdl_time_format;
