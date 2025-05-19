@@ -531,7 +531,7 @@ bool rc2d_collision_raycastCircle(const RC2D_Ray ray, const RC2D_Circle circle, 
  * @param {RC2D_Point*} intersection - Pointeur vers une structure pour stocker le point d'intersection si une collision est détectée.
  * @return {bool} `true` si une collision est détectée avec un pixel solide, sinon `false`.
  */
-static bool traceLineAndCheckCollision(const RC2D_ImageData* imageData, const RC2D_Ray ray, RC2D_Point* intersection) 
+/*static bool traceLineAndCheckCollision(const RC2D_ImageData* imageData, const RC2D_Ray ray, RC2D_Point* intersection) 
 {
     if (imageData == NULL || imageData->mask == NULL) 
     {
@@ -581,9 +581,9 @@ static bool traceLineAndCheckCollision(const RC2D_ImageData* imageData, const RC
     }
 
     return false; // Aucune collision détectée
-}
+}*/
 
-bool rc2d_collision_raycastPixelPerfect(const RC2D_ImageData* imageData, const RC2D_Ray ray, RC2D_Point* intersection)
+/*bool rc2d_collision_raycastPixelPerfect(const RC2D_ImageData* imageData, const RC2D_Ray ray, RC2D_Point* intersection)
 {
     if (imageData == NULL || imageData->mask == NULL) 
     {
@@ -592,4 +592,4 @@ bool rc2d_collision_raycastPixelPerfect(const RC2D_ImageData* imageData, const R
     }
 
     return traceLineAndCheckCollision(imageData, ray, intersection);
-}
+}*/

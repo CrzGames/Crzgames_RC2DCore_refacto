@@ -364,7 +364,7 @@ bool rc2d_collision_raycastSegment(const RC2D_Ray ray, const RC2D_Segment segmen
  * \see rc2d_collision_pointInAABB
  * \see rc2d_collision_raycastCircle
  */
-bool rc2d_collision_raycastPixelPerfect(const RC2D_ImageData* imageData, const RC2D_Ray ray, RC2D_Point* intersection);
+//bool rc2d_collision_raycastPixelPerfect(const RC2D_ImageData* imageData, const RC2D_Ray ray, RC2D_Point* intersection);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
