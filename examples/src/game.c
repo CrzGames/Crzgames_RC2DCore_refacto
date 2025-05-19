@@ -2,6 +2,7 @@
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_time.h>
 #include <RC2D/RC2D_thread.h>
+#include <RC2D/RC2D_filedialog.h>
 #include <RC2D/RC2D_internal.h>
 
 static RC2D_GPUShader* fragmentShader;
@@ -10,51 +11,32 @@ static RC2D_GPUGraphicsPipeline graphicsPipeline;
 static SDL_GPUColorTargetDescription colorTargetDesc;
 static SDL_GPUGraphicsPipelineTargetInfo targetInfo;
 
-// Variable globale pour le thread de test
-static RC2D_Thread* testThread = NULL;
-static bool threadDetached = false;
-
 typedef struct UniformBlock {
     float resolution[2]; // float2
     float time;          // float
     float padding;       // align to 16 bytes (std140)
 } UniformBlock;
 
-// Fonction exécutée par le thread de test
-static int testThreadFunction(void *data) {
-    RC2D_log(RC2D_LOG_INFO, "Thread de test démarré\n");
-
-    // Définit une priorité haute pour simuler une tâche critique
-    if (!rc2d_thread_setPriority(RC2D_THREAD_PRIORITY_HIGH)) {
-        RC2D_log(RC2D_LOG_WARN, "Échec de la définition de la priorité haute pour le thread\n");
+// Callback pour les dialogues de fichier
+static void file_dialog_callback(void *userdata, const char *const *filelist, int filter_index) {
+    if (!filelist) {
+        RC2D_log(RC2D_LOG_ERROR, "Erreur dans le dialogue de fichier : %s", SDL_GetError());
+        return;
     }
-
-    // Simule un chargement de ressources (attente de 5 secondes)
-    RC2D_DateTime startTime;
-    rc2d_time_getCurrentTime(&startTime);
-    for (int i = 0; i < 5; i++) {
-        SDL_Delay(1000); // Attend 1 seconde
-        RC2D_log(RC2D_LOG_INFO, "Thread de test : progression %d/5\n", i + 1);
+    if (!*filelist) {
+        RC2D_log(RC2D_LOG_INFO, "Dialogue annulé par l'utilisateur");
+        return;
     }
-
-    RC2D_DateTime endTime;
-    rc2d_time_getCurrentTime(&endTime);
-    RC2D_log(RC2D_LOG_INFO, "Thread de test terminé en %d secondes\n", endTime.second - startTime.second);
-
-    return 42; // Code de retour arbitraire
+    RC2D_log(RC2D_LOG_INFO, "Fichiers sélectionnés :");
+    for (int i = 0; filelist[i]; i++) {
+        RC2D_log(RC2D_LOG_INFO, "- %s", filelist[i]);
+    }
+    RC2D_log(RC2D_LOG_INFO, "Filtre sélectionné : %d", filter_index);
 }
 
 void rc2d_unload(void) 
 {
     RC2D_log(RC2D_LOG_INFO, "My game is unloading...\n");
-
-    // Nettoie le thread s'il n'est pas détaché
-    if (testThread && !threadDetached) {
-        int status;
-        rc2d_thread_wait(testThread, &status);
-        RC2D_log(RC2D_LOG_INFO, "Thread de test terminé avec le code de retour : %d\n", status);
-    }
-    testThread = NULL;
 }
 
 void rc2d_load(void) 
@@ -144,52 +126,47 @@ void rc2d_load(void)
     bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline, true);
     RC2D_assert_release(success, RC2D_LOG_CRITICAL, "Failed to create full screen shader pipeline");
 
-    // Crée un thread de test avec des options personnalisées
-    RC2D_ThreadOptions options = {
-        .stack_size = 0, // Taille par défaut
-        .priority = RC2D_THREAD_PRIORITY_NORMAL,
-        .auto_detach = false // Ne pas détacher automatiquement pour tester rc2d_thread_wait
+    // Test du module RC2D_filedialog
+    static const RC2D_FileDialogFilter filters[] = {
+        { "Fichiers de sauvegarde", "sav;save" },
+        { "Images", "png;jpg;jpeg" },
+        { "Tous les fichiers", "*" }
     };
-    testThread = rc2d_thread_newWithOptions(testThreadFunction, "TestLoadingThread", NULL, &options);
-    if (!testThread) {
-        RC2D_log(RC2D_LOG_CRITICAL, "Échec de la création du thread de test\n");
-    } else {
-        RC2D_log(RC2D_LOG_INFO, "Thread de test créé avec succès\n");
-    }
+
+    RC2D_FileDialogOptions options = {
+        .window = rc2d_window_getWindow(),
+        .filters = filters,
+        .num_filters = 3,
+        .default_location = NULL, // Chemin par défaut du système
+        .allow_many = true,
+        .title = "Sélectionner un fichier",
+        .accept_label = "Ouvrir",
+        .cancel_label = "Annuler"
+    };
+
+    // Teste rc2d_filedialog_openFile
+    rc2d_filedialog_openFile(file_dialog_callback, NULL, &options);
+    RC2D_log(RC2D_LOG_INFO, "Dialogue d'ouverture de fichier lancé\n");
+
+    // Modifie les options pour le dialogue de sauvegarde
+    options.title = "Enregistrer un fichier";
+    options.accept_label = "Enregistrer";
+    rc2d_filedialog_saveFile(file_dialog_callback, NULL, &options);
+    RC2D_log(RC2D_LOG_INFO, "Dialogue d'enregistrement de fichier lancé\n");
+
+    // Modifie les options pour le dialogue de dossier
+    options.title = "Sélectionner un dossier";
+    options.allow_many = false; // Pas de multi-sélection pour les dossiers
+    options.filters = NULL; // Pas de filtres pour les dossiers
+    options.num_filters = 0;
+    rc2d_filedialog_openFolder(file_dialog_callback, NULL, &options);
+    RC2D_log(RC2D_LOG_INFO, "Dialogue de sélection de dossier lancé\n");
 }
 
 void rc2d_update(double dt) 
 {
-    // Surveille l'état du thread
-    if (testThread) {
-        RC2D_ThreadState state = rc2d_thread_getState(testThread);
-        const char *stateStr;
-        switch (state) {
-            case RC2D_THREAD_STATE_UNKNOWN:
-                stateStr = "Inconnu";
-                break;
-            case RC2D_THREAD_STATE_ALIVE:
-                stateStr = "En cours";
-                break;
-            case RC2D_THREAD_STATE_DETACHED:
-                stateStr = "Détaché";
-                break;
-            case RC2D_THREAD_STATE_COMPLETE:
-                stateStr = "Terminé";
-                break;
-            default:
-                stateStr = "Erreur";
-        }
-        RC2D_log(RC2D_LOG_DEBUG, "État du thread de test : %s\n", stateStr);
-
-        // Teste le détachement si le thread est terminé
-        if (state == RC2D_THREAD_STATE_COMPLETE && !threadDetached) {
-            RC2D_log(RC2D_LOG_INFO, "Détachement du thread de test\n");
-            rc2d_thread_detach(testThread);
-            threadDetached = true;
-            testThread = NULL;
-        }
-    }
+    // Assure que les événements sont pompés pour les dialogues (nécessaire sur Linux avec XDG Portals)
+    SDL_PumpEvents();
 }
 
 void rc2d_draw(void)
