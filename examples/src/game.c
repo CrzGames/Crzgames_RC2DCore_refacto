@@ -2,7 +2,7 @@
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_time.h>
 #include <RC2D/RC2D_thread.h>
-#include <RC2D/RC2D_filedialog.h>
+#include <RC2D/RC2D_messagebox.h>
 #include <RC2D/RC2D_internal.h>
 
 static RC2D_GPUShader* fragmentShader;
@@ -16,23 +16,6 @@ typedef struct UniformBlock {
     float time;          // float
     float padding;       // align to 16 bytes (std140)
 } UniformBlock;
-
-// Callback pour les dialogues de fichier
-static void file_dialog_callback(void *userdata, const char *const *filelist, int filter_index) {
-    if (!filelist) {
-        RC2D_log(RC2D_LOG_ERROR, "Erreur dans le dialogue de fichier : %s", SDL_GetError());
-        return;
-    }
-    if (!*filelist) {
-        RC2D_log(RC2D_LOG_INFO, "Dialogue annulé par l'utilisateur");
-        return;
-    }
-    RC2D_log(RC2D_LOG_INFO, "Fichiers sélectionnés :");
-    for (int i = 0; filelist[i]; i++) {
-        RC2D_log(RC2D_LOG_INFO, "- %s", filelist[i]);
-    }
-    RC2D_log(RC2D_LOG_INFO, "Filtre sélectionné : %d", filter_index);
-}
 
 void rc2d_unload(void) 
 {
@@ -126,47 +109,54 @@ void rc2d_load(void)
     bool success = rc2d_gpu_createGraphicsPipeline(&graphicsPipeline, true);
     RC2D_assert_release(success, RC2D_LOG_CRITICAL, "Failed to create full screen shader pipeline");
 
-    // Test du module RC2D_filedialog
-    static const RC2D_FileDialogFilter filters[] = {
-        { "Fichiers de sauvegarde", "sav;save" },
-        { "Images", "png;jpg;jpeg" },
-        { "Tous les fichiers", "*" }
-    };
+    // Test de rc2d_messagebox_showSimple
+    success = rc2d_messagebox_showSimple(
+        RC2D_MESSAGEBOX_INFORMATION,
+        "Bienvenue",
+        "Le jeu a démarré avec succès !",
+        rc2d_window_getWindow()
+    );
+    if (success) {
+        RC2D_log(RC2D_LOG_INFO, "Boîte de dialogue simple affichée avec succès\n");
+    } else {
+        RC2D_log(RC2D_LOG_ERROR, "Échec de l'affichage de la boîte de dialogue simple\n");
+    }
 
-    RC2D_FileDialogOptions options = {
+    // Test de rc2d_messagebox_show avec boutons personnalisés
+    static const RC2D_MessageBoxButton buttons[] = {
+        { "Oui", 1, true, false },
+        { "Non", 2, false, true },
+        { "Annuler", 3, false, false }
+    };
+    static const Uint8 color_scheme[SDL_MESSAGEBOX_COLOR_COUNT][3] = {
+        { 255, 0, 255 }, // Fond
+        { 0, 0, 0 },       // Texte
+        { 100, 100, 100 }, // Bordure bouton
+        { 200, 200, 200 }, // Fond bouton
+        { 0, 255, 0 }      // Bouton sélectionné
+    };
+    RC2D_MessageBoxOptions options = {
+        .type = RC2D_MESSAGEBOX_WARNING,
         .window = rc2d_window_getWindow(),
-        .filters = filters,
-        .num_filters = 3,
-        .default_location = NULL, // Chemin par défaut du système
-        .allow_many = true,
-        .title = "Sélectionner un fichier",
-        .accept_label = "Ouvrir",
-        .cancel_label = "Annuler"
+        .title = "Confirmation",
+        .message = "Voulez-vous commencer une nouvelle partie ?",
+        .buttons = buttons,
+        .num_buttons = 3,
+        .buttons_left_to_right = true,
+        .color_scheme = color_scheme
     };
-
-    // Teste rc2d_filedialog_openFile
-    rc2d_filedialog_openFile(file_dialog_callback, NULL, &options);
-    RC2D_log(RC2D_LOG_INFO, "Dialogue d'ouverture de fichier lancé\n");
-
-    // Modifie les options pour le dialogue de sauvegarde
-    options.title = "Enregistrer un fichier";
-    options.accept_label = "Enregistrer";
-    rc2d_filedialog_saveFile(file_dialog_callback, NULL, &options);
-    RC2D_log(RC2D_LOG_INFO, "Dialogue d'enregistrement de fichier lancé\n");
-
-    // Modifie les options pour le dialogue de dossier
-    options.title = "Sélectionner un dossier";
-    options.allow_many = false; // Pas de multi-sélection pour les dossiers
-    options.filters = NULL; // Pas de filtres pour les dossiers
-    options.num_filters = 0;
-    rc2d_filedialog_openFolder(file_dialog_callback, NULL, &options);
-    RC2D_log(RC2D_LOG_INFO, "Dialogue de sélection de dossier lancé\n");
+    int button_id = 0;
+    success = rc2d_messagebox_show(&options, &button_id);
+    if (success) {
+        RC2D_log(RC2D_LOG_INFO, "Boîte de dialogue personnalisée affichée, bouton sélectionné : %d\n", button_id);
+    } else {
+        RC2D_log(RC2D_LOG_ERROR, "Échec de l'affichage de la boîte de dialogue personnalisée\n");
+    }
 }
 
 void rc2d_update(double dt) 
 {
-    // Assure que les événements sont pompés pour les dialogues (nécessaire sur Linux avec XDG Portals)
-    SDL_PumpEvents();
+    // Pas besoin de SDL_PumpEvents ici, car les boîtes de dialogue sont modales (bloquantes)
 }
 
 void rc2d_draw(void)
