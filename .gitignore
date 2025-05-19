@@ -17,3 +17,5 @@ build
 /dependencies/
 
 docker-build-output
+
+examples/shaders/tools/
