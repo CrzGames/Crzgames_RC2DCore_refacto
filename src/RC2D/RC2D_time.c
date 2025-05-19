@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_time.h>
 #include <RC2D/RC2D_logger.h>
+
 #include <SDL3/SDL_time.h>
 
 /**
@@ -27,21 +28,21 @@ bool rc2d_time_getCurrentTime(RC2D_DateTime *datetime)
 {
     if (!datetime) 
     {
-        RC2D_Log(RC2D_LOG_ERROR, "le paramètre datetime est NULL");
+        RC2D_log(RC2D_LOG_ERROR, "le paramètre datetime est NULL");
         return false;
     }
 
     SDL_Time ticks;
     if (!SDL_GetCurrentTime(&ticks)) 
     {
-        RC2D_Log(RC2D_LOG_ERROR, "echec de SDL_GetCurrentTime: %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_ERROR, "echec de SDL_GetCurrentTime: %s", SDL_GetError());
         return false;
     }
 
     SDL_DateTime sdl_dt;
     if (!SDL_TimeToDateTime(ticks, &sdl_dt, false)) 
     {
-        RC2D_Log(RC2D_LOG_ERROR, "echec de SDL_TimeToDateTime: %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_ERROR, "echec de SDL_TimeToDateTime: %s", SDL_GetError());
         return false;
     }
 
@@ -56,7 +57,7 @@ bool rc2d_time_getDateTimeLocalePreferences(RC2D_DateFormat *dateFormat, RC2D_Ti
 
     if (!SDL_GetDateTimeLocalePreferences(&sdl_date_format, &sdl_time_format)) 
     {
-        RC2D_Log(RC2D_LOG_ERROR, "echec de SDL_GetDateTimeLocalePreferences: %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_ERROR, "echec de SDL_GetDateTimeLocalePreferences: %s", SDL_GetError());
         return false;
     }
 

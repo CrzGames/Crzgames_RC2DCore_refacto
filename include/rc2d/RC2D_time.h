@@ -1,8 +1,7 @@
 #ifndef RC2D_TIME_H
 #define RC2D_TIME_H
 
-#include <SDL3/SDL_time.h> // Required for : SDL_Time, SDL_DateTime, SDL_DateFormat, SDL_TimeFormat
-#include <stdbool.h>       // Required for : bool
+#include <stdbool.h> // Required for : bool
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
