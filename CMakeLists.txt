@@ -194,11 +194,24 @@ function(rc2d_configure_shadercross target_name)
       COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
     )
 
-    # Copier les binaires de shadercross dans le répertoire "examples/shaders/tools"
+    # Copier le binaires de shadercross dans le répertoire "examples/shaders/tools"
     file(GLOB_RECURSE SHADERCROSS_BINARY
-      "${SHADERCROSS_BINARY_DIR}/*.dylib"
+      "${SHADERCROSS_BINARY_DIR}/*"
     )
     foreach(FILE IN LISTS SHADERCROSS_BINARY)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
+    endforeach()
+
+    # Copier aussi les librarieis dynamique (.dylib) dans le répertoire "examples/shaders/tools"
+    file(GLOB_RECURSE SHADERCROSS_DYLIB
+      "${CRZGAMES_LIBRARIES}/macos/lib/SDL3_shadercross/*.dylib"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_DYLIB)
       get_filename_component(FILE_NAME "${FILE}" NAME)
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
