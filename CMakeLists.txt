@@ -602,6 +602,15 @@ if(RC2D_BUILD_EXAMPLES)
   )
 
   rc2d_force_link_linux(${PROJECT_NAME})
+
+  # Copier le dossier shaders dans le dossier de sortie de rc2d_example (exécutable)
+  add_custom_command(TARGET rc2d_example POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:rc2d_example>/shaders"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${PROJECT_SOURCE_DIR}/examples/shaders"
+            "$<TARGET_FILE_DIR:rc2d_example>/shaders"
+    COMMENT "Copie du dossier shaders dans le dossier de build de rc2d_example"
+  )
 endif()
 
 # Pour les tests unitaires RC2D
