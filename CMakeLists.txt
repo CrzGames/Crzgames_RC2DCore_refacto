@@ -220,6 +220,20 @@ function(rc2d_configure_shadercross target_name)
       )
     endforeach()
 
+    # Rendre shadercross exécutable (important s’il est copié depuis une archive)
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND chmod +x "${SHADER_TOOLS_DIR}/shadercross"
+      COMMENT "Rendre shadercross exécutable"
+      VERBATIM
+    )
+
+    # Ajouter @loader_path comme RPATH pour que les .dylib soient trouvées dans le même dossier
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND install_name_tool -add_rpath @loader_path "${SHADER_TOOLS_DIR}/shadercross"
+      COMMENT "Ajout de @loader_path comme RPATH à shadercross"
+      VERBATIM
+    )
+
     # Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       # Link le dossier include de shadercross à la target
@@ -413,6 +427,16 @@ function(rc2d_configure_openssl target_name)
         crypto # OpenSSL
       )
     endif()
+  endif()
+endfunction()
+
+function(set_rpath_to_loader_path target_name)
+  if(APPLE)
+    set_target_properties(${target_name} PROPERTIES
+      INSTALL_RPATH "@loader_path"
+      BUILD_WITH_INSTALL_RPATH ON
+      MACOSX_RPATH ON
+    )
   endif()
 endfunction()
 
