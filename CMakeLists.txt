@@ -160,8 +160,14 @@ function(rc2d_configure_onnxruntime target_name)
       # Link le dossier include de ONNX Runtime à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include/onnxruntime")
 
-      # Link les librairies ONNX Runtime
+      # Ajouter explicitement la lib .dylib à linker
+      target_link_directories(${target_name} PRIVATE
+        "${CRZGAMES_LIBRARIES}/macos/lib/onnxruntime"
+      )
+
+      # Link la librairies ONNX Runtime
       target_link_libraries(${target_name} PRIVATE
+        onnxruntime
         "-framework CoreML"
       )
 
