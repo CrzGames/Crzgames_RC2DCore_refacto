@@ -601,7 +601,7 @@ if(RC2D_BUILD_EXAMPLES)
     ${PROJECT_NAME} # RC2D
   )
 
-  rc2d_force_link_linux(${PROJECT_NAME})
+  rc2d_force_link_linux(rc2d_example)
 
   # Copier le dossier shaders dans le dossier de sortie de rc2d_example (exécutable)
   add_custom_command(TARGET rc2d_example POST_BUILD
