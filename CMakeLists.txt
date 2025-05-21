@@ -681,18 +681,6 @@ rc2d_configure_shadercross(${PROJECT_NAME})
 # Linker les dépendances natives selon la plateforme
 rc2d_force_link_linux(${PROJECT_NAME})
 
-# Génération des sorties pour RC2D
-if(APPLE)
-  # Pour Apple (macOS, iOS, tvOS) générer un bundle cross-platform : XCFramework
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/xcframework
-    COMMAND xcodebuild -create-xcframework
-      -library $<TARGET_FILE:${PROJECT_NAME}>
-      -headers ${PROJECT_SOURCE_DIR}/include
-      -output ${CMAKE_BINARY_DIR}/xcframework/${PROJECT_NAME}.xcframework
-  )
-endif()
-
 # Pour l'exemple RC2D
 if(RC2D_BUILD_EXAMPLES)
   # Ajouter les fichiers source de l'exemple
