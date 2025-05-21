@@ -150,6 +150,12 @@ if [ "$COMPILE_DXIL" = true ]; then
 fi
 if [ "$COMPILE_MSL" = true ]; then
     mkdir -p "$OUT_COMPILED_DIR/msl"
+
+    # Création des dossiers metallib/ios et metallib/macos si on est sur macOS
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        mkdir -p "$OUT_COMPILED_DIR/metallib/macos"
+        mkdir -p "$OUT_COMPILED_DIR/metallib/ios"
+    fi
 fi
 if [ "$COMPILE_JSON" = true ]; then
     mkdir -p "$OUT_REFLECTION_DIR"
@@ -181,6 +187,38 @@ for f in "$SRC_DIR"/*.hlsl; do
             # Compilation des shaders HLSL vers MSL (Metal)
             if [ "$COMPILE_MSL" = true ]; then
                 "$ABS_SHADERCROSS" "$f" -o "$OUT_COMPILED_DIR/msl/$filename.msl" --msl-version "$MSL_VERSION"
+
+                # Compilation .msl → .metallib (macOS et iOS)
+                if [[ "$OSTYPE" == "darwin"* ]]; then
+                    MSL_INPUT="$OUT_COMPILED_DIR/msl/$filename.msl"
+                    cp "$MSL_INPUT" tmp.metal
+
+                    # Compilation macOS → .air
+                    xcrun -sdk macosx metal -std=metal3.2 -mmacosx-version-min=15.0 -Wall -O3 \
+                        -c tmp.metal -o tmp_macos.air 2> tmp_macos.log
+
+                    if grep -q "error:" tmp_macos.log; then
+                        print_red "[Metal macOS] Compilation échouée pour $filename.msl"
+                        cat tmp_macos.log
+                    fi
+
+                    xcrun -sdk macosx metallib tmp_macos.air -o "$OUT_COMPILED_DIR/metallib/macos/$filename.metallib" 2>> tmp_macos.log
+                    rm -f tmp_macos.air tmp_macos.log
+
+                    # Compilation iOS → .air
+                    xcrun -sdk iphoneos metal -std=metal3.2 -miphoneos-version-min=18.0 -Wall -O3 \
+                        -c tmp.metal -o tmp_ios.air 2> tmp_ios.log
+
+                    if grep -q "error:" tmp_ios.log; then
+                        print_red "[Metal iOS] Compilation échouée pour $filename.msl"
+                        cat tmp_ios.log
+                    fi
+
+                    xcrun -sdk iphoneos metallib tmp_ios.air -o "$OUT_COMPILED_DIR/metallib/ios/$filename.metallib" 2>> tmp_ios.log
+                    rm -f tmp_ios.air tmp_ios.log
+
+                    rm -f tmp.metal
+                fi
             fi
 
             # Compilation des fichiers JSON de réflexion des ressources shaders
@@ -211,6 +249,14 @@ fi
 if [ "$COMPILE_MSL" = true ]; then
     print_green "MSL (Shaders Metal) :"
     print_cyan "$ABS_OUT_COMPILED_DIR/msl"
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        print_green "METALLIB (macOS - Shaders Metal) :"
+        print_cyan "$ABS_OUT_COMPILED_DIR/metallib/macos"
+
+        print_green "METALLIB (iOS - Shaders Metal) :"
+        print_cyan "$ABS_OUT_COMPILED_DIR/metallib/ios"
+    fi
 fi
 if [ "$COMPILE_DXIL" = true ]; then
     print_green "DXIL (Shaders Direct3D12) :"
@@ -242,14 +288,14 @@ print_help() {
     echo "    --msl-version [version]   Spécifie la version de MSL pour Metal"
     echo "    --only-spirv              Compiler uniquement pour SPIR-V (Vulkan)"
     echo "    --only-dxil               Compiler uniquement pour DXIL (Direct3D12)"
-    echo "    --only-msl                Compiler uniquement pour MSL (Metal)"
+    echo "    --only-msl                Compiler uniquement pour MSL et METALLIB (Metal)"
     echo "    --no-json                 Désactiver la génération des fichiers JSON (réflexion des ressources shaders)"
     echo "    --help                    Afficher cette aide"
     echo
     echo "Comportement par défaut :"
-    echo "    Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal)."
+    echo "    Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL / METALLIB (Metal)."
     echo "    Génère les fichiers JSON : Les informations de réflexion automatique sur les ressources utilisées par un shader."
-    echo "    Version MSL par défaut : 3.2.0 (macOS 15.0+, iOS/iPadOS 18.0+)."
+    echo "    Version MSL / METALLIB par défaut : 3.2.0 (macOS 15.0+, iOS/iPadOS 18.0+)."
     echo
     echo "Exemples :"
     echo "    compile_shaders.sh --only-dxil"
