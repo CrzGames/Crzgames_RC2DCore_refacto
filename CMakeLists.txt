@@ -233,7 +233,7 @@ function(rc2d_configure_shadercross target_name)
       VERBATIM
     )
 
-    # Ajouter @loader_path comme RPATH pour que les .dylib soient trouvées dans le même dossier
+    # Ajouter @loader_path comme RPATH a l'executable "shadercross" pour que les .dylib soient trouvées dans le même dossier
     add_custom_command(TARGET ${target_name} POST_BUILD
       COMMAND install_name_tool -add_rpath @loader_path "${SHADER_TOOLS_DIR}/shadercross"
       COMMENT "Ajout de @loader_path comme RPATH à shadercross"
@@ -433,16 +433,6 @@ function(rc2d_configure_openssl target_name)
         crypto # OpenSSL
       )
     endif()
-  endif()
-endfunction()
-
-function(set_rpath_to_loader_path target_name)
-  if(APPLE)
-    set_target_properties(${target_name} PROPERTIES
-      INSTALL_RPATH "@loader_path"
-      BUILD_WITH_INSTALL_RPATH ON
-      MACOSX_RPATH ON
-    )
   endif()
 endfunction()
 
