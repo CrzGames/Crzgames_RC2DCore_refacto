@@ -183,6 +183,54 @@ function(rc2d_configure_onnxruntime target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
+    elseif (UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
+      # Link le dossier include de ONNX Runtime à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include/onnxruntime")
+
+      # Rajouter le répertoire de la lib ONNX Runtime (onnxruntime_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/${RC2D_ARCH}")
+
+      # Link les librairies ONNX Runtime
+      target_link_libraries(${target_name} PRIVATE
+        onnxruntime
+      )
+
+      # Copier aussi les libraries dynamique dans le répertoire de l'exécutable
+      file(GLOB_RECURSE ONNX_SO
+        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/*.so"
+      )
+      foreach(FILE IN LISTS ONNX_SO)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
+    elseif (UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+      # Link le dossier include de ONNX Runtime à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include/onnxruntime")
+
+      # Rajouter le répertoire de la lib ONNX Runtime (onnxruntime_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/${RC2D_ARCH}")
+
+      # Link les librairies ONNX Runtime
+      target_link_libraries(${target_name} PRIVATE
+        onnxruntime
+      )
+
+      # Copier aussi les libraries dynamique dans le répertoire de l'exécutable
+      file(GLOB_RECURSE ONNX_SO
+        "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/*.so"
+      )
+      foreach(FILE IN LISTS ONNX_SO)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
     endif()
   endif()
 endfunction()
@@ -326,7 +374,7 @@ function(rc2d_configure_shadercross target_name)
     # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/slr3-sniper/bin/SDL3_shadercross/${RC2D_ARCH}")
     
-    # Repertoire cible des dll + binaire de shadercross pour "examples/shaders/tools"
+    # Repertoire cible des .so + binaire de shadercross pour "examples/shaders/tools"
     set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
 
     # Crée le dossier "examples/shaders/tools" AVANT toute copie
@@ -334,6 +382,7 @@ function(rc2d_configure_shadercross target_name)
       COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
     )
 
+    # Copier le binaire de shadercross dans le répertoire "examples/shaders/tools"
     file(GLOB_RECURSE SHADERCROSS_BINARY
       "${SHADERCROSS_BINARY_DIR}/*"
     )
@@ -345,6 +394,33 @@ function(rc2d_configure_shadercross target_name)
                 "${SHADER_TOOLS_DIR}/${FILE_NAME}"
       )
     endforeach()
+
+    # Copier aussi les .so dans le répertoire "examples/shaders/tools"
+    file(GLOB_RECURSE SHADERCROSS_SO
+      "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_SO)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
+    endforeach()
+
+    # Rendre shadercross exécutable (important s’il est copié depuis une archive)
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND chmod +x "${SHADER_TOOLS_DIR}/shadercross"
+      COMMENT "Rendre shadercross exécutable"
+      VERBATIM
+    )
+
+    # Ajouter $ORIGIN comme RPATH a l'executable "shadercross" pour que les .so soient trouvées dans le même dossier
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND patchelf --set-rpath '$ORIGIN' "${SHADER_TOOLS_DIR}/shadercross"
+      COMMENT "Ajout de $ORIGIN comme RPATH à shadercross"
+      VERBATIM
+    )
 
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
       target_include_directories(${target_name} PRIVATE
@@ -359,6 +435,7 @@ function(rc2d_configure_shadercross target_name)
         SDL3_shadercross
       )
 
+      # Copier aussi les .so dans le répertoire de l'exécutable
       file(GLOB_RECURSE SHADERCROSS_DLLS
         "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*"
       )
@@ -371,6 +448,84 @@ function(rc2d_configure_shadercross target_name)
         )
       endforeach()
     endif() 
+
+  elseif(UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+    # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
+    set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/linux/bin/SDL3_shadercross/${RC2D_ARCH}")
+
+    # Repertoire cible des .so + binaire de shadercross pour "examples/shaders/tools"
+    set(SHADER_TOOLS_DIR "${PROJECT_SOURCE_DIR}/examples/shaders/tools")
+
+    # Crée le dossier "examples/shaders/tools" AVANT toute copie
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_TOOLS_DIR}"
+    )
+
+    # Copier le binaire de shadercross dans le répertoire "examples/shaders/tools"
+    file(GLOB_RECURSE SHADERCROSS_BINARY
+      "${SHADERCROSS_BINARY_DIR}/*"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_BINARY)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
+    endforeach()
+
+    # Copier aussi les .so dans le répertoire "examples/shaders/tools"
+    file(GLOB_RECURSE SHADERCROSS_SO
+      "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
+    )
+    foreach(FILE IN LISTS SHADERCROSS_SO)
+      get_filename_component(FILE_NAME "${FILE}" NAME)
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${FILE}"
+                "${SHADER_TOOLS_DIR}/${FILE_NAME}"
+      )
+    endforeach()
+
+    # Rendre shadercross exécutable (important s’il est copié depuis une archive)
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND chmod +x "${SHADER_TOOLS_DIR}/shadercross"
+      COMMENT "Rendre shadercross exécutable"
+      VERBATIM
+    )
+
+    # Ajouter $ORIGIN comme RPATH a l'executable "shadercross" pour que les .so soient trouvées dans le même dossier
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND patchelf --set-rpath '$ORIGIN' "${SHADER_TOOLS_DIR}/shadercross"
+      COMMENT "Ajout de $ORIGIN comme RPATH à shadercross"
+      VERBATIM
+    )
+
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+      target_include_directories(${target_name} PRIVATE
+        "${CRZGAMES_LIBRARIES}/linux/include"
+      )
+
+      # Récupérer le dossier de la lib shadercross
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}")
+
+      # Link la lib shadercross
+      target_link_libraries(${target_name} PRIVATE
+        SDL3_shadercross
+      )
+
+      # Copier aussi les .so dans le répertoire de l'exécutable
+      file(GLOB_RECURSE SHADERCROSS_DLLS
+        "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*"
+      )
+      foreach(FILE IN LISTS SHADERCROSS_DLLS)
+        get_filename_component(FILE_NAME "${FILE}" NAME)
+        add_custom_command(TARGET ${target_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  "${FILE}"
+                  "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
+        )
+      endforeach()
   endif()
 endfunction()
 
