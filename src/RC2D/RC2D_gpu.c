@@ -100,9 +100,9 @@ RC2D_GPUShader* rc2d_gpu_loadShader(const char* filename) {
     else if (backendFormatsSupported & SDL_GPU_SHADERFORMAT_METALLIB)
     {
 #ifdef RC2D_PLATFORM_IOS
-        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metal/ios/%s.metallib", basePath, filename);
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metallib/ios/%s.metallib", basePath, filename);
 #else
-        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metal/macos/%s.metallib", basePath, filename);
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/compiled/metallib/macos/%s.metallib", basePath, filename);
 #endif // RC2D_PLATFORM_IOS
         format = SDL_GPU_SHADERFORMAT_METALLIB;
         entrypoint = "main";
