@@ -197,7 +197,7 @@ function(rc2d_configure_onnxruntime target_name)
 
       # Copier aussi les libraries dynamique dans le répertoire de l'exécutable
       file(GLOB_RECURSE ONNX_SO
-        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/*.so"
+        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/${RC2D_ARCH}/*.so"
       )
       foreach(FILE IN LISTS ONNX_SO)
         get_filename_component(FILE_NAME "${FILE}" NAME)
@@ -221,7 +221,7 @@ function(rc2d_configure_onnxruntime target_name)
 
       # Copier aussi les libraries dynamique dans le répertoire de l'exécutable
       file(GLOB_RECURSE ONNX_SO
-        "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/*.so"
+        "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/${RC2D_ARCH}/*.so"
       )
       foreach(FILE IN LISTS ONNX_SO)
         get_filename_component(FILE_NAME "${FILE}" NAME)
@@ -437,7 +437,7 @@ function(rc2d_configure_shadercross target_name)
 
       # Copier aussi les .so dans le répertoire de l'exécutable
       file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*"
+        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
         get_filename_component(FILE_NAME "${FILE}" NAME)
@@ -516,7 +516,7 @@ function(rc2d_configure_shadercross target_name)
 
       # Copier aussi les .so dans le répertoire de l'exécutable
       file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*"
+        "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/.so*"
       )
       foreach(FILE IN LISTS SHADERCROSS_DLLS)
         get_filename_component(FILE_NAME "${FILE}" NAME)
