@@ -526,6 +526,7 @@ function(rc2d_configure_shadercross target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
+    endif()
   endif()
 endfunction()
 
