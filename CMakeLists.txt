@@ -130,6 +130,9 @@ endif()
 set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
 
+# Debug
+message(STATUS "RC2D_ARCH = ${RC2D_ARCH}")
+
 function(rc2d_configure_onnxruntime target_name)
   if(RC2D_ONNX_MODULE_ENABLED)
     if(WIN32)
