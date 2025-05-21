@@ -151,10 +151,10 @@ fi
 if [ "$COMPILE_MSL" = true ]; then
     mkdir -p "$OUT_COMPILED_DIR/msl"
 
-    # Création des dossiers metal/ios et metal/macos si on est sur macOS
+    # Création des dossiers metallib/ios et metallib/macos si on est sur macOS
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        mkdir -p "$OUT_COMPILED_DIR/metal/macos"
-        mkdir -p "$OUT_COMPILED_DIR/metal/ios"
+        mkdir -p "$OUT_COMPILED_DIR/metallib/macos"
+        mkdir -p "$OUT_COMPILED_DIR/metallib/ios"
     fi
 fi
 if [ "$COMPILE_JSON" = true ]; then
@@ -202,7 +202,7 @@ for f in "$SRC_DIR"/*.hlsl; do
                         cat tmp_macos.log
                     fi
 
-                    xcrun -sdk macosx metallib tmp_macos.air -o "$OUT_COMPILED_DIR/metal/macos/$filename.metallib" 2>> tmp_macos.log
+                    xcrun -sdk macosx metallib tmp_macos.air -o "$OUT_COMPILED_DIR/metallib/macos/$filename.metallib" 2>> tmp_macos.log
                     rm -f tmp_macos.air tmp_macos.log
 
                     # Compilation iOS → .air
@@ -214,7 +214,7 @@ for f in "$SRC_DIR"/*.hlsl; do
                         cat tmp_ios.log
                     fi
 
-                    xcrun -sdk iphoneos metallib tmp_ios.air -o "$OUT_COMPILED_DIR/metal/ios/$filename.metallib" 2>> tmp_ios.log
+                    xcrun -sdk iphoneos metallib tmp_ios.air -o "$OUT_COMPILED_DIR/metallib/ios/$filename.metallib" 2>> tmp_ios.log
                     rm -f tmp_ios.air tmp_ios.log
 
                     rm -f tmp.metal
@@ -252,10 +252,10 @@ if [ "$COMPILE_MSL" = true ]; then
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         print_green "METALLIB (macOS - Shaders Metal) :"
-        print_cyan "$ABS_OUT_COMPILED_DIR/metal/macos"
+        print_cyan "$ABS_OUT_COMPILED_DIR/metallib/macos"
 
         print_green "METALLIB (iOS - Shaders Metal) :"
-        print_cyan "$ABS_OUT_COMPILED_DIR/metal/ios"
+        print_cyan "$ABS_OUT_COMPILED_DIR/metallib/ios"
     fi
 fi
 if [ "$COMPILE_DXIL" = true ]; then
