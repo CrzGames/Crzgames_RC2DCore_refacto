@@ -1,6 +1,30 @@
 #!/bin/bash
 
 # ==================================================
+# Fonctions d'affichage coloré
+# ==================================================
+print_red()       { echo -e "\033[31m[ERROR] $1\033[0m"; }
+print_green()     { echo -e "\033[93m[INFO]  $1\033[0m"; }
+print_success()   { echo -e "\033[32m[SUCCESS] $1\033[0m"; }
+print_cyan()      { echo -e "\033[36m[PATH]  $1\033[0m"; }
+
+# Vérifie si un fichier shader contient une fonction main
+check_shader_main() {
+    grep -q "main" "$1"
+}
+
+# Affiche un résumé de la compilation
+print_summary() {
+    echo -e "\033[93m[SUMMARY] Compilation\033[0m"
+    echo -e "\033[37m  Total shader source .hlsl traité : $TOTAL_HLSL_COUNT\033[0m"
+    echo -e "\033[33m  Total shader source .hlsl ignoré : $SKIPPED_COUNT\033[0m"
+    echo -e "\033[32m  Total shader compilé avec succès : $COMPILED_COUNT\033[0m"
+    if [ "$COMPILE_JSON" = true ]; then
+        echo -e "\033[32m  Total fichiers JSON généré : $COMPILED_COUNT\033[0m"
+    fi
+}
+
+# ==================================================
 # Configuration par défaut
 # ==================================================
 # Documentation version MSL : https://developer.apple.com/documentation/metal/mtllanguageversion
@@ -88,7 +112,7 @@ TOTAL_HLSL_COUNT=0
 SKIPPED_COUNT=0
 
 # Résoudre le chemin absolu du binaire shadercross
-ABS_SHADERCROSS=$(cd "$(dirname "$0")/$RELATIVE_SHADERCROSS/.." && pwd)/shadercross
+ABS_SHADERCROSS="$(cd "$(dirname "$0")/../tools" && pwd)/shadercross"
 
 # Résoudre le chemin absolu du répertoire source des shaders
 ABS_SRC_DIR=$(cd "$SRC_DIR" && pwd)
@@ -270,31 +294,4 @@ print_summary() {
     if [ "$COMPILE_JSON" = true ]; then
         echo -e "\033[32m  Total fichiers JSON généré : $COMPILED_COUNT\033[0m"
     fi
-}
-
-# ---------------------------------------
-# Fonctions d'affichage coloré avec préfixes
-# ---------------------------------------
-print_red() {
-    echo -e "\033[31m[ERROR] $1\033[0m"
-}
-
-print_green() {
-    echo -e "\033[93m[INFO] $1\033[0m"
-}
-
-print_success() {
-    echo -e "\033[32m[SUCCESS] $1\033[0m"
-}
-
-print_cyan() {
-    echo -e "\033[36m[PATH] $1\033[0m"
-}
-
-# Vérifie si un fichier shader contient une fonction main
-check_shader_main() {
-    if ! grep -q "main" "$1"; then
-        return 1
-    fi
-    return 0
 }
