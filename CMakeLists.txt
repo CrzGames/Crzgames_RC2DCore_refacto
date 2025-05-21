@@ -198,7 +198,7 @@ function(rc2d_configure_onnxruntime target_name)
       # Copier tous les .so et .so.* en gardant les liens symboliques
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Copie de libonnxruntime.so* (avec liens symboliques)"
-        COMMAND cp -a "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/${RC2D_ARCH}/libonnxruntime.so"* $<TARGET_FILE_DIR:${target_name}>/
+        COMMAND sh -c "cp -a ${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/${RC2D_ARCH}/libonnxruntime.so $<TARGET_FILE_DIR:${target_name}>/"
         VERBATIM
       )
     elseif (UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
@@ -216,7 +216,7 @@ function(rc2d_configure_onnxruntime target_name)
       # Copier tous les .so et .so.* en gardant les liens symboliques
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Copie de libonnxruntime.so* (avec liens symboliques)"
-        COMMAND cp -a "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/${RC2D_ARCH}/libonnxruntime.so"* $<TARGET_FILE_DIR:${target_name}>/
+        COMMAND sh -c "cp -a ${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/${RC2D_ARCH}/libonnxruntime.so* $<TARGET_FILE_DIR:${target_name}>/"
         VERBATIM
       )
     endif()
@@ -386,7 +386,7 @@ function(rc2d_configure_shadercross target_name)
     # Copier tous les .so et .so.* (avec liens symboliques) dans le répertoire "examples/shaders/tools"
     add_custom_command(TARGET ${target_name} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "Copie de toutes les bibliothèques SDL3_shadercross (.so et liens) dans ${SHADER_TOOLS_DIR}"
-      COMMAND cp -a "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so"* ${SHADER_TOOLS_DIR}/
+      COMMAND sh -c "cp -a ${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so* ${SHADER_TOOLS_DIR}/"
       VERBATIM
     )
 
@@ -420,7 +420,7 @@ function(rc2d_configure_shadercross target_name)
       # Copier toutes les .so et .so.* de SDL3_shadercross dans le dossier de l'exécutable (avec liens symboliques)
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Copie de SDL3_shadercross (.so et liens) vers le dossier de l'exécutable"
-        COMMAND cp -a "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so"* "$<TARGET_FILE_DIR:${target_name}>/"
+        COMMAND sh -c "cp -a ${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so* $<TARGET_FILE_DIR:${target_name}>/"
         VERBATIM
       )
     endif() 
@@ -453,7 +453,7 @@ function(rc2d_configure_shadercross target_name)
     # Copier toutes les .so et .so.* de SDL3_shadercross dans le dossier "examples/shaders/tools" (avec liens symboliques)
     add_custom_command(TARGET ${target_name} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "Copie de SDL3_shadercross (.so et liens) vers examples/shaders/tools"
-      COMMAND cp -a "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so"* "${SHADER_TOOLS_DIR}/"
+      COMMAND sh -c "cp -a ${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so* ${SHADER_TOOLS_DIR}/"
       VERBATIM
     )
 
@@ -487,7 +487,7 @@ function(rc2d_configure_shadercross target_name)
       # Copier toutes les .so et .so.* de SDL3_shadercross dans le dossier de l'exécutable (avec liens symboliques)
       add_custom_command(TARGET ${target_name} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Copie de SDL3_shadercross (.so et liens) vers le dossier de l'exécutable"
-        COMMAND cp -a "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so"* "$<TARGET_FILE_DIR:${target_name}>/"
+        COMMAND sh -c "cp -a ${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/libSDL3_shadercross.so* $<TARGET_FILE_DIR:${target_name}>/"
         VERBATIM
       )
     endif()
