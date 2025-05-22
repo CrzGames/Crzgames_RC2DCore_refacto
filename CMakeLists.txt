@@ -81,6 +81,16 @@ if(UNIX AND NOT APPLE)
   set(SDL_X11 ON CACHE BOOL "Enable X11 backend for SDL3" FORCE)
   set(SDL_KMSDRM ON CACHE BOOL "Enable KMS/DRM backend for SDL3" FORCE)
   set(SDL_DUMMYVIDEO ON CACHE BOOL "Enable dummy video backend for SDL3" FORCE)
+
+  find_program(PATCHELF_EXECUTABLE NAMES patchelf)
+  if(NOT PATCHELF_EXECUTABLE)
+    message(FATAL_ERROR "patchelf non trouvé dans le PATH")
+  endif()
+endif()
+
+if (ANDROID)
+  # On désactive le rechargement à chaud des shaders pour Android (disponible uniquement sur macOS, Linux et Windows)
+  set(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED OFF CACHE BOOL "Disable hot reload shaders with SDL3_shadercross" FORCE)
 endif()
 
 # SDL3_ttf, SDL3_image, SDL3_mixer : 
@@ -121,11 +131,6 @@ add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
 
-find_program(PATCHELF_EXECUTABLE NAMES patchelf)
-if(NOT PATCHELF_EXECUTABLE)
-  message(FATAL_ERROR "patchelf non trouvé dans le PATH")
-endif()
-
 function(rc2d_configure_onnxruntime target_name)
   if(RC2D_ONNX_MODULE_ENABLED)
     if(WIN32)
@@ -152,6 +157,17 @@ function(rc2d_configure_onnxruntime target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
+    elseif (ANDROID)
+      # Link le dossier include de ONNX Runtime à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/android/include/onnxruntime")
+
+      # Rajouter le répertoire de la lib ONNX Runtime, pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/android/lib/onnxruntime/${ANDROID_ABI}")
+
+      # Link les librairies ONNX Runtime
+      target_link_libraries(${target_name} PRIVATE
+        onnxruntime
+      )
     elseif (APPLE)
       # Link le dossier include de ONNX Runtime à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/macos/include/onnxruntime")
@@ -527,6 +543,18 @@ function(rc2d_configure_openssl target_name)
         ssl    # OpenSSL
         crypto # OpenSSL
       )
+    elseif (ANDROID)
+      # Link le dossier include de OpenSSL à la target
+      target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/android/include")
+
+      # Rajouter le répertoire de la lib OpenSSL (libssl_static et libcrypto_static), pour le linker ensuite
+      target_link_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/android/lib/OpenSSL/${ANDROID_ABI}")
+
+      # Link les librairies OpenSSL
+      target_link_libraries(${target_name} PRIVATE
+        ssl    # OpenSSL
+        crypto # OpenSSL
+      )
     elseif(WIN32)
       # Link le dossier include de OpenSSL à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/windows/include")
@@ -570,7 +598,7 @@ function(rc2d_configure_openssl target_name)
 endfunction()
 
 function(rc2d_force_link_linux target_name)
-  if(UNIX AND NOT APPLE)
+  if(UNIX AND NOT APPLE AND NOT ANDROID)
     target_link_libraries(${target_name} PRIVATE
       "-Wl,--no-as-needed" m pthread dl "-Wl,--as-needed"
     )
@@ -660,6 +688,14 @@ rc2d_force_link_linux(${PROJECT_NAME})
 
 # Pour l'exemple RC2D
 if(RC2D_BUILD_EXAMPLES)
+  # Pour Android, on doit obligatoirement mettre "main" comme nom de target, quand c'est un exécutable
+  # Pour les autres plateformes, on peut mettre "rc2d_example" comme nom de target
+  if(ANDROID)
+    set(RC2D_EXAMPLE_TARGET_NAME main)
+  else()
+    set(RC2D_EXAMPLE_TARGET_NAME rc2d_example)
+  endif()
+
   # Ajouter les fichiers source de l'exemple
   # Cela inclut tous les fichiers .c dans le répertoire "examples/src" et ses sous-répertoires
   file(GLOB_RECURSE RC2D_EXAMPLE_SOURCES
@@ -673,62 +709,74 @@ if(RC2D_BUILD_EXAMPLES)
   if(ANDROID)
     # Pour Android, il faut obligatoirement mettre SHARED et "main" comme nom de target, quand
     # c'est un exécutable
-    add_library(main SHARED ${RC2D_EXAMPLE_SOURCES})
+    add_library(${RC2D_EXAMPLE_TARGET_NAME} SHARED ${RC2D_EXAMPLE_SOURCES})
   else()
-    add_executable(rc2d_example ${RC2D_EXAMPLE_SOURCES})
+    add_executable(${RC2D_EXAMPLE_TARGET_NAME} ${RC2D_EXAMPLE_SOURCES})
   endif()
 
   if (WIN32)
     # Définir le projet de démarrage dans Visual Studio
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT rc2d_example)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${RC2D_EXAMPLE_TARGET_NAME})
   endif()
 
   # Compiler les définitions pour la target rc2d_example
-  rc2d_target_compile_definitions(rc2d_example)
+  rc2d_target_compile_definitions(${RC2D_EXAMPLE_TARGET_NAME})
 
   # Les fichiers d'en-tête (headers) de l'exemple sont dans le répertoire "examples/include"
-  target_include_directories(rc2d_example PRIVATE
+  target_include_directories(${RC2D_EXAMPLE_TARGET_NAME} PRIVATE
     "${PROJECT_SOURCE_DIR}/examples/include"
   )
 
   # Inclure les répertoires d'en-tête (headers)
-  rc2d_include_headers(rc2d_example)
+  rc2d_include_headers(${RC2D_EXAMPLE_TARGET_NAME})
 
   # Linker la dépendance OpenSSL non commune à toutes les plateformes
   # Cela dépend de la plateforme, donc on le fait dans la fonction rc2d_configure_openssl
-  rc2d_configure_openssl(rc2d_example)
+  rc2d_configure_openssl(${RC2D_EXAMPLE_TARGET_NAME})
 
   # Linker SDL3_shadercross selon la plateforme
-  rc2d_configure_shadercross(rc2d_example)
+  rc2d_configure_shadercross(${RC2D_EXAMPLE_TARGET_NAME})
 
   # Link onnxruntime si le module RC2D_onnx est activé
-  rc2d_configure_onnxruntime(rc2d_example)
+  rc2d_configure_onnxruntime(${RC2D_EXAMPLE_TARGET_NAME})
 
   # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
-  target_link_libraries(rc2d_example PRIVATE
+  target_link_libraries(${RC2D_EXAMPLE_TARGET_NAME} PRIVATE
     SDL3_image::SDL3_image
     SDL3_ttf::SDL3_ttf
     SDL3::SDL3
     ${PROJECT_NAME} # RC2D
   )
 
-  rc2d_force_link_linux(rc2d_example)
+  rc2d_force_link_linux(${RC2D_EXAMPLE_TARGET_NAME})
 
-  # Copier le dossier shaders dans le dossier de sortie de rc2d_example (exécutable)
-  add_custom_command(TARGET rc2d_example POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:rc2d_example>/shaders"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${PROJECT_SOURCE_DIR}/examples/shaders"
-            "$<TARGET_FILE_DIR:rc2d_example>/shaders"
-    COMMENT "Copie du dossier shaders dans le dossier de build de rc2d_example"
-  )
+  if (NOT ANDROID)
+    # Copier le dossier shaders dans le dossier de sortie de rc2d_example (exécutable)
+    add_custom_command(TARGET ${RC2D_EXAMPLE_TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:rc2d_example>/shaders"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${PROJECT_SOURCE_DIR}/examples/shaders"
+              "$<TARGET_FILE_DIR:rc2d_example>/shaders"
+      COMMENT "Copie du dossier shaders dans le dossier de build de rc2d_example"
+    )
+  else()
+    # Pour Android, on copie le dossier shaders dans le répertoire "assets" de l'exemple
+    add_custom_command(TARGET ${RC2D_EXAMPLE_TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${PROJECT_SOURCE_DIR}/examples/shaders"
+              "${PROJECT_SOURCE_DIR}/examples/assets/shaders"
+      COMMENT "Copie du dossier shaders dans le dossier assets d'android pour l'executable rc2d_example"
+    )
+  endif()
 
-  # Rendre rc2d_example exécutable (important s’il est copié depuis une archive)
-  add_custom_command(TARGET rc2d_example POST_BUILD
-    COMMAND chmod +x "$<TARGET_FILE_DIR:rc2d_example>/rc2d_example"
-    COMMENT "Rendre rc2d_example exécutable"
-    VERBATIM
-  )
+  if (UNIX OR APPLE)
+    # Rendre rc2d_example exécutable (important s’il est copié depuis une archive)
+    add_custom_command(TARGET ${RC2D_EXAMPLE_TARGET_NAME} POST_BUILD
+      COMMAND chmod +x "$<TARGET_FILE_DIR:rc2d_example>/rc2d_example"
+      COMMENT "Rendre rc2d_example exécutable"
+      VERBATIM
+    )
+  endif()
 endif()
 
 # Pour les tests unitaires RC2D

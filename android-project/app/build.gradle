@@ -1,33 +1,27 @@
-def buildAsLibrary = project.hasProperty('BUILD_AS_LIBRARY')
-def buildAsApplication = !buildAsLibrary
-if (buildAsApplication) {
-    apply plugin: 'com.android.application'
-}
-else {
-    apply plugin: 'com.android.library'
+plugins {
+     id 'com.android.application'
 }
 
+def buildWithCMake = project.hasProperty('BUILD_WITH_CMAKE');
+
 android {
-    namespace 'com.crzgames.rc2d'
-    ndkVersion '26.3.11579264'
-    buildToolsVersion '34.0.0'
-    compileSdk 34
+    namespace = "com.crzgames.myapp"
+    compileSdkVersion 36
     defaultConfig {
-        if (buildAsApplication) {
-            applicationId 'com.crzgames.rc2d'
-        }
-        minSdkVersion 23
-        targetSdkVersion 34
+        minSdkVersion 28
+        targetSdkVersion 36
+        versionCode 1
+        versionName "1.0"
         externalNativeBuild {
             cmake {
-                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-                version '3.22.1'
+                arguments "-DANDROID_PLATFORM=android-28", "-DANDROID_STL=c++_static"
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
             }
         }
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -36,38 +30,30 @@ android {
             .dependsOn("externalNativeBuild${variant.name.capitalize()}")
     }
     if (!project.hasProperty('EXCLUDE_NATIVE_LIBS')) {
+        sourceSets.main {
+            jniLibs.srcDir 'libs'
+        }
         externalNativeBuild {
-            cmake {
-                path 'jni/CMakeLists.txt'
-                version '3.22.1'
-            }
-        }
-       
-    }
-    sourceSets {
-        main {
-            assets {
-                srcDirs 'src/main/assets'
-            }
-        }
-    }
-    lint {
-        abortOnError false
-    }
-
-    if (buildAsLibrary) {
-        libraryVariants.all { variant ->
-            variant.outputs.each { output ->
-                def outputFile = output.outputFile
-                if (outputFile != null && outputFile.name.endsWith(".aar")) {
-                    def fileName = "com.crzgames.rc2d.aar"
-                    output.outputFile = new File(outputFile.parent, fileName)
+            if (buildWithCMake) {
+                cmake {
+                    path '../../CMakeLists.txt'
+                    version '4.'
                 }
             }
         }
     }
+    sourceSets {
+        main {
+            assets {
+                srcDirs '../../examples/assets'
+            }
+        }
+    }
+    lint {
+        abortOnError = false
+    }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'jni/jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 }
