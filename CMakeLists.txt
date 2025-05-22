@@ -477,11 +477,9 @@ function(rc2d_configure_shadercross target_name)
       COMMENT "Ajout de $ORIGIN comme RPATH à shadercross"
       VERBATIM
     )
-    message(STATUS "HOT_RELOAD? = ${RC2D_GPU_SHADER_HOT_RELOAD_ENABLED}")
 
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
-      message("RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross")
-
+      # Link le dossier include de shadercross à la target
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/linux/include"
       )
@@ -613,6 +611,8 @@ function(rc2d_target_compile_definitions target_name)
     target_compile_definitions(${target_name} PRIVATE RC2D_ONNX_MODULE_ENABLED=0)
   endif()
 endfunction()
+
+message(STATUS "HOT_RELOAD? = ${RC2D_GPU_SHADER_HOT_RELOAD_ENABLED}")
 
 # Sources du projet RC2D
 file(GLOB_RECURSE SOURCES
