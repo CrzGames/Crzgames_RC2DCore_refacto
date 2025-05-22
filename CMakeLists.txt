@@ -117,15 +117,6 @@ add_subdirectory(dependencies/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 #add_subdirectory(dependencies/SDL_mixer EXCLUDE_FROM_ALL)
 
-# Determiner l'architecture de la plateforme
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(AMD64|x86_64)$")
-  set(RC2D_ARCH "x64")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(ARM64|aarch64|arm64)$")
-  set(RC2D_ARCH "arm64")
-else()
-  set(RC2D_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
-endif()
-
 # Chemin vers les dépendances
 set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
