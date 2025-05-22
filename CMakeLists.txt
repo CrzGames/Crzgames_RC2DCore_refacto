@@ -426,7 +426,7 @@ function(rc2d_configure_shadercross target_name)
         FOLLOW_SYMLINK_CHAIN
         USE_SOURCE_PERMISSIONS
       )
-    endif() 
+    endif()
 
   elseif(RC2D_PLATFORM STREQUAL "Linux")
     # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
@@ -479,6 +479,8 @@ function(rc2d_configure_shadercross target_name)
     )
 
     if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+      message("RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross")
+      
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/linux/include"
       )
