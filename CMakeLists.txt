@@ -218,10 +218,10 @@ function(rc2d_configure_onnxruntime target_name)
         "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/${RC2D_ARCH}/*.so"
         "${CRZGAMES_LIBRARIES}/linux/lib/onnxruntime/${RC2D_ARCH}/*.so.*"
       )
-      file(COPY ${ONNX_SO}
-        DESTINATION "$<TARGET_FILE_DIR:${target_name}>"
-        FOLLOW_SYMLINK_CHAIN
-        USE_SOURCE_PERMISSIONS
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND cp -a ${ONNX_SO} "$<TARGET_FILE_DIR:${target_name}>/"
+        COMMENT "Copie des bibliothèques ONNX Runtime avec conservation des liens symboliques"
+        VERBATIM
       )
     endif()
   endif()
