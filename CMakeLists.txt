@@ -121,6 +121,11 @@ add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
 
+find_program(PATCHELF_EXECUTABLE NAMES patchelf)
+if(NOT PATCHELF_EXECUTABLE)
+  message(FATAL_ERROR "patchelf non trouvé dans le PATH")
+endif()
+
 function(rc2d_configure_onnxruntime target_name)
   if(RC2D_ONNX_MODULE_ENABLED)
     if(WIN32)
@@ -473,7 +478,7 @@ function(rc2d_configure_shadercross target_name)
 
     # Ajouter $ORIGIN comme RPATH a l'executable "shadercross" pour que les .so soient trouvées dans le même dossier
     add_custom_command(TARGET ${target_name} POST_BUILD
-      COMMAND patchelf --set-rpath '$ORIGIN' --force-rpath "${SHADER_TOOLS_DIR}/shadercross"
+      COMMAND patchelf --set-rpath '\$ORIGIN' "${SHADER_TOOLS_DIR}/shadercross"
       COMMENT "Ajout de $ORIGIN comme RPATH à shadercross"
       VERBATIM
     )
