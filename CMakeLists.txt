@@ -196,7 +196,7 @@ function(rc2d_configure_onnxruntime target_name)
         FOLLOW_SYMLINK_CHAIN
         USE_SOURCE_PERMISSIONS
       )
-    elseif (UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+    elseif (UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "Linux")
       # Link le dossier include de ONNX Runtime à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include/onnxruntime")
 
@@ -357,7 +357,7 @@ function(rc2d_configure_shadercross target_name)
         )
       endforeach()
     endif()
-  elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
+  elseif(RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
     # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/slr3-sniper/bin/SDL3_shadercross/${RC2D_ARCH}")
     
@@ -432,7 +432,7 @@ function(rc2d_configure_shadercross target_name)
       )
     endif() 
 
-  elseif(UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+  elseif(RC2D_PLATFORM STREQUAL "Linux")
     # Repertoire cible du binaire de shadercross pour "examples/shaders/tools"
     set(SHADERCROSS_BINARY_DIR "${CRZGAMES_LIBRARIES}/linux/bin/SDL3_shadercross/${RC2D_ARCH}")
 
@@ -543,7 +543,7 @@ function(rc2d_configure_openssl target_name)
         Crypt32   # OpenSSL CryptoAPI (Librarie native de Windows, obligatoire)
         ws2_32    # OpenSSL Winsock2  (Librarie native de Windows, obligatoire)
       )
-    elseif (UNIX AND NOT APPLE AND NOT RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+    elseif (UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "Linux")
       # Link le dossier include de OpenSSL à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include")
 
