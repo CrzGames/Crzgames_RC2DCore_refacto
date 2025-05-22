@@ -6,7 +6,7 @@ mkdir -p build/linux/x86_64
 cd build/linux/x86_64
 
 echo -e "\e[32m \n Generate project with CMake for Linux x86_64...\e[0m"
-cmake ../../.. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_SYSTEM_NAME=Linux
+cmake ../../.. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_SYSTEM_NAME=Linux
 echo -e "\e[32m \n Build project for Debug...\e[0m"
 cmake --build .
 
