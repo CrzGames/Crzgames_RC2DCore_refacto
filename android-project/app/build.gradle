@@ -33,12 +33,11 @@ android {
         sourceSets.main {
             jniLibs.srcDir 'libs'
         }
+
         externalNativeBuild {
-            if (buildWithCMake) {
-                cmake {
-                    path '../../CMakeLists.txt'
-                    version '4.'
-                }
+            cmake {
+                path '../../CMakeLists.txt'
+                version '4.0.2'
             }
         }
     }
