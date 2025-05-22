@@ -179,7 +179,7 @@ function(rc2d_configure_onnxruntime target_name)
                   "$<TARGET_FILE_DIR:${target_name}>/${FILE_NAME}"
         )
       endforeach()
-    elseif (UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
+    elseif (RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
       # Link le dossier include de ONNX Runtime à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include/onnxruntime")
 
@@ -196,12 +196,12 @@ function(rc2d_configure_onnxruntime target_name)
         "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/${RC2D_ARCH}/*.so"
         "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/onnxruntime/${RC2D_ARCH}/*.so.*"
       )
-      file(COPY ${ONNX_SO}
-        DESTINATION "$<TARGET_FILE_DIR:${target_name}>"
-        FOLLOW_SYMLINK_CHAIN
-        USE_SOURCE_PERMISSIONS
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND cp -a ${ONNX_SO} "$<TARGET_FILE_DIR:${target_name}>/"
+        COMMENT "Copie des bibliothèques ONNX Runtime avec conservation des liens symboliques"
+        VERBATIM
       )
-    elseif (UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "Linux")
+    elseif (RC2D_PLATFORM STREQUAL "Linux")
       # Link le dossier include de ONNX Runtime à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include/onnxruntime")
 
@@ -392,10 +392,10 @@ function(rc2d_configure_shadercross target_name)
       "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
       "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*.so.*"
     )
-    file(COPY ${SHADERCROSS_SO}
-      DESTINATION "${SHADER_TOOLS_DIR}"
-      FOLLOW_SYMLINK_CHAIN
-      USE_SOURCE_PERMISSIONS
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND cp -a ${SHADERCROSS_SO} "${SHADER_TOOLS_DIR}/"
+      COMMENT "Copie des bibliothèques SDL3_shadercross avec conservation des liens symboliques"
+      VERBATIM
     )
 
     # Rendre shadercross exécutable (important s’il est copié depuis une archive)
@@ -426,10 +426,10 @@ function(rc2d_configure_shadercross target_name)
       )
 
       # Copier aussi les .so dans le répertoire de l'exécutable
-      file(COPY ${SHADERCROSS_SO}
-        DESTINATION "$<TARGET_FILE_DIR:${target_name}>"
-        FOLLOW_SYMLINK_CHAIN
-        USE_SOURCE_PERMISSIONS
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND cp -a ${SHADERCROSS_SO} "$<TARGET_FILE_DIR:${target_name}>/"
+        COMMENT "Copie des bibliothèques SDL3_shadercross avec conservation des liens symboliques"
+        VERBATIM
       )
     endif()
 
@@ -463,10 +463,10 @@ function(rc2d_configure_shadercross target_name)
       "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
       "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*.so.*"
     )
-    file(COPY ${SHADERCROSS_SO}
-      DESTINATION "${SHADER_TOOLS_DIR}"
-      FOLLOW_SYMLINK_CHAIN
-      USE_SOURCE_PERMISSIONS
+    add_custom_command(TARGET ${target_name} POST_BUILD
+      COMMAND cp -a ${SHADERCROSS_SO} "${SHADER_TOOLS_DIR}/"
+      COMMENT "Copie des bibliothèques SDL3_shadercross avec conservation des liens symboliques"
+      VERBATIM
     )
 
     # Rendre shadercross exécutable (important s’il est copié depuis une archive)
@@ -498,10 +498,10 @@ function(rc2d_configure_shadercross target_name)
       )
 
       # Copier aussi les .so dans le répertoire de l'exécutable
-      file(COPY ${SHADERCROSS_SO}
-        DESTINATION "$<TARGET_FILE_DIR:${target_name}>"
-        FOLLOW_SYMLINK_CHAIN
-        USE_SOURCE_PERMISSIONS
+      add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND cp -a ${SHADERCROSS_SO} "$<TARGET_FILE_DIR:${target_name}>/"
+        COMMENT "Copie des bibliothèques SDL3_shadercross avec conservation des liens symboliques"
+        VERBATIM
       )
     endif()
   endif()
