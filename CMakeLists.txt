@@ -612,8 +612,6 @@ function(rc2d_target_compile_definitions target_name)
   endif()
 endfunction()
 
-message(STATUS "HOT_RELOAD? = ${RC2D_GPU_SHADER_HOT_RELOAD_ENABLED}")
-
 # Sources du projet RC2D
 file(GLOB_RECURSE SOURCES
   "${PROJECT_SOURCE_DIR}/src/*.c"
@@ -718,6 +716,7 @@ if(RC2D_BUILD_EXAMPLES)
             "${PROJECT_SOURCE_DIR}/examples/shaders"
             "$<TARGET_FILE_DIR:rc2d_example>/shaders"
     COMMENT "Copie du dossier shaders dans le dossier de build de rc2d_example"
+    COMMENT "RC2D_GPU_SHADER_HOT_RELOAD_ENABLED = ${RC2D_GPU_SHADER_HOT_RELOAD_ENABLED}"
   )
 endif()
 
