@@ -478,7 +478,7 @@ function(rc2d_configure_shadercross target_name)
 
     # Ajouter $ORIGIN comme RPATH a l'executable "shadercross" pour que les .so soient trouvées dans le même dossier
     add_custom_command(TARGET ${target_name} POST_BUILD
-      COMMAND patchelf --set-rpath '\$ORIGIN' "${SHADER_TOOLS_DIR}/shadercross"
+      COMMAND patchelf --set-rpath '$ORIGIN' "${SHADER_TOOLS_DIR}/shadercross"
       COMMENT "Ajout de $ORIGIN comme RPATH à shadercross"
       VERBATIM
     )
@@ -721,6 +721,13 @@ if(RC2D_BUILD_EXAMPLES)
             "${PROJECT_SOURCE_DIR}/examples/shaders"
             "$<TARGET_FILE_DIR:rc2d_example>/shaders"
     COMMENT "Copie du dossier shaders dans le dossier de build de rc2d_example"
+  )
+
+  # Rendre rc2d_example exécutable (important s’il est copié depuis une archive)
+  add_custom_command(TARGET rc2d_example POST_BUILD
+    COMMAND chmod +x "$<TARGET_FILE_DIR:rc2d_example>/rc2d_example"
+    COMMENT "Rendre rc2d_example exécutable"
+    VERBATIM
   )
 endif()
 
