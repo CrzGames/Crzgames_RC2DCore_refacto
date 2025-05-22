@@ -421,11 +421,7 @@ function(rc2d_configure_shadercross target_name)
       )
 
       # Copier aussi les .so dans le répertoire de l'exécutable
-      file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
-        "${CRZGAMES_LIBRARIES}/slr3-sniper/lib/SDL3_shadercross/${RC2D_ARCH}/*.so.*"
-      )
-      file(COPY ${SHADERCROSS_DLLS}
+      file(COPY ${SHADERCROSS_SO}
         DESTINATION "$<TARGET_FILE_DIR:${target_name}>"
         FOLLOW_SYMLINK_CHAIN
         USE_SOURCE_PERMISSIONS
@@ -496,11 +492,7 @@ function(rc2d_configure_shadercross target_name)
       )
 
       # Copier aussi les .so dans le répertoire de l'exécutable
-      file(GLOB_RECURSE SHADERCROSS_DLLS
-        "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*.so"
-        "${CRZGAMES_LIBRARIES}/linux/lib/SDL3_shadercross/${RC2D_ARCH}/*.so.*"
-      )
-      file(COPY ${SHADERCROSS_DLLS}
+      file(COPY ${SHADERCROSS_SO}
         DESTINATION "$<TARGET_FILE_DIR:${target_name}>"
         FOLLOW_SYMLINK_CHAIN
         USE_SOURCE_PERMISSIONS
@@ -543,7 +535,7 @@ function(rc2d_configure_openssl target_name)
         Crypt32   # OpenSSL CryptoAPI (Librarie native de Windows, obligatoire)
         ws2_32    # OpenSSL Winsock2  (Librarie native de Windows, obligatoire)
       )
-    elseif (UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "Linux")
+    elseif (RC2D_PLATFORM STREQUAL "Linux")
       # Link le dossier include de OpenSSL à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/linux/include")
 
@@ -555,7 +547,7 @@ function(rc2d_configure_openssl target_name)
         ssl    # OpenSSL
         crypto # OpenSSL
       )
-    elseif(UNIX AND NOT APPLE AND RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+    elseif(RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
       # Link le dossier include de OpenSSL à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include")
 
