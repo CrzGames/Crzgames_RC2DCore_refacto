@@ -407,7 +407,7 @@ function(rc2d_configure_shadercross target_name)
 
     # Ajouter $ORIGIN comme RPATH a l'executable "shadercross" pour que les .so soient trouvées dans le même dossier
     add_custom_command(TARGET ${target_name} POST_BUILD
-      COMMAND patchelf --set-rpath '$ORIGIN' "${SHADER_TOOLS_DIR}/shadercross"
+      COMMAND ${PATCHELF_EXECUTABLE} --set-rpath "\$ORIGIN" "${SHADER_TOOLS_DIR}/shadercross"
       COMMENT "Ajout de $ORIGIN comme RPATH à shadercross"
       VERBATIM
     )
