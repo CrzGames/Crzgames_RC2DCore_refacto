@@ -341,16 +341,16 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
 
     if (rresFile == NULL)
     {
-        RRES_LOG("RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
         return chunk;
     }
 
-    RRES_LOG("RRES: INFO: Loading resource from file: %s\n", fileName);
+    RC2D_log(RC2D_LOG_INFO, "RRES: INFO: Loading resource from file: %s\n", fileName);
 
     rresFileHeader header = { 0 };
     if (SDL_ReadIO(rresFile, &header, sizeof(rresFileHeader)) != sizeof(rresFileHeader))
     {
-        RRES_LOG("RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
         SDL_CloseIO(rresFile);
         return chunk;
     }
@@ -364,30 +364,30 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
             rresResourceChunkInfo info = { 0 };
             if (SDL_ReadIO(rresFile, &info, sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
             {
-                RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                 break;
             }
 
             if (info.id == rresId)
             {
                 found = true;
-                RRES_LOG("RRES: INFO: Found requested resource id: 0x%08x\n", info.id);
-                RRES_LOG("RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
+                RC2D_log(RC2D_LOG_INFO, "RRES: INFO: Found requested resource id: 0x%08x\n", info.id);
+                RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
                          info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
                 if (info.nextOffset != 0)
-                    RRES_LOG("RRES: WARNING: Multiple linked resource chunks available for the provided id");
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Multiple linked resource chunks available for the provided id");
 
                 void *data = RRES_MALLOC(info.packedSize);
                 if (data == NULL)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to allocate memory for chunk data\n");
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk data\n");
                     break;
                 }
 
                 if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
                     RRES_FREE(data);
                     break;
                 }
@@ -401,21 +401,21 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
             {
                 if (SDL_SeekIO(rresFile, info.packedSize, SDL_IO_SEEK_CUR) == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                     break;
                 }
             }
         }
 
-        if (!found) RRES_LOG("RRES: WARNING: Requested resource not found: 0x%08x\n", rresId);
+        if (!found) RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Requested resource not found: 0x%08x\n", rresId);
     }
     else
     {
-        RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
     }
 
     if (!SDL_CloseIO(rresFile))
-        RRES_LOG("RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
 
     return chunk;
 }
@@ -433,14 +433,14 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
 
     if (rresFile == NULL)
     {
-        RRES_LOG("RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
         return rres;
     }
 
     rresFileHeader header = { 0 };
     if (SDL_ReadIO(rresFile, &header, sizeof(rresFileHeader)) != sizeof(rresFileHeader))
     {
-        RRES_LOG("RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
         SDL_CloseIO(rresFile);
         return rres;
     }
@@ -454,22 +454,22 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
             rresResourceChunkInfo info = { 0 };
             if (SDL_ReadIO(rresFile, &info, sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
             {
-                RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                 break;
             }
 
             if (info.id == rresId)
             {
                 found = true;
-                RRES_LOG("RRES: INFO: Found requested resource id: 0x%08x\n", info.id);
-                RRES_LOG("RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
+                RC2D_log(RC2D_LOG_INFO, "RRES: INFO: Found requested resource id: 0x%08x\n", info.id);
+                RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
                          info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
                 rres.count = 1;
                 Sint64 currentFileOffset = SDL_TellIO(rresFile);
                 if (currentFileOffset == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to get current file offset: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to get current file offset: %s\n", SDL_GetError());
                     break;
                 }
 
@@ -478,12 +478,12 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                 {
                     if (SDL_SeekIO(rresFile, temp.nextOffset, SDL_IO_SEEK_SET) == -1)
                     {
-                        RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                         break;
                     }
                     if (SDL_ReadIO(rresFile, &temp, sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
                     {
-                        RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                         break;
                     }
                     rres.count++;
@@ -492,13 +492,13 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                 rres.chunks = (rresResourceChunk *)RRES_CALLOC(rres.count, sizeof(rresResourceChunk));
                 if (rres.chunks == NULL)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to allocate memory for chunks\n");
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunks\n");
                     break;
                 }
 
                 if (SDL_SeekIO(rresFile, currentFileOffset, SDL_IO_SEEK_SET) == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to seek back to first chunk: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek back to first chunk: %s\n", SDL_GetError());
                     RRES_FREE(rres.chunks);
                     break;
                 }
@@ -506,14 +506,14 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                 void *data = RRES_MALLOC(info.packedSize);
                 if (data == NULL)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to allocate memory for chunk data\n");
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk data\n");
                     RRES_FREE(rres.chunks);
                     break;
                 }
 
                 if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
                     RRES_FREE(data);
                     RRES_FREE(rres.chunks);
                     break;
@@ -528,28 +528,28 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                 {
                     if (SDL_SeekIO(rresFile, info.nextOffset, SDL_IO_SEEK_SET) == -1)
                     {
-                        RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                         break;
                     }
                     if (SDL_ReadIO(rresFile, &info, sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
                     {
-                        RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                         break;
                     }
 
-                    RRES_LOG("RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
+                    RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
                              info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
                     data = RRES_MALLOC(info.packedSize);
                     if (data == NULL)
                     {
-                        RRES_LOG("RRES: WARNING: Failed to allocate memory for chunk data\n");
+                        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk data\n");
                         break;
                     }
 
                     if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                     {
-                        RRES_LOG("RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
+                        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
                         RRES_FREE(data);
                         break;
                     }
@@ -566,21 +566,21 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
             {
                 if (SDL_SeekIO(rresFile, info.packedSize, SDL_IO_SEEK_CUR) == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                     break;
                 }
             }
         }
 
-        if (!found) RRES_LOG("RRES: WARNING: Requested resource not found: 0x%08x\n", rresId);
+        if (!found) RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Requested resource not found: 0x%08x\n", rresId);
     }
     else
     {
-        RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
     }
 
     if (!SDL_CloseIO(rresFile))
-        RRES_LOG("RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
 
     return rres;
 }
@@ -599,14 +599,14 @@ RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, in
 
     if (rresFile == NULL)
     {
-        RRES_LOG("RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
         return info;
     }
 
     rresFileHeader header = { 0 };
     if (SDL_ReadIO(rresFile, &header, sizeof(rresFileHeader)) != sizeof(rresFileHeader))
     {
-        RRES_LOG("RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
         SDL_CloseIO(rresFile);
         return info;
     }
@@ -617,7 +617,7 @@ RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, in
         {
             if (SDL_ReadIO(rresFile, &info, sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
             {
-                RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                 break;
             }
 
@@ -629,7 +629,7 @@ RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, in
             {
                 if (SDL_SeekIO(rresFile, info.packedSize, SDL_IO_SEEK_CUR) == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                     break;
                 }
             }
@@ -637,11 +637,11 @@ RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, in
     }
     else
     {
-        RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
     }
 
     if (!SDL_CloseIO(rresFile))
-        RRES_LOG("RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
 
     return info;
 }
@@ -655,7 +655,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
 
     if (rresFile == NULL)
     {
-        RRES_LOG("RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
         *chunkCount = 0;
         return NULL;
     }
@@ -663,7 +663,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
     rresFileHeader header = { 0 };
     if (SDL_ReadIO(rresFile, &header, sizeof(rresFileHeader)) != sizeof(rresFileHeader))
     {
-        RRES_LOG("RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
         SDL_CloseIO(rresFile);
         *chunkCount = 0;
         return NULL;
@@ -674,7 +674,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
         infos = (rresResourceChunkInfo *)RRES_CALLOC(header.chunkCount, sizeof(rresResourceChunkInfo));
         if (infos == NULL)
         {
-            RRES_LOG("RRES: WARNING: Failed to allocate memory for chunk infos\n");
+            RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk infos\n");
             SDL_CloseIO(rresFile);
             *chunkCount = 0;
             return NULL;
@@ -686,7 +686,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
         {
             if (SDL_ReadIO(rresFile, &infos[i], sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
             {
-                RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                 RRES_FREE(infos);
                 count = 0;
                 break;
@@ -696,7 +696,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
             {
                 if (SDL_SeekIO(rresFile, infos[i].nextOffset, SDL_IO_SEEK_SET) == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                     RRES_FREE(infos);
                     count = 0;
                     break;
@@ -706,7 +706,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
             {
                 if (SDL_SeekIO(rresFile, infos[i].packedSize, SDL_IO_SEEK_CUR) == -1)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                     RRES_FREE(infos);
                     count = 0;
                     break;
@@ -716,11 +716,11 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
     }
     else
     {
-        RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
     }
 
     if (!SDL_CloseIO(rresFile))
-        RRES_LOG("RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
 
     *chunkCount = count;
     return infos;
@@ -733,14 +733,14 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
 
     if (rresFile == NULL)
     {
-        RRES_LOG("RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: [%s] rres file could not be opened: %s\n", fileName, SDL_GetError());
         return dir;
     }
 
     rresFileHeader header = { 0 };
     if (SDL_ReadIO(rresFile, &header, sizeof(rresFileHeader)) != sizeof(rresFileHeader))
     {
-        RRES_LOG("RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read file header: %s\n", SDL_GetError());
         SDL_CloseIO(rresFile);
         return dir;
     }
@@ -749,40 +749,40 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
     {
         if (header.cdOffset == 0)
         {
-            RRES_LOG("RRES: WARNING: CDIR: No central directory found\n");
+            RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: CDIR: No central directory found\n");
         }
         else
         {
             rresResourceChunkInfo info = { 0 };
             if (SDL_SeekIO(rresFile, header.cdOffset, SDL_IO_SEEK_SET) == -1)
             {
-                RRES_LOG("RRES: WARNING: Failed to seek to central directory: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to central directory: %s\n", SDL_GetError());
                 SDL_CloseIO(rresFile);
                 return dir;
             }
 
             if (SDL_ReadIO(rresFile, &info, sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
             {
-                RRES_LOG("RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
                 SDL_CloseIO(rresFile);
                 return dir;
             }
 
             if (info.type[0] == 'C' && info.type[1] == 'D' && info.type[2] == 'I' && info.type[3] == 'R')
             {
-                RRES_LOG("RRES: CDIR: Central Directory found at offset: 0x%08x\n", header.cdOffset);
+                RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory found at offset: 0x%08x\n", header.cdOffset);
 
                 void *data = RRES_MALLOC(info.packedSize);
                 if (data == NULL)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to allocate memory for central directory data\n");
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for central directory data\n");
                     SDL_CloseIO(rresFile);
                     return dir;
                 }
 
                 if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to read central directory data: %s\n", SDL_GetError());
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read central directory data: %s\n", SDL_GetError());
                     RRES_FREE(data);
                     SDL_CloseIO(rresFile);
                     return dir;
@@ -792,13 +792,13 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
                 RRES_FREE(data);
 
                 dir.count = chunkData.props[0];
-                RRES_LOG("RRES: CDIR: Central Directory file entries count: %i\n", dir.count);
+                RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory file entries count: %i\n", dir.count);
 
                 unsigned char *ptr = (unsigned char *)chunkData.raw;
                 dir.entries = (rresDirEntry *)RRES_CALLOC(dir.count, sizeof(rresDirEntry));
                 if (dir.entries == NULL)
                 {
-                    RRES_LOG("RRES: WARNING: Failed to allocate memory for directory entries\n");
+                    RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for directory entries\n");
                     RRES_FREE(chunkData.props);
                     RRES_FREE(chunkData.raw);
                     SDL_CloseIO(rresFile);
@@ -821,11 +821,11 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
     }
     else
     {
-        RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
     }
 
     if (!SDL_CloseIO(rresFile))
-        RRES_LOG("RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to close file: %s\n", SDL_GetError());
 
     return dir;
 }
@@ -958,7 +958,7 @@ static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo inf
     }
 
     if (crc32 != info.crc32)
-        RRES_LOG("RRES: WARNING: [ID %i] CRC32 does not match, data can be corrupted\n", info.id);
+        RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: [ID %i] CRC32 does not match, data can be corrupted\n", info.id);
 
     return chunkData;
 }
