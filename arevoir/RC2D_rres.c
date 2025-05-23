@@ -641,7 +641,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
  * @param size Taille des données en octets.
  * @return Un pointeur vers un tableau statique de 4 entiers non signés représentant le hachage MD5.
  */
-unsigned int *ComputeMD5(unsigned char *data, int size)
+static unsigned int *ComputeMD5(unsigned char *data, int size)
 {
 #define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))
 
