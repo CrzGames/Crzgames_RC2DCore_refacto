@@ -40,8 +40,15 @@ option(RC2D_BUILD_EXAMPLES "Build examples" ON)
 option(RC2D_BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Dossier de sortie
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+if(CMAKE_GENERATOR MATCHES "Visual Studio|Xcode")
+  # Multi-config generators
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+else()
+  # Single-config generators (Makefiles, Ninja, etc.)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+endif()
 
 # Configuration multi-plateforme avec versions minimales
 if(WIN32)
