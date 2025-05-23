@@ -4,7 +4,8 @@ echo -e "\e[32m\nGenerating Visual Studio 2022 project for Windows arm64...\e[0m
 
 cmake -S . -B build/windows/arm64 \
   -G "Visual Studio 17 2022" \
-  -A ARM64
+  -A ARM64 \
+  -DRC2D_ARCH=arm64
 
 for build_type in Debug Release; do
   echo -e "\e[32m\nBuilding $build_type...\e[0m"
