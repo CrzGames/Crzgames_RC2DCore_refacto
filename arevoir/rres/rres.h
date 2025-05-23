@@ -10,7 +10,7 @@
 *       or source files without problems. But only ONE file should hold the implementation.
 *
 *   FEATURES:
-* 
+*
 *     - Multi-resource files: Some files could end-up generating multiple connected resources in
 *       the rres output file (i.e TTF files could generate RRES_DATA_FONT_GLYPHS and RRES_DATA_IMAGE).
 *     - File packaging as raw resource data: Avoid data processing and just package the file bytes.
@@ -79,7 +79,7 @@
 *
 *     - rres file maximum chunks: 65535 (16bit chunk count in rresFileHeader)
 *     - rres file maximum size: 4GB (chunk offset and Central Directory Offset is 32bit, so it can not address more than 4GB
-*     - Chunk search by ID is done one by one, starting at first chunk and accessed with fread() function
+*     - Chunk search by ID is done one by one, starting at first chunk and accessed with SDL_ReadIO() function
 *     - Endianness: rres does not care about endianness, data is stored as desired by the host platform (most probably Little Endian)
 *       Endianness won't affect chunk data but it will affect rresFileHeader and rresResourceChunkInfo
 *     - CRC32 hash is used to to generate the rres file identifier from filename
@@ -100,13 +100,36 @@
 *
 *     - stdlib.h: Required for memory allocation: malloc(), calloc(), free()
 *                 NOTE: Allocators can be redefined with macros RRES_MALLOC, RRES_CALLOC, RRES_FREE
-*     - SDL.h:  Required for file access functionality: SDL_RWFromFile(), SDL_RWseek(), SDL_RWread(), SDL_RWclose()
+*     - stdio.h:  Required for file access functionality: FILE, SDL_IOFromFile(), SDL_SeekIO(), SDL_ReadIO(), SDL_CloseIO()
 *     - string.h: Required for memory data management: memcpy(), memcmp()
 *
 *   VERSION HISTORY:
 *
 *     - 1.0 (12-May-2022): Implementation review for better alignment with rres specs
 *     - 0.9 (28-Apr-2022): Initial implementation of rres specs
+*
+*
+*   LICENSE: MIT
+*
+*   Copyright (c) 2016-2022 Ramon Santamaria (@raysan5)
+*
+*   Permission is hereby granted, free of charge, to any person obtaining a copy
+*   of this software and associated documentation files (the "Software"), to deal
+*   in the Software without restriction, including without limitation the rights
+*   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*   copies of the Software, and to permit persons to whom the Software is
+*   furnished to do so, subject to the following conditions:
+*
+*   The above copyright notice and this permission notice shall be included in all
+*   copies or substantial portions of the Software.
+*
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*   SOFTWARE.
 *
 **********************************************************************************************/
 
@@ -146,6 +169,17 @@
     #define RRES_FREE(ptr)          free(ptr)
 #endif
 
+// Simple log system to avoid printf() calls if required
+// NOTE: Avoiding those calls, also avoids const strings memory usage
+#define RRES_SUPPORT_LOG_INFO
+#if defined(RRES_SUPPORT_LOG_INFO)
+    #define RRES_LOG(...) printf(__VA_ARGS__)
+#else
+    #define RRES_LOG(...)
+#endif
+
+// On Windows, MAX_PATH is limited to 256 by default,
+// on Linux, it could go up to 4096
 #define RRES_MAX_FILENAME_SIZE      1024
 
 //----------------------------------------------------------------------------------
@@ -441,6 +475,11 @@ typedef enum rresFontStyle {
 } rresFontStyle;
 
 //----------------------------------------------------------------------------------
+// Global variables
+//----------------------------------------------------------------------------------
+//...
+
+//----------------------------------------------------------------------------------
 // Module Functions Declaration
 //----------------------------------------------------------------------------------
 #ifdef __cplusplus
@@ -465,14 +504,20 @@ RRESAPI void rresUnloadCentralDirectory(rresCentralDir dir);                    
 RRESAPI unsigned int rresGetDataType(const unsigned char *fourCC);                  // Get rresResourceDataType from FourCC code
 RRESAPI int rresGetResourceId(rresCentralDir dir, const char *fileName);            // Get resource id for a provided filename
                                                                                     // NOTE: It requires CDIR available in the file (it's optinal by design)
-RRESAPI unsigned int rresComputeCRC32(unsigned char *data, int len);                // Compute CRC32 for provided data
+RRESAPI unsigned int rresComputeCRC32(unsigned char *data, int len);                   // Compute CRC32 for provided data
+
+// Manage password for data encryption/decryption
+// NOTE: The cipher password is kept as an internal pointer to provided string, it's up to the user to manage that sensible data properly
+// Password should be to allocate and set before loading an encrypted resource and it should be cleaned/wiped after the encrypted resource has been loaded
+// TODO: Move this functionality to engine-library, after all rres.h does not manage data decryption
+RRESAPI void rresSetCipherPassword(const char *pass);                 // Set password to be used on data decryption
+RRESAPI const char *rresGetCipherPassword(void);                      // Get password to be used on data decryption
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif // RRES_H
-
 
 /***********************************************************************************
 *
@@ -490,10 +535,27 @@ RRESAPI unsigned int rresComputeCRC32(unsigned char *data, int len);            
     #define RL_BOOL_TYPE
 #endif
 
-#include <SDL3/SDL_iostream.h>      // Required for: SDL_RWFromFile(), SDL_RWseek(), SDL_RWread(), SDL_RWclose()
-#include <SDL3/SDL_stdinc.h>        // Required for: SDL_memset(), SDL_memcpy(), SDL_memcmp()
-#include <RC2D/RC2D_logger.h>       // Required for: RC2D_log()
+#include <stdlib.h>                 // Required for: malloc(), free()
+#include <string.h>                 // Required for: memcpy(), memcmp()
+#include <SDL3/SDL_iostream.h>      // Required for: SDL_IOStream, SDL_IOFromFile(), SDL_ReadIO(), SDL_SeekIO(), SDL_CloseIO()
+//----------------------------------------------------------------------------------
+// Defines and Macros
+//----------------------------------------------------------------------------------
+//...
 
+//----------------------------------------------------------------------------------
+// Types and Structures Definition
+//----------------------------------------------------------------------------------
+//...
+
+//----------------------------------------------------------------------------------
+// Global Variables Definition
+//----------------------------------------------------------------------------------
+static const char *password = NULL;     // Password pointer, managed by user libraries
+
+//----------------------------------------------------------------------------------
+// Module Internal Functions Declaration
+//----------------------------------------------------------------------------------
 // Load resource chunk packed data into our data struct
 static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo info, void *packedData);
 
@@ -504,20 +566,18 @@ static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo inf
 rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
 {
     rresResourceChunk chunk = { 0 };
-    SDL_RWops *rresRW = SDL_RWFromFile(fileName, "rb");
 
-    if (rresRW == NULL)
-    {
-        RC2D_log(RC2D_LOG_WARN, "RRES: [%s] rres file could not be opened\n", fileName);
-    }
+    SDL_IOStream *rresFile = SDL_IOFromFile(fileName, "rb");
+
+    if (rresFile == NULL) RRES_LOG("RRES: WARNING: [%s] rres file could not be opened\n", fileName);
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "RRES: Loading resource from file: %s\n", fileName);
+        RRES_LOG("RRES: INFO: Loading resource from file: %s\n", fileName);
 
         rresFileHeader header = { 0 };
 
         // Read rres file header
-        SDL_RWread(rresRW, &header, sizeof(rresFileHeader), 1);
+        SDL_ReadIO(&header, sizeof(rresFileHeader), 1, rresFile);
 
         // Verify file signature: "rres" and file version: 100
         if (((header.id[0] == 'r') && (header.id[1] == 'r') && (header.id[2] == 'e') && (header.id[3] == 's')) && (header.version == 100))
@@ -530,48 +590,62 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
                 rresResourceChunkInfo info = { 0 };
 
                 // Read resource info header
-                SDL_RWread(rresRW, &info, sizeof(rresResourceChunkInfo), 1);
+                SDL_ReadIO(&info, sizeof(rresResourceChunkInfo), 1, rresFile);
 
                 // Check if resource id is the requested one
                 if (info.id == rresId)
                 {
                     found = true;
 
-                    RC2D_log(RC2D_LOG_INFO, "RRES: Found requested resource id: 0x%08x\n", info.id);
-                    RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
+                    RRES_LOG("RRES: INFO: Found requested resource id: 0x%08x\n", info.id);
+                    RRES_LOG("RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
-                    // NOTE: We only load the first matching id resource chunk found, but
+                    // NOTE: We only load first matching id resource chunk found but
                     // we show a message if additional chunks are detected
-                    if (info.nextOffset != 0) 
+                    if (info.nextOffset != 0) RRES_LOG("RRES: WARNING: Multiple linked resource chunks available for the provided id");
+
+                    /*
+                    // Variables required to check multiple chunks
+                    int chunkCount = 0;
+                    long currentFileOffset = ftell(rresFile);           // Store current file position
+                    rresResourceChunkInfo temp = info;                  // Temp info header to scan resource chunks
+
+                    // Count all linked resource chunks checking temp.nextOffset
+                    while (temp.nextOffset != 0)
                     {
-                        RC2D_log(RC2D_LOG_WARN, "RRES: Multiple linked resource chunks available for the provided id \n");
+                        SDL_SeekIO(rresFile, temp.nextOffset, SEEK_SET);     // Jump to next linked resource
+                        SDL_ReadIO(&temp, sizeof(rresResourceChunkInfo), 1, rresFile);  // Read next resource info header
+                        chunkCount++;
                     }
+
+                    SDL_SeekIO(rresFile, currentFileOffset, SEEK_SET);       // Return to first resource chunk position
+                    */
 
                     // Read and resource chunk from file data
                     // NOTE: Read data can be compressed/encrypted, it's up to the user library to manage decompression/decryption
-                    void *data = SDL_malloc(info.packedSize); // Allocate enough memory to store resource data chunk
-                    SDL_RWread(rresRW, data, info.packedSize, 1); // Read data: propsCount + props[] + data (+additional_data)
+                    void *data = RRES_MALLOC(info.packedSize);    // Allocate enough memory to store resource data chunk
+                    SDL_ReadIO(data, info.packedSize, 1, rresFile);    // Read data: propsCount + props[] + data (+additional_data)
 
                     // Get chunk.data properly organized (only if uncompressed/unencrypted)
                     chunk.data = rresLoadResourceChunkData(info, data);
                     chunk.info = info;
 
-                    SDL_free(data);
+                    RRES_FREE(data);
 
-                    break; // Resource id found and loaded, stop checking the file
+                    break;      // Resource id found and loaded, stop checking the file
                 }
                 else
                 {
-                    // Skip required data size to read the next resource info header
-                    SDL_RWseek(rresRW, info.packedSize, RW_SEEK_CUR);
+                    // Skip required data size to read next resource info header
+                    SDL_SeekIO(rresFile, info.packedSize, SEEK_CUR);
                 }
             }
 
-            if (!found) RC2D_log(RC2D_LOG_WARN, "RRES: Requested resource not found: 0x%08x\n", rresId);
+            if (!found) RRES_LOG("RRES: WARNING: Requested resource not found: 0x%08x\n", rresId);
         }
-        else RC2D_log(RC2D_LOG_WARN, "RRES: The provided file is not a valid rres file, file signature or version not valid\n");
+        else RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
 
-        SDL_RWclose(rresRW);
+        SDL_CloseIO(rresFile);
     }
 
     return chunk;
@@ -580,8 +654,8 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
 // Unload resource chunk from memory
 void rresUnloadResourceChunk(rresResourceChunk chunk)
 {
-    SDL_free(chunk.data.props);  // Resource chunk properties
-    SDL_free(chunk.data.raw);    // Resource chunk raw data
+    RRES_FREE(chunk.data.props);  // Resource chunk properties
+    RRES_FREE(chunk.data.raw);    // Resource chunk raw data
 }
 
 // Load resource from file by id
@@ -589,18 +663,16 @@ void rresUnloadResourceChunk(rresResourceChunk chunk)
 rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
 {
     rresResourceMulti rres = { 0 };
-    SDL_RWops *rresRW = SDL_RWFromFile(fileName, "rb");
 
-    if (rresRW == NULL)
-    {
-        RC2D_log(RC2D_LOG_WARN, "RRES: [%s] rres file could not be opened\n", fileName);
-    }
+    SDL_IOStream *rresFile = SDL_IOFromFile(fileName, "rb");
+
+    if (rresFile == NULL) RRES_LOG("RRES: WARNING: [%s] rres file could not be opened\n", fileName);
     else
     {
         rresFileHeader header = { 0 };
 
         // Read rres file header
-        SDL_RWread(rresRW, &header, sizeof(rresFileHeader), 1);
+        SDL_ReadIO(&header, sizeof(rresFileHeader), 1, rresFile);
 
         // Verify file signature: "rres" and file version: 100
         if (((header.id[0] == 'r') && (header.id[1] == 'r') && (header.id[2] == 'e') && (header.id[3] == 's')) && (header.version == 100))
@@ -613,80 +685,80 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                 rresResourceChunkInfo info = { 0 };
 
                 // Read resource info header
-                SDL_RWread(rresRW, &info, sizeof(rresResourceChunkInfo), 1);
+                SDL_ReadIO(&info, sizeof(rresResourceChunkInfo), 1, rresFile);
 
                 // Check if resource id is the requested one
                 if (info.id == rresId)
                 {
                     found = true;
 
-                    RC2D_log(RC2D_LOG_INFO, "RRES: Found requested resource id: 0x%08x\n", info.id);
-                    RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
+                    RRES_LOG("RRES: INFO: Found requested resource id: 0x%08x\n", info.id);
+                    RRES_LOG("RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
                     rres.count = 1;
 
-                    Sint64 currentFileOffset = SDL_RWtell(rresRW); // Store current file position
-                    rresResourceChunkInfo temp = info; // Temp info header to scan resource chunks
+                    long currentFileOffset = ftell(rresFile);               // Store current file position
+                    rresResourceChunkInfo temp = info;                      // Temp info header to scan resource chunks
 
                     // Count all linked resource chunks checking temp.nextOffset
                     while (temp.nextOffset != 0)
                     {
-                        SDL_RWseek(rresRW, temp.nextOffset, RW_SEEK_SET); // Jump to next linked resource
-                        SDL_RWread(rresRW, &temp, sizeof(rresResourceChunkInfo), 1); // Read next resource info header
+                        SDL_SeekIO(rresFile, temp.nextOffset, SEEK_SET);         // Jump to next linked resource
+                        SDL_ReadIO(&temp, sizeof(rresResourceChunkInfo), 1, rresFile); // Read next resource info header
                         rres.count++;
                     }
 
-                    rres.chunks = (rresResourceChunk *)SDL_calloc(rres.count, sizeof(rresResourceChunk)); // Load as many rres slots as required
-                    SDL_RWseek(rresRW, currentFileOffset, RW_SEEK_SET); // Return to the first resource chunk position
+                    rres.chunks = (rresResourceChunk *)RRES_CALLOC(rres.count, sizeof(rresResourceChunk)); // Load as many rres slots as required
+                    SDL_SeekIO(rresFile, currentFileOffset, SEEK_SET);           // Return to first resource chunk position
 
                     // Read and load data chunk from file data
                     // NOTE: Read data can be compressed/encrypted,
                     // it's up to the user library to manage decompression/decryption
-                    void *data = SDL_malloc(info.packedSize); // Allocate enough memory to store resource data chunk
-                    SDL_RWread(rresRW, data, info.packedSize, 1); // Read data: propsCount + props[] + data (+additional_data)
+                    void *data = RRES_MALLOC(info.packedSize);              // Allocate enough memory to store resource data chunk
+                    SDL_ReadIO(data, info.packedSize, 1, rresFile);              // Read data: propsCount + props[] + data (+additional_data)
 
                     // Get chunk.data properly organized (only if uncompressed/unencrypted)
                     rres.chunks[0].data = rresLoadResourceChunkData(info, data);
                     rres.chunks[0].info = info;
 
-                    SDL_free(data);
+                    RRES_FREE(data);
 
-                    int j = 1;
+                    int i = 1;
 
                     // Load all linked resource chunks
                     while (info.nextOffset != 0)
                     {
-                        SDL_RWseek(rresRW, info.nextOffset, RW_SEEK_SET); // Jump to next resource chunk
-                        SDL_RWread(rresRW, &info, sizeof(rresResourceChunkInfo), 1); // Read next resource info header
+                        SDL_SeekIO(rresFile, info.nextOffset, SEEK_SET);         // Jump to next resource chunk
+                        SDL_ReadIO(&info, sizeof(rresResourceChunkInfo), 1, rresFile); // Read next resource info header
 
-                        RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
+                        RRES_LOG("RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n", info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
-                        void *data = SDL_malloc(info.packedSize); // Allocate enough memory to store resource data chunk
-                        SDL_RWread(rresRW, data, info.packedSize, 1); // Read data: propsCount + props[] + data (+additional_data)
+                        void *data = RRES_MALLOC(info.packedSize);          // Allocate enough memory to store resource data chunk
+                        SDL_ReadIO(data, info.packedSize, 1, rresFile);          // Read data: propsCount + props[] + data (+additional_data)
 
                         // Get chunk.data properly organized (only if uncompressed/unencrypted)
-                        rres.chunks[j].data = rresLoadResourceChunkData(info, data);
-                        rres.chunks[j].info = info;
+                        rres.chunks[i].data = rresLoadResourceChunkData(info, data);
+                        rres.chunks[i].info = info;
 
-                        SDL_free(data);
+                        RRES_FREE(data);
 
-                        j++;
+                        i++;
                     }
 
-                    break; // Resource id found and loaded, stop checking the file
+                    break;      // Resource id found and loaded, stop checking the file
                 }
                 else
                 {
                     // Skip required data size to read next resource info header
-                    SDL_RWseek(rresRW, info.packedSize, RW_SEEK_CUR);
+                    SDL_SeekIO(rresFile, info.packedSize, SEEK_CUR);
                 }
             }
 
-            if (!found) RC2D_log(RC2D_LOG_WARN, "RRES: Requested resource not found: 0x%08x\n", rresId);
+            if (!found) RRES_LOG("RRES: WARNING: Requested resource not found: 0x%08x\n", rresId);
         }
-        else RC2D_log(RC2D_LOG_WARN, "RRES: The provided file is not a valid rres file, file signature or version not valid\n");
+        else RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
 
-        SDL_RWclose(rresRW);
+        SDL_CloseIO(rresFile);
     }
 
     return rres;
@@ -697,21 +769,21 @@ void rresUnloadResourceMulti(rresResourceMulti multi)
 {
     for (unsigned int i = 0; i < multi.count; i++) rresUnloadResourceChunk(multi.chunks[i]);
 
-    SDL_free(multi.chunks);
+    RRES_FREE(multi.chunks);
 }
 
 // Load resource chunk info for provided id
 RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, int rresId)
 {
     rresResourceChunkInfo info = { 0 };
-    SDL_RWops *rresRW = SDL_RWFromFile(fileName, "rb");
 
-    if (rresRW != NULL)
+    SDL_IOStream *rresFile = SDL_IOFromFile(fileName, "rb");
+
+    if (rresFile != NULL)
     {
         rresFileHeader header = { 0 };
 
-        // Read rres file header
-        SDL_RWread(rresRW, &header, sizeof(rresFileHeader), 1);
+        SDL_ReadIO(&header, sizeof(rresFileHeader), 1, rresFile);
 
         // Verify file signature: "rres", file version: 100
         if (((header.id[0] == 'r') && (header.id[1] == 'r') && (header.id[2] == 'e') && (header.id[3] == 's')) && (header.version == 100))
@@ -720,21 +792,21 @@ RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, in
             for (int i = 0; i < header.chunkCount; i++)
             {
                 // Read resource chunk info
-                SDL_RWread(rresRW, &info, sizeof(rresResourceChunkInfo), 1);
+                SDL_ReadIO(&info, sizeof(rresResourceChunkInfo), 1, rresFile);
 
                 if (info.id == rresId)
                 {
                     // TODO: Jump to next resource chunk for provided id
-                    //if (info.nextOffset > 0) SDL_RWseek(rresRW, info.nextOffset, RW_SEEK_SET);
+                    //if (info.nextOffset > 0) SDL_SeekIO(rresFile, info.nextOffset, SEEK_SET);
 
                     break; // If requested rresId is found, we return the read rresResourceChunkInfo
-                }   
-                else SDL_RWseek(rresRW, info.packedSize, RW_SEEK_CUR); // Jump to next resource
+                }
+                else SDL_SeekIO(rresFile, info.packedSize, SEEK_CUR); // Jump to next resource
             }
         }
-        else RC2D_log(RC2D_LOG_WARN, "RRES: The provided file is not a valid rres file, file signature or version not valid\n");
+        else RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
 
-        SDL_RWclose(rresRW);
+        SDL_CloseIO(rresFile);
     }
 
     return info;
@@ -743,35 +815,35 @@ RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, in
 // Load all resource chunks info
 RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName, unsigned int *chunkCount)
 {
-    rresResourceChunkInfo *infos = NULL;
+    rresResourceChunkInfo *infos = { 0 };
     unsigned int count = 0;
-    SDL_RWops *rresRW = SDL_RWFromFile(fileName, "rb");
 
-    if (rresRW != NULL)
+    SDL_IOStream *rresFile = SDL_IOFromFile(fileName, "rb");
+
+    if (rresFile != NULL)
     {
         rresFileHeader header = { 0 };
 
-        // Read rres file header
-        SDL_RWread(rresRW, &header, sizeof(rresFileHeader), 1);
+        SDL_ReadIO(&header, sizeof(rresFileHeader), 1, rresFile);
 
         // Verify file signature: "rres", file version: 100
         if (((header.id[0] == 'r') && (header.id[1] == 'r') && (header.id[2] == 'e') && (header.id[3] == 's')) && (header.version == 100))
         {
             // Load all resource chunks info
-            infos = (rresResourceChunkInfo *)SDL_calloc(header.chunkCount, sizeof(rresResourceChunkInfo));
+            infos = (rresResourceChunkInfo *)RRES_CALLOC(header.chunkCount, sizeof(rresResourceChunkInfo));
             count = header.chunkCount;
 
             for (unsigned int i = 0; i < count; i++)
             {
-                SDL_RWread(rresRW, &infos[i], sizeof(rresResourceChunkInfo), 1); // Read resource chunk info
+                SDL_ReadIO(&infos[i], sizeof(rresResourceChunkInfo), 1, rresFile); // Read resource chunk info
 
-                if (infos[i].nextOffset > 0) SDL_RWseek(rresRW, infos[i].nextOffset, RW_SEEK_SET); // Jump to next resource
-                else SDL_RWseek(rresRW, infos[i].packedSize, RW_SEEK_CUR); // Jump to next resource
+                if (infos[i].nextOffset > 0) SDL_SeekIO(rresFile, infos[i].nextOffset, SEEK_SET); // Jump to next resource
+                else SDL_SeekIO(rresFile, infos[i].packedSize, SEEK_CUR); // Jump to next resource
             }
         }
-        else RC2D_log(RC2D_LOG_WARN, "RRES: The provided file is not a valid rres file, file signature or version not valid\n");
+        else RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
 
-        SDL_RWclose(rresRW);
+        SDL_CloseIO(rresFile);
     }
 
     *chunkCount = count;
@@ -782,68 +854,68 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
 rresCentralDir rresLoadCentralDirectory(const char *fileName)
 {
     rresCentralDir dir = { 0 };
-    SDL_RWops *rresRW = SDL_RWFromFile(fileName, "rb");
 
-    if (rresRW != NULL)
+    SDL_IOStream *rresFile = SDL_IOFromFile(fileName, "rb");
+
+    if (rresFile != NULL)
     {
         rresFileHeader header = { 0 };
 
-        // Read rres file header
-        SDL_RWread(rresRW, &header, sizeof(rresFileHeader), 1);
+        SDL_ReadIO(&header, sizeof(rresFileHeader), 1, rresFile);
 
         // Verify file signature: "rres", file version: 100
         if (((header.id[0] == 'r') && (header.id[1] == 'r') && (header.id[2] == 'e') && (header.id[3] == 's')) && (header.version == 100))
         {
             // Check if there is a Central Directory available
-            if (header.cdOffset == 0) RC2D_log(RC2D_LOG_WARN, "RRES: CDIR: No central directory found\n");
+            if (header.cdOffset == 0) RRES_LOG("RRES: WARNING: CDIR: No central directory found\n");
             else
             {
                 rresResourceChunkInfo info = { 0 };
 
-                SDL_RWseek(rresRW, header.cdOffset, RW_SEEK_CUR); // Move to central directory position
-                SDL_RWread(rresRW, &info, sizeof(rresResourceChunkInfo), 1); // Read resource info
+                SDL_SeekIO(rresFile, header.cdOffset, SEEK_CUR); // Move to central directory position
+                SDL_ReadIO(&info, sizeof(rresResourceChunkInfo), 1, rresFile); // Read resource info
 
                 // Verify resource type is CDIR
                 if ((info.type[0] == 'C') && (info.type[1] == 'D') && (info.type[2] == 'I') && (info.type[3] == 'R'))
                 {
-                    RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory found at offset: 0x%08x\n", header.cdOffset);
+                    RRES_LOG("RRES: CDIR: Central Directory found at offset: 0x%08x\n", header.cdOffset);
 
-                    void *data = SDL_malloc(info.packedSize);
-                    SDL_RWread(rresRW, data, info.packedSize, 1);
+                    void *data = RRES_MALLOC(info.packedSize);
+                    SDL_ReadIO(data, info.packedSize, 1, rresFile);
 
                     // Load resource chunk data (central directory), data is uncompressed/unencrypted by default
                     rresResourceChunkData chunkData = rresLoadResourceChunkData(info, data);
-                    SDL_free(data);
+                    RRES_FREE(data);
 
-                    dir.count = chunkData.props[0]; // File entries count
+                    dir.count = chunkData.props[0];     // File entries count
 
-                    RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory file entries count: %i\n", dir.count);
+                    RRES_LOG("RRES: CDIR: Central Directory file entries count: %i\n", dir.count);
 
                     unsigned char *ptr = (unsigned char *)chunkData.raw;
-                    dir.entries = (rresDirEntry *)SDL_calloc(dir.count, sizeof(rresDirEntry));
+                    dir.entries = (rresDirEntry *)RRES_CALLOC(dir.count, sizeof(rresDirEntry));
 
                     for (unsigned int i = 0; i < dir.count; i++)
                     {
-                        dir.entries[i].id = ((int *)ptr)[0]; // Resource id
-                        dir.entries[i].offset = ((int *)ptr)[1]; // Resource offset in file
+                        dir.entries[i].id = ((int *)ptr)[0];            // Resource id
+                        dir.entries[i].offset = ((int *)ptr)[1];        // Resource offset in file
                         // NOTE: There is a reserved integer value before fileNameSize
-                        dir.entries[i].fileNameSize = ((int *)ptr)[3]; // Resource fileName size
+                        dir.entries[i].fileNameSize = ((int *)ptr)[3];  // Resource fileName size
 
                         // Resource fileName, NULL terminated and 0-padded to 4-byte,
                         // fileNameSize considers NULL and padding
-                        SDL_memcpy(dir.entries[i].fileName, ptr + 16, dir.entries[i].fileNameSize);
+                        memcpy(dir.entries[i].fileName, ptr + 16, dir.entries[i].fileNameSize);
 
-                        ptr += (16 + dir.entries[i].fileNameSize); // Move pointer for the next entry
+                        ptr += (16 + dir.entries[i].fileNameSize);      // Move pointer for next entry
                     }
 
-                    SDL_free(chunkData.props);
-                    SDL_free(chunkData.raw);
+                    RRES_FREE(chunkData.props);
+                    RRES_FREE(chunkData.raw);
                 }
             }
         }
-        else RC2D_log(RC2D_LOG_INFO, "RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
+        else RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
 
-        SDL_RWclose(rresRW);
+        SDL_CloseIO(rresFile);
     }
 
     return dir;
@@ -852,7 +924,7 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
 // Unload central directory data
 void rresUnloadCentralDirectory(rresCentralDir dir)
 {
-    SDL_free(dir.entries);
+    RRES_FREE(dir.entries);
 }
 
 // Get rresResourceDataType from FourCC code
@@ -873,6 +945,19 @@ unsigned int rresGetDataType(const unsigned char *fourCC)
         else if (memcmp(fourCC, "LINK", 4) == 0) type = RRES_DATA_LINK;         // External linked file, filepath as provided on file input
         else if (memcmp(fourCC, "CDIR", 4) == 0) type = RRES_DATA_DIRECTORY;    // Central directory for input files relation to resource chunks
     }
+
+    /*
+    // Assign type (unsigned int) FourCC (char[4])
+    if ((fourCC[0] == 'N') && (fourCC[1] == 'U') && (fourCC[2] == 'L') && (fourCC[3] == 'L')) type = RRES_DATA_NULL;             // NULL
+    if ((fourCC[0] == 'R') && (fourCC[1] == 'A') && (fourCC[2] == 'W') && (fourCC[3] == 'D')) type = RRES_DATA_RAW;              // RAWD
+    else if ((fourCC[0] == 'T') && (fourCC[1] == 'E') && (fourCC[2] == 'X') && (fourCC[3] == 'T')) type = RRES_DATA_TEXT;        // TEXT
+    else if ((fourCC[0] == 'I') && (fourCC[1] == 'M') && (fourCC[2] == 'G') && (fourCC[3] == 'E')) type = RRES_DATA_IMAGE;       // IMGE
+    else if ((fourCC[0] == 'W') && (fourCC[1] == 'A') && (fourCC[2] == 'V') && (fourCC[3] == 'E')) type = RRES_DATA_WAVE;        // WAVE
+    else if ((fourCC[0] == 'V') && (fourCC[1] == 'R') && (fourCC[2] == 'T') && (fourCC[3] == 'X')) type = RRES_DATA_VERTEX;      // VRTX
+    else if ((fourCC[0] == 'F') && (fourCC[1] == 'N') && (fourCC[2] == 'T') && (fourCC[3] == 'G')) type = RRES_DATA_FONT_GLYPHS; // FNTG
+    else if ((fourCC[0] == 'L') && (fourCC[1] == 'I') && (fourCC[2] == 'N') && (fourCC[3] == 'K')) type = RRES_DATA_LINK;        // LINK
+    else if ((fourCC[0] == 'C') && (fourCC[1] == 'D') && (fourCC[2] == 'I') && (fourCC[3] == 'R')) type = RRES_DATA_DIRECTORY;   // CDIR
+    */
 
     return type;
 }
@@ -944,6 +1029,20 @@ unsigned int rresComputeCRC32(unsigned char *data, int len)
     return ~crc;
 }
 
+// Set password to be used on data decryption
+void rresSetCipherPassword(const char *pass)
+{
+    password = pass;
+}
+
+// Get password to be used on data decryption
+const char *rresGetCipherPassword(void)
+{
+    if (password == NULL) password = "password12345";
+
+    return password;
+}
+
 //----------------------------------------------------------------------------------
 // Module Internal Functions Definition
 //----------------------------------------------------------------------------------
@@ -967,24 +1066,25 @@ static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo inf
 
             if (chunkData.propCount > 0)
             {
-                chunkData.props = (unsigned int *)SDL_calloc(chunkData.propCount, sizeof(unsigned int));
+                chunkData.props = (unsigned int *)RRES_CALLOC(chunkData.propCount, sizeof(unsigned int));
                 for (unsigned int i = 0; i < chunkData.propCount; i++) chunkData.props[i] = ((unsigned int *)data)[i + 1];
             }
 
-            chunkData.raw = SDL_malloc(info.baseSize);
-            SDL_memcpy(chunkData.raw, ((unsigned char *)data) + sizeof(int) + (chunkData.propCount*sizeof(int)), info.baseSize);
+            int rawSize = info.baseSize - sizeof(int) - (chunkData.propCount*sizeof(int));
+            chunkData.raw = RRES_MALLOC(rawSize);
+            if (chunkData.raw != NULL) memcpy(chunkData.raw, ((unsigned char *)data) + sizeof(int) + (chunkData.propCount*sizeof(int)), rawSize);
         }
         else
         {
             // Data is compressed/encrypted
             // We just return the loaded resource packed data from .rres file,
             // it's up to the user to manage decompression/decryption on user library
-            chunkData.raw = SDL_malloc(info.packedSize);
-            SDL_memcpy(chunkData.raw, (unsigned char *)data, info.packedSize);
+            chunkData.raw = RRES_MALLOC(info.packedSize);
+            if (chunkData.raw != NULL) memcpy(chunkData.raw, (unsigned char *)data, info.packedSize);
         }
     }
 
-    if (crc32 != info.crc32) RC2D_log(RC2D_LOG_WARN, "RRES: [ID %i] CRC32 does not match, data can be corrupted\n", info.id);
+    if (crc32 != info.crc32) RRES_LOG("RRES: WARNING: [ID %i] CRC32 does not match, data can be corrupted\n", info.id);
 
     return chunkData;
 }

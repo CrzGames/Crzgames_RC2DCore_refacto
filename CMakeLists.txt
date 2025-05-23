@@ -761,6 +761,15 @@ if(RC2D_BUILD_EXAMPLES)
               "$<TARGET_FILE_DIR:rc2d_example>/shaders"
       COMMENT "Copie du dossier shaders dans le dossier de build de rc2d_example"
     )
+
+    # Copier le dossier assets dans le dossier de sortie de rc2d_example (exécutable)
+    add_custom_command(TARGET ${RC2D_EXAMPLE_TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:rc2d_example>/assets"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${PROJECT_SOURCE_DIR}/examples/assets"
+              "$<TARGET_FILE_DIR:rc2d_example>/assets"
+      COMMENT "Copie du dossier assets dans le dossier de build de rc2d_example"
+    )
   else()
     # Pour Android, on copie le dossier shaders dans le répertoire "assets" de l'exemple
     add_custom_command(TARGET ${RC2D_EXAMPLE_TARGET_NAME} POST_BUILD
