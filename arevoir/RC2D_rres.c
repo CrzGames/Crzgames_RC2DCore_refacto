@@ -426,7 +426,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
-            inputs.pass_size = SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
+            inputs.pass_size = (uint32_t)SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
             inputs.salt = salt; // Salt for the password
             inputs.salt_size = 16;
 
@@ -499,7 +499,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
-            inputs.pass_size = SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
+            inputs.pass_size = (uint32_t)SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
             inputs.salt = salt; // Salt for the password
             inputs.salt_size = 16;
 
@@ -524,7 +524,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             SDL_memcpy(mac, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 16);
 
             // Message decryption requires key, nonce and MAC
-            int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, (const uint8_t *)chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
+            int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, (unsigned char *)chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
 
             // Wipe secrets if they are no longer needed
             crypto_wipe(nonce, 24);
@@ -641,7 +641,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
  * @param size Taille des données en octets.
  * @return Un pointeur vers un tableau statique de 4 entiers non signés représentant le hachage MD5.
  */
-static unsigned int *ComputeMD5(unsigned char *data, int size)
+static unsigned int *ComputeMD5(const unsigned char *data, int size)
 {
 #define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))
 
