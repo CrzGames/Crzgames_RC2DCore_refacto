@@ -9,91 +9,6 @@
 *       If not defined, the library is in header only mode and can be included in other headers
 *       or source files without problems. But only ONE file should hold the implementation.
 *
-*   FEATURES:
-*
-*     - Multi-resource files: Some files could end-up generating multiple connected resources in
-*       the rres output file (i.e TTF files could generate RRES_DATA_FONT_GLYPHS and RRES_DATA_IMAGE).
-*     - File packaging as raw resource data: Avoid data processing and just package the file bytes.
-*     - Per-file data compression/encryption: Configure compression/encription for every input file.
-*     - Externally linked files: Package only the file path, to be loaded from external file when the
-*       specific id is requested. WARNING: Be careful with path, it should be relative to application dir.
-*     - Central Directory resource (optional): Create a central directory with the input filename relation
-*       to the resource(s) id. This is the default option but it can be avoided; in that case, a header
-*       file (.h) is generated with the file ids definitions.
-*
-*   FILE STRUCTURE:
-*
-*   rres files consist of a file header followed by a number of resource chunks.
-*
-*   Optionally it can contain a Central Directory resource chunk (usually at the end) with the info
-*   of all the files processed into the rres file.
-*
-*   NOTE: Chunks count could not match files count, some processed files (i.e Font, Mesh)
-*   could generate multiple chunks with the same id related by the rresResourceChunkInfo.nextOffset
-*   Those chunks are loaded together when resource is loaded
-*
-*   rresFileHeader               (16 bytes)
-*       Signature Id              (4 bytes)     // File signature id: 'rres'
-*       Version                   (2 bytes)     // Format version
-*       Resource Count            (2 bytes)     // Number of resource chunks contained
-*       CD Offset                 (4 bytes)     // Central Directory offset (if available)
-*       Reserved                  (4 bytes)     // <reserved>
-*
-*   rresResourceChunk[]
-*   {
-*       rresResourceChunkInfo   (32 bytes)
-*           Type                  (4 bytes)     // Resource type (FourCC)
-*           Id                    (4 bytes)     // Resource identifier (CRC32 filename hash or custom)
-*           Compressor            (1 byte)      // Data compression algorithm
-*           Cipher                (1 byte)      // Data encryption algorithm
-*           Flags                 (2 bytes)     // Data flags (if required)
-*           Data Packed Size      (4 bytes)     // Data packed size (compressed/encrypted + custom data appended)
-*           Data Base Size        (4 bytes)     // Data base size (uncompressed/unencrypted)
-*           Next Offset           (4 bytes)     // Next resource chunk offset (if required)
-*           Reserved              (4 bytes)     // <reserved>
-*           CRC32                 (4 bytes)     // Resource Data Chunk CRC32
-*
-*       rresResourceChunkData     (n bytes)     // Packed data
-*           Property Count        (4 bytes)     // Number of properties contained
-*           Properties[]          (4*i bytes)   // Resource data required properties, depend on Type
-*           Data                  (m bytes)     // Resource data
-*   }
-*
-*   rresResourceChunk: RRES_DATA_DIRECTORY      // Central directory (special resource chunk)
-*   {
-*       rresResourceChunkInfo   (32 bytes)
-*
-*       rresCentralDir            (n bytes)     // rresResourceChunkData
-*           Entries Count         (4 bytes)     // Central directory entries count (files)
-*           rresDirEntry[]
-*           {
-*               Id                (4 bytes)     // Resource id
-*               Offset            (4 bytes)     // Resource global offset in file
-*               reserved          (4 bytes)     // <reserved>
-*               FileName Size     (4 bytes)     // Resource fileName size (NULL terminator and 4-bytes align padding considered)
-*               FileName          (m bytes)     // Resource original fileName (NULL terminated and padded to 4-byte alignment)
-*           }
-*    }
-*
-*   DESIGN DECISIONS / LIMITATIONS:
-*
-*     - rres file maximum chunks: 65535 (16bit chunk count in rresFileHeader)
-*     - rres file maximum size: 4GB (chunk offset and Central Directory Offset is 32bit, so it can not address more than 4GB
-*     - Chunk search by ID is done one by one, starting at first chunk and accessed with SDL_ReadIO() function
-*     - Endianness: rres does not care about endianness, data is stored as desired by the host platform (most probably Little Endian)
-*       Endianness won't affect chunk data but it will affect rresFileHeader and rresResourceChunkInfo
-*     - CRC32 hash is used to to generate the rres file identifier from filename
-*       There is a "small" probability of random collision (1 in 2^32 approx.) but considering
-*       the chance of collision is related to the number of data inputs, not the size of the inputs, we assume that risk
-*       Also note that CRC32 is not used as a security/cryptographic hash, just an identifier for the input file
-*     - CRC32 hash is also used to detect chunk data corruption. CRC32 is smaller and computationally much less complex than MD5 or SHA1.
-*       Using a hash function like MD5 is probably overkill for random error detection
-*     - Central Directory rresDirEntry.fileName is NULL terminated and padded to 4-byte, rresDirEntry.fileNameSize considers the padding
-*     - Compression and Encryption. rres supports chunks data compression and encryption, it provides two fields in the rresResourceChunkInfo to
-*       note it, but in those cases is up to the user to implement the desired compressor/uncompressor and encryption/decryption mechanisms
-*       In case of data encryption, it's recommended that any additional resource data (i.e. MAC) to be appended to data chunk and properly
-*       noted in the packed data size field of rresResourceChunkInfo. Data compression should be applied before encryption.
-*
 *   DEPENDENCIES:
 *
 *   rres library dependencies have been kept to the minimum. It depends only on some libc and SDL3 functionality:
@@ -661,8 +576,6 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
     }
     else
     {
-
-
         RRES_LOG("RRES: WARNING: The provided file is not a valid rres file, file signature or version not valid\n");
     }
 
@@ -791,8 +704,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
             }
             else
             {
-                if (SDL_SeekIO(rresFile, infos[i].p
-ackedSize, SDL_IO_SEEK_CUR) == -1)
+                if (SDL_SeekIO(rresFile, infos[i].packedSize, SDL_IO_SEEK_CUR) == -1)
                 {
                     RRES_LOG("RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
                     RRES_FREE(infos);

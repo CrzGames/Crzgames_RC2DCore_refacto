@@ -16,7 +16,13 @@
 /**
  * Password pointer, managed by user libraries
  */
-static const char *password = NULL;
+static const char *rc2d_rres_password = NULL;
+
+/**
+ * Buffer pour stocker le mot de passe de déchiffrement (rc2d_rres_password).
+ * Limité à 15 caractères pour éviter les débordements de mémoire + 1 pour le terminateur NULL ('\0').
+ */ 
+static char rc2d_rres_passwordBuffer[16];
 
 /**
  * Password par défaut utilisé par l'outil rrespacker pour empaqueter les ressources
@@ -24,10 +30,135 @@ static const char *password = NULL;
 static const char *passwordDefaultInRrespacker = "password12345";
 
 /**
- * Buffer pour stocker le mot de passe de déchiffrement.
- * Limité à 15 caractères pour éviter les débordements de mémoire + 1 pour le terminateur NULL ('\0').
- */ 
-static char passwordBuffer[16];
+ * Calcule le hachage MD5 pour une séquence de données.
+ *
+ * Cette fonction prend en entrée une séquence de données et sa taille, puis calcule
+ * et retourne le hachage MD5 de ces données. Le hachage MD5 est un hachage de 128 bits
+ * (16 octets) utilisé pour vérifier l'intégrité des données.
+ *
+ * La fonction utilise une série de transformations et opérations bit à bit sur les données
+ * d'entrée pour produire le hachage final. Le résultat est un tableau statique de 4 entiers
+ * non signés (représentant les 128 bits du hachage MD5) qui doit être utilisé immédiatement
+ * ou copié ailleurs car il sera écrasé lors du prochain appel à cette fonction.
+ *
+ * @param data Pointeur vers les données à hacher.
+ * @param size Taille des données en octets.
+ * @return Un pointeur vers un tableau statique de 4 entiers non signés représentant le hachage MD5.
+ */
+static unsigned int *ComputeMD5(const unsigned char *data, int size)
+{
+#define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))
+
+    static unsigned int hash[4] = { 0 };
+
+    // NOTE: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating
+
+    // r specifies the per-round shift amounts
+    unsigned int r[] = {
+        7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+        5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
+        4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+        6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
+    };
+
+    // Use binary integer part of the sines of integers (in radians) as constants// Initialize variables:
+    unsigned int k[] = {
+        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+    };
+
+    hash[0] = 0x67452301;
+    hash[1] = 0xefcdab89;
+    hash[2] = 0x98badcfe;
+    hash[3] = 0x10325476;
+
+    // Pre-processing: adding a single 1 bit
+    // Append '1' bit to message
+    // NOTE: The input bytes are considered as bits strings,
+    // where the first bit is the most significant bit of the byte
+
+    // Pre-processing: padding with zeros
+    // Append '0' bit until message length in bit 448 (mod 512)
+    // Append length mod (2 pow 64) to message
+
+    int newDataSize = ((((size + 8)/64) + 1)*64) - 8;
+
+    unsigned char *msg = (unsigned char *)SDL_calloc(newDataSize + 64, 1);   // Also appends "0" bits (we alloc also 64 extra bytes...)
+    SDL_memcpy(msg, data, size);
+    msg[size] = 128;                 // Write the "1" bit
+
+    unsigned int bitsLen = 8*size;
+    SDL_memcpy(msg + newDataSize, &bitsLen, 4);  // We append the len in bits at the end of the buffer
+
+    // Process the message in successive 512-bit chunks for each 512-bit chunk of message
+    for (int offset = 0; offset < newDataSize; offset += (512/8))
+    {
+        // Break chunk into sixteen 32-bit words w[j], 0 <= j <= 15
+        unsigned int *w = (unsigned int *)(msg + offset);
+
+        // Initialize hash value for this chunk
+        unsigned int a = hash[0];
+        unsigned int b = hash[1];
+        unsigned int c = hash[2];
+        unsigned int d = hash[3];
+
+        for (int i = 0; i < 64; i++)
+        {
+            unsigned int f, g;
+
+            if (i < 16)
+            {
+                f = (b & c) | ((~b) & d);
+                g = i;
+            }
+            else if (i < 32)
+            {
+                f = (d & b) | ((~d) & c);
+                g = (5*i + 1)%16;
+            }
+            else if (i < 48)
+            {
+                f = b ^ c ^ d;
+                g = (3*i + 5)%16;
+            }
+            else
+            {
+                f = c ^ (b | (~d));
+                g = (7*i)%16;
+            }
+
+            unsigned int temp = d;
+            d = c;
+            c = b;
+            b = b + LEFTROTATE((a + f + k[i] + w[g]), r[i]);
+            a = temp;
+        }
+
+        // Add chunk's hash to result so far
+        hash[0] += a;
+        hash[1] += b;
+        hash[2] += c;
+        hash[3] += d;
+    }
+
+    SDL_free(msg);
+
+    return hash;
+}
 
 void rc2d_rres_setCipherPassword(const char *pass)
 {
@@ -44,30 +175,30 @@ void rc2d_rres_setCipherPassword(const char *pass)
     }
 
     // Initialise le buffer à zéro
-    SDL_memset(passwordBuffer, 0, sizeof(passwordBuffer));
+    SDL_memset(rc2d_rres_passwordBuffer, 0, sizeof(rc2d_rres_passwordBuffer));
 
     // Copie le mot de passe dans le buffer
-    SDL_memcpy(passwordBuffer, pass, passwordLength);
+    SDL_memcpy(rc2d_rres_passwordBuffer, pass, passwordLength);
 
     // Définit le mot de passe pour le décryptage
-    password = passwordBuffer;
+    rc2d_rres_password = rc2d_rres_passwordBuffer;
 }
 
 const char *rc2d_rres_getCipherPassword(void)
 {
-    if (password == NULL) 
+    if (rc2d_rres_password == NULL) 
     {   
-        password = passwordDefaultInRrespacker;
+        rc2d_rres_password = passwordDefaultInRrespacker;
     }
 
-    return password;
+    return rc2d_rres_password;
 }
 
 void rc2d_rres_cleanCipherPassword(void)
 {
     // Efface le mot de passe
-    SDL_memset(passwordBuffer, 0, sizeof(passwordBuffer));
-    password = NULL;
+    SDL_memset(rc2d_rres_passwordBuffer, 0, sizeof(rc2d_rres_passwordBuffer));
+    rc2d_rres_password = NULL;
 }
 
 void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size)
@@ -205,7 +336,7 @@ Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer *render
                     image.format = SDL_PIXELFORMAT_UNKNOWN;
                     break;
                 case RRES_PIXELFORMAT_COMP_DXT1_RGB:
-                    image.format = SDL_PIXELFORMAT_RGB888; // DXT1 est un format compressé, ici on suppose RGB non compressé
+                    image.format = SDL_PIXELFORMAT_XRGB8888; // DXT1 est un format compressé, ici on suppose RGB non compressé
                     break;
                 case RRES_PIXELFORMAT_COMP_DXT1_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // DXT1 avec alpha
@@ -217,16 +348,16 @@ Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer *render
                     image.format = SDL_PIXELFORMAT_RGBA8888; // De même pour DXT5
                     break;
                 case RRES_PIXELFORMAT_COMP_ETC1_RGB:
-                    image.format = SDL_PIXELFORMAT_RGB888; // ETC1 est un format compressé
+                    image.format = SDL_PIXELFORMAT_XRGB8888; // ETC1 est un format compressé
                     break;
                 case RRES_PIXELFORMAT_COMP_ETC2_RGB:
-                    image.format = SDL_PIXELFORMAT_RGB888; // ETC2 pour RGB
+                    image.format = SDL_PIXELFORMAT_XRGB8888; // ETC2 pour RGB
                     break;
                 case RRES_PIXELFORMAT_COMP_ETC2_EAC_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // ETC2 avec alpha
                     break;
                 case RRES_PIXELFORMAT_COMP_PVRT_RGB:
-                    image.format = SDL_PIXELFORMAT_RGB888; // PVRTC pour RGB
+                    image.format = SDL_PIXELFORMAT_XRGB8888; // PVRTC pour RGB
                     break;
                 case RRES_PIXELFORMAT_COMP_PVRT_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // PVRTC avec alpha
@@ -646,135 +777,4 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
     }
 
     return result;
-}
-
-/**
- * Calcule le hachage MD5 pour une séquence de données.
- *
- * Cette fonction prend en entrée une séquence de données et sa taille, puis calcule
- * et retourne le hachage MD5 de ces données. Le hachage MD5 est un hachage de 128 bits
- * (16 octets) utilisé pour vérifier l'intégrité des données.
- *
- * La fonction utilise une série de transformations et opérations bit à bit sur les données
- * d'entrée pour produire le hachage final. Le résultat est un tableau statique de 4 entiers
- * non signés (représentant les 128 bits du hachage MD5) qui doit être utilisé immédiatement
- * ou copié ailleurs car il sera écrasé lors du prochain appel à cette fonction.
- *
- * @param data Pointeur vers les données à hacher.
- * @param size Taille des données en octets.
- * @return Un pointeur vers un tableau statique de 4 entiers non signés représentant le hachage MD5.
- */
-static unsigned int *ComputeMD5(const unsigned char *data, int size)
-{
-#define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))
-
-    static unsigned int hash[4] = { 0 };
-
-    // NOTE: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating
-
-    // r specifies the per-round shift amounts
-    unsigned int r[] = {
-        7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-        5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
-        4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-        6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
-    };
-
-    // Use binary integer part of the sines of integers (in radians) as constants// Initialize variables:
-    unsigned int k[] = {
-        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
-    };
-
-    hash[0] = 0x67452301;
-    hash[1] = 0xefcdab89;
-    hash[2] = 0x98badcfe;
-    hash[3] = 0x10325476;
-
-    // Pre-processing: adding a single 1 bit
-    // Append '1' bit to message
-    // NOTE: The input bytes are considered as bits strings,
-    // where the first bit is the most significant bit of the byte
-
-    // Pre-processing: padding with zeros
-    // Append '0' bit until message length in bit 448 (mod 512)
-    // Append length mod (2 pow 64) to message
-
-    int newDataSize = ((((size + 8)/64) + 1)*64) - 8;
-
-    unsigned char *msg = (unsigned char *)SDL_calloc(newDataSize + 64, 1);   // Also appends "0" bits (we alloc also 64 extra bytes...)
-    SDL_memcpy(msg, data, size);
-    msg[size] = 128;                 // Write the "1" bit
-
-    unsigned int bitsLen = 8*size;
-    SDL_memcpy(msg + newDataSize, &bitsLen, 4);  // We append the len in bits at the end of the buffer
-
-    // Process the message in successive 512-bit chunks for each 512-bit chunk of message
-    for (int offset = 0; offset < newDataSize; offset += (512/8))
-    {
-        // Break chunk into sixteen 32-bit words w[j], 0 <= j <= 15
-        unsigned int *w = (unsigned int *)(msg + offset);
-
-        // Initialize hash value for this chunk
-        unsigned int a = hash[0];
-        unsigned int b = hash[1];
-        unsigned int c = hash[2];
-        unsigned int d = hash[3];
-
-        for (int i = 0; i < 64; i++)
-        {
-            unsigned int f, g;
-
-            if (i < 16)
-            {
-                f = (b & c) | ((~b) & d);
-                g = i;
-            }
-            else if (i < 32)
-            {
-                f = (d & b) | ((~d) & c);
-                g = (5*i + 1)%16;
-            }
-            else if (i < 48)
-            {
-                f = b ^ c ^ d;
-                g = (3*i + 5)%16;
-            }
-            else
-            {
-                f = c ^ (b | (~d));
-                g = (7*i)%16;
-            }
-
-            unsigned int temp = d;
-            d = c;
-            c = b;
-            b = b + LEFTROTATE((a + f + k[i] + w[g]), r[i]);
-            a = temp;
-        }
-
-        // Add chunk's hash to result so far
-        hash[0] += a;
-        hash[1] += b;
-        hash[2] += c;
-        hash[3] += d;
-    }
-
-    SDL_free(msg);
-
-    return hash;
 }
