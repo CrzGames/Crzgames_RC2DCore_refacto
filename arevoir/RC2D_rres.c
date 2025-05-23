@@ -123,7 +123,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
             // Lire les données textuelles dans une chaîne de caractères
             char* text = (char*)SDL_malloc(chunk.data.props[0] + 1);
             SDL_RWread(rw, text, chunk.data.props[0], 1);
-            text[chunk.data.props[0]] = '\0'; // Ajouter un terminateur NULL
+            text[chunk.data.props[0]] = '\0'; // Ajouter un terminateur NULL pour le texte
 
             SDL_RWclose(rw);
 
