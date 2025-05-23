@@ -320,6 +320,7 @@ RRESAPI const char *rresGetCipherPassword(void);
 #include <stdlib.h>
 #include <string.h>
 #include <SDL3/SDL_iostream.h>
+#include <RC2D/RC2D_logger.h>
 
 //----------------------------------------------------------------------------------
 // Global Variables Definition
