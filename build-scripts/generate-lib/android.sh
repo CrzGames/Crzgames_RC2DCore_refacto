@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Generate lib for Android to arm64-v8a, armeabi-v7a, x86 and x86_64 architectures
+# Generate lib for Android to arm64-v8a and armeabi-v7a architectures
 
 # Vérifier le système d'exploitation
 if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "darwin"* ]]; then
-    # Système Unix/Linux (y compris macOS)
+    # Système Unix
     GRADLE="./gradlew"
 else
     # Système Windows
@@ -20,12 +20,8 @@ DIST_DIR_DEBUG="dist/lib/android/Debug"
 # Create destination directories
 mkdir -p "$DIST_DIR_RELEASE/arm64-v8a"
 mkdir -p "$DIST_DIR_RELEASE/armeabi-v7a"
-mkdir -p "$DIST_DIR_RELEASE/x86"
-mkdir -p "$DIST_DIR_RELEASE/x86_64"
 mkdir -p "$DIST_DIR_DEBUG/arm64-v8a"
 mkdir -p "$DIST_DIR_DEBUG/armeabi-v7a"
-mkdir -p "$DIST_DIR_DEBUG/x86"
-mkdir -p "$DIST_DIR_DEBUG/x86_64"
 
 # Vérifier si ANDROID_HOME est défini
 if [ -z "$ANDROID_HOME" ]; then
@@ -52,12 +48,8 @@ cd ../
 # Copy .so files to respective directories
 cp "$BASE_BUILD_DIR_RELEASE/arm64-v8a/librc2d.so" "$DIST_DIR_RELEASE/arm64-v8a/"
 cp "$BASE_BUILD_DIR_RELEASE/armeabi-v7a/librc2d.so" "$DIST_DIR_RELEASE/armeabi-v7a/"
-cp "$BASE_BUILD_DIR_RELEASE/x86/librc2d.so" "$DIST_DIR_RELEASE/x86/"
-cp "$BASE_BUILD_DIR_RELEASE/x86_64/librc2d.so" "$DIST_DIR_RELEASE/x86_64/"
 
 cp "$BASE_BUILD_DIR_DEBUG/arm64-v8a/librc2d.so" "$DIST_DIR_DEBUG/arm64-v8a/"
 cp "$BASE_BUILD_DIR_DEBUG/armeabi-v7a/librc2d.so" "$DIST_DIR_DEBUG/armeabi-v7a/"
-cp "$BASE_BUILD_DIR_DEBUG/x86/librc2d.so" "$DIST_DIR_DEBUG/x86/"
-cp "$BASE_BUILD_DIR_DEBUG/x86_64/librc2d.so" "$DIST_DIR_DEBUG/x86_64/"
 
-echo -e "\e[32m \n Lib RC2D for Android >= 6.0 for arm64-v8a, armeabi-v7a, x86 and x86_64 architectures generated successfully, go to dist/lib/android directory...\e[0m"
+echo -e "\e[32m \n Lib RC2D for Android >= 9.0 for arm64-v8a and armeabi-v7a architectures generated successfully, go to dist/lib/android directory...\e[0m"

@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# Generate lib for macOS to Intel x64 and Apple Silicon arm64 architectures
+echo -e "\e[32m\nGenerating Xcode project for macOS Apple Silicon arm64...\e[0m"
 
-mkdir -p build/macos/arm64
+cmake -S . -B build/macos/arm64 -G Xcode
 
-cd build/macos/arm64
+for build_type in Debug Release; do
+  echo -e "\e[32m\nBuilding $build_type...\e[0m"
+  cmake --build build/macos/arm64 --config $build_type
+done
 
-echo -e "\e[32m \n Generate project with CMake for macOS Apple Silicon arm64...\e[0m"
-cmake ../../.. -G "Xcode" -DCMAKE_OSX_SYSROOT="macosx"
-echo -e "\e[32m \n Build project for Release...\e[0m"
-cmake --build . --config Release
-
-echo -e "\033[32m \n Lib RC2D for macOS >= 11.0 to x86_64 Intel and Apple Silicon arm64 to Debug/Release generated successfully, go to the dist/lib/macos/ directory... \n\033[0m"
+echo -e "\033[32m\nLib RC2D for macOS arm64 built in Debug and Release configs.\nGo to dist/lib/macos/.\n\033[0m"

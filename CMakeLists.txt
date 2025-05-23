@@ -75,7 +75,7 @@ else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-error=strict-prototypes -Wno-newline-eof")
 endif()
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
   # Active les backends vidéo nécessaires pour Linux (Steam Deck, Distribution Linux, Raspberry PI 5 etc.)
   set(SDL_WAYLAND ON CACHE BOOL "Enable Wayland backend for SDL3" FORCE)
   set(SDL_X11 ON CACHE BOOL "Enable X11 backend for SDL3" FORCE)
@@ -86,11 +86,6 @@ if(UNIX AND NOT APPLE)
   if(NOT PATCHELF_EXECUTABLE)
     message(FATAL_ERROR "patchelf non trouvé dans le PATH")
   endif()
-endif()
-
-if (ANDROID)
-  # On désactive le rechargement à chaud des shaders pour Android (disponible uniquement sur macOS, Linux et Windows)
-  set(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED OFF CACHE BOOL "Disable hot reload shaders with SDL3_shadercross" FORCE)
 endif()
 
 # SDL3_ttf, SDL3_image, SDL3_mixer : 
@@ -297,7 +292,7 @@ function(rc2d_configure_shadercross target_name)
     )
 
     # Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross
-    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED AND NOT ANDROID)
       # Link le dossier include de shadercross à la target
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/macos/include"
@@ -351,7 +346,7 @@ function(rc2d_configure_shadercross target_name)
     endforeach()
 
     # Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est activé, on link la lib shadercross
-    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED AND NOT ANDROID)
       # Link le dossier include de shadercross à la target
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/windows/include"
@@ -428,7 +423,7 @@ function(rc2d_configure_shadercross target_name)
       VERBATIM
     )
 
-    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED AND NOT ANDROID)
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/slr3-sniper/include"
       )
@@ -499,7 +494,7 @@ function(rc2d_configure_shadercross target_name)
       VERBATIM
     )
 
-    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED)
+    if(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED AND NOT ANDROID)
       # Link le dossier include de shadercross à la target
       target_include_directories(${target_name} PRIVATE
         "${CRZGAMES_LIBRARIES}/linux/include"
@@ -581,7 +576,7 @@ function(rc2d_configure_openssl target_name)
         ssl    # OpenSSL
         crypto # OpenSSL
       )
-    elseif(RC2D_PLATFORM STREQUAL "SLR3-SNIPER")
+    elseif(RC2D_PLATFORM STREQUAL "SLR3-SNIPER") # Steam Deck / Steam Linux
       # Link le dossier include de OpenSSL à la target
       target_include_directories(${target_name} PRIVATE "${CRZGAMES_LIBRARIES}/slr3-sniper/include")
 
@@ -769,7 +764,7 @@ if(RC2D_BUILD_EXAMPLES)
     )
   endif()
 
-  if (UNIX OR APPLE)
+  if (UNIX OR APPLE AND NOT ANDROID)
     # Rendre rc2d_example exécutable (important s’il est copié depuis une archive)
     add_custom_command(TARGET ${RC2D_EXAMPLE_TARGET_NAME} POST_BUILD
       COMMAND chmod +x "$<TARGET_FILE_DIR:rc2d_example>/rc2d_example"
