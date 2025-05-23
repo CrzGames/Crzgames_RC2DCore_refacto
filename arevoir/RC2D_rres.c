@@ -1,24 +1,34 @@
 #define RRES_IMPLEMENTATION
 
-#include <RC2D/RC2D_rres.h> 
+#include <RC2D/RC2D_rres.h>
 #include <RC2D/RC2D_logger.h>
 
-#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free, SDL_memset, SDL_memcpy
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_iostream.h>
 
-// Remarque : Les algorithme pour encrypt/compresser sont utiliser de base via rrespacker
+/**
+ * Remarque : Les algorithmes pour encrypter/compresser sont utilisés de base via l'outil rrespacker
+ */
 #include <lz4/lz4.h> // Compression algorithm: LZ4
 #include <monocypher/monocypher.h> // Encryption algorithm: XChaCha20-Poly1305
 #include <aes/aes.h> // Encryption algorithm: AES 
 
-static const char *password = NULL; // Password pointer, managed by user libraries
-static const char *passwordDefaultInRrespacker = "password12345"; // Password par défault utiliser par l'outil rrespacker pour empacter les ressources
-static char passwordBuffer[16]; // 15 caractères pour l'utilisateur + 1 pour le '\0'
+/**
+ * Password pointer, managed by user libraries
+ */
+static const char *password = NULL;
 
 /**
- * Définit le mot de passe utilisé pour le déchiffrement des données.
- * Ce mot de passe sera appliqué pour déchiffrer les ressources chiffrées.
- * @param pass Le mot de passe de déchiffrement.
+ * Password par défaut utilisé par l'outil rrespacker pour empaqueter les ressources
  */
+static const char *passwordDefaultInRrespacker = "password12345";
+
+/**
+ * Buffer pour stocker le mot de passe de déchiffrement.
+ * Limité à 15 caractères pour éviter les débordements de mémoire + 1 pour le terminateur NULL ('\0').
+ */ 
+static char passwordBuffer[16];
+
 void rc2d_rres_setCipherPassword(const char *pass)
 {
     // Effacez le mot de passe précédent
@@ -43,11 +53,6 @@ void rc2d_rres_setCipherPassword(const char *pass)
     password = passwordBuffer;
 }
 
-/**
- * Obtient le mot de passe actuellement défini pour le déchiffrement des données.
- * Retourne le mot de passe par défaut si aucun mot de passe n'a été spécifié par l'utilisateur.
- * @return Le mot de passe de déchiffrement.
- */
 const char *rc2d_rres_getCipherPassword(void)
 {
     if (password == NULL) 
@@ -58,9 +63,6 @@ const char *rc2d_rres_getCipherPassword(void)
     return password;
 }
 
-/**
- * Nettoie le mot de passe de déchiffrement actuellement défini, effaçant toute trace en mémoire.
- */
 void rc2d_rres_cleanCipherPassword(void)
 {
     // Efface le mot de passe
@@ -68,13 +70,6 @@ void rc2d_rres_cleanCipherPassword(void)
     password = NULL;
 }
 
-/**
- * Charge des données brutes à partir d'un chunk RRES.
- * Utile pour les fichiers embarqués ou d'autres blobs binaires.
- * @param chunk Le chunk RRES contenant les données brutes.
- * @param size La taille des données chargées.
- * @return Pointeur vers les données brutes chargées.
- */
 void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size)
 {
     // RRES_DATA_RAW = Raw file data
@@ -103,12 +98,6 @@ void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size
     return NULL;
 }
 
-/**
- * Charge des données textuelles à partir d'un chunk RRES.
- * Le texte est correctement terminé par un caractère NULL.
- * @param chunk Le chunk RRES contenant les données textuelles.
- * @return Chaîne de caractères contenant les données textuelles chargées.
- */
 char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
 {
     // RRES_DATA_TEXT = Text data
@@ -117,41 +106,59 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
         // Si les données ne sont pas compressées/chiffrées, elles peuvent être utilisées directement
         if ((chunk.info.compType == RRES_COMP_NONE) && (chunk.info.cipherType == RRES_CIPHER_NONE))
         {
-            // Créer un RWops à partir des données textuelles
-            SDL_RWops* rw = SDL_RWFromMem(chunk.data.raw, chunk.data.props[0]);
+            // Créer un SDL_IOStream à partir des données textuelles
+            SDL_IOStream *rw = SDL_IOFromMem(chunk.data.raw, chunk.data.props[0]);
+            if (!rw)
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Échec de la création de SDL_IOStream: %s", SDL_GetError());
+                return NULL;
+            }
 
             // Lire les données textuelles dans une chaîne de caractères
-            char* text = (char*)SDL_malloc(chunk.data.props[0] + 1);
-            SDL_RWread(rw, text, chunk.data.props[0], 1);
+            char *text = (char *)SDL_malloc(chunk.data.props[0] + 1);
+            if (!text)
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le texte");
+                SDL_CloseIO(rw);
+                return NULL;
+            }
+
+            // Lire les données textuelles
+            if (SDL_ReadIO(rw, text, chunk.data.props[0]) != chunk.data.props[0])
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Échec de la lecture des données textuelles: %s", SDL_GetError());
+                SDL_free(text);
+                SDL_CloseIO(rw);
+                return NULL;
+            }
             text[chunk.data.props[0]] = '\0'; // Ajouter un terminateur NULL pour le texte
 
-            SDL_RWclose(rw);
+            // Libérer le SDL_IOStream
+            if (!SDL_CloseIO(rw))
+            {
+                RC2D_log(RC2D_LOG_WARN, "Échec de la fermeture de SDL_IOStream: %s", SDL_GetError());
+            }
 
             return text;
         }
-
     }
 
     return NULL;
 }
 
-
-void freeImage(Image *image) {
-    if (image->texture != NULL) {
+void freeImage(Image *image)
+{
+    if (image->texture != NULL)
+    {
         SDL_DestroyTexture(image->texture);
         image->texture = NULL;
     }
 }
-/**
- * Charge des données d'image à partir d'un chunk RRES et crée une texture SDL à partir de ces données.
- * @param chunk Le chunk RRES contenant les données d'image.
- * @param renderer Le renderer SDL utilisé pour créer la texture.
- * @return Structure Image contenant la texture SDL et les métadonnées de l'image.
- */
-Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer* renderer) 
+
+Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer *renderer)
 {
     // RRES_DATA_IMAGE = Image data
-    if (rresGetDataType(chunk.info.type) == RRES_DATA_IMAGE) 
+    if (rresGetDataType(chunk.info.type) == RRES_DATA_IMAGE)
     {
         // Si les données ne sont pas compressées/chiffrées, elles peuvent être utilisées directement
         if ((chunk.info.compType == RRES_COMP_NONE) && (chunk.info.cipherType == RRES_CIPHER_NONE))
@@ -162,26 +169,27 @@ Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer* render
 
             int format = chunk.data.props[2];
 
-            switch (format) {
-                case RRES_PIXELFORMAT_UNCOMP_GRAYSCALE: 
+            switch (format)
+            {
+                case RRES_PIXELFORMAT_UNCOMP_GRAYSCALE:
                     image.format = SDL_PIXELFORMAT_INDEX8; // Grayscale est généralement indexé en SDL
                     break;
-                case RRES_PIXELFORMAT_UNCOMP_GRAY_ALPHA: 
+                case RRES_PIXELFORMAT_UNCOMP_GRAY_ALPHA:
                     image.format = SDL_PIXELFORMAT_RGBA4444; // Gray avec alpha, supposons un format RGBA 4 bits chacun
                     break;
-                case RRES_PIXELFORMAT_UNCOMP_R5G6B5: 
+                case RRES_PIXELFORMAT_UNCOMP_R5G6B5:
                     image.format = SDL_PIXELFORMAT_RGB565; // 5 bits pour Rouge, 6 pour Vert, 5 pour Bleu
                     break;
-                case RRES_PIXELFORMAT_UNCOMP_R8G8B8: 
+                case RRES_PIXELFORMAT_UNCOMP_R8G8B8:
                     image.format = SDL_PIXELFORMAT_RGB24; // RGB standard 8 bits par canal
                     break;
-                case RRES_PIXELFORMAT_UNCOMP_R5G5B5A1: 
+                case RRES_PIXELFORMAT_UNCOMP_R5G5B5A1:
                     image.format = SDL_PIXELFORMAT_RGBA5551; // RGBA avec 1 bit alpha
                     break;
-                case RRES_PIXELFORMAT_UNCOMP_R4G4B4A4: 
+                case RRES_PIXELFORMAT_UNCOMP_R4G4B4A4:
                     image.format = SDL_PIXELFORMAT_RGBA4444; // RGBA 4 bits chacun
                     break;
-                case RRES_PIXELFORMAT_UNCOMP_R8G8B8A8: 
+                case RRES_PIXELFORMAT_UNCOMP_R8G8B8A8:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // RGBA standard 8 bits par canal
                     break;
                 case RRES_PIXELFORMAT_UNCOMP_R32:
@@ -196,97 +204,98 @@ Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer* render
                     // SDL n'a pas de format direct pour R32G32B32A32; cela pourrait nécessiter un traitement personnalisé
                     image.format = SDL_PIXELFORMAT_UNKNOWN;
                     break;
-                case RRES_PIXELFORMAT_COMP_DXT1_RGB: 
+                case RRES_PIXELFORMAT_COMP_DXT1_RGB:
                     image.format = SDL_PIXELFORMAT_RGB888; // DXT1 est un format compressé, ici on suppose RGB non compressé
                     break;
-                case RRES_PIXELFORMAT_COMP_DXT1_RGBA: 
+                case RRES_PIXELFORMAT_COMP_DXT1_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // DXT1 avec alpha
                     break;
-                case RRES_PIXELFORMAT_COMP_DXT3_RGBA: 
+                case RRES_PIXELFORMAT_COMP_DXT3_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // DXT3 est aussi un format compressé
                     break;
-                case RRES_PIXELFORMAT_COMP_DXT5_RGBA: 
+                case RRES_PIXELFORMAT_COMP_DXT5_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // De même pour DXT5
                     break;
-                case RRES_PIXELFORMAT_COMP_ETC1_RGB: 
+                case RRES_PIXELFORMAT_COMP_ETC1_RGB:
                     image.format = SDL_PIXELFORMAT_RGB888; // ETC1 est un format compressé
                     break;
-                case RRES_PIXELFORMAT_COMP_ETC2_RGB: 
+                case RRES_PIXELFORMAT_COMP_ETC2_RGB:
                     image.format = SDL_PIXELFORMAT_RGB888; // ETC2 pour RGB
                     break;
-                case RRES_PIXELFORMAT_COMP_ETC2_EAC_RGBA: 
+                case RRES_PIXELFORMAT_COMP_ETC2_EAC_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // ETC2 avec alpha
                     break;
-                case RRES_PIXELFORMAT_COMP_PVRT_RGB: 
+                case RRES_PIXELFORMAT_COMP_PVRT_RGB:
                     image.format = SDL_PIXELFORMAT_RGB888; // PVRTC pour RGB
                     break;
-                case RRES_PIXELFORMAT_COMP_PVRT_RGBA: 
+                case RRES_PIXELFORMAT_COMP_PVRT_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // PVRTC avec alpha
                     break;
-                case RRES_PIXELFORMAT_COMP_ASTC_4x4_RGBA: 
+                case RRES_PIXELFORMAT_COMP_ASTC_4x4_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // ASTC est un format compressé
                     break;
-                case RRES_PIXELFORMAT_COMP_ASTC_8x8_RGBA: 
+                case RRES_PIXELFORMAT_COMP_ASTC_8x8_RGBA:
                     image.format = SDL_PIXELFORMAT_RGBA8888; // ASTC 8x8 pour RGBA
                     break;
-                default: 
+                default:
                     image.format = SDL_PIXELFORMAT_UNKNOWN;
                     break;
             }
 
-            Uint32 rmask, gmask, bmask, amask;
-            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-                rmask = 0xff000000;
-                gmask = 0x00ff0000;
-                bmask = 0x0000ff00;
-                amask = 0x000000ff;
-            #else
-                rmask = 0x000000ff;
-                gmask = 0x0000ff00;
-                bmask = 0x00ff0000;
-                amask = 0xff000000;
-            #endif
+            // Remplacer SDL_CreateRGBSurfaceFrom par SDL_CreateSurfaceFrom (SDL3)
+            SDL_Surface *surface = SDL_CreateSurfaceFrom(
+                chunk.data.raw,
+                image.width,
+                image.height,
+                image.width * SDL_BYTESPERPIXEL(image.format),
+                image.format
+            );
 
-            // Créer une surface SDL à partir des données de l'image
-            SDL_Surface* surface = SDL_CreateRGBSurfaceFrom((void*)chunk.data.raw, image.width, image.height, SDL_BITSPERPIXEL(image.format), image.width * SDL_BYTESPERPIXEL(image.format), rmask, gmask, bmask, amask);
-
-            if (surface) 
+            if (surface)
             {
                 // Convertir SDL_Surface en SDL_Texture
                 image.texture = SDL_CreateTextureFromSurface(renderer, surface);
-                SDL_FreeSurface(surface);
+                SDL_DestroySurface(surface); // Remplacer SDL_FreeSurface par SDL_DestroySurface (SDL3)
 
-                return image;
+                if (image.texture)
+                {
+                    return image;
+                }
+                else
+                {
+                    RC2D_log(RC2D_LOG_ERROR, "Erreur lors de la création de la texture SDL: %s\n", SDL_GetError());
+                }
             }
-            else 
+            else
             {
-                RC2D_log(RC2D_LOG_ERROR, "Erreur lors de la creation de la surface SDL: %s\n", SDL_GetError());
+                RC2D_log(RC2D_LOG_ERROR, "Erreur lors de la création de la surface SDL: %s\n", SDL_GetError());
             }
         }
     }
+
+    Image image = { 0 }; // Retourner une structure vide en cas d'erreur
+    return image;
 }
 
-
-// Fonction pour libérer la mémoire allouée pour la structure Wave
-void freeWave(Wave *wave) {
-    // Libérer le Mix_Chunk
-    if (wave->sound != NULL) {
+void freeWave(Wave *wave)
+{
+    // Libérer le Mix_Chunk (commenté car SDL3_mixer n'est pas inclus)
+    /*
+    if (wave->sound != NULL)
+    {
         Mix_FreeChunk(wave->sound);
         wave->sound = NULL;
     }
+    */
 
     // Libérer les données audio brutes
-    if (wave->data != NULL) {
+    if (wave->data != NULL)
+    {
         SDL_free(wave->data);
         wave->data = NULL;
     }
 }
-/**
- * Charge des données audio (Wave) à partir d'un chunk RRES.
- * Crée un Mix_Chunk utilisable avec SDL_mixer à partir de ces données.
- * @param chunk Le chunk RRES contenant les données audio.
- * @return Structure Wave contenant les données audio et le Mix_Chunk.
- */
+
 Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk)
 {
     // RRES_DATA_WAVE = Sound data
@@ -303,46 +312,50 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk)
             wave.channels = chunk.data.props[3];
 
             // Calcul de la taille des données audio brutes attendues
-            // Issue Github par rapport à cela (v1.2.0) : https://github.com/raysan5/rres/issues/13 (concerne la taille totale des données audio brutes)
             unsigned int size = wave.frameCount * wave.sampleSize * wave.channels / 8;
             wave.data = SDL_calloc(size, 1);
-            SDL_memcpy(wave.data, chunk.data.raw, size);
+            if (wave.data)
+            {
+                SDL_memcpy(wave.data, chunk.data.raw, size);
+            }
+            else
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour les données audio");
+            }
 
-            // Chargement des données PCM brutes en tant que Mix_Chunk
+            // Chargement des données PCM brutes en tant que Mix_Chunk (commenté car SDL3_mixer n'est pas inclus)
+            /*
             wave.sound = Mix_QuickLoad_RAW((Uint8 *)wave.data, size);
-
-            if (wave.sound == NULL) 
+            if (wave.sound == NULL)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Erreur lors du chargement du son: %s\n", Mix_GetError());
             }
+            */
 
-            return wave;        
+            return wave;
         }
     }
+
+    Wave wave = { 0 }; // Retourner une structure vide en cas d'erreur
+    return wave;
 }
 
-
-// Fonction pour libérer la police stockée dans la structure Font
-void freeFont(Font *font) {
-    if (font->font) {
+void freeFont(Font *font)
+{
+    if (font->font)
+    {
         TTF_CloseFont(font->font);
         font->font = NULL;
     }
 
     // Libérer la mémoire pour rawData
-    if (font->rawData != NULL) {
+    if (font->rawData != NULL)
+    {
         SDL_free(font->rawData);
         font->rawData = NULL;
     }
 }
 
-/**
- * Charge des données de police à partir d'un chunk RRES et crée une police TTF utilisable avec SDL_ttf.
- * Cette fonction est utile pour charger des polices personnalisées ou embarquées directement à partir des ressources RRES.
- * @param chunk Le chunk RRES contenant les données de la police.
- * @return Une structure Font contenant la police chargée et les données brutes associées.
- *         En cas d'échec du chargement de la police, les champs de la structure retournée sont initialisés à zéro.
- */
 Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk)
 {
     // RRES_DATA_RAW = Raw file data
@@ -355,26 +368,37 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk)
 
             unsigned int dataSize = 0;
             font.rawData = (unsigned char *)rc2d_rres_loadDataRawFromChunk(chunk, &dataSize);
+            if (!font.rawData)
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Échec du chargement des données brutes de la police");
+                return font;
+            }
 
-            // Load font from raw data
-            SDL_RWops *rw = SDL_RWFromMem(font.rawData, dataSize);
-            font.font = TTF_OpenFontRW(rw, 1, 30);
+            // Créer un SDL_IOStream à partir des données brutes
+            SDL_IOStream *rw = SDL_IOFromMem(font.rawData, dataSize);
+            if (!rw)
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Échec de la création de SDL_IOStream: %s", SDL_GetError());
+                SDL_free(font.rawData);
+                return font;
+            }
 
-            if (!font.font) 
+            // Charger la police avec TTF_OpenFontIO
+            font.font = TTF_OpenFontIO(rw, true, 30.0f);
+            if (!font.font)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Erreur de chargement de la police: %s\n", TTF_GetError());
-            } 
+                SDL_free(font.rawData);
+            }
 
             return font;
         }
     }
+
+    Font font = { 0 }; // Retourner une structure vide en cas d'erreur
+    return font;
 }
 
-/**
- * Décompresse et/ou déchiffre les données contenues dans un chunk RRES.
- * @param chunk Pointeur vers le chunk RRES à traiter.
- * @return Code d'erreur indiquant le résultat de l'opération.
- */
 int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 {
     int result = 0;
@@ -422,7 +446,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             config.algorithm = CRYPTO_ARGON2_I; // Algorithm: Argon2i
             config.nb_blocks = 16384; // Blocks: 16 MB
             config.nb_passes = 3; // Iterations
-            config.nb_lanes  = 1; // Single-threaded
+            config.nb_lanes = 1; // Single-threaded
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
@@ -495,7 +519,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             config.algorithm = CRYPTO_ARGON2_I; // Algorithm: Argon2i
             config.nb_blocks = 16384; // Blocks: 16 MB
             config.nb_passes = 3; // Iterations
-            config.nb_lanes  = 1; // Single-threaded
+            config.nb_lanes = 1; // Single-threaded
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
@@ -524,7 +548,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             SDL_memcpy(mac, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 16);
 
             // Message decryption requires key, nonce and MAC
-            int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, (unsigned char *)chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
+            int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, (const unsigned char *)chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
 
             // Wipe secrets if they are no longer needed
             crypto_wipe(nonce, 24);
@@ -541,11 +565,10 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
                 RC2D_log(RC2D_LOG_WARN, "RRES: %c%c%c%c: Data decryption failed, wrong password or corrupted data\n", chunk->info.type[0], chunk->info.type[1], chunk->info.type[2], chunk->info.type[3]);
             }
         } break;
-        default: 
+        default:
         {
             result = 1;    // Decryption algorithm not supported
             RC2D_log(RC2D_LOG_WARN, "RRES: %c%c%c%c: Chunk data encryption algorithm not supported\n", chunk->info.type[0], chunk->info.type[1], chunk->info.type[2], chunk->info.type[3]);
-
         } break;
     }
 
@@ -569,7 +592,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             {
                 int uncompDataSize = 0;
                 uncompData = (unsigned char *)SDL_calloc(chunk->info.baseSize, 1);
-                uncompDataSize = LZ4_decompress_safe((const char*)decryptedData, (char *)uncompData, chunk->info.packedSize, chunk->info.baseSize);
+                uncompDataSize = LZ4_decompress_safe((const char *)decryptedData, (char *)uncompData, chunk->info.packedSize, chunk->info.baseSize);
 
                 if ((uncompData != NULL) && (uncompDataSize > 0))     // Decompression successful
                 {
@@ -604,7 +627,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
     // Update chunk->data.propCount and chunk->data.props if required
     if (updateProps && (unpackedData != NULL))
     {
-        // Data is decompressed/decrypted into chunk->data.raw but data.propCount and data.props[] are still empty, 
+        // Data is decompressed/decrypted into chunk->data.raw but data.propCount and data.props[] are still empty,
         // they must be filled with the just updated chunk->data.raw (that contains everything)
         chunk->data.propCount = ((int *)unpackedData)[0];
 
