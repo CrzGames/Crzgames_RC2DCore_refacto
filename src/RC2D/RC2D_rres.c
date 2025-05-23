@@ -2,6 +2,7 @@
 
 #include <RC2D/RC2D_rres.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_internal.h>
 
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_iostream.h>
@@ -245,7 +246,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
                 return NULL;
             }
 
-            // Lire les données textuelles dans une chaîne de caractères
+            // Allouer de la mémoire pour le texte + terminateur NULL pour le texte
             char *text = (char *)SDL_malloc(chunk.data.props[0] + 1);
             if (!text)
             {
@@ -281,130 +282,243 @@ void freeImage(Image *image)
 {
     if (image->texture != NULL)
     {
-        SDL_DestroyTexture(image->texture);
+        SDL_ReleaseGPUTexture(rc2d_gpu_getDevice(), image->texture);
         image->texture = NULL;
     }
 }
 
-Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer *renderer)
+Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk)
 {
-    // RRES_DATA_IMAGE = Image data
-    if (rresGetDataType(chunk.info.type) == RRES_DATA_IMAGE)
+    Image image = { 0 };
+
+    // Vérifier que le chunk est de type RRES_DATA_IMAGE
+    if (rresGetDataType(chunk.info.type) != RRES_DATA_IMAGE)
     {
-        // Si les données ne sont pas compressées/chiffrées, elles peuvent être utilisées directement
-        if ((chunk.info.compType == RRES_COMP_NONE) && (chunk.info.cipherType == RRES_CIPHER_NONE))
-        {
-            Image image = { 0 };
-            image.width = chunk.data.props[0];
-            image.height = chunk.data.props[1];
-
-            int format = chunk.data.props[2];
-
-            switch (format)
-            {
-                case RRES_PIXELFORMAT_UNCOMP_GRAYSCALE:
-                    image.format = SDL_PIXELFORMAT_INDEX8; // Grayscale est généralement indexé en SDL
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_GRAY_ALPHA:
-                    image.format = SDL_PIXELFORMAT_RGBA4444; // Gray avec alpha, supposons un format RGBA 4 bits chacun
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R5G6B5:
-                    image.format = SDL_PIXELFORMAT_RGB565; // 5 bits pour Rouge, 6 pour Vert, 5 pour Bleu
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R8G8B8:
-                    image.format = SDL_PIXELFORMAT_RGB24; // RGB standard 8 bits par canal
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R5G5B5A1:
-                    image.format = SDL_PIXELFORMAT_RGBA5551; // RGBA avec 1 bit alpha
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R4G4B4A4:
-                    image.format = SDL_PIXELFORMAT_RGBA4444; // RGBA 4 bits chacun
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R8G8B8A8:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // RGBA standard 8 bits par canal
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R32:
-                    // SDL n'a pas de format direct pour R32; cela pourrait nécessiter un traitement personnalisé
-                    image.format = SDL_PIXELFORMAT_UNKNOWN;
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R32G32B32:
-                    // SDL n'a pas de format direct pour R32G32B32; cela pourrait nécessiter un traitement personnalisé
-                    image.format = SDL_PIXELFORMAT_UNKNOWN;
-                    break;
-                case RRES_PIXELFORMAT_UNCOMP_R32G32B32A32:
-                    // SDL n'a pas de format direct pour R32G32B32A32; cela pourrait nécessiter un traitement personnalisé
-                    image.format = SDL_PIXELFORMAT_UNKNOWN;
-                    break;
-                case RRES_PIXELFORMAT_COMP_DXT1_RGB:
-                    image.format = SDL_PIXELFORMAT_XRGB8888; // DXT1 est un format compressé, ici on suppose RGB non compressé
-                    break;
-                case RRES_PIXELFORMAT_COMP_DXT1_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // DXT1 avec alpha
-                    break;
-                case RRES_PIXELFORMAT_COMP_DXT3_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // DXT3 est aussi un format compressé
-                    break;
-                case RRES_PIXELFORMAT_COMP_DXT5_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // De même pour DXT5
-                    break;
-                case RRES_PIXELFORMAT_COMP_ETC1_RGB:
-                    image.format = SDL_PIXELFORMAT_XRGB8888; // ETC1 est un format compressé
-                    break;
-                case RRES_PIXELFORMAT_COMP_ETC2_RGB:
-                    image.format = SDL_PIXELFORMAT_XRGB8888; // ETC2 pour RGB
-                    break;
-                case RRES_PIXELFORMAT_COMP_ETC2_EAC_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // ETC2 avec alpha
-                    break;
-                case RRES_PIXELFORMAT_COMP_PVRT_RGB:
-                    image.format = SDL_PIXELFORMAT_XRGB8888; // PVRTC pour RGB
-                    break;
-                case RRES_PIXELFORMAT_COMP_PVRT_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // PVRTC avec alpha
-                    break;
-                case RRES_PIXELFORMAT_COMP_ASTC_4x4_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // ASTC est un format compressé
-                    break;
-                case RRES_PIXELFORMAT_COMP_ASTC_8x8_RGBA:
-                    image.format = SDL_PIXELFORMAT_RGBA8888; // ASTC 8x8 pour RGBA
-                    break;
-                default:
-                    image.format = SDL_PIXELFORMAT_UNKNOWN;
-                    break;
-            }
-
-            // Remplacer SDL_CreateRGBSurfaceFrom par SDL_CreateSurfaceFrom (SDL3)
-            SDL_Surface *surface = SDL_CreateSurfaceFrom(
-                chunk.data.raw,
-                image.width,
-                image.height,
-                image.width * SDL_BYTESPERPIXEL(image.format),
-                image.format
-            );
-
-            if (surface)
-            {
-                // Convertir SDL_Surface en SDL_Texture
-                image.texture = SDL_CreateTextureFromSurface(renderer, surface);
-                SDL_DestroySurface(surface); // Remplacer SDL_FreeSurface par SDL_DestroySurface (SDL3)
-
-                if (image.texture)
-                {
-                    return image;
-                }
-                else
-                {
-                    RC2D_log(RC2D_LOG_ERROR, "Erreur lors de la création de la texture SDL: %s\n", SDL_GetError());
-                }
-            }
-            else
-            {
-                RC2D_log(RC2D_LOG_ERROR, "Erreur lors de la création de la surface SDL: %s\n", SDL_GetError());
-            }
-        }
+        RC2D_log(RC2D_LOG_ERROR, "Le chunk n'est pas de type RRES_DATA_IMAGE\n");
+        return image;
     }
 
-    Image image = { 0 }; // Retourner une structure vide en cas d'erreur
+    // Si les données ne sont pas compressées/chiffrées, elles peuvent être utilisées directement
+    if ((chunk.info.compType != RRES_COMP_NONE) || (chunk.info.cipherType != RRES_CIPHER_NONE))
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Les données doivent être non compressées et non chiffrées. Appelez rc2d_rres_unpackResourceChunk.\n");
+        return image;
+    }
+
+    // Extraire les dimensions de l'image
+    Uint32 width = chunk.data.props[0];
+    Uint32 height = chunk.data.props[1];
+    int format = chunk.data.props[2];
+
+    // Mapper rresPixelFormat à SDL_GPUTextureFormat
+    SDL_GPUTextureFormat gpuFormat = SDL_GPU_TEXTUREFORMAT_INVALID;
+    switch (format)
+    {
+        case RRES_PIXELFORMAT_UNCOMP_GRAYSCALE:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R8_UNORM; // 8 bits, niveaux de gris
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_GRAY_ALPHA:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R8G8_UNORM; // 16 bits, gris + alpha
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R5G6B5:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_B5G6R5_UNORM; // 5 bits rouge, 6 vert, 5 bleu
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R8G8B8:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM; // RGB 8 bits par canal, alpha inutilisé
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R5G5B5A1:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_B5G5R5A1_UNORM; // RGBA avec 1 bit alpha
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R4G4B4A4:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_B4G4R4A4_UNORM; // RGBA 4 bits chacun
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R8G8B8A8:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM; // RGBA 8 bits par canal
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R32:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R32_FLOAT; // 32 bits flottant, canal unique
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R32G32B32:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT; // RGB flottant, alpha inutilisé
+            break;
+        case RRES_PIXELFORMAT_UNCOMP_R32G32B32A32:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT; // RGBA 32 bits flottant
+            break;
+        case RRES_PIXELFORMAT_COMP_DXT1_RGB:
+        case RRES_PIXELFORMAT_COMP_DXT1_RGBA:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_BC1_RGBA_UNORM; // DXT1, alpha binaire
+            break;
+        case RRES_PIXELFORMAT_COMP_DXT3_RGBA:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_BC2_RGBA_UNORM; // DXT3
+            break;
+        case RRES_PIXELFORMAT_COMP_DXT5_RGBA:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_BC3_RGBA_UNORM; // DXT5
+            break;
+        case RRES_PIXELFORMAT_COMP_ASTC_4x4_RGBA:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_ASTC_4x4_UNORM; // ASTC 4x4
+            break;
+        case RRES_PIXELFORMAT_COMP_ASTC_8x8_RGBA:
+            gpuFormat = SDL_GPU_TEXTUREFORMAT_ASTC_8x8_UNORM; // ASTC 8x8
+            break;
+        case RRES_PIXELFORMAT_COMP_ETC1_RGB:
+        case RRES_PIXELFORMAT_COMP_ETC2_RGB:
+        case RRES_PIXELFORMAT_COMP_ETC2_EAC_RGBA:
+        case RRES_PIXELFORMAT_COMP_PVRT_RGB:
+        case RRES_PIXELFORMAT_COMP_PVRT_RGBA:
+            RC2D_log(RC2D_LOG_ERROR, "Format compressé %d (ETC/PVRTC) non supporté par SDL3 GPU\n", format);
+            return image;
+        default:
+            RC2D_log(RC2D_LOG_ERROR, "Format de pixel RRES inconnu %d\n", format);
+            return image;
+    }
+
+    // Vérifier si le format est supporté par le matériel
+    if (!SDL_GPUTextureSupportsFormat(rc2d_gpu_getDevice(), gpuFormat, SDL_GPU_TEXTURETYPE_2D, SDL_GPU_TEXTUREUSAGE_SAMPLER))
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Format GPU %d non supporté par le matériel\n", gpuFormat);
+        return image;
+    }
+
+    // Calculer la taille des données en fonction du format
+    Uint32 dataSize;
+    if (format >= RRES_PIXELFORMAT_COMP_DXT1_RGB && format <= RRES_PIXELFORMAT_COMP_ASTC_8x8_RGBA)
+    {
+        // Formats compressés : calculer la taille en fonction des blocs
+        Uint32 blockWidth = (width + 3) / 4; // Blocs de 4x4 pixels
+        Uint32 blockHeight = (height + 3) / 4;
+        Uint32 blockSize;
+        if (format == RRES_PIXELFORMAT_COMP_DXT1_RGB || format == RRES_PIXELFORMAT_COMP_DXT1_RGBA)
+            blockSize = 8; // BC1: 8 octets par bloc
+        else if (format == RRES_PIXELFORMAT_COMP_DXT3_RGBA || format == RRES_PIXELFORMAT_COMP_DXT5_RGBA)
+            blockSize = 16; // BC2/BC3: 16 octets par bloc
+        else if (format == RRES_PIXELFORMAT_COMP_ASTC_4x4_RGBA)
+            blockSize = 16; // ASTC 4x4: 16 octets par bloc
+        else if (format == RRES_PIXELFORMAT_COMP_ASTC_8x8_RGBA)
+            blockSize = 16; // ASTC 8x8: 16 octets par bloc (1 bit/pixel)
+        dataSize = blockWidth * blockHeight * blockSize;
+    }
+    else
+    {
+        // Formats non compressés : calculer la taille en fonction des octets par pixel
+        Uint32 bytesPerPixel;
+        switch (gpuFormat)
+        {
+            case SDL_GPU_TEXTUREFORMAT_R8_UNORM: bytesPerPixel = 1; break;
+            case SDL_GPU_TEXTUREFORMAT_R8G8_UNORM: bytesPerPixel = 2; break;
+            case SDL_GPU_TEXTUREFORMAT_B5G6R5_UNORM: bytesPerPixel = 2; break;
+            case SDL_GPU_TEXTUREFORMAT_B5G5R5A1_UNORM: bytesPerPixel = 2; break;
+            case SDL_GPU_TEXTUREFORMAT_B4G4R4A4_UNORM: bytesPerPixel = 2; break;
+            case SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM: bytesPerPixel = 4; break;
+            case SDL_GPU_TEXTUREFORMAT_R32_FLOAT: bytesPerPixel = 4; break;
+            case SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT: bytesPerPixel = 16; break;
+            default: bytesPerPixel = 4; break; // Par défaut, suppose 4 octets
+        }
+        dataSize = width * height * bytesPerPixel;
+    }
+
+    // Créer la texture GPU
+    SDL_GPUTextureCreateInfo createInfo = {
+        .type = SDL_GPU_TEXTURETYPE_2D,
+        .format = gpuFormat,
+        .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER, // Utilisation pour le rendu
+        .width = width,
+        .height = height,
+        .layer_count_or_depth = 1,
+        .num_levels = 1, // Pas de mipmaps pour l'instant
+        .sample_count = SDL_GPU_SAMPLECOUNT_1,
+        .props = 0
+    };
+
+    SDL_GPUTexture *texture = SDL_CreateGPUTexture(rc2d_gpu_getDevice(), &createInfo);
+    if (!texture)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Échec de la création de la texture GPU: %s\n", SDL_GetError());
+        return image;
+    }
+
+    // Créer un buffer de transfert
+    SDL_GPUTransferBuffer *transferBuffer = SDL_CreateGPUTransferBuffer(
+        rc2d_gpu_getDevice(),
+        &(SDL_GPUTransferBufferCreateInfo){
+            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+            .size = dataSize
+        }
+    );
+    if (!transferBuffer)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Échec de la création du buffer de transfert: %s\n", SDL_GetError());
+        SDL_ReleaseGPUTexture(rc2d_gpu_getDevice(), texture);
+        return image;
+    }
+
+    // Mapper le buffer de transfert et copier les données
+    void *mappedData = SDL_MapGPUTransferBuffer(rc2d_gpu_getDevice(), transferBuffer, false);
+    if (!mappedData)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Échec du mappage du buffer de transfert: %s\n", SDL_GetError());
+        SDL_ReleaseGPUTransferBuffer(rc2d_gpu_getDevice(), transferBuffer);
+        SDL_ReleaseGPUTexture(rc2d_gpu_getDevice(), texture);
+        return image;
+    }
+
+    SDL_memcpy(mappedData, chunk.data.raw, dataSize);
+    SDL_UnmapGPUTransferBuffer(rc2d_gpu_getDevice(), transferBuffer);
+
+    // Créer un copy pass pour le téléversement
+    SDL_GPUCommandBuffer *commandBuffer = SDL_AcquireGPUCommandBuffer(rc2d_gpu_getDevice());
+    if (!commandBuffer)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Échec de l'acquisition du buffer de commandes: %s\n", SDL_GetError());
+        SDL_ReleaseGPUTransferBuffer(rc2d_gpu_getDevice(), transferBuffer);
+        SDL_ReleaseGPUTexture(rc2d_gpu_getDevice(), texture);
+        return image;
+    }
+
+    SDL_GPUCopyPass *copyPass = SDL_BeginGPUCopyPass(commandBuffer);
+    if (!copyPass)
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Échec du démarrage du copy pass: %s\n", SDL_GetError());
+        SDL_ReleaseGPUTransferBuffer(rc2d_gpu_getDevice(), transferBuffer);
+        SDL_ReleaseGPUTexture(rc2d_gpu_getDevice(), texture);
+        SDL_ReleaseGPUCommandBuffer(commandBuffer);
+        return image;
+    }
+
+    // Configurer les informations de transfert
+    SDL_GPUTextureTransferInfo source = {
+        .transfer_buffer = transferBuffer,
+        .offset = 0, // Offset aligné à 512 octets pour Direct3D 12
+        .pixels_per_row = width, // Données compactes
+        .rows_per_layer = height
+    };
+
+    SDL_GPUTextureRegion destination = {
+        .texture = texture,
+        .mip_level = 0,
+        .layer = 0,
+        .x = 0,
+        .y = 0,
+        .z = 0,
+        .w = width,
+        .h = height,
+        .d = 1
+    };
+
+    // Téléverser les données
+    SDL_UploadToGPUTexture(copyPass, &source, &destination, false);
+
+    // Terminer le copy pass
+    SDL_EndGPUCopyPass(copyPass);
+
+    // Soumettre le buffer de commandes
+    SDL_SubmitGPUCommandBuffer(commandBuffer);
+
+    // Libérer le buffer de transfert
+    SDL_ReleaseGPUTransferBuffer(rc2d_gpu_getDevice(), transferBuffer);
+
+    // Assigner la texture à la structure Image
+    image.texture = texture;
+
     return image;
 }
 
@@ -487,7 +601,7 @@ void freeFont(Font *font)
     }
 }
 
-Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk)
+Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize)
 {
     // RRES_DATA_RAW = Raw file data
     if (rresGetDataType(chunk.info.type) == RRES_DATA_RAW)
@@ -515,7 +629,7 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk)
             }
 
             // Charger la police avec TTF_OpenFontIO
-            font.font = TTF_OpenFontIO(rw, true, 30.0f);
+            font.font = TTF_OpenFontIO(rw, true, ptsize);
             if (!font.font)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Erreur de chargement de la police: %s\n", TTF_GetError());

@@ -15,45 +15,18 @@ extern "C" {
 /**
  * \brief Structure représentant une image chargée à partir d'un chunk RRES.
  *
- * Contient une texture SDL3 GPU et des métadonnées sur l'image (format, dimensions).
- * Cette structure est utilisée pour les sprites, les textures de fond, ou tout autre élément graphique
- * rendu via SDL3.
- *
- * \note La texture est créée à partir d'une surface SDL3 temporaire, qui est libérée automatiquement après
- * la création de la texture. L'utilisateur doit libérer la texture via SDL_DestroyTexture lorsqu'elle
- * n'est plus nécessaire.
+ * Contient une texture SDL3 GPU utilisée pour le rendu via l'API SDL3 GPU.
+ * Cette structure est utilisée pour les sprites, les textures de fond, ou tout autre élément graphique.
  *
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct Image {
     /**
-     * \brief Format de pixel de l'image, correspondant à un SDL_PIXELFORMAT_*.
+     * \brief Texture SDL3 GPU utilisée pour le rendu.
      *
-     * Les formats possibles incluent SDL_PIXELFORMAT_RGBA8888, SDL_PIXELFORMAT_RGB565, etc.,
-     * en fonction du format RRES (par exemple, RRES_PIXELFORMAT_UNCOMP_R8G8B8A8).
-     *
-     * \note Certains formats RRES (comme RRES_PIXELFORMAT_UNCOMP_R32) n'ont pas d'équivalent direct
-     * dans SDL3 et peuvent nécessiter une conversion manuelle.
+     * Cette texture doit être libérée avec SDL_ReleaseGPUTexture lorsque l'image n'est plus utilisée.
      */
-    int format;
-
-    /**
-     * \brief Largeur de l'image en pixels.
-     */
-    int width;
-
-    /**
-     * \brief Hauteur de l'image en pixels.
-     */
-    int height;
-
-    /**
-     * \brief Texture SDL3 GPU contenant les données de l'image.
-     *
-     * Cette texture est prête à être rendue via un renderer SDL3. Elle doit être libérée
-     * avec  SDL_DestroyTexture lorsque l'image n'est plus utilisée.
-     */
-    SDL_Texture* texture;
+    SDL_GPUTexture* texture;
 } Image;
 
 /**
@@ -185,8 +158,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk);
  * différents formats de pixels définis dans rresPixelFormat et effectue les conversions nécessaires pour SDL3.
  *
  * \param chunk Le chunk RRES contenant les données d'image (doit être de type RRES_DATA_IMAGE).
- * \param renderer Le renderer SDL3 utilisé pour créer la texture.
- * \return Une structure Image contenant la texture et les métadonnées, ou une structure vide en cas d'erreur.
+ * \return Une structure Image contenant la surface SDL et les métadonnées, ou une structure vide en cas d'erreur.
  *
  * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
@@ -199,7 +171,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk);
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk, SDL_Renderer* renderer);
+Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk);
 
 /**
  * \brief Charge des données audio Wave à partir d'un chunk RRES de type RRES_DATA_WAVE.
@@ -229,6 +201,7 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk);
  * Les données brutes sont conservées pour permettre un rechargement ou une gestion manuelle.
  *
  * \param chunk Le chunk RRES contenant les données de la police (doit être de type RRES_DATA_RAW).
+ * \param ptsize La taille de la police en points.
  * \return Une structure Font contenant la police TTF et les données brutes, ou une structure vide en cas d'erreur.
  *
  * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
@@ -241,7 +214,7 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk);
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk);
+Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize);
 
 /**
  * \brief Décompresse et/ou déchiffre les données d'un chunk RRES.
