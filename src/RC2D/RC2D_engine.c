@@ -157,24 +157,33 @@ static void rc2d_engine_stateInit(void) {
     static SDL_GPUViewport default_viewport = {0, 0, 0, 0};
     rc2d_engine_state.gpu_current_viewport = &default_viewport;
 
-    // Initialiser le cache des shaders
-    rc2d_engine_state.gpu_shader_count = 0;
-    rc2d_engine_state.gpu_shaders_cache = NULL;
-    rc2d_engine_state.gpu_shader_mutex = SDL_CreateMutex();
-    if (!rc2d_engine_state.gpu_shader_mutex) {
+    // Initialiser le cache des shaders graphiques
+    rc2d_engine_state.gpu_graphics_shader_count = 0;
+    rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
+    rc2d_engine_state.gpu_graphics_shader_mutex = SDL_CreateMutex();
+    if (!rc2d_engine_state.gpu_graphics_shader_mutex) {
         RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Erreur lors de la création du mutex pour les shaders : %s", SDL_GetError());
         return;
     }
 
-    // Initialiser le cache des pipelines graphiques
-    rc2d_engine_state.gpu_pipeline_count = 0;
-    rc2d_engine_state.gpu_pipelines_cache = NULL;
-    rc2d_engine_state.gpu_pipeline_mutex = SDL_CreateMutex();
-    if (!rc2d_engine_state.gpu_pipeline_mutex) {
+    // Initialiser le cache des pipelines graphiques pour les shaders graphiques
+    rc2d_engine_state.gpu_graphics_pipeline_count = 0;
+    rc2d_engine_state.gpu_graphics_pipelines_cache = NULL;
+    rc2d_engine_state.gpu_graphics_pipeline_mutex = SDL_CreateMutex();
+    if (!rc2d_engine_state.gpu_graphics_pipeline_mutex) {
         RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Erreur lors de la création du mutex pour les pipelines : %s", SDL_GetError());
         return;
     }
     
+    // Initialiser le cache des shaders de calcul
+    rc2d_engine_state.gpu_compute_shader_count = 0;
+    rc2d_engine_state.gpu_compute_shaders_cache = NULL;
+    rc2d_engine_state.gpu_compute_shader_mutex = SDL_CreateMutex();
+    if (!rc2d_engine_state.gpu_compute_shader_mutex) {
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Erreur lors de la création du mutex pour les shaders de calcul : %s", SDL_GetError());
+        return;
+    }
+
     // État d'exécution de la boucle de jeu
     rc2d_engine_state.fps = 60;
     rc2d_engine_state.delta_time = 0.0;
@@ -1781,20 +1790,20 @@ void rc2d_engine_quit(void)
     // Lib SDL3_shadercross Deinitialize
     rc2d_engine_cleanup_sdlshadercross();
     
-    // Libérer les shaders internes
-    SDL_LockMutex(rc2d_engine_state.gpu_shader_mutex);
-    for (int i = 0; i < rc2d_engine_state.gpu_shader_count; i++) {
-        SDL_free(rc2d_engine_state.gpu_shaders_cache[i].filename);
-        if (rc2d_engine_state.gpu_shaders_cache[i].shader) {
-            SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_shaders_cache[i].shader);
+    // Libérer les shaders graphics (vertex/fragment) internes
+    SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
+    for (int i = 0; i < rc2d_engine_state.gpu_graphics_shader_count; i++) {
+        SDL_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
+        if (rc2d_engine_state.gpu_graphics_shaders_cache[i].shader) {
+            SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_shaders_cache[i].shader);
         }
     }
-    SDL_free(rc2d_engine_state.gpu_shaders_cache);
-    rc2d_engine_state.gpu_shaders_cache = NULL;
-    rc2d_engine_state.gpu_shader_count = 0;
-    SDL_UnlockMutex(rc2d_engine_state.gpu_shader_mutex);
-    SDL_DestroyMutex(rc2d_engine_state.gpu_shader_mutex);
-    rc2d_engine_state.gpu_shader_mutex = NULL;
+    SDL_free(rc2d_engine_state.gpu_graphics_shaders_cache);
+    rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
+    rc2d_engine_state.gpu_graphics_shader_count = 0;
+    SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
+    SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
+    rc2d_engine_state.gpu_graphics_shader_mutex = NULL;
 
     // Annule la revendication d'une fenêtre, détruisant ainsi sa structure de chaîne d'échange.
     SDL_ReleaseWindowFromGPUDevice(rc2d_gpu_getDevice(), rc2d_window_getWindow());

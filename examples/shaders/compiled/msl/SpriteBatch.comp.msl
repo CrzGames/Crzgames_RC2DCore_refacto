@@ -1,0 +1,99 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct SpriteComputeData
+{
+    packed_float3 Position;
+    float Rotation;
+    float2 Scale;
+    float2 Padding;
+    float TexU;
+    float TexV;
+    float TexW;
+    float TexH;
+    float4 Color;
+};
+
+struct type_StructuredBuffer_SpriteComputeData
+{
+    SpriteComputeData _m0[1];
+};
+
+struct SpriteVertex
+{
+    float4 Position;
+    float2 Texcoord;
+    float4 Color;
+};
+
+struct type_RWStructuredBuffer_SpriteVertex
+{
+    SpriteVertex _m0[1];
+};
+
+struct SpriteComputeData_1
+{
+    float3 Position;
+    float Rotation;
+    float2 Scale;
+    float2 Padding;
+    float TexU;
+    float TexV;
+    float TexW;
+    float TexH;
+    float4 Color;
+};
+
+constant float2 _59 = {};
+
+kernel void main0(const device type_StructuredBuffer_SpriteComputeData& ComputeBuffer [[buffer(0)]], device type_RWStructuredBuffer_SpriteVertex& VertexBuffer [[buffer(1)]], uint3 gl_GlobalInvocationID [[thread_position_in_grid]])
+{
+    uint3 _81 = gl_GlobalInvocationID;
+    uint _70 = gl_GlobalInvocationID.x;
+    SpriteComputeData _86 = ComputeBuffer._m0[gl_GlobalInvocationID.x];
+    float3 _69 = float3(_86.Position);
+    float _68 = _86.Rotation;
+    float2 _67 = _86.Scale;
+    float _66 = _86.TexU;
+    float _65 = _86.TexV;
+    float _64 = _86.TexW;
+    float _63 = _86.TexH;
+    float4 _62 = _86.Color;
+    float4x4 _103 = float4x4(float4(_67.x, 0.0, 0.0, 0.0), float4(0.0, _67.y, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(0.0, 0.0, 0.0, 1.0));
+    float4x4 _71 = _103;
+    float _104 = cos(_86.Rotation);
+    float _72 = _104;
+    float _105 = sin(_86.Rotation);
+    float _73 = _105;
+    float4x4 _109 = float4x4(float4(_104, _105, 0.0, 0.0), float4(-_105, _104, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(0.0, 0.0, 0.0, 1.0));
+    float4x4 _74 = _109;
+    float4x4 _117 = float4x4(float4(1.0, 0.0, 0.0, 0.0), float4(0.0, 1.0, 0.0, 0.0), float4(0.0, 0.0, 1.0, 0.0), float4(_69.x, _69.y, _69.z, 1.0));
+    float4x4 _75 = _117;
+    float4x4 _119 = (_117 * _109) * _103;
+    float4x4 _76 = _119;
+    float4 _77 = float4(0.0, 0.0, 0.0, 1.0);
+    float4 _78 = float4(1.0, 0.0, 0.0, 1.0);
+    float4 _79 = float4(0.0, 1.0, 0.0, 1.0);
+    float4 _80 = float4(1.0, 1.0, 0.0, 1.0);
+    uint _121 = gl_GlobalInvocationID.x * 4u;
+    VertexBuffer._m0[_121].Position = _119 * float4(0.0, 0.0, 0.0, 1.0);
+    uint _124 = _121 + 1u;
+    VertexBuffer._m0[_124].Position = _119 * float4(1.0, 0.0, 0.0, 1.0);
+    uint _127 = _121 + 2u;
+    VertexBuffer._m0[_127].Position = _119 * float4(0.0, 1.0, 0.0, 1.0);
+    uint _130 = _121 + 3u;
+    VertexBuffer._m0[_130].Position = _119 * float4(1.0, 1.0, 0.0, 1.0);
+    VertexBuffer._m0[_121].Texcoord = float2(_86.TexU, _86.TexV);
+    float _134 = _86.TexU + _86.TexW;
+    VertexBuffer._m0[_124].Texcoord = float2(_134, _86.TexV);
+    float _137 = _86.TexV + _86.TexH;
+    VertexBuffer._m0[_127].Texcoord = float2(_86.TexU, _137);
+    VertexBuffer._m0[_130].Texcoord = float2(_134, _137);
+    VertexBuffer._m0[_121].Color = _86.Color;
+    VertexBuffer._m0[_124].Color = _86.Color;
+    VertexBuffer._m0[_127].Color = _86.Color;
+    VertexBuffer._m0[_130].Color = _86.Color;
+}
+

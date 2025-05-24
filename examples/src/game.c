@@ -27,10 +27,10 @@ void rc2d_load(void)
     rc2d_window_setTitle("Test jeu");
     rc2d_window_setMinimumSize(1280, 720);
 
-    fragmentShader = rc2d_gpu_loadShader("test.fragment");
+    fragmentShader = rc2d_gpu_loadGraphicsShader("test.fragment");
     RC2D_assert_release(fragmentShader != NULL, RC2D_LOG_CRITICAL, "Failed to load fragment shader");
 
-    vertexShader = rc2d_gpu_loadShader("test.vertex");
+    vertexShader = rc2d_gpu_loadGraphicsShader("test.vertex");
     RC2D_assert_release(vertexShader != NULL, RC2D_LOG_CRITICAL, "Failed to load vertex shader");
 
     SDL_GPUVertexInputState vertexInput = {

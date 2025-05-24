@@ -21,6 +21,44 @@ static OrtEnv* g_ort_env = NULL;
  */
 static OrtSessionOptions* g_session_options = NULL;
 
+/**
+ * Calcule la taille d'un type ONNX en octets.
+ * 
+ * @param type Type ONNX à évaluer.
+ * @return Taille en octets du type ONNX.
+ */
+static size_t rc2d_onnx_getTypeSize(ONNXTensorElementDataType type)
+{
+    switch (type) {
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:   return sizeof(float);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8:   return sizeof(uint8_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8:    return sizeof(int8_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16:  return sizeof(uint16_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16:   return sizeof(int16_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32:   return sizeof(int32_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64:   return sizeof(int64_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE:  return sizeof(double);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL:    return sizeof(bool);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32:  return sizeof(uint32_t);
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64:  return sizeof(uint64_t);
+        default: return 0; // STRING / autres types = non supportés ici
+    }
+}
+
+/**
+ * Calcule le nombre total d'éléments dans un tenseur ONNX à partir de sa forme.
+ * 
+ * @param shape Tableau contenant la forme du tenseur (dimensions).
+ * @param dims Nombre de dimensions du tenseur.
+ * @return Nombre total d'éléments dans le tenseur.
+ */
+static size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims)
+{
+    size_t count = 1;
+    for (size_t i = 0; i < dims; ++i) count *= (size_t)shape[i];
+    return count;
+}
+
 bool rc2d_onnx_init(void) 
 {
     OrtStatus* status;
@@ -202,44 +240,6 @@ void rc2d_onnx_unloadModel(RC2D_OnnxModel* model)
     model->session = NULL;
 
     RC2D_log(RC2D_LOG_INFO, "ONNX model session unloaded.");
-}
-
-/**
- * Calcule la taille d'un type ONNX en octets.
- * 
- * @param type Type ONNX à évaluer.
- * @return Taille en octets du type ONNX.
- */
-static size_t rc2d_onnx_getTypeSize(ONNXTensorElementDataType type)
-{
-    switch (type) {
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:   return sizeof(float);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8:   return sizeof(uint8_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8:    return sizeof(int8_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16:  return sizeof(uint16_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16:   return sizeof(int16_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32:   return sizeof(int32_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64:   return sizeof(int64_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE:  return sizeof(double);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL:    return sizeof(bool);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32:  return sizeof(uint32_t);
-        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64:  return sizeof(uint64_t);
-        default: return 0; // STRING / autres types = non supportés ici
-    }
-}
-
-/**
- * Calcule le nombre total d'éléments dans un tenseur ONNX à partir de sa forme.
- * 
- * @param shape Tableau contenant la forme du tenseur (dimensions).
- * @param dims Nombre de dimensions du tenseur.
- * @return Nombre total d'éléments dans le tenseur.
- */
-static size_t rc2d_onnx_computeElementCount(const int64_t* shape, size_t dims)
-{
-    size_t count = 1;
-    for (size_t i = 0; i < dims; ++i) count *= (size_t)shape[i];
-    return count;
 }
 
 bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTensor* outputs)

@@ -21,6 +21,35 @@ extern "C" {
 #endif
 
 /**
+ * \brief Structure représentant une entrée de shader de calcul dans le moteur RC2D.
+ *
+ * Cette structure est utilisée pour gérer les shaders de calcul chargés par le moteur,
+ * y compris leur nom de fichier, le pointeur vers le shader chargé et le timestamp
+ * de la dernière modification du fichier.
+ * 
+ * \note Cela est utilisé pour le rechargement à chaud des shaders via RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+ * si défini à 1.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_ComputeShaderEntry {
+    /**
+     * Nom du fichier du shader (e.g., "test.compute").
+     */
+    char* filename;
+    
+    /**
+     * Pointeur vers le shader de calcul chargé.
+     */
+    RC2D_GPUComputePipeline* shader;
+
+    /**
+     * Timestamp de la dernière modification du fichier shader.
+     */
+    SDL_Time lastModified;
+} RC2D_ComputeShaderEntry;
+
+/**
  * \brief Structure représentant une entrée de shader dans le moteur RC2D.
  *
  * Cette structure est utilisée pour gérer les shaders chargés par le moteur,
@@ -32,22 +61,22 @@ extern "C" {
  *
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
-typedef struct RC2D_ShaderEntry {
+typedef struct RC2D_GraphicsShaderEntry {
     /**
      * Nom du fichier du shader (e.g., "test.vertex" ou "test.fragment").
      */
     char* filename;
     
     /**
-     * Pointeur vers le shader chargé.
+     * Pointeur vers le shader graphique chargé.
      */
-    SDL_GPUShader* shader;
+    RC2D_GPUShader* shader;
 
     /**
      * Timestamp de la dernière modification du fichier shader.
      */
     SDL_Time lastModified;
-} RC2D_ShaderEntry;
+} RC2D_GraphicsShaderEntry;
 
 /**
  * \brief Structure représentant une entrée de pipeline graphique dans le moteur RC2D.
@@ -60,7 +89,7 @@ typedef struct RC2D_ShaderEntry {
  * 
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
-typedef struct RC2D_PipelineEntry {
+typedef struct RC2D_GraphicsPipelineEntry {
     /**
      * Nom du fichier du shader de vertex (e.g., "test.vertex").
      */
@@ -75,7 +104,7 @@ typedef struct RC2D_PipelineEntry {
      * Pointeur vers le pipeline graphique chargé.
      */
     RC2D_GPUGraphicsPipeline* graphicsPipeline;
-} RC2D_PipelineEntry;
+} RC2D_GraphicsPipelineEntry;
 
 /**
  * \brief Structure regroupant l'état global du moteur RC2D.
@@ -92,7 +121,19 @@ typedef struct RC2D_EngineState {
     // SDL : Window
     SDL_Window* window;
 
-    // SDL : GPU
+    /**
+     * SDL GPU
+     * 
+     * Cette structure contient :
+     * - Pointeur vers le périphérique GPU SDL (SDL_GPUDevice)
+     * - Mode de présentation du GPU (SDL_GPUPresentMode)
+     * - Composition de la swapchain du GPU (SDL_GPUSwapchainComposition)
+     * - Pointeur vers le tampon de commandes actuel (SDL_GPUCommandBuffer)
+     * - Pointeur vers la texture de swapchain actuelle (SDL_GPUTexture)
+     * - Pointeur vers le rendu actuel (SDL_GPURenderPass)
+     * - Pointeur vers la vue actuelle (SDL_GPUViewport)
+     * - Pointeur vers le pipeline graphique actuel (SDL_GPUGraphicsPipeline)
+     */
     SDL_GPUDevice* gpu_device;
     SDL_GPUPresentMode gpu_present_mode;
     SDL_GPUSwapchainComposition gpu_swapchain_composition;
@@ -100,17 +141,47 @@ typedef struct RC2D_EngineState {
     SDL_GPUTexture* gpu_current_swapchain_texture;
     SDL_GPURenderPass* gpu_current_render_pass;
     SDL_GPUViewport* gpu_current_viewport;
-    SDL_GPUGraphicsPipeline* gpu_pipeline;
 
-    RC2D_ShaderEntry* gpu_shaders_cache;   // cache Tableau dynamique des shaders chargés
-    int gpu_shader_count;            // Nombre de shaders chargés
-    SDL_Mutex* gpu_shader_mutex;     // Mutex pour protéger l'accès aux shaders
+    /**
+     * Mise en cache des shaders graphiques
+     * 
+     * Cette structure contient :
+     * - Tableau dynamique des shaders graphics (vertex/fragment) chargés
+     * - Nombre de shaders graphics (vertex/fragment) chargés
+     * - Mutex pour protéger l'accès aux shaders graphics (vertex/fragment) chargés
+     */
+    RC2D_GraphicsShaderEntry* gpu_graphics_shaders_cache;
+    int gpu_graphics_shader_count;
+    SDL_Mutex* gpu_graphics_shader_mutex;
 
-    RC2D_PipelineEntry* gpu_pipelines_cache; // cache Tableau dynamique des pipelines graphiques chargés
-    int gpu_pipeline_count;       // Nombre de pipelines graphiques chargés
-    SDL_Mutex* gpu_pipeline_mutex; // Mutex pour protéger l'accès aux pipelines graphiques
+    /**
+     * Mise en cache des pipelines graphiques lié aux shaders graphics (vertex/fragment)
+     * 
+     * Cette structure contient :
+     * - Tableau dynamique des pipelines graphiques chargés
+     * - Nombre de pipelines graphiques chargés
+     * - Mutex pour protéger l'accès aux pipelines graphiques chargés
+     */
+    RC2D_GraphicsPipelineEntry* gpu_graphics_pipelines_cache;
+    int gpu_graphics_pipeline_count;
+    SDL_Mutex* gpu_graphics_pipeline_mutex;
 
-    bool skip_rendering; // Ajout du drapeau pour indiquer si le rendu doit être sauté
+    /**
+     * Mise en cache des shaders de calcul
+     * 
+     * Cette structure contient :
+     * - Tableau dynamique des shaders de calcul chargés
+     * - Nombre de shaders de calcul chargés
+     * - Mutex pour protéger l'accès aux shaders de calcul chargés
+     */
+    RC2D_ComputeShaderEntry* gpu_compute_shaders_cache;
+    int gpu_compute_shader_count;
+    SDL_Mutex* gpu_compute_shader_mutex;
+
+    /**
+     * Pour indiquer si le rendu doit être sauté
+     */
+    bool skip_rendering;
     
     // RC2D : État d'exécution
     int fps;
@@ -235,7 +306,24 @@ void rc2d_timer_init(void);
 void rc2d_gpu_hotReloadShaders(void);
 
 #if RC2D_ONNX_MODULE_ENABLED
+/**
+ * \brief Initialise le module ONNX de RC2D.
+ * 
+ * Cette fonction initialise le module ONNX de RC2D. Elle doit être appelée avant d'utiliser les fonctionnalités ONNX.
+ * 
+ * \return true si l'initialisation a réussi, false sinon.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
 bool rc2d_onnx_init(void);
+
+/**
+ * \brief Libère les ressources allouées par le module ONNX de RC2D.
+ * 
+ * Cette fonction doit être appelée avant de quitter l'application pour éviter les fuites de mémoire.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
 void rc2d_onnx_cleanup(void);
 #endif
 
