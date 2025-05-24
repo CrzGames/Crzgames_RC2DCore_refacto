@@ -579,8 +579,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     return computePipelineShader;
 }
 
-// TODO: Ajouté pour le rechargement des shaders de type : Compute
-void rc2d_gpu_hotReloadShaders(void)
+void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 {
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     if (!rc2d_engine_state.gpu_graphics_shader_mutex)
@@ -764,6 +763,14 @@ void rc2d_gpu_hotReloadShaders(void)
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
 #endif
+}
+
+// TODO: Implementation de la fonction de rechargement a chaud des compute shaders
+RC2D_GPUComputePipeline* rc2d_gpu_hotReloadComputeShader(void)
+{
+#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+
+#endif 
 }
 
 bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache)
