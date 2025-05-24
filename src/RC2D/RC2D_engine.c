@@ -1796,18 +1796,21 @@ void rc2d_engine_quit(void)
     SDL_DestroyMutex(rc2d_engine_state.gpu_shader_mutex);
     rc2d_engine_state.gpu_shader_mutex = NULL;
 
-    // Destroy GPU device
-    if (rc2d_engine_state.gpu_device != NULL)
-    {
-        SDL_DestroyGPUDevice(rc2d_engine_state.gpu_device);
-        rc2d_engine_state.gpu_device = NULL;
-    }
+    // Annule la revendication d'une fenêtre, détruisant ainsi sa structure de chaîne d'échange.
+    SDL_ReleaseWindowFromGPUDevice(rc2d_gpu_getDevice(), rc2d_window_getWindow());
 
     // Destroy window
     if (rc2d_engine_state.window != NULL)
     {
         SDL_DestroyWindow(rc2d_engine_state.window);
         rc2d_engine_state.window = NULL;
+    }
+
+    // Destroy GPU device
+    if (rc2d_engine_state.gpu_device != NULL)
+    {
+        SDL_DestroyGPUDevice(rc2d_engine_state.gpu_device);
+        rc2d_engine_state.gpu_device = NULL;
     }
 
     // TODO: Destroy RC2D Engine state (tout ce qui est dans rc2d_engine_state)
