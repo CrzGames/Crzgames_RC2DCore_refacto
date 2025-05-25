@@ -31,6 +31,7 @@ void rc2d_load(void)
 
     // Charger les shaders graphiques
     fragmentShader = rc2d_gpu_loadGraphicsShader("test.fragment");
+    RC2D_log(RC2D_LOG_INFO, "Toto \n");
     RC2D_assert_release(fragmentShader != NULL, RC2D_LOG_CRITICAL, "Failed to load fragment shader");
 
     vertexShader = rc2d_gpu_loadGraphicsShader("test.vertex");

@@ -1,6 +1,5 @@
 #include <RC2D/RC2D_memory.h>
 #include <RC2D/RC2D_logger.h>
-#include <SDL3/SDL_stdinc.h>
 
 #if RC2D_MEMORY_DEBUG_ENABLED
 
@@ -23,7 +22,7 @@ static void add_allocation(void* ptr, size_t size, const char* file, int line, c
 {
     if (!ptr) return;
 
-    Allocation* alloc = (Allocation*)RC2D_malloc(sizeof(Allocation));
+    Allocation* alloc = (Allocation*)SDL_malloc(sizeof(Allocation));
     if (!alloc) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible d'allouer la structure Allocation");
@@ -59,7 +58,7 @@ static void remove_allocation(void* ptr)
             }
 
             /* Libérer la mémoire de l'allocation */
-            RC2D_free(current);
+            SDL_free(current);
             return;
         
         }
@@ -173,7 +172,7 @@ void rc2d_memory_report(void)
     {
         Allocation* temp = allocations;
         allocations = allocations->next;
-        RC2D_free(temp);
+        SDL_free(temp);
     }
 #else
     /* Ne rien faire si le suivi de mémoire est désactivé */
