@@ -5,6 +5,11 @@
 
 #include <SDL3/SDL_stdinc.h>
 
+/* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if RC2D_MEMORY_DEBUG_ENABLED
 /**
  * \brief Macros de préprocesseur pour les fonctions de gestion de mémoire.
