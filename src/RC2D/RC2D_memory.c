@@ -68,43 +68,6 @@ static void remove_allocation(void* ptr)
     }
 }
 
-/* Afficher le rapport des fuites mémoire */
-void RC2D_memory_report(void) 
-{
-    if (!allocations) 
-    {
-        RC2D_log(RC2D_LOG_INFO, "RC2D Memory: Aucune fuite mémoire détectée.");
-        return;
-    }
-
-    size_t total_leaked = 0;
-    int leak_count = 0;
-
-    RC2D_log(RC2D_LOG_ERROR, "RC2D Memory: Rapport des fuites mémoire:");
-    RC2D_log(RC2D_LOG_ERROR, "----------------------------------------");
-
-    Allocation* current = allocations;
-    while (current) 
-    {
-        RC2D_log(RC2D_LOG_ERROR, "Fuite: %p, Taille: %zu octets, Fichier: %s, Ligne: %d, Fonction: %s",
-                 current->ptr, current->size, current->file, current->line, current->func);
-        total_leaked += current->size;
-        leak_count++;
-        current = current->next;
-    }
-
-    RC2D_log(RC2D_LOG_ERROR, "----------------------------------------");
-    RC2D_log(RC2D_LOG_ERROR, "Total: %d fuites, %zu octets non libérés", leak_count, total_leaked);
-
-    /* Libérer la liste des allocations */
-    while (allocations) 
-    {
-        Allocation* temp = allocations;
-        allocations = allocations->next;
-        SDL_free(temp);
-    }
-}
-
 /**
  * \brief Alloue dynamiquement un bloc de mémoire avec suivi de débogage.
  *
@@ -122,7 +85,7 @@ void RC2D_memory_report(void)
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void* RC2D_malloc_debug(size_t size, const char* file, int line, const char* func) 
+void* rc2d_malloc_debug(size_t size, const char* file, int line, const char* func) 
 {
     void* ptr = SDL_malloc(size);
     if (ptr) 
@@ -152,7 +115,7 @@ void* RC2D_malloc_debug(size_t size, const char* file, int line, const char* fun
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void* RC2D_calloc_debug(size_t nmemb, size_t size, const char* file, int line, const char* func) 
+void* rc2d_calloc_debug(size_t nmemb, size_t size, const char* file, int line, const char* func) 
 {
     void* ptr = SDL_calloc(nmemb, size);
     if (ptr) 
@@ -182,7 +145,7 @@ void* RC2D_calloc_debug(size_t nmemb, size_t size, const char* file, int line, c
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void* RC2D_realloc_debug(void* ptr, size_t size, const char* file, int line, const char* func) 
+void* rc2d_realloc_debug(void* ptr, size_t size, const char* file, int line, const char* func) 
 {
     if (ptr) 
     {
@@ -214,7 +177,7 @@ void* RC2D_realloc_debug(void* ptr, size_t size, const char* file, int line, con
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void RC2D_free_debug(void* ptr, const char* file, int line, const char* func) 
+void rc2d_free_debug(void* ptr, const char* file, int line, const char* func) 
 {
     if (ptr) 
     {
@@ -240,7 +203,7 @@ void RC2D_free_debug(void* ptr, const char* file, int line, const char* func)
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-char* RC2D_strdup_debug(const char* str, const char* file, int line, const char* func) 
+char* rc2d_strdup_debug(const char* str, const char* file, int line, const char* func) 
 {
     char* ptr = SDL_strdup(str);
     if (ptr) 
@@ -270,7 +233,7 @@ char* RC2D_strdup_debug(const char* str, const char* file, int line, const char*
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-char* RC2D_strndup_debug(const char* str, size_t n, const char* file, int line, const char* func) 
+char* rc2d_strndup_debug(const char* str, size_t n, const char* file, int line, const char* func) 
 {
     char* ptr = SDL_strndup(str, n);
     if (ptr) 
@@ -284,7 +247,7 @@ char* RC2D_strndup_debug(const char* str, size_t n, const char* file, int line, 
 #endif /* RC2D_MEMORY_DEBUG_ENABLED */
 
 /* Afficher le rapport des fuites mémoire */
-void RC2D_memory_report(void) 
+void rc2d_memory_report(void) 
 {
 #if RC2D_MEMORY_DEBUG_ENABLED
     if (!allocations) 
