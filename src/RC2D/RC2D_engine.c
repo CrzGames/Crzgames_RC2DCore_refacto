@@ -1791,33 +1791,102 @@ void rc2d_engine_quit(void)
     // Lib SDL3_shadercross Deinitialize
     rc2d_engine_cleanup_sdlshadercross();
     
-    // Libérer les shaders graphics (vertex/fragment) internes
-    SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
-    for (int i = 0; i < rc2d_engine_state.gpu_graphics_shader_count; i++) {
-        RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
-        if (rc2d_engine_state.gpu_graphics_shaders_cache[i].shader) {
-            SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_shaders_cache[i].shader);
+    /* Libérer les shaders graphiques (vertex/fragment) */
+    if (rc2d_engine_state.gpu_graphics_shader_mutex) 
+    {
+        SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
+        for (int i = 0; i < rc2d_engine_state.gpu_graphics_shader_count; i++)
+        {
+            if (rc2d_engine_state.gpu_graphics_shaders_cache[i].filename) 
+            {
+                RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
+                rc2d_engine_state.gpu_graphics_shaders_cache[i].filename = NULL;
+            }
+            if (rc2d_engine_state.gpu_graphics_shaders_cache[i].shader) 
+            {
+                SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_shaders_cache[i].shader);
+                rc2d_engine_state.gpu_graphics_shaders_cache[i].shader = NULL;
+            }
         }
+        RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache);
+        rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
+        rc2d_engine_state.gpu_graphics_shader_count = 0;
+        SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
+        SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
+        rc2d_engine_state.gpu_graphics_shader_mutex = NULL;
     }
-    RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache);
-    rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
-    rc2d_engine_state.gpu_graphics_shader_count = 0;
-    SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
-    SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
-    rc2d_engine_state.gpu_graphics_shader_mutex = NULL;
 
-    // Annule la revendication d'une fenêtre, détruisant ainsi sa structure de chaîne d'échange.
-    SDL_ReleaseWindowFromGPUDevice(rc2d_gpu_getDevice(), rc2d_window_getWindow());
+    /* Libérer les shaders de calcul */
+    if (rc2d_engine_state.gpu_compute_shader_mutex) 
+    {
+        SDL_LockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
+        for (int i = 0; i < rc2d_engine_state.gpu_compute_shader_count; i++) 
+        {
+            if (rc2d_engine_state.gpu_compute_shaders_cache[i].filename) 
+            {
+                RC2D_free(rc2d_engine_state.gpu_compute_shaders_cache[i].filename);
+                rc2d_engine_state.gpu_compute_shaders_cache[i].filename = NULL;
+            }
+            if (rc2d_engine_state.gpu_compute_shaders_cache[i].shader) 
+            {
+                SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_compute_shaders_cache[i].shader);
+                rc2d_engine_state.gpu_compute_shaders_cache[i].shader = NULL;
+            }
+        }
+        RC2D_free(rc2d_engine_state.gpu_compute_shaders_cache);
+        rc2d_engine_state.gpu_compute_shaders_cache = NULL;
+        rc2d_engine_state.gpu_compute_shader_count = 0;
+        SDL_UnlockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
+        SDL_DestroyMutex(rc2d_engine_state.gpu_compute_shader_mutex);
+        rc2d_engine_state.gpu_compute_shader_mutex = NULL;
+    }
 
-    // Destroy window
-    if (rc2d_engine_state.window != NULL)
+    /* Libérer les pipelines graphiques */
+    if (rc2d_engine_state.gpu_graphics_pipeline_mutex) 
+    {
+        SDL_LockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
+        for (int i = 0; i < rc2d_engine_state.gpu_graphics_pipeline_count; i++) 
+        {
+            if (rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename) 
+            {
+                RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename);
+                rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename = NULL;
+            }
+            if (rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename) 
+            {
+                RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename);
+                rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename = NULL;
+            }
+            if (rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline &&
+                rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline->pipeline) 
+            {
+                SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline->pipeline);
+                rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline->pipeline = NULL;
+            }
+        }
+        RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache);
+        rc2d_engine_state.gpu_graphics_pipelines_cache = NULL;
+        rc2d_engine_state.gpu_graphics_pipeline_count = 0;
+        SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
+        SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
+        rc2d_engine_state.gpu_graphics_pipeline_mutex = NULL;
+    }
+
+    /* Annuler la revendication de la fenêtre */
+    if (rc2d_engine_state.gpu_device && rc2d_engine_state.window) 
+    {
+        SDL_ReleaseWindowFromGPUDevice(rc2d_engine_state.gpu_device, rc2d_engine_state.window);
+    }
+
+    /* Détruire la fenêtre */
+    if (rc2d_engine_state.window) 
     {
         SDL_DestroyWindow(rc2d_engine_state.window);
         rc2d_engine_state.window = NULL;
     }
 
-    // Destroy GPU device
-    if (rc2d_engine_state.gpu_device != NULL)
+    /* Détruire le périphérique GPU */
+    if (rc2d_engine_state.gpu_device) 
     {
         SDL_DestroyGPUDevice(rc2d_engine_state.gpu_device);
         rc2d_engine_state.gpu_device = NULL;

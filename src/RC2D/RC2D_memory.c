@@ -151,7 +151,7 @@ void rc2d_memory_report(void)
     size_t total_leaked = 0;
     int leak_count = 0;
 
-    RC2D_log(RC2D_LOG_ERROR, "RC2D Memory: Rapport des fuites mémoire:");
+    RC2D_log(RC2D_LOG_ERROR, "RC2D Memory - Rapport des fuites mémoire:");
     RC2D_log(RC2D_LOG_ERROR, "----------------------------------------");
 
     Allocation* current = allocations;
