@@ -916,8 +916,10 @@ void rc2d_gpu_hotReloadComputeShader(void)
 
 bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache)
 {
+    // Vérification des paramètres d'entrée
     RC2D_assert_release(pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
 
+    // Créer props pour le nom de débogage si nécessaire
     SDL_PropertiesID props = 0;
     if (pipeline->debug_name) 
     {
@@ -929,10 +931,9 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool ad
     RC2D_GPUGraphicsPipelineCreateInfo info = pipeline->create_info;
     info.props = props;
 
+    // Créer le pipeline graphique
     pipeline->pipeline = SDL_CreateGPUGraphicsPipeline(rc2d_gpu_getDevice(), &info);
-
     SDL_DestroyProperties(props);
-
     if (pipeline->pipeline == NULL) 
     {
         // Si la création du pipeline échoue, on log l'erreur
