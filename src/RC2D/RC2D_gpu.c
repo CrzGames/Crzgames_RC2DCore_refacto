@@ -766,7 +766,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 }
 
 // TODO: Implementation de la fonction de rechargement a chaud des compute shaders
-RC2D_GPUComputePipeline* rc2d_gpu_hotReloadComputeShader(void)
+void rc2d_gpu_hotReloadComputeShader(void)
 {
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
 

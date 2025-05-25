@@ -304,7 +304,7 @@ void rc2d_assert_init(void);
 void rc2d_timer_init(void);
 
 void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void);
-RC2D_GPUComputePipeline* rc2d_gpu_hotReloadComputeShader(void);
+void rc2d_gpu_hotReloadComputeShader(void);
 
 #if RC2D_ONNX_MODULE_ENABLED
 /**
