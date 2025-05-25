@@ -97,7 +97,7 @@ void rc2d_system_freeClipboardText(char* text)
 {
     if (text != NULL)
     {
-        SDL_free(text);
+        RC2D_free(text);
         text = NULL;
     }
 }

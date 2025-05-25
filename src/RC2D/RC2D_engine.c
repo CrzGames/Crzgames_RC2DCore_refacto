@@ -1566,7 +1566,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         {
             char* filedir = event->drop.file;
             rc2d_engine_state.config->callbacks->rc2d_dropfile(filedir);
-            SDL_free(filedir);
+            RC2D_free(filedir);
         }*/
     }
 
@@ -1579,7 +1579,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         {
             char* filedir = event->drop.file;
             rc2d_engine_state.config->callbacks->rc2d_droptext(filedir);
-            SDL_free(filedir);
+            RC2D_free(filedir);
         }*/
     }
 
@@ -1592,7 +1592,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         {
             char* filedir = event->drop.file;
             rc2d_engine_state.config->callbacks->rc2d_dropbegin(filedir);
-            SDL_free(filedir);
+            RC2D_free(filedir);
         }*/
     }
 
@@ -1605,7 +1605,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         {
             char* filedir = event->drop.file;
             rc2d_engine_state.config->callbacks->rc2d_dropcomplete(filedir);
-            SDL_free(filedir);
+            RC2D_free(filedir);
         }*/
     }
 
@@ -1793,12 +1793,12 @@ void rc2d_engine_quit(void)
     // Libérer les shaders graphics (vertex/fragment) internes
     SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
     for (int i = 0; i < rc2d_engine_state.gpu_graphics_shader_count; i++) {
-        SDL_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
+        RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
         if (rc2d_engine_state.gpu_graphics_shaders_cache[i].shader) {
             SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_shaders_cache[i].shader);
         }
     }
-    SDL_free(rc2d_engine_state.gpu_graphics_shaders_cache);
+    RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache);
     rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
     rc2d_engine_state.gpu_graphics_shader_count = 0;
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);

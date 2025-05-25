@@ -1,5 +1,7 @@
 #include <RC2D/RC2D_camera.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_memory.h>
+
 #include <SDL3/SDL_camera.h>
 
 // Structure interne pour RC2D_Camera
@@ -90,7 +92,7 @@ RC2D_Camera *rc2d_camera_open(RC2D_CameraID instance_id, const RC2D_CameraOption
     }
 
     // Alloue la structure RC2D_Camera
-    RC2D_Camera *camera = SDL_malloc(sizeof(RC2D_Camera));
+    RC2D_Camera *camera = RC2D_malloc(sizeof(RC2D_Camera));
     if (!camera) 
     {
         RC2D_log(RC2D_LOG_ERROR,  "echec d'allocation de RC2D_Camera");
@@ -112,7 +114,7 @@ void rc2d_camera_close(RC2D_Camera *camera)
     }
 
     SDL_CloseCamera(camera->sdl_camera);
-    SDL_free(camera);
+    RC2D_free(camera);
 }
 
 int rc2d_camera_getPermission(RC2D_Camera *camera) 

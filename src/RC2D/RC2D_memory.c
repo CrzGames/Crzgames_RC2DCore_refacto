@@ -23,7 +23,7 @@ static void add_allocation(void* ptr, size_t size, const char* file, int line, c
 {
     if (!ptr) return;
 
-    Allocation* alloc = (Allocation*)SDL_malloc(sizeof(Allocation));
+    Allocation* alloc = (Allocation*)RC2D_malloc(sizeof(Allocation));
     if (!alloc) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible d'allouer la structure Allocation");
@@ -59,7 +59,7 @@ static void remove_allocation(void* ptr)
             }
 
             /* Libérer la mémoire de l'allocation */
-            SDL_free(current);
+            RC2D_free(current);
             return;
         
         }
@@ -71,7 +71,7 @@ static void remove_allocation(void* ptr)
 /**
  * \brief Alloue dynamiquement un bloc de mémoire avec suivi de débogage.
  *
- * Cette fonction alloue un bloc de mémoire de la taille spécifiée via `SDL_malloc` et enregistre
+ * Cette fonction alloue un bloc de mémoire de la taille spécifiée via `RC2D_malloc` et enregistre
  * les informations de débogage (fichier, ligne, fonction) si `RC2D_MEMORY_DEBUG_ENABLED` est activé.
  *
  * \param size Taille du bloc de mémoire à allouer (en octets).
@@ -164,7 +164,7 @@ void* rc2d_realloc_debug(void* ptr, size_t size, const char* file, int line, con
 /**
  * \brief Libère un bloc de mémoire avec suivi de débogage.
  *
- * Cette fonction libère un bloc de mémoire précédemment alloué via `SDL_free` et supprime les
+ * Cette fonction libère un bloc de mémoire précédemment alloué via `RC2D_free` et supprime les
  * informations de débogage associées si `RC2D_MEMORY_DEBUG_ENABLED` est activé. Si `ptr` est NULL,
  * la fonction ne fait rien.
  *
@@ -280,7 +280,7 @@ void rc2d_memory_report(void)
     {
         Allocation* temp = allocations;
         allocations = allocations->next;
-        SDL_free(temp);
+        RC2D_free(temp);
     }
 #else
     /* Ne rien faire si le suivi de mémoire est désactivé */

@@ -171,7 +171,7 @@ typedef struct RC2D_OnnxModel {
  *     .data = labels
  *     // type / shape / dims seront remplis par rc2d_onnx_run()
  * };
- * // Après l’appel, chaque labels[i] est alloué avec SDL_malloc
+ * // Après l’appel, chaque labels[i] est alloué avec RC2D_malloc
  * ```
  *
  * \since Disponible depuis RC2D 1.0.0.
@@ -232,7 +232,7 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
  *
  * ⚠️ Pour les types scalaires (FLOAT, INT, BOOL...), le buffer pointé par `tensor->data`
  * n’est **pas** libéré (il appartient à l’utilisateur).  
- * En revanche, pour les types `STRING`, chaque `char*` est libéré via `SDL_free()`.
+ * En revanche, pour les types `STRING`, chaque `char*` est libéré via `RC2D_free()`.
  *
  * Tous les champs de la structure sont ensuite réinitialisés à zéro.
  *

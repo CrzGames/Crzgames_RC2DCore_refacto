@@ -36,7 +36,7 @@ NOTE:   String length must be evenly divisible by 16byte (str_len % 16 == 0)
 /* Includes:                                                                 */
 /*****************************************************************************/
 #include <string.h> // CBC mode, for memset
-#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free, SDL_memset, SDL_memcpy
+#include <SDL3/SDL_stdinc.h> // Required for : RC2D_malloc, SDL_free, SDL_memset, SDL_memcpy
 #include <aes/aes.h>
 
 /*****************************************************************************/

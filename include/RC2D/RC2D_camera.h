@@ -103,7 +103,7 @@ typedef struct RC2D_CameraOptions {
  * \brief Récupère la liste des caméras connectées.
  *
  * \param count Pointeur pour stocker le nombre de caméras (peut être NULL).
- * \return Tableau d'ID de caméras terminé par 0, ou NULL en cas d'erreur. À libérer avec SDL_free().
+ * \return Tableau d'ID de caméras terminé par 0, ou NULL en cas d'erreur. À libérer avec RC2D_free().
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *

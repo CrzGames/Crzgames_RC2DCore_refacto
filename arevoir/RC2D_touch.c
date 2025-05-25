@@ -1,8 +1,9 @@
 #include <RC2D/RC2D_touch.h>
 #include <RC2D/RC2D_graphics.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <SDL3/SDL_touch.h> // Required for : SDL_FINGERDOWN, SDL_FINGERMOTION, SDL_FINGERUP
-#include <SDL3/SDL_stdinc.h> // Required for : SDL_malloc, SDL_free
+#include <SDL3/SDL_stdinc.h> // Required for : RC2D_malloc, SDL_free
 
 static RC2D_TouchState* touchState = NULL;
 
@@ -11,7 +12,7 @@ static RC2D_TouchState* touchState = NULL;
  */
 static void initTouchState(void) 
 {
-    touchState = SDL_malloc(sizeof(RC2D_TouchState));
+    touchState = RC2D_malloc(sizeof(RC2D_TouchState));
     if (touchState == NULL) 
     {
         return; // Gestion de l'erreur de mémoire
@@ -33,25 +34,25 @@ void rc2d_touch_freeTouchState(void)
     {
         if (touchState->numTouches > 0)
         {
-            SDL_free(touchState->touches);
+            RC2D_free(touchState->touches);
         }
 
         if (touchState->pressures != NULL)
         {
-            SDL_free(touchState->pressures);
+            RC2D_free(touchState->pressures);
         }
 
         if (touchState->x != NULL)
         {
-            SDL_free(touchState->x);
+            RC2D_free(touchState->x);
         }
 
         if (touchState->y != NULL)
         {
-            SDL_free(touchState->y);
+            RC2D_free(touchState->y);
         }
 
-        SDL_free(touchState);
+        RC2D_free(touchState);
     }
 }
 
@@ -81,10 +82,10 @@ void rc2d_touch_updateState(const int fingerId, const int eventType, const float
     {
         // Allouer de la mémoire pour un nouvel identifiant de pression tactile
         touchState->numTouches++;
-        touchState->touches = SDL_realloc(touchState->touches, sizeof(int) * touchState->numTouches);
-        touchState->pressures = SDL_realloc(touchState->pressures, sizeof(double) * touchState->numTouches); // Allouer de la mémoire pour les pressions
-        touchState->x = SDL_realloc(touchState->x, sizeof(double) * touchState->numTouches); // Allouer de la mémoire pour les coordonnées x
-        touchState->y = SDL_realloc(touchState->y, sizeof(double) * touchState->numTouches); // Allouer de la mémoire pour les coordonnées y
+        touchState->touches = RC2D_realloc(touchState->touches, sizeof(int) * touchState->numTouches);
+        touchState->pressures = RC2D_realloc(touchState->pressures, sizeof(double) * touchState->numTouches); // Allouer de la mémoire pour les pressions
+        touchState->x = RC2D_realloc(touchState->x, sizeof(double) * touchState->numTouches); // Allouer de la mémoire pour les coordonnées x
+        touchState->y = RC2D_realloc(touchState->y, sizeof(double) * touchState->numTouches); // Allouer de la mémoire pour les coordonnées y
         if (touchState->touches != NULL && touchState->pressures != NULL && touchState->x != NULL && touchState->y != NULL) 
         {
             // Ajouter le nouvel identifiant à la liste
@@ -108,7 +109,7 @@ void rc2d_touch_updateState(const int fingerId, const int eventType, const float
                 }
                 // Réduire la taille du tableau et libérer la mémoire
                 touchState->numTouches--;
-                touchState->touches = SDL_realloc(touchState->touches, sizeof(int) * touchState->numTouches);
+                touchState->touches = RC2D_realloc(touchState->touches, sizeof(int) * touchState->numTouches);
                 break;
             }
         }
@@ -123,7 +124,7 @@ void rc2d_touch_updateState(const int fingerId, const int eventType, const float
 int* rc2d_touch_getTouches(void) 
 {
     // Retourner la liste des touches
-    int* touches = SDL_malloc(sizeof(int) * touchState->numTouches);
+    int* touches = RC2D_malloc(sizeof(int) * touchState->numTouches);
     if (touches == NULL) 
     {
         return NULL; // Gestion de l'erreur de mémoire
@@ -143,7 +144,7 @@ void rc2d_touch_freeTouches(int* touches)
 {
     if (touches != NULL) 
     {
-        SDL_free(touches);
+        RC2D_free(touches);
     }
 }
 

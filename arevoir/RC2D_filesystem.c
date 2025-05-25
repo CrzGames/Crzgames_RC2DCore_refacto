@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_filesystem.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <SDL3/SDL_stdinc.h>
 
@@ -80,13 +81,13 @@ void rc2d_filesystem_quit(void)
 {
     if (prefPath != NULL)
     {
-        SDL_free(prefPath);
+        RC2D_free(prefPath);
         prefPath = NULL;
     }
 
     if (basePath != NULL)
     {
-        SDL_free(basePath);
+        RC2D_free(basePath);
         basePath = NULL;
     }
 }
@@ -213,7 +214,7 @@ RC2D_FileSystemResult rc2d_filesystem_read(const char* pathFile, unsigned char**
 
     // Allouer la mémoire nécessaire pour contenir le contenu du fichier.
     // Si dataType est texte, allouer un octet supplémentaire pour le caractère nul de fin.
-    *data = (unsigned char*)SDL_malloc(fileSize + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0));
+    *data = (unsigned char*)RC2D_malloc(fileSize + (dataType == RC2D_DATA_TYPE_TEXT ? 1 : 0));
     if (*data == NULL) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible d'allouer de la mémoire pour le contenu du fichier : %s\n", pathFile);
@@ -231,7 +232,7 @@ RC2D_FileSystemResult rc2d_filesystem_read(const char* pathFile, unsigned char**
     if (nbItemsRead != fileSize) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Impossible de lire le contenu complet du fichier : %s, Erreur SDL : %s dans rc2d_filesystem_read\n", pathFile, SDL_GetError());
-        SDL_free(*data);
+        RC2D_free(*data);
         
         int result = SDL_RWclose(rw);
         if (result < 0)
@@ -272,7 +273,7 @@ void rc2d_filesystem_free(unsigned char* data)
 {
     if (data != NULL) 
     {
-        SDL_free(data);
+        RC2D_free(data);
         data = NULL;
     }
 }

@@ -2,6 +2,7 @@
 #include <RC2D/RC2D_assert.h>
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_platform_defines.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_filesystem.h>
@@ -197,7 +198,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
             SDL_sscanf(content, "%*[^\"readOnlyStorageTextures\"]\"readOnlyStorageTextures\"%*[: ]%u", &numStorageTextures);
     
         // Libérer le contenu JSON après la lecture
-        SDL_free(jsonContent);
+        RC2D_free(jsonContent);
     }
     else 
     {
@@ -219,7 +220,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
     };
 
     SDL_GPUShader* graphicsShader = SDL_CreateGPUShader(rc2d_gpu_getDevice(), &info);
-    SDL_free(codeShaderCompiled);
+    RC2D_free(codeShaderCompiled);
 
     if (!graphicsShader) 
     {
@@ -263,7 +264,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
         &hlslInfo,
         &metadata
     );
-    SDL_free(codeHLSLSource);
+    RC2D_free(codeHLSLSource);
 
     if (!graphicsShader) 
     {
@@ -274,7 +275,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
     // Ajouter le shader graphics dans le cache
     SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
 
-    RC2D_GraphicsShaderEntry* newShaders = SDL_realloc(
+    RC2D_GraphicsShaderEntry* newShaders = RC2D_realloc(
         rc2d_engine_state.gpu_graphics_shaders_cache,
         (rc2d_engine_state.gpu_graphics_shader_count + 1) * sizeof(RC2D_GraphicsShaderEntry)
     );
@@ -282,7 +283,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
 
     rc2d_engine_state.gpu_graphics_shaders_cache = newShaders;
     RC2D_GraphicsShaderEntry* entry = &rc2d_engine_state.gpu_graphics_shaders_cache[rc2d_engine_state.gpu_graphics_shader_count++];
-    entry->filename = SDL_strdup(filename);
+    entry->filename = RC2D_strdup(filename);
     entry->shader = graphicsShader;
     entry->lastModified = get_file_modification_time(fullPath);
 
@@ -476,7 +477,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
             SDL_sscanf(content, "%*[^\"threadCountZ\"]\"threadCountZ\"%*[: ]%u", &numThreadCountZ);
         
         // Libérer le contenu JSON après la lecture
-        SDL_free(jsonContent);
+        RC2D_free(jsonContent);
     }
     else 
     {
@@ -505,7 +506,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
         rc2d_gpu_getDevice(),
         &info
     );
-    SDL_free(codeShaderCompiled);
+    RC2D_free(codeShaderCompiled);
 
     if (!computePipelineShader) 
     {
@@ -549,7 +550,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
         &hlslInfo,
         &metadata
     );
-    SDL_free(codeHLSLSource);
+    RC2D_free(codeHLSLSource);
 
     if (!computePipelineShader) 
     {
@@ -560,7 +561,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     // Ajouter le shader de calcul dans le cache
     SDL_LockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
 
-    RC2D_ComputeShaderEntry* newShaders = SDL_realloc(
+    RC2D_ComputeShaderEntry* newShaders = RC2D_realloc(
         rc2d_engine_state.gpu_compute_shaders_cache,
         (rc2d_engine_state.gpu_compute_shader_count + 1) * sizeof(RC2D_ComputeShaderEntry)
     );
@@ -568,7 +569,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
 
     rc2d_engine_state.gpu_compute_shaders_cache = newShaders;
     RC2D_ComputeShaderEntry* entry = &rc2d_engine_state.gpu_compute_shaders_cache[rc2d_engine_state.gpu_compute_shader_count++];
-    entry->filename = SDL_strdup(filename);
+    entry->filename = RC2D_strdup(filename);
     entry->shader = computePipelineShader;
     entry->lastModified = get_file_modification_time(fullPath);
 
@@ -679,7 +680,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
             double compileTimeMs = (double)(t1 - t0) * 1000.0 / SDL_GetPerformanceFrequency();
 
             // Free le code source HLSL
-            SDL_free(codeHLSLSource);
+            RC2D_free(codeHLSLSource);
 
             if (newShader) 
             {
@@ -856,7 +857,7 @@ void rc2d_gpu_hotReloadComputeShader(void)
         double compileTimeMs = (double)(t1 - t0) * 1000.0 / SDL_GetPerformanceFrequency();
 
         // Libérer le code source HLSL
-        SDL_free(codeHLSLSource);
+        RC2D_free(codeHLSLSource);
 
         if (newShader) 
         {
@@ -947,7 +948,7 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool ad
         // Ajouter dans le cache des pipelines
         SDL_LockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
 
-        RC2D_GraphicsPipelineEntry* newPipelines = SDL_realloc(
+        RC2D_GraphicsPipelineEntry* newPipelines = RC2D_realloc(
             rc2d_engine_state.gpu_graphics_pipelines_cache,
             (rc2d_engine_state.gpu_graphics_pipeline_count + 1) * sizeof(RC2D_GraphicsPipelineEntry)
         );
@@ -956,8 +957,8 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool ad
 
         RC2D_GraphicsPipelineEntry* entry = &rc2d_engine_state.gpu_graphics_pipelines_cache[rc2d_engine_state.gpu_graphics_pipeline_count++];
         entry->graphicsPipeline = pipeline;
-        entry->vertex_shader_filename = SDL_strdup(pipeline->vertex_shader_filename);
-        entry->fragment_shader_filename = SDL_strdup(pipeline->fragment_shader_filename);
+        entry->vertex_shader_filename = RC2D_strdup(pipeline->vertex_shader_filename);
+        entry->fragment_shader_filename = RC2D_strdup(pipeline->fragment_shader_filename);
 
         SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
     }

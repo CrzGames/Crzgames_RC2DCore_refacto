@@ -3,6 +3,7 @@
 #include <RC2D/RC2D_rres.h>
 #include <RC2D/RC2D_logger.h>
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_iostream.h>
@@ -98,7 +99,7 @@ static unsigned int *ComputeMD5(const unsigned char *data, int size)
 
     int newDataSize = ((((size + 8)/64) + 1)*64) - 8;
 
-    unsigned char *msg = (unsigned char *)SDL_calloc(newDataSize + 64, 1);   // Also appends "0" bits (we alloc also 64 extra bytes...)
+    unsigned char *msg = (unsigned char *)RC2D_calloc(newDataSize + 64, 1);   // Also appends "0" bits (we alloc also 64 extra bytes...)
     SDL_memcpy(msg, data, size);
     msg[size] = 128;                 // Write the "1" bit
 
@@ -156,7 +157,7 @@ static unsigned int *ComputeMD5(const unsigned char *data, int size)
         hash[3] += d;
     }
 
-    SDL_free(msg);
+    RC2D_free(msg);
 
     return hash;
 }
@@ -213,7 +214,7 @@ void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size
             void *rawData = NULL;
 
             // Allocate memory for raw data
-            rawData = SDL_calloc(chunk.data.props[0], 1);
+            rawData = RC2D_calloc(chunk.data.props[0], 1);
             if (rawData != NULL) 
             {
                 SDL_memcpy(rawData, chunk.data.raw, chunk.data.props[0]);
@@ -247,7 +248,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
             }
 
             // Allouer de la mémoire pour le texte + terminateur NULL pour le texte
-            char *text = (char *)SDL_malloc(chunk.data.props[0] + 1);
+            char *text = (char *)RC2D_malloc(chunk.data.props[0] + 1);
             if (!text)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le texte");
@@ -259,7 +260,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
             if (SDL_ReadIO(rw, text, chunk.data.props[0]) != chunk.data.props[0])
             {
                 RC2D_log(RC2D_LOG_ERROR, "Échec de la lecture des données textuelles: %s", SDL_GetError());
-                SDL_free(text);
+                RC2D_free(text);
                 SDL_CloseIO(rw);
                 return NULL;
             }
@@ -536,7 +537,7 @@ void freeWave(Wave *wave)
     // Libérer les données audio brutes
     if (wave->data != NULL)
     {
-        SDL_free(wave->data);
+        RC2D_free(wave->data);
         wave->data = NULL;
     }
 }
@@ -558,7 +559,7 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk)
 
             // Calcul de la taille des données audio brutes attendues
             unsigned int size = wave.frameCount * wave.sampleSize * wave.channels / 8;
-            wave.data = SDL_calloc(size, 1);
+            wave.data = RC2D_calloc(size, 1);
             if (wave.data)
             {
                 SDL_memcpy(wave.data, chunk.data.raw, size);
@@ -596,7 +597,7 @@ void freeFont(Font *font)
     // Libérer la mémoire pour rawData
     if (font->rawData != NULL)
     {
-        SDL_free(font->rawData);
+        RC2D_free(font->rawData);
         font->rawData = NULL;
     }
 }
@@ -624,7 +625,7 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize)
             if (!rw)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Échec de la création de SDL_IOStream: %s", SDL_GetError());
-                SDL_free(font.rawData);
+                RC2D_free(font.rawData);
                 return font;
             }
 
@@ -633,7 +634,7 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize)
             if (!font.font)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Erreur de chargement de la police: %s\n", TTF_GetError());
-                SDL_free(font.rawData);
+                RC2D_free(font.rawData);
             }
 
             return font;
@@ -675,7 +676,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             // Actually, chunk->info.packedSize considers those additional elements
 
             // Get some memory for the possible message output
-            decryptedData = (unsigned char *)SDL_calloc(chunk->info.packedSize - 16 - 16, 1);
+            decryptedData = (unsigned char *)RC2D_calloc(chunk->info.packedSize - 16 - 16, 1);
             if (decryptedData != NULL) SDL_memcpy(decryptedData, chunk->data.raw, chunk->info.packedSize - 16 - 16);
 
             // Required variables for key stretching
@@ -701,14 +702,14 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_extras extras = { 0 };  
 
-            void *workArea = SDL_malloc(config.nb_blocks*1024);    // Key stretching work area
+            void *workArea = RC2D_malloc(config.nb_blocks*1024);    // Key stretching work area
 
             // Generate strong encryption key, generated from user password using Argon2i algorithm (256 bit)
             crypto_argon2(key, 32, workArea, config, inputs, extras);
 
             // Wipe key generation secrets, they are no longer needed
             crypto_wipe(salt, 16);
-            SDL_free(workArea);
+            RC2D_free(workArea);
 
             // Required variables for decryption and message authentication
             unsigned int md5[4] = { 0 };                // Message Authentication Code generated on encryption
@@ -749,7 +750,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             // Actually, chunk->info.packedSize considers those additional elements
 
             // Get some memory for the possible message output
-            decryptedData = (unsigned char *)SDL_calloc(chunk->info.packedSize - 16 - 24 - 16, 1);
+            decryptedData = (unsigned char *)RC2D_calloc(chunk->info.packedSize - 16 - 24 - 16, 1);
 
             // Required variables for key stretching
             uint8_t key[32] = { 0 };                    // Encryption key
@@ -774,14 +775,14 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_extras extras = { 0 };  
 
-            void *workArea = SDL_malloc(config.nb_blocks*1024);    // Key stretching work area
+            void *workArea = RC2D_malloc(config.nb_blocks*1024);    // Key stretching work area
 
             // Generate strong encryption key, generated from user password using Argon2i algorithm (256 bit)
             crypto_argon2(key, 32, workArea, config, inputs, extras);
 
             // Wipe key generation secrets, they are no longer needed
             crypto_wipe(salt, 16);
-            SDL_free(workArea);
+            RC2D_free(workArea);
 
             // Required variables for decryption and message authentication
             uint8_t nonce[24] = { 0 };                  // nonce used on encryption, unique to processed file
@@ -836,7 +837,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             case RRES_COMP_LZ4:
             {
                 int uncompDataSize = 0;
-                uncompData = (unsigned char *)SDL_calloc(chunk->info.baseSize, 1);
+                uncompData = (unsigned char *)RC2D_calloc(chunk->info.baseSize, 1);
                 uncompDataSize = LZ4_decompress_safe((const char *)decryptedData, (char *)uncompData, chunk->info.packedSize, chunk->info.baseSize);
 
                 if ((uncompData != NULL) && (uncompDataSize > 0))     // Decompression successful
@@ -878,16 +879,16 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
         if (chunk->data.propCount > 0)
         {
-            chunk->data.props = (unsigned int *)SDL_calloc(chunk->data.propCount, sizeof(int));
+            chunk->data.props = (unsigned int *)RC2D_calloc(chunk->data.propCount, sizeof(int));
             for (unsigned int i = 0; i < chunk->data.propCount; i++) chunk->data.props[i] = ((int *)unpackedData)[1 + i];
         }
 
         // Move chunk->data.raw pointer (chunk->data.propCount*sizeof(int)) positions
-        void *raw = SDL_calloc(chunk->info.baseSize - 20, 1);
+        void *raw = RC2D_calloc(chunk->info.baseSize - 20, 1);
         if (raw != NULL) SDL_memcpy(raw, ((unsigned char *)unpackedData) + 20, chunk->info.baseSize - 20);
-        SDL_free(chunk->data.raw);
+        RC2D_free(chunk->data.raw);
         chunk->data.raw = raw;
-        SDL_free(unpackedData);
+        RC2D_free(unpackedData);
     }
 
     return result;

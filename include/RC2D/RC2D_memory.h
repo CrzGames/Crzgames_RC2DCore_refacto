@@ -19,12 +19,12 @@
  * \since Ces macros sont disponibles depuis RC2D 1.0.0.
  */
 #if RC2D_MEMORY_DEBUG_ENABLED
-#define RC2D_malloc(size) rc2d_malloc_debug(size, __FILE__, __LINE__, __FUNCTION__)
-#define RC2D_calloc(nmemb, size) rc2d_calloc_debug(nmemb, size, __FILE__, __LINE__, __FUNCTION__)
-#define RC2D_realloc(ptr, size) rc2d_realloc_debug(ptr, size, __FILE__, __LINE__, __FUNCTION__)
-#define RC2D_free(ptr) rc2d_free_debug(ptr, __FILE__, __LINE__, __FUNCTION__)
-#define RC2D_strdup(str) rc2d_strdup_debug(str, __FILE__, __LINE__, __FUNCTION__)
-#define RC2D_strndup(str, n) rc2d_strndup_debug(str, n, __FILE__, __LINE__, __FUNCTION__)
+#define RC2D_malloc(size) rc2d_malloc_debug(size, SDL_FILE, SDL_LINE, SDL_FUNCTION)
+#define RC2D_calloc(nmemb, size) rc2d_calloc_debug(nmemb, size, SDL_FILE, SDL_LINE, SDL_FUNCTION)
+#define RC2D_realloc(ptr, size) rc2d_realloc_debug(ptr, size, SDL_FILE, SDL_LINE, SDL_FUNCTION)
+#define RC2D_free(ptr) rc2d_free_debug(ptr, SDL_FILE, SDL_LINE, SDL_FUNCTION)
+#define RC2D_strdup(str) rc2d_strdup_debug(str, SDL_FILE, SDL_LINE, SDL_FUNCTION)
+#define RC2D_strndup(str, n) rc2d_strndup_debug(str, n, SDL_FILE, SDL_LINE, SDL_FUNCTION)
 #else
 #define RC2D_malloc(size) SDL_malloc(size)
 #define RC2D_calloc(nmemb, size) SDL_calloc(nmemb, size)

@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_messagebox.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <SDL3/SDL_messagebox.h>
 
@@ -52,7 +53,7 @@ bool rc2d_messagebox_show(const RC2D_MessageBoxOptions *options, int *button_id)
     if (options->num_buttons > 0 && options->buttons) 
     {
         // Alloue de la mémoire pour les boutons
-        sdl_buttons = SDL_malloc(options->num_buttons * sizeof(SDL_MessageBoxButtonData));
+        sdl_buttons = RC2D_malloc(options->num_buttons * sizeof(SDL_MessageBoxButtonData));
         if (!sdl_buttons)
          {
             RC2D_log(RC2D_LOG_ERROR, "echec d'allocation des boutons");
@@ -118,7 +119,7 @@ bool rc2d_messagebox_show(const RC2D_MessageBoxOptions *options, int *button_id)
     if (!SDL_ShowMessageBox(&sdl_data, &result_button_id)) 
     {
         RC2D_log(RC2D_LOG_ERROR, "echec de SDL_ShowMessageBox : %s", SDL_GetError());
-        SDL_free(sdl_buttons);
+        RC2D_free(sdl_buttons);
         return false;
     }
 
@@ -129,6 +130,6 @@ bool rc2d_messagebox_show(const RC2D_MessageBoxOptions *options, int *button_id)
     }
 
     // Nettoie les boutons alloués
-    SDL_free(sdl_buttons);
+    RC2D_free(sdl_buttons);
     return true;
 }

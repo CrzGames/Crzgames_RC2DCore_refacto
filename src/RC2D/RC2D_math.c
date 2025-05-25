@@ -1,5 +1,6 @@
 #include <RC2D/RC2D_math.h>
 #include <RC2D/RC2D_logger.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <SDL3/SDL_stdinc.h> // Require for : SDL_malloc, SDL_free, SDL_memcpy
 
@@ -161,7 +162,7 @@ static uint32_t rc2d_math_extractNumber(RC2D_RandomGenerator *rng)
  */
 static RC2D_RandomGenerator* rc2d_math_newRandomGeneratorSingle(uint32_t seed) 
 {
-    RC2D_RandomGenerator* rng = (RC2D_RandomGenerator*) SDL_malloc(sizeof(RC2D_RandomGenerator));
+    RC2D_RandomGenerator* rng = (RC2D_RandomGenerator*) RC2D_malloc(sizeof(RC2D_RandomGenerator));
 
     if (rng) 
     {
@@ -215,7 +216,7 @@ void rc2d_math_freeRandomGenerator(RC2D_RandomGenerator* randomGenerator)
 {
     if (randomGenerator != NULL) 
     {
-        SDL_free(randomGenerator); // Libérer la mémoire allouée pour le randomGenerator
+        RC2D_free(randomGenerator); // Libérer la mémoire allouée pour le randomGenerator
         randomGenerator = NULL; // Eviter les pointeurs fantomes
     }
 }
@@ -492,8 +493,8 @@ RC2D_BezierCurve* rc2d_math_new_BezierCurve(int count, ...)
     va_list args;
     va_start(args, count);
 
-    RC2D_BezierCurve* curve = SDL_malloc(sizeof(RC2D_BezierCurve));
-    curve->points = SDL_malloc(sizeof(RC2D_Point) * count);
+    RC2D_BezierCurve* curve = RC2D_malloc(sizeof(RC2D_BezierCurve));
+    curve->points = RC2D_malloc(sizeof(RC2D_Point) * count);
     curve->count = count;
 
     for (int i = 0; i < count; i++) 
@@ -519,10 +520,10 @@ void rc2d_math_free_BezierCurve(RC2D_BezierCurve* curve)
     {
         if (curve->points != NULL) 
         {
-            SDL_free(curve->points); // Libérer le tableau de points
+            RC2D_free(curve->points); // Libérer le tableau de points
         }
 
-        SDL_free(curve);            // Libérer la courbe elle-même
+        RC2D_free(curve);            // Libérer la courbe elle-même
         curve = NULL;           // Eviter les pointeurs fantomes
     }
 }
@@ -543,7 +544,7 @@ static RC2D_Point deCasteljau(RC2D_Point* points, int count, double t)
         return (RC2D_Point){0, 0}; // Les points de contrôle de la courbe sont NULL
     }
 
-    RC2D_Point* tempPoints = SDL_malloc(sizeof(RC2D_Point) * count);
+    RC2D_Point* tempPoints = RC2D_malloc(sizeof(RC2D_Point) * count);
     SDL_memcpy(tempPoints, points, sizeof(RC2D_Point) * count);
 
     for (int r = 1; r < count; ++r) 
@@ -556,7 +557,7 @@ static RC2D_Point deCasteljau(RC2D_Point* points, int count, double t)
     }
 
     RC2D_Point result = tempPoints[0];
-    SDL_free(tempPoints);
+    RC2D_free(tempPoints);
 
     return result;
 }
@@ -719,7 +720,7 @@ void rc2d_math_removeControlPoint_BezierCurve(RC2D_BezierCurve* curve, int index
     }
 
     // Créer un nouveau tableau de points de contrôle avec une taille réduite
-    RC2D_Point* newPoints = SDL_malloc(sizeof(RC2D_Point) * (curve->count - 1));
+    RC2D_Point* newPoints = RC2D_malloc(sizeof(RC2D_Point) * (curve->count - 1));
     
     // Copier tous les points de contrôle sauf celui à supprimer
     for (int i = 0, j = 0; i < curve->count; i++) 
@@ -731,7 +732,7 @@ void rc2d_math_removeControlPoint_BezierCurve(RC2D_BezierCurve* curve, int index
     }
     
     // Libérer l'ancien tableau de points de contrôle et mettre à jour la courbe
-    SDL_free(curve->points);
+    RC2D_free(curve->points);
 
     curve->points = newPoints;
     curve->count -= 1;
@@ -776,7 +777,7 @@ void rc2d_math_insertControlPoint_BezierCurve(RC2D_BezierCurve* curve, double x,
     i -= 1;
     
     // Créer un nouveau tableau de points de contrôle avec une taille augmentée
-    RC2D_Point* newPoints = SDL_malloc(sizeof(RC2D_Point) * (curve->count + 1));
+    RC2D_Point* newPoints = RC2D_malloc(sizeof(RC2D_Point) * (curve->count + 1));
     
     // Copier les points existants en insérant le nouveau point à l'indice spécifié
     for (int j = 0, k = 0; j < curve->count + 1; j++) 
@@ -792,7 +793,7 @@ void rc2d_math_insertControlPoint_BezierCurve(RC2D_BezierCurve* curve, double x,
     }
     
     // Libérer l'ancien tableau de points et mettre à jour la courbe
-    SDL_free(curve->points);
+    RC2D_free(curve->points);
 
     curve->points = newPoints;
     curve->count += 1; // Augmenter le nombre de points de contrôle
@@ -815,8 +816,8 @@ RC2D_BezierCurve* rc2d_math_getSegment_BezierCurve(RC2D_BezierCurve* curve, doub
     }
 
     // Application de l'algorithme de De Casteljau pour trouver les nouveaux points de contrôle
-    RC2D_Point* newPointsStart = SDL_malloc(sizeof(RC2D_Point) * curve->count);
-    RC2D_Point* newPointsEnd = SDL_malloc(sizeof(RC2D_Point) * curve->count);
+    RC2D_Point* newPointsStart = RC2D_malloc(sizeof(RC2D_Point) * curve->count);
+    RC2D_Point* newPointsEnd = RC2D_malloc(sizeof(RC2D_Point) * curve->count);
     SDL_memcpy(newPointsStart, curve->points, sizeof(RC2D_Point) * curve->count);
     SDL_memcpy(newPointsEnd, curve->points, sizeof(RC2D_Point) * curve->count);
 
@@ -848,8 +849,8 @@ RC2D_BezierCurve* rc2d_math_getSegment_BezierCurve(RC2D_BezierCurve* curve, doub
         segmentCurve->points[i] = newPointsStart[i];
     }
 
-    SDL_free(newPointsStart);
-    SDL_free(newPointsEnd);
+    RC2D_free(newPointsStart);
+    RC2D_free(newPointsEnd);
 
     return segmentCurve;
 }
@@ -871,7 +872,7 @@ RC2D_Point* rc2d_math_render_BezierCurve(RC2D_BezierCurve* curve, int depth, int
     }
 
     int countPoints = SDL_pow(2, depth) + 1; // Calcul du nombre de points basé sur la profondeur de récursion
-    RC2D_Point* points = SDL_malloc(sizeof(RC2D_Point) * countPoints);
+    RC2D_Point* points = RC2D_malloc(sizeof(RC2D_Point) * countPoints);
     *numPoints = countPoints; // Stocker le nombre de points dans la variable de sortie
 
     int index = 0;
@@ -900,7 +901,7 @@ RC2D_Point* rc2d_math_renderSegment_BezierCurve(RC2D_BezierCurve* curve, double 
     }
 
     int countPoints = SDL_pow(2, depth) + 1; // Calcul du nombre de points basé sur la profondeur de récursion
-    RC2D_Point* points = SDL_malloc(sizeof(RC2D_Point) * countPoints);
+    RC2D_Point* points = RC2D_malloc(sizeof(RC2D_Point) * countPoints);
     *numPoints = countPoints; // Stocker le nombre de points dans la variable de sortie
 
     int index = 0;
@@ -928,10 +929,10 @@ RC2D_BezierCurve* rc2d_math_getDerivative_BezierCurve(RC2D_BezierCurve* curve) {
     }
 
     int degree = curve->count - 1; // Le degré de la courbe originale
-    RC2D_BezierCurve* derivativeCurve = SDL_malloc(sizeof(RC2D_BezierCurve));
+    RC2D_BezierCurve* derivativeCurve = RC2D_malloc(sizeof(RC2D_BezierCurve));
 
     derivativeCurve->count = degree; // La courbe dérivée aura un degré de moins.
-    derivativeCurve->points = SDL_malloc(sizeof(RC2D_Point) * derivativeCurve->count);
+    derivativeCurve->points = RC2D_malloc(sizeof(RC2D_Point) * derivativeCurve->count);
 
     for (int i = 0; i < degree; i++) 
     {

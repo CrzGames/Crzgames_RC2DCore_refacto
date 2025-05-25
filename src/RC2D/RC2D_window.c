@@ -155,7 +155,7 @@ void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType 
                     RC2D_log(RC2D_LOG_ERROR, "rc2d_window_setFullscreen: Impossible de récupérer les modes plein écran : %s\n", SDL_GetError());
                     if (modes != NULL) 
                     {
-                        SDL_free(modes);
+                        RC2D_free(modes);
                     }
                     return;
                 }
@@ -171,7 +171,7 @@ void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType 
                 if (!result) 
                 {
                     RC2D_log(RC2D_LOG_ERROR, "rc2d_window_setFullscreen: Impossible de définir le mode plein écran : %s\n", SDL_GetError());
-                    SDL_free(modes);
+                    RC2D_free(modes);
                     return;
                 }
                 
@@ -183,7 +183,7 @@ void rc2d_window_setFullscreen(const bool fullscreen, const RC2D_FullscreenType 
                 if (!result) 
                 {
                     RC2D_log(RC2D_LOG_ERROR, "rc2d_window_setFullscreen: Impossible de définir le mode plein écran : %s\n", SDL_GetError());
-                    SDL_free(modes);
+                    RC2D_free(modes);
                     return;
                 }
                 break;
