@@ -1873,6 +1873,13 @@ void rc2d_engine_quit(void)
     }
 
     /**
+     * IMPORTAT: 
+     * L'appelle de cette fonction doit être appeler avant : 
+     * - SDL_ReleaseWindowFromGPUDevice()
+     * - SDL_DestroyWindow()
+     * - SDL_DestroyGPUDevice()
+     * - SDL_Quit()
+     * 
      * Affiche un rapport des fuites mémoire détectées.
      * Cela est utile pour identifier les fuites de mémoire dans l'application.
      * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
