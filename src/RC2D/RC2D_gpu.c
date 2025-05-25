@@ -696,7 +696,12 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                     }
 
                     // Attendre que le GPU ait fini de traiter le buffer
-                    SDL_WaitForGPUFences(rc2d_engine_state.gpu_device, true, &fence, 1);
+                    if (!SDL_WaitForGPUFences(rc2d_engine_state.gpu_device, true, &fence, 1))
+                    {
+                        RC2D_log(RC2D_LOG_ERROR, "Failed to wait for GPU fence: %s", SDL_GetError());
+                        SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), newShader);
+                        continue;
+                    }
                     SDL_ReleaseGPUFence(rc2d_gpu_getDevice(), fence);
                 }
 
@@ -704,7 +709,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                 rc2d_engine_state.gpu_current_command_buffer = SDL_AcquireGPUCommandBuffer(rc2d_engine_state.gpu_device);
                 if (!rc2d_engine_state.gpu_current_command_buffer) 
                 {
-                    RC2D_log(RC2D_LOG_ERROR, "Failed to acquire new command buffer after shader reload");
+                    RC2D_log(RC2D_LOG_ERROR, "Failed to acquire new command buffer after shader reload : %s", SDL_GetError());
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), newShader);
                     continue;
                 }
@@ -862,13 +867,18 @@ void rc2d_gpu_hotReloadComputeShader(void)
                 fence = SDL_SubmitGPUCommandBufferAndAcquireFence(rc2d_engine_state.gpu_current_command_buffer);
                 if (!fence) 
                 {
-                    RC2D_log(RC2D_LOG_ERROR, "Failed to submit command buffer and acquire fence");
+                    RC2D_log(RC2D_LOG_ERROR, "Failed to submit command buffer and acquire fence : %s", SDL_GetError());
                     SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), newShader);
                     continue;
                 }
 
                 // Attendre que le GPU ait fini de traiter le buffer
-                SDL_WaitForGPUFences(rc2d_engine_state.gpu_device, true, &fence, 1);
+                if (!SDL_WaitForGPUFences(rc2d_engine_state.gpu_device, true, &fence, 1)) 
+                {
+                    RC2D_log(RC2D_LOG_ERROR, "Failed to wait for GPU fence : %s", SDL_GetError());
+                    SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), newShader);
+                    continue;
+                }
                 SDL_ReleaseGPUFence(rc2d_gpu_getDevice(), fence);
             }
 
@@ -876,7 +886,7 @@ void rc2d_gpu_hotReloadComputeShader(void)
             rc2d_engine_state.gpu_current_command_buffer = SDL_AcquireGPUCommandBuffer(rc2d_engine_state.gpu_device);
             if (!rc2d_engine_state.gpu_current_command_buffer) 
             {
-                RC2D_log(RC2D_LOG_ERROR, "Failed to acquire new command buffer after shader reload");
+                RC2D_log(RC2D_LOG_ERROR, "Failed to acquire new command buffer after shader reload : %s", SDL_GetError());
                 SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), newShader);
                 continue;
             }
