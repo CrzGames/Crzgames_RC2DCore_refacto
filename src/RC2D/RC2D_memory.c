@@ -138,7 +138,6 @@ char* rc2d_strndup_debug(const char* str, size_t n, const char* file, int line, 
 
 #endif /* RC2D_MEMORY_DEBUG_ENABLED */
 
-/* Afficher le rapport des fuites mémoire */
 void rc2d_memory_report(void) 
 {
 #if RC2D_MEMORY_DEBUG_ENABLED

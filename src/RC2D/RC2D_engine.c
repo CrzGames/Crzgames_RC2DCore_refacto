@@ -1872,6 +1872,13 @@ void rc2d_engine_quit(void)
         rc2d_engine_state.gpu_graphics_pipeline_mutex = NULL;
     }
 
+    /**
+     * Affiche un rapport des fuites mémoire détectées.
+     * Cela est utile pour identifier les fuites de mémoire dans l'application.
+     * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
+     */
+    rc2d_memory_report();
+
     /* Annuler la revendication de la fenêtre */
     if (rc2d_engine_state.gpu_device && rc2d_engine_state.window) 
     {
@@ -1891,13 +1898,6 @@ void rc2d_engine_quit(void)
         SDL_DestroyGPUDevice(rc2d_engine_state.gpu_device);
         rc2d_engine_state.gpu_device = NULL;
     }
-
-    /**
-     * Affiche un rapport des fuites mémoire détectées.
-     * Cela est utile pour identifier les fuites de mémoire dans l'application.
-     * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
-     */
-    rc2d_memory_report();
 
     // Cleanup SDL3
 	rc2d_engine_cleanup_sdl();
