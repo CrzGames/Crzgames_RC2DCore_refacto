@@ -6,6 +6,7 @@
 #include <RC2D/RC2D_filesystem.h>
 #include <RC2D/RC2D_touch.h>
 #include <RC2D/RC2D_platform_defines.h>
+#include <RC2D/RC2D_memory.h>
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
