@@ -1892,7 +1892,12 @@ void rc2d_engine_quit(void)
         rc2d_engine_state.gpu_device = NULL;
     }
 
-    // TODO: Destroy RC2D Engine state (tout ce qui est dans rc2d_engine_state)
+    /**
+     * Affiche un rapport des fuites mémoire détectées.
+     * Cela est utile pour identifier les fuites de mémoire dans l'application.
+     * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
+     */
+    rc2d_memory_report();
 
     // Cleanup SDL3
 	rc2d_engine_cleanup_sdl();
