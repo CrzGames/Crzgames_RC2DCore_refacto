@@ -765,12 +765,143 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 #endif
 }
 
-// TODO: Implementation de la fonction de rechargement a chaud des compute shaders
 void rc2d_gpu_hotReloadComputeShader(void)
 {
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+    // Vérifier que le mutex pour les compute shaders est valide
+    if (!rc2d_engine_state.gpu_compute_shader_mutex) 
+    {
+        RC2D_log(RC2D_LOG_ERROR, "gpu_compute_shader_mutex is NULL");
+        return;
+    }
 
-#endif 
+    // Récupérer le chemin de base de l'application
+    const char* basePath = SDL_GetBasePath();
+    if (basePath == NULL) 
+    {
+        RC2D_log(RC2D_LOG_ERROR, "Failed to get base path for shader updates");
+        return;
+    }
+
+    // Verrouiller le mutex pour accéder au cache des compute shaders
+    SDL_LockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
+
+    // Parcourir le cache des compute shaders
+    for (int i = 0; i < rc2d_engine_state.gpu_compute_shader_count; i++) 
+    {
+        RC2D_ComputeShaderEntry* entry = &rc2d_engine_state.gpu_compute_shaders_cache[i];
+
+        // Construire le chemin complet vers le fichier HLSL source
+        char fullPath[512];
+        SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, entry->filename);
+
+        // Vérifier le timestamp de dernière modification
+        SDL_Time currentModified = get_file_modification_time(fullPath);
+        if (currentModified <= entry->lastModified) 
+        {
+            // Pas de modification, passer au shader suivant
+            continue;
+        }
+
+        /**
+         * Charger le fichier HLSL
+         * 
+         * Attend un peu que l'os ou l'ide est le temps d'écrire le 
+         * fichier avant de le lire
+         */
+        char* codeHLSLSource = NULL;
+        for (int attempt = 0; attempt < 3; attempt++) 
+        {
+            codeHLSLSource = SDL_LoadFile(fullPath, NULL);
+            if (codeHLSLSource != NULL) break;
+            SDL_Delay(20); // Attendre un peu au cas où le fichier est en cours d'écriture
+        }
+
+        if (!codeHLSLSource) 
+        {
+            RC2D_log(RC2D_LOG_ERROR, "Failed to load HLSL shader source after retries: %s", fullPath);
+            continue;
+        }
+
+        // Préparer les métadonnées et les informations pour la compilation du compute shader
+        SDL_ShaderCross_ComputePipelineMetadata metadata = {0};
+        SDL_ShaderCross_HLSL_Info hlslInfo = {
+            .source = codeHLSLSource,
+            .entrypoint = "main",
+            .include_dir = NULL,
+            .defines = NULL,
+            .shader_stage = SDL_SHADERCROSS_SHADERSTAGE_COMPUTE,
+            .enable_debug = true,
+            .name = entry->filename,
+            .props = 0
+        };
+
+        // Mesurer le temps de compilation
+        Uint64 t0 = SDL_GetPerformanceCounter();
+
+        // Compiler le nouveau compute shader
+        SDL_GPUComputePipeline* newShader = SDL_ShaderCross_CompileComputePipelineFromHLSL(
+            rc2d_gpu_getDevice(),
+            &hlslInfo,
+            &metadata
+        );
+
+        // Calculer le temps de compilation
+        Uint64 t1 = SDL_GetPerformanceCounter();
+        double compileTimeMs = (double)(t1 - t0) * 1000.0 / SDL_GetPerformanceFrequency();
+
+        // Libérer le code source HLSL
+        SDL_free(codeHLSLSource);
+
+        if (newShader) 
+        {
+            // Synchroniser le GPU pour éviter les conflits
+            SDL_GPUFence* fence = NULL;
+            if (rc2d_engine_state.gpu_current_command_buffer) 
+            {
+                fence = SDL_SubmitGPUCommandBufferAndAcquireFence(rc2d_engine_state.gpu_current_command_buffer);
+                if (!fence) 
+                {
+                    RC2D_log(RC2D_LOG_ERROR, "Failed to submit command buffer and acquire fence");
+                    SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), newShader);
+                    continue;
+                }
+
+                // Attendre que le GPU ait fini de traiter le buffer
+                SDL_WaitForGPUFences(rc2d_engine_state.gpu_device, true, &fence, 1);
+                SDL_ReleaseGPUFence(rc2d_gpu_getDevice(), fence);
+            }
+
+            // Acquérir un nouveau command buffer
+            rc2d_engine_state.gpu_current_command_buffer = SDL_AcquireGPUCommandBuffer(rc2d_engine_state.gpu_device);
+            if (!rc2d_engine_state.gpu_current_command_buffer) 
+            {
+                RC2D_log(RC2D_LOG_ERROR, "Failed to acquire new command buffer after shader reload");
+                SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), newShader);
+                continue;
+            }
+
+            // Libérer l'ancien compute shader
+            if (entry->shader) 
+            {
+                SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), entry->shader);
+            }
+
+            // Mettre à jour l'entrée dans le cache
+            entry->shader = newShader;
+            entry->lastModified = currentModified;
+
+            RC2D_log(RC2D_LOG_INFO, "Successfully reloaded compute shader %s in %.2f ms", entry->filename, compileTimeMs);
+        } 
+        else 
+        {
+            RC2D_log(RC2D_LOG_ERROR, "Failed to reload compute shader: %s", entry->filename);
+        }
+    }
+
+    // Déverrouiller le mutex
+    SDL_UnlockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
+#endif
 }
 
 bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache)

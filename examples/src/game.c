@@ -3,6 +3,7 @@
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_internal.h>
 
+static RC2D_GPUComputePipeline* computeShader;
 static RC2D_GPUShader* fragmentShader;
 static RC2D_GPUShader* vertexShader;
 static RC2D_GPUGraphicsPipeline graphicsPipeline;
@@ -27,11 +28,16 @@ void rc2d_load(void)
     rc2d_window_setTitle("Test jeu");
     rc2d_window_setMinimumSize(1280, 720);
 
+    // Charger les shaders graphiques
     fragmentShader = rc2d_gpu_loadGraphicsShader("test.fragment");
     RC2D_assert_release(fragmentShader != NULL, RC2D_LOG_CRITICAL, "Failed to load fragment shader");
 
     vertexShader = rc2d_gpu_loadGraphicsShader("test.vertex");
     RC2D_assert_release(vertexShader != NULL, RC2D_LOG_CRITICAL, "Failed to load vertex shader");
+
+    // Charger le compute shader
+    computeShader = rc2d_gpu_loadComputeShader("test.compute");
+    RC2D_assert_release(computeShader != NULL, RC2D_LOG_CRITICAL, "Failed to load compute shader");
 
     SDL_GPUVertexInputState vertexInput = {
         .vertex_buffer_descriptions = NULL,
@@ -115,6 +121,11 @@ void rc2d_update(double dt)
 
 void rc2d_draw(void)
 {
+    // --------------------  SHADER COMPUTE -------------------
+
+
+    // -------------------  SHADER GRAPHICS -------------------
+    // Passe de rendu graphique
     rc2d_gpu_bindGraphicsPipeline(&graphicsPipeline);
 
     UniformBlock ubo = {

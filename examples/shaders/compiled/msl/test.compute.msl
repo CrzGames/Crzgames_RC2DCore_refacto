@@ -1,0 +1,12 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+kernel void main0(texture2d<float, access::write> outputTexture [[texture(0)]], uint3 gl_GlobalInvocationID [[thread_position_in_grid]])
+{
+    uint3 _32 = gl_GlobalInvocationID;
+    float2 _31 = float2(gl_GlobalInvocationID.xy) * float2(0.0005208333604969084262847900390625, 0.000925925909541547298431396484375);
+    outputTexture.write(float4(_31.x, _31.y, 0.5, 1.0), uint2(gl_GlobalInvocationID.xy));
+}
+
