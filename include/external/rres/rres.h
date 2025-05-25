@@ -14,7 +14,7 @@
 *   rres library dependencies have been kept to the minimum. It depends only on some libc and SDL3 functionality:
 *
 *     - stdlib.h: Required for memory allocation: malloc(), calloc(), free()
-*                 NOTE: Allocators can be redefined with macros RRES_MALLOC, RRES_CALLOC, RRES_FREE
+*                 NOTE: Allocators can be redefined with macros RC2D_malloc, RC2D_calloc, RC2D_free
 *     - SDL3/SDL_iostream.h: Required for file access functionality: SDL_IOStream, SDL_IOFromFile(), SDL_SeekIO(), SDL_ReadIO(), SDL_TellIO(), SDL_CloseIO()
 *     - string.h: Required for memory data management: memcpy(), memcmp()
 *
@@ -379,7 +379,7 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
                 if (info.nextOffset != 0)
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Multiple linked resource chunks available for the provided id");
 
-                void *data = RRES_MALLOC(info.packedSize);
+                void *data = RC2D_malloc(info.packedSize);
                 if (data == NULL)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk data\n");
@@ -389,13 +389,13 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
                 if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
-                    RRES_FREE(data);
+                    RC2D_free(data);
                     break;
                 }
 
                 chunk.data = rresLoadResourceChunkData(info, data);
                 chunk.info = info;
-                RRES_FREE(data);
+                RC2D_free(data);
                 break;
             }
             else
@@ -423,8 +423,8 @@ rresResourceChunk rresLoadResourceChunk(const char *fileName, int rresId)
 
 void rresUnloadResourceChunk(rresResourceChunk chunk)
 {
-    RRES_FREE(chunk.data.props);
-    RRES_FREE(chunk.data.raw);
+    RC2D_free(chunk.data.props);
+    RC2D_free(chunk.data.raw);
 }
 
 rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
@@ -490,7 +490,7 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                     rres.count++;
                 }
 
-                rres.chunks = (rresResourceChunk *)RRES_CALLOC(rres.count, sizeof(rresResourceChunk));
+                rres.chunks = (rresResourceChunk *)RC2D_calloc(rres.count, sizeof(rresResourceChunk));
                 if (rres.chunks == NULL)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunks\n");
@@ -500,29 +500,29 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                 if (SDL_SeekIO(rresFile, currentFileOffset, SDL_IO_SEEK_SET) == -1)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek back to first chunk: %s\n", SDL_GetError());
-                    RRES_FREE(rres.chunks);
+                    RC2D_free(rres.chunks);
                     break;
                 }
 
-                void *data = RRES_MALLOC(info.packedSize);
+                void *data = RC2D_malloc(info.packedSize);
                 if (data == NULL)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk data\n");
-                    RRES_FREE(rres.chunks);
+                    RC2D_free(rres.chunks);
                     break;
                 }
 
                 if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
-                    RRES_FREE(data);
-                    RRES_FREE(rres.chunks);
+                    RC2D_free(data);
+                    RC2D_free(rres.chunks);
                     break;
                 }
 
                 rres.chunks[0].data = rresLoadResourceChunkData(info, data);
                 rres.chunks[0].info = info;
-                RRES_FREE(data);
+                RC2D_free(data);
 
                 int j = 1;
                 while (info.nextOffset != 0)
@@ -541,7 +541,7 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                     RC2D_log(RC2D_LOG_INFO, "RRES: %c%c%c%c: Id: 0x%08x | Base size: %i | Packed size: %i\n",
                              info.type[0], info.type[1], info.type[2], info.type[3], info.id, info.baseSize, info.packedSize);
 
-                    data = RRES_MALLOC(info.packedSize);
+                    data = RC2D_malloc(info.packedSize);
                     if (data == NULL)
                     {
                         RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk data\n");
@@ -551,13 +551,13 @@ rresResourceMulti rresLoadResourceMulti(const char *fileName, int rresId)
                     if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                     {
                         RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk data: %s\n", SDL_GetError());
-                        RRES_FREE(data);
+                        RC2D_free(data);
                         break;
                     }
 
                     rres.chunks[j].data = rresLoadResourceChunkData(info, data);
                     rres.chunks[j].info = info;
-                    RRES_FREE(data);
+                    RC2D_free(data);
                     j++;
                 }
 
@@ -590,7 +590,7 @@ void rresUnloadResourceMulti(rresResourceMulti multi)
 {
     for (unsigned int i = 0; i < multi.count; i++)
         rresUnloadResourceChunk(multi.chunks[i]);
-    RRES_FREE(multi.chunks);
+    RC2D_free(multi.chunks);
 }
 
 RRESAPI rresResourceChunkInfo rresLoadResourceChunkInfo(const char *fileName, int rresId)
@@ -672,7 +672,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
 
     if (header.id[0] == 'r' && header.id[1] == 'r' && header.id[2] == 'e' && header.id[3] == 's' && header.version == 100)
     {
-        infos = (rresResourceChunkInfo *)RRES_CALLOC(header.chunkCount, sizeof(rresResourceChunkInfo));
+        infos = (rresResourceChunkInfo *)RC2D_calloc(header.chunkCount, sizeof(rresResourceChunkInfo));
         if (infos == NULL)
         {
             RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for chunk infos\n");
@@ -688,7 +688,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
             if (SDL_ReadIO(rresFile, &infos[i], sizeof(rresResourceChunkInfo)) != sizeof(rresResourceChunkInfo))
             {
                 RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read chunk info: %s\n", SDL_GetError());
-                RRES_FREE(infos);
+                RC2D_free(infos);
                 count = 0;
                 break;
             }
@@ -698,7 +698,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
                 if (SDL_SeekIO(rresFile, infos[i].nextOffset, SDL_IO_SEEK_SET) == -1)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
-                    RRES_FREE(infos);
+                    RC2D_free(infos);
                     count = 0;
                     break;
                 }
@@ -708,7 +708,7 @@ RRESAPI rresResourceChunkInfo *rresLoadResourceChunkInfoAll(const char *fileName
                 if (SDL_SeekIO(rresFile, infos[i].packedSize, SDL_IO_SEEK_CUR) == -1)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to seek to next chunk: %s\n", SDL_GetError());
-                    RRES_FREE(infos);
+                    RC2D_free(infos);
                     count = 0;
                     break;
                 }
@@ -773,7 +773,7 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
             {
                 RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory found at offset: 0x%08x\n", header.cdOffset);
 
-                void *data = RRES_MALLOC(info.packedSize);
+                void *data = RC2D_malloc(info.packedSize);
                 if (data == NULL)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for central directory data\n");
@@ -784,24 +784,24 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
                 if (SDL_ReadIO(rresFile, data, info.packedSize) != info.packedSize)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to read central directory data: %s\n", SDL_GetError());
-                    RRES_FREE(data);
+                    RC2D_free(data);
                     SDL_CloseIO(rresFile);
                     return dir;
                 }
 
                 rresResourceChunkData chunkData = rresLoadResourceChunkData(info, data);
-                RRES_FREE(data);
+                RC2D_free(data);
 
                 dir.count = chunkData.props[0];
                 RC2D_log(RC2D_LOG_INFO, "RRES: CDIR: Central Directory file entries count: %i\n", dir.count);
 
                 unsigned char *ptr = (unsigned char *)chunkData.raw;
-                dir.entries = (rresDirEntry *)RRES_CALLOC(dir.count, sizeof(rresDirEntry));
+                dir.entries = (rresDirEntry *)RC2D_calloc(dir.count, sizeof(rresDirEntry));
                 if (dir.entries == NULL)
                 {
                     RC2D_log(RC2D_LOG_WARN, "RRES: WARNING: Failed to allocate memory for directory entries\n");
-                    RRES_FREE(chunkData.props);
-                    RRES_FREE(chunkData.raw);
+                    RC2D_free(chunkData.props);
+                    RC2D_free(chunkData.raw);
                     SDL_CloseIO(rresFile);
                     return dir;
                 }
@@ -811,12 +811,12 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
                     dir.entries[i].id = ((int *)ptr)[0];
                     dir.entries[i].offset = ((int *)ptr)[1];
                     dir.entries[i].fileNameSize = ((int *)ptr)[3];
-                    memcpy(dir.entries[i].fileName, ptr + 16, dir.entries[i].fileNameSize);
+                    SDL_memcpy(dir.entries[i].fileName, ptr + 16, dir.entries[i].fileNameSize);
                     ptr += (16 + dir.entries[i].fileNameSize);
                 }
 
-                RRES_FREE(chunkData.props);
-                RRES_FREE(chunkData.raw);
+                RC2D_free(chunkData.props);
+                RC2D_free(chunkData.raw);
             }
         }
     }
@@ -833,7 +833,7 @@ rresCentralDir rresLoadCentralDirectory(const char *fileName)
 
 void rresUnloadCentralDirectory(rresCentralDir dir)
 {
-    RRES_FREE(dir.entries);
+    RC2D_free(dir.entries);
 }
 
 unsigned int rresGetDataType(const unsigned char *fourCC)
@@ -842,15 +842,15 @@ unsigned int rresGetDataType(const unsigned char *fourCC)
 
     if (fourCC != NULL)
     {
-        if (memcmp(fourCC, "NULL", 4) == 0) type = RRES_DATA_NULL;
-        else if (memcmp(fourCC, "RAWD", 4) == 0) type = RRES_DATA_RAW;
-        else if (memcmp(fourCC, "TEXT", 4) == 0) type = RRES_DATA_TEXT;
-        else if (memcmp(fourCC, "IMGE", 4) == 0) type = RRES_DATA_IMAGE;
-        else if (memcmp(fourCC, "WAVE", 4) == 0) type = RRES_DATA_WAVE;
-        else if (memcmp(fourCC, "VRTX", 4) == 0) type = RRES_DATA_VERTEX;
-        else if (memcmp(fourCC, "FNTG", 4) == 0) type = RRES_DATA_FONT_GLYPHS;
-        else if (memcmp(fourCC, "LINK", 4) == 0) type = RRES_DATA_LINK;
-        else if (memcmp(fourCC, "CDIR", 4) == 0) type = RRES_DATA_DIRECTORY;
+        if (SDL_memcmp(fourCC, "NULL", 4) == 0) type = RRES_DATA_NULL;
+        else if (SDL_memcmp(fourCC, "RAWD", 4) == 0) type = RRES_DATA_RAW;
+        else if (SDL_memcmp(fourCC, "TEXT", 4) == 0) type = RRES_DATA_TEXT;
+        else if (SDL_memcmp(fourCC, "IMGE", 4) == 0) type = RRES_DATA_IMAGE;
+        else if (SDL_memcmp(fourCC, "WAVE", 4) == 0) type = RRES_DATA_WAVE;
+        else if (SDL_memcmp(fourCC, "VRTX", 4) == 0) type = RRES_DATA_VERTEX;
+        else if (SDL_memcmp(fourCC, "FNTG", 4) == 0) type = RRES_DATA_FONT_GLYPHS;
+        else if (SDL_memcmp(fourCC, "LINK", 4) == 0) type = RRES_DATA_LINK;
+        else if (SDL_memcmp(fourCC, "CDIR", 4) == 0) type = RRES_DATA_DIRECTORY;
     }
 
     return type;
@@ -863,7 +863,7 @@ int rresGetResourceId(rresCentralDir dir, const char *fileName)
     for (unsigned int i = 0; i < dir.count; i++)
     {
         unsigned int len = (unsigned int)strlen(fileName);
-        if (strncmp((const char *)dir.entries[i].fileName, fileName, len) == 0)
+        if (SDL_strncmp((const char *)dir.entries[i].fileName, fileName, len) == 0)
         {
             id = dir.entries[i].id;
             break;
@@ -940,21 +940,21 @@ static rresResourceChunkData rresLoadResourceChunkData(rresResourceChunkInfo inf
 
             if (chunkData.propCount > 0)
             {
-                chunkData.props = (unsigned int *)RRES_CALLOC(chunkData.propCount, sizeof(unsigned int));
+                chunkData.props = (unsigned int *)RC2D_calloc(chunkData.propCount, sizeof(unsigned int));
                 for (unsigned int i = 0; i < chunkData.propCount; i++)
                     chunkData.props[i] = ((unsigned int *)data)[i + 1];
             }
 
             int rawSize = info.baseSize - sizeof(int) - (chunkData.propCount * sizeof(int));
-            chunkData.raw = RRES_MALLOC(rawSize);
+            chunkData.raw = RC2D_malloc(rawSize);
             if (chunkData.raw != NULL)
-                memcpy(chunkData.raw, ((unsigned char *)data) + sizeof(int) + (chunkData.propCount * sizeof(int)), rawSize);
+                SDL_memcpy(chunkData.raw, ((unsigned char *)data) + sizeof(int) + (chunkData.propCount * sizeof(int)), rawSize);
         }
         else
         {
-            chunkData.raw = RRES_MALLOC(info.packedSize);
+            chunkData.raw = RC2D_malloc(info.packedSize);
             if (chunkData.raw != NULL)
-                memcpy(chunkData.raw, (unsigned char *)data, info.packedSize);
+                SDL_memcpy(chunkData.raw, (unsigned char *)data, info.packedSize);
         }
     }
 
