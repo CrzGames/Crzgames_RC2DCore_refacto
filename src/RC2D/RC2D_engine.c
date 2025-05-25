@@ -1633,7 +1633,7 @@ static bool rc2d_engine(void)
      * et les utiliser dès le début de l'application.
      */
     rc2d_assert_init();
-
+    
     /**
      * Set les informations de l'application.
      * Dois toujours etre fait avant d'initialiser SDL3

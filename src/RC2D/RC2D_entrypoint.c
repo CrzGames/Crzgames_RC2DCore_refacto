@@ -16,6 +16,7 @@
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_logger.h>
 #include <RC2D/RC2D_graphics.h>
+#include <RC2D/RC2D_memory.h>
 
 /**
  * SDL3 Callback: Initialisation
@@ -174,6 +175,13 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     {
         rc2d_engine_state.config->callbacks->rc2d_unload();
     }
+
+    /**
+     * Affiche un rapport des fuites mémoire détectées.
+     * Cela est utile pour identifier les fuites de mémoire dans l'application.
+     * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
+     */
+    RC2D_memory_report();
 
     /**
      * Si le résultat est SDL_APP_FAILURE, cela signifie que l'application a échoué 

@@ -15,6 +15,9 @@ set(CMAKE_C_STANDARD 99)
 # Cela signifie que le compilateur doit respecter la version C standard spécifiée
 set(CMAKE_C_STANDARD_REQUIRED True)
 
+# Option pour activer le débogage mémoire, pour savoir les fuites de mémoire si il manque des free()
+option(RC2D_MEMORY_DEBUG_ENABLED "Enable RC2D memory debug tracking (realloc/malloc/free.. wrappers)" ON)
+
 # Option pour activer la compilation des shaders en ligne (hot reload) pour SDL3_shadercross
 option(RC2D_GPU_SHADER_HOT_RELOAD_ENABLED "Enable hot reload shaders with SDL3_shadercross" ON)
 
@@ -644,6 +647,12 @@ function(rc2d_target_compile_definitions target_name)
     target_compile_definitions(${target_name} PRIVATE RC2D_ONNX_MODULE_ENABLED=1)
   else()
     target_compile_definitions(${target_name} PRIVATE RC2D_ONNX_MODULE_ENABLED=0)
+  endif()
+
+  if (RC2D_MEMORY_DEBUG_ENABLED)
+    target_compile_definitions(${target_name} PRIVATE RC2D_MEMORY_DEBUG_ENABLED=1)
+  else()
+    target_compile_definitions(${target_name} PRIVATE RC2D_MEMORY_DEBUG_ENABLED=0)
   endif()
 endfunction()
 
