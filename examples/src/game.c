@@ -2,6 +2,7 @@
 
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_internal.h>
+#include <RC2D/RC2D_memory.h>
 
 static RC2D_GPUComputePipeline* computeShader;
 static RC2D_GPUShader* fragmentShader;
