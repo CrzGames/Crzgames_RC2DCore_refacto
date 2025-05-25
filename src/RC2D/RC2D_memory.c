@@ -68,23 +68,6 @@ static void remove_allocation(void* ptr)
     }
 }
 
-/**
- * \brief Alloue dynamiquement un bloc de mémoire avec suivi de débogage.
- *
- * Cette fonction alloue un bloc de mémoire de la taille spécifiée via `RC2D_malloc` et enregistre
- * les informations de débogage (fichier, ligne, fonction) si `RC2D_MEMORY_DEBUG_ENABLED` est activé.
- *
- * \param size Taille du bloc de mémoire à allouer (en octets).
- * \param file Nom du fichier source où l'allocation est effectuée.
- * \param line Numéro de ligne dans le fichier source.
- * \param func Nom de la fonction appelante.
- *
- * \return Pointeur vers le bloc de mémoire alloué, ou NULL en cas d'échec.
- *
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 void* rc2d_malloc_debug(size_t size, const char* file, int line, const char* func) 
 {
     void* ptr = SDL_malloc(size);
@@ -96,25 +79,6 @@ void* rc2d_malloc_debug(size_t size, const char* file, int line, const char* fun
     return ptr;
 }
 
-/**
- * \brief Alloue et initialise un bloc de mémoire avec suivi de débogage.
- *
- * Cette fonction alloue un bloc de mémoire pour `nmemb` éléments de taille `size` via `SDL_calloc`,
- * initialise tous les octets à zéro, et enregistre les informations de débogage si
- * `RC2D_MEMORY_DEBUG_ENABLED` est activé.
- *
- * \param nmemb Nombre d'éléments à allouer.
- * \param size Taille de chaque élément (en octets).
- * \param file Nom du fichier source où l'allocation est effectuée.
- * \param line Numéro de ligne dans le fichier source.
- * \param func Nom de la fonction appelante.
- *
- * \return Pointeur vers le bloc de mémoire alloué et initialisé, ou NULL en cas d'échec.
- *
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 void* rc2d_calloc_debug(size_t nmemb, size_t size, const char* file, int line, const char* func) 
 {
     void* ptr = SDL_calloc(nmemb, size);
@@ -126,25 +90,6 @@ void* rc2d_calloc_debug(size_t nmemb, size_t size, const char* file, int line, c
     return ptr;
 }
 
-/**
- * \brief Réalloue un bloc de mémoire avec suivi de débogage.
- *
- * Cette fonction redimensionne un bloc de mémoire précédemment alloué via `SDL_realloc` et met à jour
- * les informations de débogage si `RC2D_MEMORY_DEBUG_ENABLED` est activé. Si `ptr` est NULL, elle
- * se comporte comme `RC2D_malloc_debug`. Si `size` est 0, elle libère le bloc.
- *
- * \param ptr Pointeur vers le bloc de mémoire à réallouer.
- * \param size Nouvelle taille du bloc de mémoire (en octets).
- * \param file Nom du fichier source où l'allocation est effectuée.
- * \param line Numéro de ligne dans le fichier source.
- * \param func Nom de la fonction appelante.
- *
- * \return Pointeur vers le bloc de mémoire réalloué, ou NULL en cas d'échec.
- *
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 void* rc2d_realloc_debug(void* ptr, size_t size, const char* file, int line, const char* func) 
 {
     if (ptr) 
@@ -161,22 +106,6 @@ void* rc2d_realloc_debug(void* ptr, size_t size, const char* file, int line, con
     return new_ptr;
 }
 
-/**
- * \brief Libère un bloc de mémoire avec suivi de débogage.
- *
- * Cette fonction libère un bloc de mémoire précédemment alloué via `RC2D_free` et supprime les
- * informations de débogage associées si `RC2D_MEMORY_DEBUG_ENABLED` est activé. Si `ptr` est NULL,
- * la fonction ne fait rien.
- *
- * \param ptr Pointeur vers le bloc de mémoire à libérer.
- * \param file Nom du fichier source où la libération est effectuée.
- * \param line Numéro de ligne dans le fichier source.
- * \param func Nom de la fonction appelante.
- *
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 void rc2d_free_debug(void* ptr, const char* file, int line, const char* func) 
 {
     if (ptr) 
@@ -186,23 +115,6 @@ void rc2d_free_debug(void* ptr, const char* file, int line, const char* func)
     }
 }
 
-/**
- * \brief Duplique une chaîne de caractères avec suivi de débogage.
- *
- * Cette fonction alloue un nouveau bloc de mémoire pour dupliquer la chaîne `str` via `SDL_strdup`
- * et enregistre les informations de débogage si `RC2D_MEMORY_DEBUG_ENABLED` est activé.
- *
- * \param str Chaîne de caractères à dupliquer.
- * \param file Nom du fichier source où l'allocation est effectuée.
- * \param line Numéro de ligne dans le fichier source.
- * \param func Nom de la fonction appelante.
- *
- * \return Pointeur vers la nouvelle chaîne dupliquée, ou NULL en cas d'échec.
- *
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 char* rc2d_strdup_debug(const char* str, const char* file, int line, const char* func) 
 {
     char* ptr = SDL_strdup(str);
@@ -214,25 +126,6 @@ char* rc2d_strdup_debug(const char* str, const char* file, int line, const char*
     return ptr;
 }
 
-/**
- * \brief Duplique une portion d'une chaîne de caractères avec suivi de débogage.
- *
- * Cette fonction alloue un nouveau bloc de mémoire pour dupliquer jusqu'à `n` caractères de la chaîne
- * `str` via `SDL_strndup` et enregistre les informations de débogage si `RC2D_MEMORY_DEBUG_ENABLED`
- * est activé.
- *
- * \param str Chaîne de caractères à dupliquer.
- * \param n Nombre maximum de caractères à dupliquer.
- * \param file Nom du fichier source où l'allocation est effectuée.
- * \param line Numéro de ligne dans le fichier source.
- * \param func Nom de la fonction appelante.
- *
- * \return Pointeur vers la nouvelle chaîne dupliquée, ou NULL en cas d'échec.
- *
- * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
 char* rc2d_strndup_debug(const char* str, size_t n, const char* file, int line, const char* func) 
 {
     char* ptr = SDL_strndup(str, n);
