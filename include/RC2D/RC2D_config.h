@@ -86,7 +86,7 @@ extern "C" {
  * avec des métadonnées supplémentaires, telles que le fichier source, la ligne, et la fonction appelante.
  *
  * Cela permet de générer un rapport complet des fuites mémoire (pointeurs non libérés) à la fin de l'exécution
- * du programme ou à la demande via la fonction `RC2D_memory_report()`. Le rapport inclut des informations
+ * du programme ou à la demande via la fonction `rc2d_memory_report()`. Le rapport inclut des informations
  * détaillées sur chaque allocation non libérée, facilitant le débogage des problèmes de gestion de mémoire.
  *
  * \note Cette fonctionnalité est destinée exclusivement au développement ou au débogage, car elle entraîne
@@ -98,8 +98,8 @@ extern "C" {
  *   RC2D (`RC2D_malloc`, `RC2D_free`, etc.).
  * - Activez la macro en définissant `RC2D_MEMORY_DEBUG_ENABLED` à 1 dans votre configuration.
  * - À la fin de l'exécution du programme, un rapport des fuites mémoire est automatiquement affiché
- *   (via un appel à `RC2D_memory_report()` enregistré avec `atexit`), ou vous pouvez appeler manuellement
- *   `RC2D_memory_report()` pour un rapport à un moment spécifique.
+ *   (via un appel à `rc2d_memory_report()` enregistré avec `atexit`), ou vous pouvez appeler manuellement
+ *   `rc2d_memory_report()` pour un rapport à un moment spécifique.
  *
  * \warning L'activation de cette fonctionnalité augmente la consommation de mémoire, car chaque allocation
  * est accompagnée d'une structure de suivi. De plus, les performances peuvent être légèrement dégradées

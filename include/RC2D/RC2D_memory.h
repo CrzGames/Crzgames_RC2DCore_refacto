@@ -52,7 +52,7 @@
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void RC2D_memory_report(void);
+void rc2d_memory_report(void);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus

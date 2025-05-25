@@ -181,7 +181,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
      * Cela est utile pour identifier les fuites de mémoire dans l'application.
      * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
      */
-    RC2D_memory_report();
+    rc2d_memory_report();
 
     /**
      * Si le résultat est SDL_APP_FAILURE, cela signifie que l'application a échoué 
