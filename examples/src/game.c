@@ -22,6 +22,14 @@ void rc2d_unload(void)
     RC2D_log(RC2D_LOG_INFO, "My game is unloading...\n");
 
     /* Libérer les ressources allouées */
+    if (graphicsPipeline.vertex_shader_filename) {
+        RC2D_free(graphicsPipeline.vertex_shader_filename); 
+        graphicsPipeline.vertex_shader_filename = NULL;
+    }
+    if (graphicsPipeline.fragment_shader_filename) {
+        RC2D_free(graphicsPipeline.fragment_shader_filename);
+        graphicsPipeline.fragment_shader_filename = NULL;
+    }
     if (graphicsPipeline.pipeline) {
         SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), graphicsPipeline.pipeline);
         graphicsPipeline.pipeline = NULL;
