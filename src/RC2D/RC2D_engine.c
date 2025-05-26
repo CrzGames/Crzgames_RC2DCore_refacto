@@ -1887,6 +1887,7 @@ void rc2d_engine_quit(void)
      * 
      * Affiche un rapport des fuites mémoire détectées.
      * Cela est utile pour identifier les fuites de mémoire dans l'application.
+     * 
      * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
      */
     rc2d_memory_report();
