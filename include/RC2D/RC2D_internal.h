@@ -12,7 +12,7 @@
 /**
  * IMPORTANT : 
  * Module interne de la bibliothèque RC2D.
- * Pour ne pas exposer certaines fonctions et variables à l'utilisateur final.
+ * Pour ne pas exposer certaines fonctions, struct, enums et variables à l'utilisateur final.
  */
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
