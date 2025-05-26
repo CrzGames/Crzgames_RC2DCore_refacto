@@ -1082,6 +1082,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
              * Cela est nécessaire pour s'assurer que le rendu s'adapte correctement à la nouvelle orientation.
              */
             rc2d_engine_calculate_renderscale_and_gpuviewport();
+            rc2d_engine_update_fps_based_on_monitor();
 
             RC2D_DisplayOrientation newOrientation = rc2d_window_getDisplayOrientation();
             rc2d_engine_state.config->callbacks->rc2d_monitororientationchanged(event->display.displayID, newOrientation);
@@ -1162,13 +1163,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     else if (event->type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED)
     {
         rc2d_engine_calculate_renderscale_and_gpuviewport();
-    }
-
-    // Quand le content scale de l'affichage change
-    else if (event->type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
-    {
-        // Met à jour le viewport GPU et le render scale
-        rc2d_engine_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_update_fps_based_on_monitor();
     }
 
     // Window HDR State changed
@@ -1234,6 +1229,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * on indique que le viewport du gpu et render scale doit être recalculé.
          */
         rc2d_engine_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_update_fps_based_on_monitor();
     }
 
     // Window enter fullscreen
@@ -1295,6 +1291,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_engine_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_update_fps_based_on_monitor();
     }
 
     // Window display scale changed
@@ -1305,6 +1302,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_engine_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_update_fps_based_on_monitor();
     }
 
     // Window Occluded
@@ -1327,6 +1325,7 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * et on indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_engine_calculate_renderscale_and_gpuviewport();
+        rc2d_engine_update_fps_based_on_monitor();
 
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
