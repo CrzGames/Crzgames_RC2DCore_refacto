@@ -979,52 +979,56 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     // Le presse-papiers ou la sélection principale a changé
     else if (event->type == SDL_EVENT_CLIPBOARD_UPDATE)
     {
-        /*if (rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_clipboardupdated != NULL) 
+        if (rc2d_engine_state.config != NULL &&
+            rc2d_engine_state.config->callbacks != NULL &&
+            rc2d_engine_state.config->callbacks->rc2d_clipboardupdated != NULL)
         {
-            rc2d_engine_state.config->callbacks->rc2d_clipboardupdated();
-        }*/
-    }
+            const SDL_ClipboardEvent* e = &event->clipboard;
 
-    // Un nouvel appareil photo est disponible
-    /*else if (event->type == SDL_EVENT_CAMERA_DEVICE_ADDED)
-    {
-        if (rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_cameraadded != NULL) 
-        {
-            rc2d_engine_state.config->callbacks->rc2d_cameraadded(event->camera.deviceID);
+            RC2D_ClipboardEventInfo info = {
+                .is_owner = e->owner,
+                .num_mime_types = e->num_mime_types,
+                .mime_types = e->mime_types
+            };
+
+            rc2d_engine_state.config->callbacks->rc2d_clipboardupdated(&info);
         }
     }
 
-    // Un appareil photo a été retiré
-    else if (event->type == SDL_EVENT_CAMERA_DEVICE_REMOVED)
+    else if (event->type == SDL_EVENT_CAMERA_DEVICE_ADDED ||
+            event->type == SDL_EVENT_CAMERA_DEVICE_REMOVED ||
+            event->type == SDL_EVENT_CAMERA_DEVICE_APPROVED ||
+            event->type == SDL_EVENT_CAMERA_DEVICE_DENIED)
     {
-        if (rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_cameraremoved != NULL) 
+        const SDL_CameraDeviceEvent* e = &event->cdevice;
+
+        RC2D_CameraEventInfo info = {
+            .deviceID = e->which
+        };
+
+        if (rc2d_engine_state.config && rc2d_engine_state.config->callbacks) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_cameraremoved(event->camera.deviceID);
+            switch (event->type) 
+            {
+                case SDL_EVENT_CAMERA_DEVICE_ADDED:
+                    if (rc2d_engine_state.config->callbacks->rc2d_cameraadded)
+                        rc2d_engine_state.config->callbacks->rc2d_cameraadded(&info);
+                    break;
+                case SDL_EVENT_CAMERA_DEVICE_REMOVED:
+                    if (rc2d_engine_state.config->callbacks->rc2d_cameraremoved)
+                        rc2d_engine_state.config->callbacks->rc2d_cameraremoved(&info);
+                    break;
+                case SDL_EVENT_CAMERA_DEVICE_APPROVED:
+                    if (rc2d_engine_state.config->callbacks->rc2d_cameraapproved)
+                        rc2d_engine_state.config->callbacks->rc2d_cameraapproved(&info);
+                    break;
+                case SDL_EVENT_CAMERA_DEVICE_DENIED:
+                    if (rc2d_engine_state.config->callbacks->rc2d_cameradenied)
+                        rc2d_engine_state.config->callbacks->rc2d_cameradenied(&info);
+                    break;
+            }
         }
     }
-
-    // Un appareil photo a été approuvé pour être utilisé par l'utilisateur.
-    else if (event->type == SDL_EVENT_CAMERA_DEVICE_APPROVED)
-    {
-        if (rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_cameraapproved != NULL) 
-        {
-            rc2d_engine_state.config->callbacks->rc2d_cameraapproved(event->camera.deviceID);
-        }
-    }
-
-    // L'utilisation d'un appareil photo a été refusée à l'utilisateur.
-    else if (event->type == SDL_EVENT_CAMERA_DEVICE_DENIED)
-    {
-        if (rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_cameradenied != NULL) 
-        {
-            rc2d_engine_state.config->callbacks->rc2d_cameradenied(event->camera.deviceID);
-        }
-    }*/
 
     else if (event->type == SDL_EVENT_WILL_ENTER_FOREGROUND) 
     {
@@ -1057,24 +1061,29 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     // La préférence de la langue locale a changé
     else if (event->type == SDL_EVENT_LOCALE_CHANGED)
     {
-        /*if (rc2d_engine_state.config != NULL && 
-            rc2d_engine_state.config->callbacks != NULL && 
+        if (rc2d_engine_state.config != NULL &&
+            rc2d_engine_state.config->callbacks != NULL &&
             rc2d_engine_state.config->callbacks->rc2d_localechanged != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_localechanged();
-        }*/
+            RC2D_Locale* locales = rc2d_local_getPreferredLocales();
+            rc2d_engine_state.config->callbacks->rc2d_localechanged(locales);
+            rc2d_local_freeLocales(locales);
+        }
     }
 
+    // Quand l'orientation de l'affichage change
     else if (event->type == SDL_EVENT_DISPLAY_ORIENTATION) 
     {
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged(event->display.orientation);
-        }*/
+            RC2D_DisplayOrientation newOrientation = rc2d_window_getDisplayOrientation();
+            rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged(newOrientation);
+        }
     }
 
+    // Quand le content scale de l'affichage change
     else if (event->type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED) 
     {
         // Met à jour le viewport GPU et le render scale
@@ -1091,52 +1100,48 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         }
     }
 
-    // Touch moved
-    else if (event->type == SDL_EVENT_FINGER_MOTION) 
+    else if (event->type == SDL_EVENT_FINGER_DOWN ||
+            event->type == SDL_EVENT_FINGER_UP ||
+            event->type == SDL_EVENT_FINGER_MOTION ||
+            event->type == SDL_EVENT_FINGER_CANCELED)
     {
-        /*if (rc2d_engine_state.config != NULL && 
-            rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_touchmoved != NULL) 
+        const SDL_TouchFingerEvent* e = &event->tfinger;
+
+        RC2D_TouchEventInfo info = {
+            .touchID = e->touchID,
+            .fingerID = e->fingerID,
+            .x = e->x,
+            .y = e->y,
+            .dx = e->dx,
+            .dy = e->dy,
+            .pressure = e->pressure
+        };
+
+        if (rc2d_engine_state.config && rc2d_engine_state.config->callbacks)
         {
-            rc2d_engine_state.config->callbacks->rc2d_touchmoved(event->tfinger.touchId, event->tfinger.fingerId,
-                                                                event->tfinger.x, event->tfinger.y,
-                                                                event->tfinger.dx, event->tfinger.dy);
+            switch (event->type) 
+            {
+                case SDL_EVENT_FINGER_DOWN:
+                    if (rc2d_engine_state.config->callbacks->rc2d_touchpressed)
+                        rc2d_engine_state.config->callbacks->rc2d_touchpressed(&info);
+                    break;
+                case SDL_EVENT_FINGER_UP:
+                    if (rc2d_engine_state.config->callbacks->rc2d_touchreleased)
+                        rc2d_engine_state.config->callbacks->rc2d_touchreleased(&info);
+                    break;
+                case SDL_EVENT_FINGER_MOTION:
+                    if (rc2d_engine_state.config->callbacks->rc2d_touchmoved)
+                        rc2d_engine_state.config->callbacks->rc2d_touchmoved(&info);
+                    break;
+                case SDL_EVENT_FINGER_CANCELED:
+                    if (rc2d_engine_state.config->callbacks->rc2d_touchcanceled)
+                        rc2d_engine_state.config->callbacks->rc2d_touchcanceled(&info);
+                    break;
+            }
         }
 
-        // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(event->tfinger.fingerId, SDL_EVENT_FINGER_MOTION, event->tfinger.pressure, event->tfinger.x, event->tfinger.y);*/
-    }
-
-    // Touch pressed
-    else if (event->type == SDL_EVENT_FINGER_DOWN) 
-    {
-        /*if (rc2d_engine_state.config != NULL && 
-            rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_touchpressed != NULL) 
-        {
-            rc2d_engine_state.config->callbacks->rc2d_touchpressed(event->tfinger.touchId, event->tfinger.fingerId,
-                                                                  event->tfinger.x, event->tfinger.y,
-                                                                  event->tfinger.pressure);
-        }
-
-        // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(event->tfinger.fingerId, SDL_EVENT_FINGER_DOWN, event->tfinger.pressure, event->tfinger.x, event->tfinger.y);*/
-    }
-
-    // Touch released
-    else if (event->type == SDL_EVENT_FINGER_UP) 
-    {
-        /*if (rc2d_engine_state.config != NULL && 
-            rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_touchreleased != NULL) 
-        {
-            rc2d_engine_state.config->callbacks->rc2d_touchreleased(event->tfinger.touchId, event->tfinger.fingerId,
-                                                                   event->tfinger.x, event->tfinger.y,
-                                                                   event->tfinger.pressure);
-        }
-
-        // Mettre à jour l'état des pressions tactiles
-        rc2d_touch_updateState(event->tfinger.fingerId, SDL_EVENT_FINGER_UP, 0.0f, 0.0f, 0.0f);*/
+        // (facultatif) mise à jour de l’état du toucher :
+        rc2d_touch_updateState(info.fingerID, event->type, info.pressure, info.x, info.y);
     }
 
     // Window safe area changed

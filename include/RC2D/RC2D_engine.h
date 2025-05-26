@@ -2,6 +2,10 @@
 #define RC2D_ENGINE_H
 
 #include <RC2D/RC2D_gpu.h>
+#include <RC2D/RC2D_window.h>
+#include <RC2D/RC2D_local.h>
+
+#include <SDL3/SDL_touch.h>
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
@@ -135,6 +139,131 @@ typedef struct RC2D_AppInfo {
 } RC2D_AppInfo;
 
 /**
+ * \brief Informations relatives à un événement de mise à jour du presse-papiers.
+ * 
+ * Cette structure contient les informations transmises à la callback `rc2d_clipboardupdated`
+ * lorsqu'un changement du presse-papiers est détecté.
+ * Elle permet à l'utilisateur de savoir si le changement vient de son propre programme,
+ * et d'accéder à la liste des types MIME actuellement disponibles dans le presse-papiers.
+ * 
+ * \note Cette structure est construite à partir de `SDL_ClipboardEvent` introduite dans SDL 3.2.0.
+ * Elle n’inclut que les champs les plus utiles pour l’utilisateur final.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_clipboardupdated
+ */
+typedef struct RC2D_ClipboardEventInfo {
+    /**
+     * Indique si l’application actuelle est à l’origine de la mise à jour du presse-papiers.
+     * 
+     * - `true` : la mise à jour du presse-papiers provient de l’application elle-même
+     * - `false` : la mise à jour provient d’un autre programme (copie externe)
+     */
+    bool is_owner;
+
+    /**
+     * Nombre total de types MIME actuellement disponibles dans le presse-papiers.
+     * 
+     * Par exemple :
+     * - 1 pour `"text/plain"`
+     * - 2 pour `"text/plain"` + `"text/html"`
+     */
+    int num_mime_types;
+
+    /**
+     * Tableau de chaînes représentant les types MIME disponibles dans le presse-papiers.
+     * 
+     * Ce tableau est uniquement valide pendant la durée de l’événement.
+     * Il ne doit **pas** être modifié ou libéré par l’utilisateur.
+     *
+     * \note Ce tableau peut être NULL si `num_mime_types` vaut 0.
+     *
+     * Exemples de valeurs possibles :
+     * - `"text/plain"`
+     * - `"text/html"`
+     * - `"image/png"`
+     */
+    const char** mime_types;
+} RC2D_ClipboardEventInfo;
+
+/**
+ * \brief Informations relatives à un événement concernant un appareil photo.
+ * 
+ * Cette structure est transmise aux callbacks suivantes :
+ * - `rc2d_cameraadded`
+ * - `rc2d_cameraremoved`
+ * - `rc2d_cameraapproved`
+ * - `rc2d_cameradenied`
+ * 
+ * Elle permet d’identifier précisément l’appareil photo concerné par l’événement.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ * 
+ * \see rc2d_cameraadded
+ * \see rc2d_cameraremoved
+ * \see rc2d_cameraapproved
+ * \see rc2d_cameradenied
+ */
+typedef struct RC2D_CameraEventInfo {
+    /**
+     * Identifiant unique de l’appareil photo concerné.
+     * 
+     * \note Cet identifiant est stable tant que l'appareil reste connecté.
+     */
+    SDL_CameraID deviceID;
+} RC2D_CameraEventInfo;
+
+/**
+ * \brief Informations relatives à un événement tactile.
+ * 
+ * Cette structure représente les données d’un toucher (appui, déplacement, relâchement, annulation),
+ * en provenance d’un écran tactile ou d’un trackpad.
+ * 
+ * Les coordonnées sont normalisées dans la fenêtre entre 0.0f et 1.0f.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_TouchEventInfo {
+    /**
+     * Identifiant du périphérique tactile (écran, trackpad...).
+     */
+    SDL_TouchID touchID;
+
+    /**
+     * Identifiant du doigt ou point de contact.
+     */
+    SDL_FingerID fingerID;
+
+    /**
+     * Position X normalisée dans la fenêtre (0.0f = gauche, 1.0f = droite).
+     */
+    float x;
+
+    /**
+     * Position Y normalisée dans la fenêtre (0.0f = haut, 1.0f = bas).
+     */
+    float y;
+
+    /**
+     * Déplacement relatif en X depuis le dernier événement.
+     * Valeur normalisée entre -1.0f et 1.0f.
+     */
+    float dx;
+
+    /**
+     * Déplacement relatif en Y depuis le dernier événement.
+     * Valeur normalisée entre -1.0f et 1.0f.
+     */
+    float dy;
+
+    /**
+     * Pression normalisée (entre 0.0f et 1.0f).
+     */
+    float pressure;
+} RC2D_TouchEventInfo;
+
+/**
  * Structure représentant les fonctions de rappel pour l'API Engine.
  * @typedef {struct} RC2D_Callbacks
  * @property {function} rc2d_unload - Fonction appelée lors du déchargement du jeu.
@@ -195,11 +324,6 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_mousereleased)(int x, int y, const char* button, int presses);
     void (*rc2d_wheelmoved)(const char* scroll);
 
-    // Touch Callbacks -> TODO: A revoir
-    /*void (*rc2d_touchmoved)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float dx, float dy);
-    void (*rc2d_touchpressed)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float pressure);
-    void (*rc2d_touchreleased)(SDL_TouchID touchID, SDL_FingerID fingerID, float x, float y, float pressure);*/
-
     // Gamepad and Joystick Callbacks -> TODO: A revoir
     /*void (*rc2d_gamepadaxis)(SDL_JoystickID joystick, Uint8 axis, float value);
     void (*rc2d_gamepadpressed)(SDL_JoystickID joystick, Uint8 button);
@@ -233,6 +357,154 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_windowclosed)(void);
     void (*rc2d_windowtakefocus)(void);
     void (*rc2d_windowhittest)(void);
+
+
+    // ------------- Touch Callbacks ------------- //
+    /**
+     * \brief Appelée lorsqu’un toucher est déplacé sur l’écran.
+     * 
+     * Cette fonction permet de suivre le mouvement d’un doigt sur l’écran tactile
+     * ou sur un trackpad multitouch.
+     * 
+     * \param info Données relatives au mouvement du toucher.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TouchEventInfo
+     */
+    void (*rc2d_touchmoved)(const RC2D_TouchEventInfo* info);
+
+    /**
+     * \brief Appelée lorsqu’un doigt touche l’écran.
+     * 
+     * Cette fonction est déclenchée au moment du contact initial d’un doigt
+     * avec la surface tactile.
+     * 
+     * \param info Données relatives à l’appui.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TouchEventInfo
+     */
+    void (*rc2d_touchpressed)(const RC2D_TouchEventInfo* info);
+
+    /**
+     * \brief Appelée lorsqu’un doigt est relâché de l’écran.
+     * 
+     * Elle permet de détecter la fin d’un contact tactile.
+     * 
+     * \param info Données relatives au relâchement.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TouchEventInfo
+     */
+    void (*rc2d_touchreleased)(const RC2D_TouchEventInfo* info);
+
+    /**
+     * \brief Appelée lorsqu’un toucher est annulé.
+     * 
+     * Cela peut se produire lors d’un changement de focus, d’une fermeture de fenêtre,
+     * ou d’un comportement système particulier (ex : appel système, app en arrière-plan).
+     * 
+     * \param info Données relatives à l’annulation du contact.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TouchEventInfo
+     */
+    void (*rc2d_touchcanceled)(const RC2D_TouchEventInfo* info);
+
+
+    // -------------- Display Callbacks ------------- //
+    /**
+     * \brief Appelée lorsqu’un changement d’orientation de l’affichage est détecté.
+     * 
+     * Cette fonction permet de réagir à une rotation de l’écran (portrait, paysage, etc.),
+     * utile sur mobile, tablette ou appareils à écran rotatif.
+     * 
+     * \param orientation Nouvelle orientation de l’affichage.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_DisplayOrientation
+     */
+    void (*rc2d_displayorientationchanged)(RC2D_DisplayOrientation orientation);
+
+
+    // ------------- Locale Callbacks ------------- //
+    /**
+     * \brief La préférence de la langue locale a changé.
+     * 
+     * Cette fonction est appelée lorsque l'utilisateur change la langue locale
+     * de l'application via les paramètres système.
+     * 
+     * \param locales Liste actuelle des locales préférées. 
+     * 
+     * \note Elle est allouée dynamiquement et doit être libérée avec `rc2d_local_freeLocales()`, mais cela
+     * est fait en interne par RC2D, après l'appel de cette fonction.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see rc2d_local_getPreferredLocales
+     * \see rc2d_local_freeLocales
+     */
+    void (*rc2d_localechanged)(RC2D_Locale* locales);
+
+    
+    // ------------- Clipboard Callbacks ------------- //
+    /**
+     * \brief Appelée lorsque le contenu du presse-papiers a changé ou la selection principale a changé.
+     * 
+     * \param info Informations sur le nouveau contenu du presse-papiers.
+     * Peut être `NULL` si aucune information supplémentaire n’est fournie.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_ClipboardInfo
+     */
+    void (*rc2d_clipboardupdated)(const RC2D_ClipboardEventInfo* info);
+
+
+    // ------------- Camera Callbacks ------------- //
+    /**
+     * \brief Callback appelée lorsqu’un nouvel appareil photo est détecté.
+     * 
+     * Cette fonction est appelée lorsqu’un nouveau périphérique caméra est disponible sur le système.
+     * 
+     * \param {RC2D_CameraEventInfo*} info - Informations sur l'appareil photo ajouté.
+     */
+    void (*rc2d_cameraadded)(const RC2D_CameraEventInfo* info);
+
+    /**
+     * \brief Callback appelée lorsqu’un appareil photo a été retiré du système.
+     * 
+     * Cette fonction permet de détecter la déconnexion d’un périphérique caméra.
+     * 
+     * \param {RC2D_CameraEventInfo*} info - Informations sur l'appareil photo supprimé.
+     */
+    void (*rc2d_cameraremoved)(const RC2D_CameraEventInfo* info);
+
+    /**
+     * \brief Callback appelée lorsque l’utilisateur autorise l’accès à une caméra.
+     * 
+     * Cela se produit lorsque l’utilisateur approuve une demande d’accès à la caméra,
+     * généralement via une fenêtre système ou une autorisation explicite.
+     * 
+     * \param {RC2D_CameraEventInfo*} info - Informations sur l'appareil photo autorisé.
+     */
+    void (*rc2d_cameraapproved)(const RC2D_CameraEventInfo* info);
+
+    /**
+     * \brief Callback appelée lorsque l’utilisateur refuse l’accès à une caméra.
+     * 
+     * Cette fonction permet de réagir à un refus d’autorisation (ex: permission système).
+     * 
+     * \param {RC2D_CameraEventInfo*} info - Informations sur l'appareil photo refusé.
+     */
+    void (*rc2d_cameradenied)(const RC2D_CameraEventInfo* info);
+
+
 } RC2D_EngineCallbacks;
 
 /**

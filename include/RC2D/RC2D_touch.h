@@ -1,36 +1,99 @@
 #ifndef RC2D_TOUCH_H
 #define RC2D_TOUCH_H
 
+#include <SDL3/SDL_touch.h>
+
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Structure représentant l'état des pressions tactiles.
- * @typedef {object} RC2D_TouchState
- * @property {number[]} touches - Tableau des identifiants des pressions tactiles.
- * @property {number[]} pressures - Tableau des valeurs de pression pour chaque pression tactile.
- * @property {number[]} x - Tableau des coordonnées x pour chaque pression tactile.
- * @property {number[]} y - Tableau des coordonnées y pour chaque pression tactile.
- * @property {number} numTouches - Nombre total de pressions tactiles enregistrées.
+ * \brief Données d'un point de contact tactile.
+ * 
+ * Chaque point représente un doigt ou un stylet actif sur un appareil tactile donné.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_TouchPoint {
+    SDL_FingerID fingerID; /**< Identifiant du doigt */
+    SDL_TouchID deviceID;  /**< Identifiant de l'appareil tactile */
+    float x;               /**< Position X normalisée (0.0 - 1.0) */
+    float y;               /**< Position Y normalisée (0.0 - 1.0) */
+    float pressure;        /**< Pression normalisée (0.0 - 1.0) */
+} RC2D_TouchPoint;
+
+/**
+ * \brief Etat tactile global.
+ * 
+ * Conserve tous les contacts tactiles actifs dans l'application.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_TouchState {
-    int* touches;
-    float* pressures;
-    float* x;
-    float* y;
-    int numTouches;
+    RC2D_TouchPoint* touches; /**< Liste dynamique de points de contact */
+    int numTouches;           /**< Nombre total de contacts actifs */
 } RC2D_TouchState;
 
-void rc2d_touch_updateState(const int fingerId, const int eventType, const float pressure, const float x, const float y); 
+/**
+ * \brief Met à jour l'état tactile avec un nouvel événement SDL.
+ * 
+ * \param deviceID Identifiant du périphérique tactile.
+ * \param fingerID Identifiant du doigt.
+ * \param eventType Type d'événement (DOWN, MOTION, UP).
+ * \param pressure Pression normale.
+ * \param x Position X normalisée.
+ * \param y Position Y normalisée.
+ * 
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_touch_updateState(SDL_TouchID deviceID, SDL_FingerID fingerID, int eventType, float pressure, float x, float y);
+
+/**
+ * \brief Libère tous les contacts tactiles actifs.
+ * 
+ * \since Disponible depuis RC2D 1.0.0.
+ */
 void rc2d_touch_freeTouchState(void);
 
-void rc2d_touch_getPosition(const int fingerId, float* x, float* y);
-float rc2d_touch_getPressure(const int touchId);
+/**
+ * \brief Récupère les coordonnées (en pixels) d'un contact actif.
+ * 
+ * \param fingerID Identifiant du doigt.
+ * \param x Pointeur vers X à remplir.
+ * \param y Pointeur vers Y à remplir.
+ * 
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_touch_getPosition(SDL_FingerID fingerID, float* x, float* y);
 
-int* rc2d_touch_getTouches(void);
-void rc2d_touch_freeTouches(int* touches);
+/**
+ * \brief Récupère la pression d'un contact actif.
+ * 
+ * \param fingerID Identifiant du doigt.
+ * \return Pression entre 0.0 et 1.0 (ou 1.0 si inconnu).
+ * 
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+float rc2d_touch_getPressure(SDL_FingerID fingerID);
+
+/**
+ * \brief Récupère la liste des identifiants des doigts actifs.
+ * 
+ * \return Tableau dynamique de SDL_FingerID (à libérer avec rc2d_touch_freeTouches).
+ * 
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+SDL_FingerID* rc2d_touch_getTouches(void);
+
+/**
+ * \brief Libère un tableau obtenu via rc2d_touch_getTouches.
+ * 
+ * \param touches Tableau à libérer.
+ * 
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_touch_freeTouches(SDL_FingerID* touches);
 
 #ifdef __cplusplus
 };
