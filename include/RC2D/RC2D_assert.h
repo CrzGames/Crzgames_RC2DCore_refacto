@@ -16,14 +16,14 @@
  * \since Cette macro est disponible depuis RC2D 1.0.0.
  */
 #ifndef RC2D_ASSERT_LEVEL
-    #define RC2D_ASSERT_LEVEL 3
+#define RC2D_ASSERT_LEVEL 3
 #endif
 
 /**
  * Synchronise avec SDL_ASSERT_LEVEL *avant* l'include de : SDL_assert.h
  */
 #ifndef SDL_ASSERT_LEVEL
-    #define SDL_ASSERT_LEVEL RC2D_ASSERT_LEVEL
+#define SDL_ASSERT_LEVEL RC2D_ASSERT_LEVEL
 #endif
 
 #include <RC2D/RC2D_logger.h>
