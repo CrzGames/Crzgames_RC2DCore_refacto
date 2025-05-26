@@ -94,6 +94,108 @@ static bool rc2d_engine_supported_gpu_backends(void)
 }
 
 /**
+ * \brief Configure le swapchain GPU avec la meilleure combinaison de mode de présentation et de composition.
+ *
+ * Cette fonction tente de trouver et d'appliquer la meilleure combinaison supportée de mode de présentation
+ * et de composition de swapchain pour le dispositif GPU et la fenêtre donnés.
+ *
+ * \return true si une configuration valide a été appliquée, false sinon.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static bool rc2d_engine_configure_swapchain(void)
+{
+    // SDL3 : Configurer le mode de présentation du GPU
+    /**
+     * SDL_GPU_PRESENTMODE_MAILBOX est utiliser par défaut,
+     * car il est généralement le meilleur choix pour la plupart des applications.
+     * Il offre un bon équilibre entre la latence et la fluidité de l'affichage, 
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_PRESENTMODE_VSYNC est un bon choix si vous voulez éviter le tearing,
+     * mais il peut introduire une latence supplémentaire, mais il est toujours disponible et sûr.
+     * 
+     * SDL_GPU_PRESENTMODE_IMMEDIATE est le moins recommandé, car il peut entraîner du tearing,
+     * mais il peut être utilisé si vous avez besoin de la latence la plus basse possible.
+     */
+    SDL_GPUPresentMode present_modes[] = {
+        SDL_GPU_PRESENTMODE_MAILBOX,
+        SDL_GPU_PRESENTMODE_VSYNC,
+        SDL_GPU_PRESENTMODE_IMMEDIATE
+    };
+
+    // Configurer le swapchain pour le GPU
+    /**
+     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084 est le meilleur choix pour les écrans HDR,
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR est un bon choix pour les écrans HDR,
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR est un bon choix pour les écrans SDR,
+     * mais il n'est pas toujours disponible sur tous les systèmes.
+     * 
+     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR est toujours disponible sur tous les systèmes.
+     */
+    SDL_GPUSwapchainComposition compositions[] = {
+        SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084,
+        SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
+        SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
+        SDL_GPU_SWAPCHAINCOMPOSITION_SDR
+    };
+    
+    /**
+     * Appliquer le swapchain pour le GPU
+     * Rechercher la meilleure combinaison supportée entre le mode de présentation et la composition.
+     */
+    bool swapchain_combo_found = false;
+    for (int i = 0; i < SDL_arraysize(present_modes); ++i)
+    {
+        for (int j = 0; j < SDL_arraysize(compositions); ++j) 
+        {
+            SDL_GPUPresentMode pm = present_modes[i];
+            SDL_GPUSwapchainComposition sc = compositions[j];
+
+            // Vérifie si la combinaison est supportée individuellement
+            if (SDL_WindowSupportsGPUPresentMode(rc2d_engine_state.gpu_device, rc2d_engine_state.window, pm) &&
+                SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, sc)) 
+            {
+                // Essaye la combinaison
+                if (SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, pm, sc)) 
+                {
+                    // Si la combinaison est supportée, on l'applique
+                    rc2d_engine_state.gpu_present_mode = pm;
+                    rc2d_engine_state.gpu_swapchain_composition = sc;
+                    RC2D_log(RC2D_LOG_INFO, "GPU swapchain configuré avec succès : present_mode = %s, composition = %s", rc2d_present_mode_to_string(pm), rc2d_composition_to_string(sc));
+                    swapchain_combo_found = true;
+                    break;
+                }
+                else
+                {
+                    /**
+                     * Si la combinaison de mode de présentation et de composition est supportée individuellement
+                     * mais qu'elle échoue lors de l'application avec SDL_SetGPUSwapchainParameters, on loggue un avertissement
+                     * en précisant les noms lisibles de la combinaison qui a échoué.
+                     */
+                    RC2D_log(RC2D_LOG_WARN, "La combinaison de mode de présentation et de composition a échoué : present_mode = %s, composition = %s", rc2d_present_mode_to_string(pm), rc2d_composition_to_string(sc));
+                }
+            }
+        }
+
+        // Si une combinaison valide a été trouvée, on sort de la boucle externe
+        if (swapchain_combo_found) break;
+    }
+
+    if (!swapchain_combo_found) 
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Could not find any valid swapchain configuration.");
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * \brief Convertit le mode de présentation SDL_GPU en chaîne de caractères.
  *
  * Cette fonction convertit un mode de présentation SDL_GPU en une chaîne de caractères lisible.
@@ -615,90 +717,9 @@ static bool rc2d_engine_create_gpu(void)
         RC2D_log(RC2D_LOG_INFO, "Fenêtre associée au GPU avec succès.");
     }
 
-    // SDL3 : Configurer le mode de présentation du GPU
-    /**
-     * SDL_GPU_PRESENTMODE_MAILBOX est utiliser par défaut,
-     * car il est généralement le meilleur choix pour la plupart des applications.
-     * Il offre un bon équilibre entre la latence et la fluidité de l'affichage, 
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_PRESENTMODE_VSYNC est un bon choix si vous voulez éviter le tearing,
-     * mais il peut introduire une latence supplémentaire, mais il est toujours disponible et sûr.
-     * 
-     * SDL_GPU_PRESENTMODE_IMMEDIATE est le moins recommandé, car il peut entraîner du tearing,
-     * mais il peut être utilisé si vous avez besoin de la latence la plus basse possible.
-     */
-    SDL_GPUPresentMode present_modes[] = {
-        SDL_GPU_PRESENTMODE_MAILBOX,
-        SDL_GPU_PRESENTMODE_VSYNC,
-        SDL_GPU_PRESENTMODE_IMMEDIATE
-    };
-
-    // Configurer le swapchain pour le GPU
-    /**
-     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084 est le meilleur choix pour les écrans HDR,
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR est un bon choix pour les écrans HDR,
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR est un bon choix pour les écrans SDR,
-     * mais il n'est pas toujours disponible sur tous les systèmes.
-     * 
-     * SDL_GPU_SWAPCHAINCOMPOSITION_SDR est toujours disponible sur tous les systèmes.
-     */
-    SDL_GPUSwapchainComposition compositions[] = {
-        SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084,
-        SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
-        SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
-        SDL_GPU_SWAPCHAINCOMPOSITION_SDR
-    };
-    
-    /**
-     * Appliquer le swapchain pour le GPU
-     * Rechercher la meilleure combinaison supportée entre le mode de présentation et la composition.
-     */
-    bool swapchain_combo_found = false;
-    for (int i = 0; i < SDL_arraysize(present_modes); ++i)
+    // Configurer le swapchain en utilisant la fonction dédiée
+    if (!rc2d_engine_configure_swapchain())
     {
-        for (int j = 0; j < SDL_arraysize(compositions); ++j) 
-        {
-            SDL_GPUPresentMode pm = present_modes[i];
-            SDL_GPUSwapchainComposition sc = compositions[j];
-
-            // Vérifie si la combinaison est supportée individuellement
-            if (SDL_WindowSupportsGPUPresentMode(rc2d_engine_state.gpu_device, rc2d_engine_state.window, pm) &&
-                SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, sc)) 
-            {
-                // Essaye la combinaison
-                if (SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, pm, sc)) 
-                {
-                    // Si la combinaison est supportée, on l'applique
-                    rc2d_engine_state.gpu_present_mode = pm;
-                    rc2d_engine_state.gpu_swapchain_composition = sc;
-                    RC2D_log(RC2D_LOG_INFO, "GPU swapchain configuré avec succès : present_mode = %s, composition = %s", rc2d_present_mode_to_string(pm), rc2d_composition_to_string(sc));
-                    swapchain_combo_found = true;
-                    break;
-                }
-                else
-                {
-                    /**
-                     * Si la combinaison de mode de présentation et de composition est supportée individuellement
-                     * mais qu'elle échoue lors de l'application avec SDL_SetGPUSwapchainParameters, on loggue un avertissement
-                     * en précisant les noms lisibles de la combinaison qui a échoué.
-                     */
-                    RC2D_log(RC2D_LOG_WARN, "La combinaison de mode de présentation et de composition a échoué : present_mode = %s, composition = %s", rc2d_present_mode_to_string(pm), rc2d_composition_to_string(sc));
-                }
-            }
-        }
-
-        // Si une combinaison valide a été trouvée, on sort de la boucle externe
-        if (swapchain_combo_found) break;
-    }
-
-    if (!swapchain_combo_found) 
-    {
-        RC2D_log(RC2D_LOG_CRITICAL, "Could not find any valid swapchain configuration.");
         return false;
     }
 
@@ -1063,24 +1084,8 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     // Window HDR State changed
     else if (event->type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
     {
-        // Re-vérifie le meilleur swapchain disponible
-        SDL_GPUSwapchainComposition compositions[] = {
-            SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084,
-            SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
-            SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
-            SDL_GPU_SWAPCHAINCOMPOSITION_SDR
-        };
-        for (int i = 0; i < SDL_arraysize(compositions); i++) 
-        {
-            if (SDL_WindowSupportsGPUSwapchainComposition(rc2d_engine_state.gpu_device, rc2d_engine_state.window, compositions[i])) 
-            {
-                rc2d_engine_state.gpu_swapchain_composition = compositions[i];
-                break;
-            }
-        }
-
-        // Re-set la composition (en gardant le mode de présentation actuel)
-        if (!SDL_SetGPUSwapchainParameters(rc2d_engine_state.gpu_device, rc2d_engine_state.window, rc2d_engine_state.gpu_swapchain_composition, rc2d_engine_state.gpu_present_mode)) 
+        // Re-set le meilleur swapchain disponible
+        if (!rc2d_engine_configure_swapchain())
         {
             RC2D_log(RC2D_LOG_ERROR, "Failed to update swapchain on HDR state change: %s", SDL_GetError());
         }
@@ -1873,7 +1878,7 @@ void rc2d_engine_quit(void)
     }
 
     /**
-     * IMPORTAT: 
+     * IMPORTANT: 
      * L'appelle de cette fonction doit être appeler avant : 
      * - SDL_ReleaseWindowFromGPUDevice()
      * - SDL_DestroyWindow()
