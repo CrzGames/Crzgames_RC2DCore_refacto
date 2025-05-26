@@ -1140,8 +1140,8 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
             }
         }
 
-        // (facultatif) mise à jour de l’état du toucher :
-        rc2d_touch_updateState(info.fingerID, event->type, info.pressure, info.x, info.y);
+        // Mise à jour de l’état du toucher :
+        rc2d_touch_updateState(info.touchID, info.fingerID, event->type, info.pressure, info.x, info.y);
     }
 
     // Window safe area changed
