@@ -1779,7 +1779,8 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
                 .timestamp = event->sensor.sensor_timestamp
             };
             // Copy sensor data (up to 6 values)
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 6; i++) 
+            {
                 info.data[i] = event->sensor.data[i];
             }
             rc2d_engine_state.config->callbacks->rc2d_sensorupdate(&info);
