@@ -10,6 +10,43 @@ extern "C" {
 #endif
 
 /**
+ * \brief Bouton de souris reconnu par RC2D.
+ *
+ * Cette énumération représente les différents boutons de la souris pouvant être
+ * utilisés dans les callbacks `rc2d_mousepressed` et `rc2d_mousereleased`.
+ *
+ * Elle est directement mappée sur les valeurs définies par SDL3 pour les boutons
+ * standards : gauche, milieu, droit, et les boutons additionnels X1/X2.
+ *
+ * \since Cette énumération est disponible depuis RC2D 1.0.0.
+ */
+typedef enum RC2D_MouseButton {
+    RC2D_MOUSE_UNKNOWN = 0,  /**< Bouton inconnu ou non supporté */
+    RC2D_MOUSE_LEFT    = 1,  /**< Bouton gauche de la souris */
+    RC2D_MOUSE_MIDDLE  = 2,  /**< Bouton du milieu (roulette) */
+    RC2D_MOUSE_RIGHT   = 3,  /**< Bouton droit de la souris */
+    RC2D_MOUSE_X1      = 4,  /**< Bouton latéral 1 de la souris */
+    RC2D_MOUSE_X2      = 5   /**< Bouton latéral 2 de la souris */
+} RC2D_MouseButton;
+
+/**
+ * \brief Direction de défilement de la molette de souris.
+ *
+ * Cette énumération décrit les différentes directions possibles lors d’un mouvement
+ * de la molette, que ce soit à l’horizontale ou à la verticale.
+ *
+ * \since Cette énumération est disponible depuis RC2D 1.0.0.
+ */
+typedef enum RC2D_MouseWheelDirection {
+    RC2D_SCROLL_NONE = 0,   /**< Aucun défilement détecté */
+    RC2D_SCROLL_UP,         /**< Défilement vers le haut */
+    RC2D_SCROLL_DOWN,       /**< Défilement vers le bas */
+    RC2D_SCROLL_LEFT,       /**< Défilement vers la gauche */
+    RC2D_SCROLL_RIGHT       /**< Défilement vers la droite */
+} RC2D_MouseWheelDirection;
+
+
+/**
  * \brief Structure représentant un curseur personnalisé.
  * 
  * \since Cette structure est disponible depuis RC2D 1.0.0.

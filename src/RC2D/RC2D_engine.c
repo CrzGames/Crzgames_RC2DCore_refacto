@@ -1,12 +1,11 @@
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_logger.h>
 #include <RC2D/RC2D_assert.h>
-#include <RC2D/RC2D_window.h>
 #include <RC2D/RC2D_math.h>
 #include <RC2D/RC2D_filesystem.h>
-#include <RC2D/RC2D_touch.h>
 #include <RC2D/RC2D_platform_defines.h>
 #include <RC2D/RC2D_memory.h>
+#include <RC2D/RC2D_config.h>
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
@@ -1076,11 +1075,93 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged != NULL) 
+            rc2d_engine_state.config->callbacks->rc2d_monitororientationchanged != NULL) 
         {
+            /**
+             * Recalculer le viewport GPU et le render scale, puisque l'orientation de l'affichage a changé.
+             * Cela est nécessaire pour s'assurer que le rendu s'adapte correctement à la nouvelle orientation.
+             */
+            rc2d_engine_calculate_renderscale_and_gpuviewport();
+
             RC2D_DisplayOrientation newOrientation = rc2d_window_getDisplayOrientation();
-            rc2d_engine_state.config->callbacks->rc2d_displayorientationchanged(newOrientation);
+            rc2d_engine_state.config->callbacks->rc2d_monitororientationchanged(event->display.displayID, newOrientation);
         }
+    }
+
+        // Monitor Added
+    else if (event->type == SDL_EVENT_DISPLAY_ADDED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_monitoradded != NULL) 
+        {
+            rc2d_engine_calculate_renderscale_and_gpuviewport();
+            rc2d_engine_update_fps_based_on_monitor();
+
+            rc2d_engine_state.config->callbacks->rc2d_monitoradded(event->display.displayID);
+        }
+    }
+
+    // Monitor Removed
+    else if (event->type == SDL_EVENT_DISPLAY_REMOVED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_monitorremoved != NULL) 
+        {
+            rc2d_engine_calculate_renderscale_and_gpuviewport();
+            rc2d_engine_update_fps_based_on_monitor();
+
+            rc2d_engine_state.config->callbacks->rc2d_monitorremoved(event->display.displayID);
+        }
+    }
+
+    // Monitor Moved
+    else if (event->type == SDL_EVENT_DISPLAY_MOVED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_monitormoved != NULL) 
+        {
+            rc2d_engine_calculate_renderscale_and_gpuviewport();
+            rc2d_engine_update_fps_based_on_monitor();
+
+            rc2d_engine_state.config->callbacks->rc2d_monitormoved(event->display.displayID);
+        }
+    }
+
+    // Monitor Desktop Mode Changed
+    else if (event->type == SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_monitordesktopmodechanged != NULL) 
+        {
+            rc2d_engine_calculate_renderscale_and_gpuviewport();
+            rc2d_engine_update_fps_based_on_monitor();
+
+            rc2d_engine_state.config->callbacks->rc2d_monitordesktopmodechanged(event->display.displayID);
+        }
+    }
+
+    // Monitor Current Mode Changed
+    else if (event->type == SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_monitorcurrentmodechanged != NULL) 
+        {
+            rc2d_engine_calculate_renderscale_and_gpuviewport();
+            rc2d_engine_update_fps_based_on_monitor();
+
+            rc2d_engine_state.config->callbacks->rc2d_monitorcurrentmodechanged(event->display.displayID);
+        }
+    }
+
+    // Monitor Content Scale Changed
+    else if (event->type == SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED)
+    {
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
     }
 
     // Quand le content scale de l'affichage change
@@ -1091,7 +1172,8 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     }
 
     // Window HDR State changed
-    else if (event->type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED)
+    else if (event->type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED ||
+            event->type == SDL_EVENT_WINDOW_ICCPROF_CHANGED)
     {
         // Re-set le meilleur swapchain disponible
         if (!rc2d_engine_configure_swapchain())
@@ -1166,12 +1248,23 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         rc2d_engine_update_fps_based_on_monitor();
         rc2d_engine_calculate_renderscale_and_gpuviewport();
 
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_windowenterfullscreen != NULL) 
         {
             rc2d_engine_state.config->callbacks->rc2d_windowenterfullscreen();
-        }*/
+        }
+    }
+
+    // Window Shown
+    else if (event->type == SDL_EVENT_WINDOW_SHOWN)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowshown != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_windowshown();
+        }
     }
 
     // Window leave fullscreen
@@ -1186,12 +1279,12 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         rc2d_engine_update_fps_based_on_monitor();
         rc2d_engine_calculate_renderscale_and_gpuviewport();
 
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_windowleavefullscreen != NULL) 
         {
             rc2d_engine_state.config->callbacks->rc2d_windowleavefullscreen();
-        }*/
+        }
     }
 
     // Window pixel size changed
@@ -1212,6 +1305,17 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
          * On indique que le viewport du gpu et le render scale interne doit être recalculé.
          */
         rc2d_engine_calculate_renderscale_and_gpuviewport();
+    }
+
+    // Window Occluded
+    else if (event->type == SDL_EVENT_WINDOW_OCCLUDED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_windowoccluded != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_windowoccluded();
+        }
     }
 
     // Window resized
@@ -1255,17 +1359,27 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         rc2d_engine_update_fps_based_on_monitor();
         rc2d_engine_calculate_renderscale_and_gpuviewport();
 
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_windowdisplaychanged != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_windowdisplaychanged(event->window.data1, event->window.data2);
-        }*/
+            rc2d_engine_state.config->callbacks->rc2d_windowdisplaychanged(event->window.data1);
+        }
     }
 
     // Window exposed
     else if (event->type == SDL_EVENT_WINDOW_EXPOSED) 
     {
+        /**
+         * Quand la fenêtre est exposée (par exemple, après avoir été masquée ou minimisée),
+         * on indique que le viewport du gpu et le render scale interne doit être recalculé.
+         * 
+         * Egalement si jamais entre temps on a changé de moniteur,
+         * on met à jour les FPS en fonction du moniteur actuel.
+         */
+        rc2d_engine_update_fps_based_on_monitor();
+        rc2d_engine_calculate_renderscale_and_gpuviewport();
+
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_windowexposed != NULL) 
@@ -1326,9 +1440,9 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_mouseenteredwindow != NULL) 
+            rc2d_engine_state.config->callbacks->rc2d_windowmouseenter != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_mouseenteredwindow();
+            rc2d_engine_state.config->callbacks->rc2d_windowmouseenter();
         }
     }
 
@@ -1337,9 +1451,9 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_mouseleavewindow != NULL) 
+            rc2d_engine_state.config->callbacks->rc2d_windowmouseleave != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_mouseleavewindow();
+            rc2d_engine_state.config->callbacks->rc2d_windowmouseleave();
         }
     }
 
@@ -1348,9 +1462,9 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_keyboardfocusgained != NULL) 
+            rc2d_engine_state.config->callbacks->rc2d_windowkeyboardfocus != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_keyboardfocusgained();
+            rc2d_engine_state.config->callbacks->rc2d_windowkeyboardfocus();
         }
     }
 
@@ -1359,9 +1473,9 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_keyboardfocuslost != NULL) 
+            rc2d_engine_state.config->callbacks->rc2d_windowkeyboardlost != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_keyboardfocuslost();
+            rc2d_engine_state.config->callbacks->rc2d_windowkeyboardlost();
         }
     }
 
@@ -1385,7 +1499,13 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_mousemoved != NULL) 
         {
-            rc2d_engine_state.config->callbacks->rc2d_mousemoved(event->motion.x, event->motion.y);
+            rc2d_engine_state.config->callbacks->rc2d_mousemoved(
+                event->motion.x,
+                event->motion.y,
+                event->motion.xrel,
+                event->motion.yrel,
+                event->motion.which
+            );
         }
     }
 
@@ -1394,77 +1514,277 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_wheelmoved != NULL) 
+            rc2d_engine_state.config->callbacks->rc2d_mousewheelmoved != NULL) 
         {
-            const char* stateScroll = "";
+            RC2D_MouseWheelDirection direction = RC2D_SCROLL_NONE;
+            float x = event->wheel.x;
+            float y = event->wheel.y;
 
-            if (event->wheel.y > 0) stateScroll = "up"; // scroll up
-            else if (event->wheel.y < 0) stateScroll = "down"; // scroll down
-            else if (event->wheel.x > 0) stateScroll = "right"; // scroll right
-            else if (event->wheel.x < 0) stateScroll = "left"; // scroll left
+            // Ajuster les valeurs en fonction de la direction (normal ou flipped)
+            if (event->wheel.direction == SDL_MOUSEWHEEL_FLIPPED) 
+            {
+                x *= -1.0f;
+                y *= -1.0f;
+            }
 
-            rc2d_engine_state.config->callbacks->rc2d_wheelmoved(stateScroll);
+            // Déterminer la direction principale
+            if (y > 0.0f) 
+            {
+                direction = RC2D_SCROLL_UP;
+            } 
+            else if (y < 0.0f) 
+            {
+                direction = RC2D_SCROLL_DOWN;
+            } 
+            else if (x > 0.0f) 
+            {
+                direction = RC2D_SCROLL_RIGHT;
+            } 
+            else if (x < 0.0f) 
+            {
+                direction = RC2D_SCROLL_LEFT;
+            }
+
+            rc2d_engine_state.config->callbacks->rc2d_mousewheelmoved(
+                direction,
+                x,
+                y,
+                event->wheel.integer_x,
+                event->wheel.integer_y,
+                event->wheel.mouse_x,
+                event->wheel.mouse_y,
+                event->wheel.which
+            );
         }
     }
 
-    // Mouse pressed
+    // Mouse Pressed
     else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) 
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_mousepressed != NULL) 
         {
-            const char* button = "";
+            RC2D_MouseButton button = RC2D_MOUSE_UNKNOWN;
 
-            if (event->button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
-            else if (event->button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
-            else if (event->button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
+            switch (event->button.button) 
+            {
+                case SDL_BUTTON_LEFT:   button = RC2D_MOUSE_LEFT; break;
+                case SDL_BUTTON_MIDDLE: button = RC2D_MOUSE_MIDDLE; break;
+                case SDL_BUTTON_RIGHT:  button = RC2D_MOUSE_RIGHT; break;
+                case SDL_BUTTON_X1:     button = RC2D_MOUSE_X1; break;
+                case SDL_BUTTON_X2:     button = RC2D_MOUSE_X2; break;
+                default:                button = RC2D_MOUSE_UNKNOWN; break;
+            }
 
-            rc2d_engine_state.config->callbacks->rc2d_mousepressed(event->button.x, event->button.y, button, event->button.clicks);
+            rc2d_engine_state.config->callbacks->rc2d_mousepressed(
+                event->button.x,
+                event->button.y,
+                button,
+                event->button.clicks,
+                event->button.which
+            );
         }
     }
 
-    // Mouse released
+    // Mouse Released
     else if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) 
     {
         if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_mousereleased != NULL) 
         {
-            const char* button = "";
+            RC2D_MouseButton button = RC2D_MOUSE_UNKNOWN;
 
-            if (event->button.button == SDL_BUTTON_LEFT) button = "left"; // Click gauche
-            else if (event->button.button == SDL_BUTTON_MIDDLE) button = "middle"; // Click roulette
-            else if (event->button.button == SDL_BUTTON_RIGHT) button = "right"; // Click droit
+            switch (event->button.button) 
+            {
+                case SDL_BUTTON_LEFT:   button = RC2D_MOUSE_LEFT; break;
+                case SDL_BUTTON_MIDDLE: button = RC2D_MOUSE_MIDDLE; break;
+                case SDL_BUTTON_RIGHT:  button = RC2D_MOUSE_RIGHT; break;
+                case SDL_BUTTON_X1:     button = RC2D_MOUSE_X1; break;
+                case SDL_BUTTON_X2:     button = RC2D_MOUSE_X2; break;
+                default:                button = RC2D_MOUSE_UNKNOWN; break;
+            }
 
-            rc2d_engine_state.config->callbacks->rc2d_mousereleased(event->button.x, event->button.y, button, event->button.clicks);
+            rc2d_engine_state.config->callbacks->rc2d_mousereleased(
+                event->button.x,
+                event->button.y,
+                button,
+                event->button.clicks,
+                event->button.which
+            );
         }
     }
 
-    // Keyboard pressed
+    // Mouse Added
+    else if (event->type == SDL_EVENT_MOUSE_ADDED) 
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mouseadded != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_mouseadded(event->mdevice.which);
+        }
+    }
+
+    // Mouse Removed
+    else if (event->type == SDL_EVENT_MOUSE_REMOVED) 
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_mouseremoved != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_mouseremoved(event->mdevice.which);
+        }
+    }
+
+    // Keyboard Pressed
     else if (event->type == SDL_EVENT_KEY_DOWN)
     {
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_keypressed != NULL) 
         {
-            const char* keyCurrent = SDL_GetKeyName(event->key.keysym.sym);
-            bool keyRepeat = event->key.repeat != 0;
-
-            rc2d_engine_state.config->callbacks->rc2d_keypressed(keyCurrent, keyRepeat);
-        }*/
+            const char* key_name = SDL_GetKeyName(event->key.key);
+            rc2d_engine_state.config->callbacks->rc2d_keypressed(
+                key_name,
+                event->key.scancode,
+                event->key.key,
+                event->key.mod,
+                event->key.repeat,
+                event->key.which
+            );
+        }
     }
 
-    // Keyboard released
+    // Keyboard Released
     else if (event->type == SDL_EVENT_KEY_UP)
     {
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_keyreleased != NULL) 
         {
-            const char* keyCurrent = SDL_GetKeyName(event->key.keysym.sym);
-            rc2d_engine_state.config->callbacks->rc2d_keyreleased(keyCurrent);
-        }*/
+            const char* key_name = SDL_GetKeyName(event->key.key);
+            rc2d_engine_state.config->callbacks->rc2d_keyreleased(
+                key_name,
+                event->key.scancode,
+                event->key.key,
+                event->key.mod,
+                event->key.which
+            );
+        }
+    }
+
+    // Text Editing (IME)
+    else if (event->type == SDL_EVENT_TEXT_EDITING)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_textediting != NULL) 
+        {
+            RC2D_TextEditingEventInfo info = {
+                .text = event->edit.text,
+                .start = event->edit.start,
+                .length = event->edit.length,
+                .windowID = event->edit.windowID
+            };
+            rc2d_engine_state.config->callbacks->rc2d_textediting(&info);
+        }
+    }
+
+    // Text Editing Candidates (IME)
+    else if (event->type == SDL_EVENT_TEXT_EDITING_CANDIDATES)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_texteditingcandidates != NULL) 
+        {
+            RC2D_TextEditingCandidatesEventInfo info = {
+                .candidates = event->edit_candidates.candidates,
+                .num_candidates = event->edit_candidates.num_candidates,
+                .selected_candidate = event->edit_candidates.selected_candidate,
+                .horizontal = event->edit_candidates.horizontal,
+                .windowID = event->edit_candidates.windowID
+            };
+            rc2d_engine_state.config->callbacks->rc2d_texteditingcandidates(&info);
+        }
+    }
+
+    // Text Input
+    else if (event->type == SDL_EVENT_TEXT_INPUT)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_textinput != NULL) 
+        {
+            RC2D_TextInputEventInfo info = {
+                .text = event->text.text,
+                .windowID = event->text.windowID
+            };
+            rc2d_engine_state.config->callbacks->rc2d_textinput(&info);
+        }
+    }
+
+    // Keymap Changed
+    else if (event->type == SDL_EVENT_KEYMAP_CHANGED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keymapchanged != NULL) 
+        {
+            rc2d_engine_state.config->callbacks->rc2d_keymapchanged();
+        }
+    }
+
+    // Keyboard Added
+    else if (event->type == SDL_EVENT_KEYBOARD_ADDED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keyboardadded != NULL) 
+        {
+            RC2D_KeyboardDeviceEventInfo info = {
+                .keyboardID = event->kdevice.which,
+                .name = SDL_GetKeyboardNameForID(event->kdevice.which)
+            };
+            rc2d_engine_state.config->callbacks->rc2d_keyboardadded(&info);
+        }
+    }
+
+    // Keyboard Removed
+    else if (event->type == SDL_EVENT_KEYBOARD_REMOVED)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_keyboardremoved != NULL) 
+        {
+            RC2D_KeyboardDeviceEventInfo info = {
+                .keyboardID = event->kdevice.which,
+                .name = SDL_GetKeyboardNameForID(event->kdevice.which)
+            };
+            rc2d_engine_state.config->callbacks->rc2d_keyboardremoved(&info);
+        }
+    }
+
+    // Sensor Update
+    else if (event->type == SDL_EVENT_SENSOR_UPDATE)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_sensorupdate != NULL) 
+        {
+            RC2D_SensorEventInfo info = {
+                .sensorID = event->sensor.which,
+                .type = SDL_GetSensorType(event->sensor.which),
+                .name = SDL_GetSensorNameForID(event->sensor.which),
+                .timestamp = event->sensor.sensor_timestamp
+            };
+            // Copy sensor data (up to 6 values)
+            for (int i = 0; i < 6; i++) {
+                info.data[i] = event->sensor.data[i];
+            }
+            rc2d_engine_state.config->callbacks->rc2d_sensorupdate(&info);
+        }
     }
 
     // Gamepad axis moved
@@ -1568,56 +1888,103 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
         }*/
     }
 
-    // DROP FILE
-    else if (event->type == SDL_EVENT_DROP_FILE) 
+    // Drag-and-Drop Events
+    else if (event->type == SDL_EVENT_DROP_BEGIN)
     {
-        /*if (rc2d_engine_state.config != NULL && 
-            rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_dropfile != NULL)
-        {
-            char* filedir = event->drop.file;
-            rc2d_engine_state.config->callbacks->rc2d_dropfile(filedir);
-            RC2D_free(filedir);
-        }*/
-    }
-
-    // SDL_DROPTEXT
-    else if (event->type == SDL_EVENT_DROP_TEXT) 
-    {
-        /*if (rc2d_engine_state.config != NULL && 
-            rc2d_engine_state.config->callbacks != NULL && 
-            rc2d_engine_state.config->callbacks->rc2d_droptext != NULL) 
-        {
-            char* filedir = event->drop.file;
-            rc2d_engine_state.config->callbacks->rc2d_droptext(filedir);
-            RC2D_free(filedir);
-        }*/
-    }
-
-    // SDL_DROPBEGIN
-    else if (event->type == SDL_EVENT_DROP_BEGIN) 
-    {
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_dropbegin != NULL) 
         {
-            char* filedir = event->drop.file;
-            rc2d_engine_state.config->callbacks->rc2d_dropbegin(filedir);
-            RC2D_free(filedir);
-        }*/
+            RC2D_DropEventInfo info = {
+                .windowID = event->drop.windowID,
+                .x = 0.0f,
+                .y = 0.0f,
+                .source = event->drop.source,
+                .data = NULL,
+                .timestamp = event->drop.timestamp
+            };
+            rc2d_engine_state.config->callbacks->rc2d_dropbegin(&info);
+        }
     }
-
-    // SDL_DROPCOMPLETE
-    else if (event->type == SDL_EVENT_DROP_COMPLETE) 
+    else if (event->type == SDL_EVENT_DROP_FILE)
     {
-        /*if (rc2d_engine_state.config != NULL && 
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_dropfile != NULL) 
+        {
+            RC2D_DropEventInfo info = {
+                .windowID = event->drop.windowID,
+                .x = event->drop.x,
+                .y = event->drop.y,
+                .source = event->drop.source,
+                .data = event->drop.data,
+                .timestamp = event->drop.timestamp
+            };
+            rc2d_engine_state.config->callbacks->rc2d_dropfile(&info);
+        }
+    }
+    else if (event->type == SDL_EVENT_DROP_TEXT)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_droptext != NULL) 
+        {
+            RC2D_DropEventInfo info = {
+                .windowID = event->drop.windowID,
+                .x = event->drop.x,
+                .y = event->drop.y,
+                .source = event->drop.source,
+                .data = event->drop.data,
+                .timestamp = event->drop.timestamp
+            };
+            rc2d_engine_state.config->callbacks->rc2d_droptext(&info);
+        }
+    }
+    else if (event->type == SDL_EVENT_DROP_COMPLETE)
+    {
+        if (rc2d_engine_state.config != NULL && 
             rc2d_engine_state.config->callbacks != NULL && 
             rc2d_engine_state.config->callbacks->rc2d_dropcomplete != NULL) 
         {
-            char* filedir = event->drop.file;
-            rc2d_engine_state.config->callbacks->rc2d_dropcomplete(filedir);
-            RC2D_free(filedir);
-        }*/
+            RC2D_DropEventInfo info = {
+                .windowID = event->drop.windowID,
+                .x = 0.0f,
+                .y = 0.0f,
+                .source = event->drop.source,
+                .data = NULL,
+                .timestamp = event->drop.timestamp
+            };
+            rc2d_engine_state.config->callbacks->rc2d_dropcomplete(&info);
+        }
+    }
+    else if (event->type == SDL_EVENT_DROP_POSITION)
+    {
+        if (rc2d_engine_state.config != NULL && 
+            rc2d_engine_state.config->callbacks != NULL && 
+            rc2d_engine_state.config->callbacks->rc2d_dropposition != NULL) 
+        {
+            RC2D_DropEventInfo info = {
+                .windowID = event->drop.windowID,
+                .x = event->drop.x,
+                .y = event->drop.y,
+                .source = event->drop.source,
+                .data = NULL,
+                .timestamp = event->drop.timestamp
+            };
+            rc2d_engine_state.config->callbacks->rc2d_dropposition(&info);
+        }
+
+        // System Theme Changed
+        else if (event->type == SDL_EVENT_SYSTEM_THEME_CHANGED)
+        {
+            if (rc2d_engine_state.config != NULL && 
+                rc2d_engine_state.config->callbacks != NULL && 
+                rc2d_engine_state.config->callbacks->rc2d_systemthemechanged != NULL) 
+            {
+                SDL_SystemTheme theme = SDL_GetSystemTheme();
+                rc2d_engine_state.config->callbacks->rc2d_systemthemechanged(theme);
+            }
+        }
     }
 
     /**

@@ -6,6 +6,11 @@
 #include <RC2D/RC2D_local.h>
 #include <RC2D/RC2D_touch.h>
 #include <RC2D/RC2D_camera.h>
+#include <RC2D/RC2D_mouse.h>
+
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_sensor.h>
+#include <SDL3/SDL_keyboard.h>
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
@@ -264,67 +269,314 @@ typedef struct RC2D_TouchEventInfo {
 } RC2D_TouchEventInfo;
 
 /**
- * Structure représentant les fonctions de rappel pour l'API Engine.
- * @typedef {struct} RC2D_Callbacks
- * @property {function} rc2d_unload - Fonction appelée lors du déchargement du jeu.
- * @property {function} rc2d_load - Fonction appelée lors du chargement du jeu.
- * @property {function} rc2d_update - Fonction appelée pour mettre à jour le jeu.
- * @property {function} rc2d_draw - Fonction appelée pour dessiner le jeu.
- * @property {function} rc2d_keypressed - Fonction appelée lorsqu'une touche est enfoncée.
- * @property {function} rc2d_keyreleased - Fonction appelée lorsqu'une touche est relâchée.
- * @property {function} rc2d_mousemoved - Fonction appelée lorsque la souris est déplacée.
- * @property {function} rc2d_mousepressed - Fonction appelée lorsqu'un bouton de la souris est enfoncé.
- * @property {function} rc2d_mousereleased - Fonction appelée lorsqu'un bouton de la souris est relâché.
- * @property {function} rc2d_wheelmoved - Fonction appelée lorsqu'une molette de la souris est déplacée.
- * @property {function} rc2d_touchmoved - Fonction appelée lorsqu'un toucher est déplacé.
- * @property {function} rc2d_touchpressed - Fonction appelée lorsqu'un toucher est enfoncé.
- * @property {function} rc2d_touchreleased - Fonction appelée lorsqu'un toucher est relâché.
- * @property {function} rc2d_gamepadaxis - Fonction appelée lorsqu'un axe de la manette est déplacé.
- * @property {function} rc2d_gamepadpressed - Fonction appelée lorsqu'un bouton de la manette est enfoncé.
- * @property {function} rc2d_gamepadreleased - Fonction appelée lorsqu'un bouton de la manette est relâché.
- * @property {function} rc2d_joystickaxis - Fonction appelée lorsqu'un axe du joystick est déplacé.
- * @property {function} rc2d_joystickhat - Fonction appelée lorsqu'un chapeau du joystick est déplacé.
- * @property {function} rc2d_joystickpressed - Fonction appelée lorsqu'un bouton du joystick est enfoncé.
- * @property {function} rc2d_joystickreleased - Fonction appelée lorsqu'un bouton du joystick est relâché.
- * @property {function} rc2d_joystickadded - Fonction appelée lorsqu'un joystick est ajouté.
- * @property {function} rc2d_joystickremoved - Fonction appelée lorsqu'un joystick est retiré.
- * @property {function} rc2d_dropfile - Fonction appelée lorsqu'un fichier est déposé.
- * @property {function} rc2d_droptext - Fonction appelée lorsqu'un texte est déposé.
- * @property {function} rc2d_dropbegin - Fonction appelée au début du dépôt.
- * @property {function} rc2d_dropcomplete - Fonction appelée à la fin du dépôt.
- * @property {function} rc2d_windowresized - Fonction appelée lorsque la fenêtre est redimensionnée.
- * @property {function} rc2d_windowmoved - Fonction appelée lorsque la fenêtre est déplacée.
- * @property {function} rc2d_windowsizedchanged - Fonction appelée lorsque la taille de la fenêtre est modifiée.
- * @property {function} rc2d_windowexposed - Fonction appelée lorsque la fenêtre est exposée.
- * @property {function} rc2d_windowminimized - Fonction appelée lorsque la fenêtre est réduite.
- * @property {function} rc2d_windowmaximized - Fonction appelée lorsque la fenêtre est maximisée.
- * @property {function} rc2d_windowrestored - Fonction appelée lorsque la fenêtre est restaurée.
- * @property {function} rc2d_mouseenteredwindow - Fonction appelée lorsque la souris entre dans la fenêtre.
- * @property {function} rc2d_mouseleavewindow - Fonction appelée lorsque la souris quitte la fenêtre.
- * @property {function} rc2d_keyboardfocusgained - Fonction appelée lorsque le focus clavier est obtenu.
- * @property {function} rc2d_keyboardfocuslost - Fonction appelée lorsque le focus clavier est perdu.
- * @property {function} rc2d_windowclosed - Fonction appelée lorsque la fenêtre est fermée.
- * @property {function} rc2d_windowtakefocus - Fonction appelée lorsque la fenêtre prend le focus.
- * @property {function} rc2d_windowhittest - Fonction appelée pour le test de collision de la fenêtre.
+ * \brief Informations relatives à un événement de texte en cours d'édition (IME).
+ *
+ * Cette structure est transmise au callback `rc2d_textediting`.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_TextEditingEventInfo {
+    const char *text;   /**< Le texte en cours d'édition (UTF-8). */
+    Sint32 start;       /**< Position du curseur dans le texte (en caractères UTF-8). */
+    Sint32 length;      /**< Longueur du texte sélectionné à remplacer (en caractères UTF-8). */
+    SDL_WindowID windowID; /**< Identifiant de la fenêtre avec le focus clavier. */
+} RC2D_TextEditingEventInfo;
+
+/**
+ * \brief Informations relatives à un événement de candidats d'édition de texte (IME).
+ *
+ * Cette structure est transmise au callback `rc2d_texteditingcandidates`.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_TextEditingCandidatesEventInfo {
+    const char * const *candidates; /**< Liste des candidats (tableau de chaînes UTF-8). */
+    Sint32 num_candidates;          /**< Nombre de candidats dans la liste. */
+    Sint32 selected_candidate;      /**< Index du candidat sélectionné, ou -1 si aucun. */
+    bool horizontal;                /**< true si la liste est horizontale, false si verticale. */
+    SDL_WindowID windowID;          /**< Identifiant de la fenêtre avec le focus clavier. */
+} RC2D_TextEditingCandidatesEventInfo;
+
+/**
+ * \brief Informations relatives à un événement d'entrée de texte.
+ *
+ * Cette structure est transmise au callback `rc2d_textinput`.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_TextInputEventInfo {
+    const char *text;   /**< Le texte entré (UTF-8). */
+    SDL_WindowID windowID; /**< Identifiant de la fenêtre avec le focus clavier. */
+} RC2D_TextInputEventInfo;
+
+/**
+ * \brief Informations relatives à un événement de périphérique clavier.
+ *
+ * Cette structure est transmise aux callbacks `rc2d_keyboardadded` et `rc2d_keyboardremoved`.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_KeyboardDeviceEventInfo {
+    SDL_KeyboardID keyboardID; /**< Identifiant unique du clavier. */
+    const char *name;          /**< Nom du clavier (peut être vide si non disponible). */
+} RC2D_KeyboardDeviceEventInfo;
+
+/**
+ * \brief Informations relatives à un événement de mise à jour de capteur (par exemple, accéléromètre, gyroscope).
+ *
+ * Cette structure est transmise au callback `rc2d_sensorupdate`.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_SensorEventInfo {
+    SDL_SensorID sensorID;      /**< Identifiant unique du capteur. */
+    SDL_SensorType type;        /**< Type de capteur (ex: SDL_SENSOR_ACCEL, SDL_SENSOR_GYRO). */
+    const char *name;           /**< Nom du capteur (peut être vide si non disponible). */
+    float data[6];              /**< Données du capteur (jusqu'à 6 valeurs, selon le type). */
+    Uint64 timestamp;           /**< Horodatage de la lecture du capteur (en nanosecondes). */
+} RC2D_SensorEventInfo;
+
+/**
+ * \brief Informations relatives à un événement de drag-and-drop.
+ *
+ * Cette structure est transmise aux callbacks `rc2d_dropbegin`, `rc2d_dropfile`,
+ * `rc2d_droptext`, `rc2d_dropcomplete`, et `rc2d_dropposition`. Les champs contiennent
+ * des données spécifiques selon le type d'événement, comme décrit ci-dessous.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_DropEventInfo {
+    /**
+     * Identifiant de la fenêtre cible sur laquelle l'événement de drag-and-drop a lieu.
+     * - Valide pour tous les callbacks (`rc2d_dropbegin`, `rc2d_dropfile`, `rc2d_droptext`,
+     *   `rc2d_dropcomplete`, `rc2d_dropposition`).
+     * - Représente l'identifiant unique de la fenêtre SDL3 (SDL_WindowID).
+     */
+    SDL_WindowID windowID;
+
+    /**
+     * Coordonnée X du curseur relative à la fenêtre, en pixels, au moment du drop.
+     * - Pour `rc2d_dropfile` et `rc2d_droptext`: Position où le fichier ou texte a été déposé.
+     * - Pour `rc2d_dropposition`: Position actuelle du curseur pendant le survol.
+     * - Pour `rc2d_dropbegin` et `rc2d_dropcomplete`: Toujours 0.0f, car non applicable.
+     */
+    float x;
+
+    /**
+     * Coordonnée Y du curseur relative à la fenêtre, en pixels, au moment du drop.
+     * - Pour `rc2d_dropfile` et `rc2d_droptext`: Position où le fichier ou texte a été déposé.
+     * - Pour `rc2d_dropposition`: Position actuelle du curseur pendant le survol.
+     * - Pour `rc2d_dropbegin` et `rc2d_dropcomplete`: Toujours 0.0f, car non applicable.
+     */
+    float y;
+
+    /**
+     * Nom de l'application source ayant initié l'opération de drag-and-drop.
+     * - Valide pour tous les callbacks, mais peut être NULL si l'information n'est pas disponible.
+     * - Exemple: Nom de l'application (e.g., "Finder" sur macOS, "Explorer" sur Windows).
+     */
+    const char *source;
+
+    /**
+     * Données associées à l'événement de drag-and-drop.
+     * - Pour `rc2d_dropfile`: Chemin absolu du fichier déposé (chaîne UTF-8).
+     * - Pour `rc2d_droptext`: Texte déposé (chaîne UTF-8, e.g., contenu text/plain).
+     * - Pour `rc2d_dropbegin`, `rc2d_dropcomplete`, et `rc2d_dropposition`: Toujours NULL.
+     */
+    const char *data;
+
+    /**
+     * Horodatage de l'événement, en nanosecondes, depuis le démarrage de l'application.
+     * - Valide pour tous les callbacks.
+     * - Obtenu via SDL_GetTicksNS(), permettant de suivre la chronologie des événements.
+     */
+    Uint64 timestamp;
+} RC2D_DropEventInfo;
+
+/**
+ * \brief Structure contenant tous les callbacks de l'application RC2D.
+ * 
+ * Cette structure regroupe les fonctions de rappel (callbacks) utilisées par le moteur RC2D
+ * pour gérer les événements du jeu, les entrées clavier, souris, et autres interactions.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_Callbacks {
-    // Game Loop Callbacks
+    // ------------- GameLoop Callbacks ------------- //
     void (*rc2d_unload)(void);
     void (*rc2d_load)(void);
     void (*rc2d_update)(double dt);
     void (*rc2d_draw)(void);
 
-    // Keyboard Callbacks
-    void (*rc2d_keypressed)(const char* key, bool isrepeat);
-    void (*rc2d_keyreleased)(const char* key);
 
-    // Mouse Callbacks
-    void (*rc2d_mousemoved)(int x, int y);
-    void (*rc2d_mousepressed)(int x, int y, const char* button, int presses);
-    void (*rc2d_mousereleased)(int x, int y, const char* button, int presses);
-    void (*rc2d_wheelmoved)(const char* scroll);
+    // ------------- Keyboard Callbacks ------------- //
+    /**
+     * \brief Appelée lorsqu'une touche est enfoncée.
+     *
+     * \param key Nom de la touche (UTF-8, obtenu via SDL_GetKeyName).
+     * \param scancode Code physique de la touche (SDL_Scancode).
+     * \param keycode Code virtuel de la touche (SDL_Keycode).
+     * \param mod État des modificateurs (SDL_Keymod, ex: Shift, Ctrl).
+     * \param isrepeat True si l'événement est une répétition de touche.
+     * \param keyboardID Identifiant du clavier (SDL_KeyboardID).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_keypressed)(const char *key, SDL_Scancode scancode, SDL_Keycode keycode, SDL_Keymod mod, bool isrepeat, SDL_KeyboardID keyboardID);
 
-    // Gamepad and Joystick Callbacks -> TODO: A revoir
+    /**
+     * \brief Appelée lorsqu'une touche est relâchée.
+     *
+     * \param key Nom de la touche (UTF-8, obtenu via SDL_GetKeyName).
+     * \param scancode Code physique de la touche (SDL_Scancode).
+     * \param keycode Code virtuel de la touche (SDL_Keycode).
+     * \param mod État des modificateurs (SDL_Keymod, ex: Shift, Ctrl).
+     * \param keyboardID Identifiant du clavier (SDL_KeyboardID).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_keyreleased)(const char *key, SDL_Scancode scancode, SDL_Keycode keycode, SDL_Keymod mod, SDL_KeyboardID keyboardID);
+
+    /**
+     * \brief Appelée lorsqu'un texte est en cours d'édition via un IME.
+     *
+     * \param info Informations sur l'événement d'édition.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TextEditingEventInfo
+     */
+    void (*rc2d_textediting)(const RC2D_TextEditingEventInfo *info);
+
+    /**
+     * \brief Appelée lorsque des candidats d'édition de texte (IME) sont disponibles.
+     *
+     * \param info Informations sur les candidats.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TextEditingCandidatesEventInfo
+     */
+    void (*rc2d_texteditingcandidates)(const RC2D_TextEditingCandidatesEventInfo *info);
+
+    /**
+     * \brief Appelée lorsqu'un texte est entré (après validation de l'IME ou saisie directe).
+     *
+     * \param info Informations sur le texte entré.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_TextInputEventInfo
+     */
+    void (*rc2d_textinput)(const RC2D_TextInputEventInfo *info);
+
+    /**
+     * \brief Appelée lorsque la disposition du clavier ou la langue change.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_keymapchanged)(void);
+
+    /**
+     * \brief Appelée lorsqu'un nouveau clavier est connecté.
+     *
+     * \param info Informations sur le clavier ajouté.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_KeyboardDeviceEventInfo
+     */
+    void (*rc2d_keyboardadded)(const RC2D_KeyboardDeviceEventInfo *info);
+
+    /**
+     * \brief Appelée lorsqu'un clavier est déconnecté.
+     *
+     * \param info Informations sur le clavier supprimé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * 
+     * \see RC2D_KeyboardDeviceEventInfo
+     */
+    void (*rc2d_keyboardremoved)(const RC2D_KeyboardDeviceEventInfo *info);
+
+
+    // ------------- Mouse Callbacks ------------- //
+    /**
+     * \brief Appelée lorsque la souris est déplacée.
+     *
+     * \param x Position X de la souris, relative à la fenêtre (en pixels, type float).
+     * \param y Position Y de la souris, relative à la fenêtre (en pixels, type float).
+     * \param xrel Mouvement relatif en X depuis le dernier événement (en pixels, type float).
+     * \param yrel Mouvement relatif en Y depuis le dernier événement (en pixels, type float).
+     * \param mouseID Identifiant de la souris (SDL_MouseID, ou SDL_TOUCH_MOUSEID pour les événements tactiles).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_mousemoved)(float x, float y, float xrel, float yrel, SDL_MouseID mouseID);
+
+    /**
+     * \brief Appelée lorsqu’un bouton de la souris est enfoncé.
+     *
+     * \param x Position X de la souris, relative à la fenêtre (en pixels, type float).
+     * \param y Position Y de la souris, relative à la fenêtre (en pixels, type float).
+     * \param button Bouton de la souris enfoncé (RC2D_MouseButton).
+     * \param clicks Nombre de clics (1 pour simple clic, 2 pour double clic, etc.).
+     * \param mouseID Identifiant de la souris (SDL_MouseID, ou SDL_TOUCH_MOUSEID pour les événements tactiles).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_mousepressed)(float x, float y, RC2D_MouseButton button, int clicks, SDL_MouseID mouseID);
+
+    /**
+     * \brief Appelée lorsqu’un bouton de la souris est relâché.
+     *
+     * \param x Position X de la souris, relative à la fenêtre (en pixels, type float).
+     * \param y Position Y de la souris, relative à la fenêtre (en pixels, type float).
+     * \param button Bouton de la souris relâché (RC2D_MouseButton).
+     * \param clicks Nombre de clics (1 pour simple clic, 2 pour double clic, etc.).
+     * \param mouseID Identifiant de la souris (SDL_MouseID, ou SDL_TOUCH_MOUSEID pour les événements tactiles).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_mousereleased)(float x, float y, RC2D_MouseButton button, int clicks, SDL_MouseID mouseID);
+
+    /**
+     * \brief Appelée lorsqu’un mouvement de la molette de la souris est détecté.
+     *
+     * \param direction Direction du défilement (RC2D_MouseWheelDirection).
+     * \param x Quantité de défilement horizontal (positif vers la droite, négatif vers la gauche, type float).
+     * \param y Quantité de défilement vertical (positif vers le haut, négatif vers le bas, type float).
+     * \param integer_x Quantité parcourue horizontalement, cumulée sur l'ensemble des « ticks » de défilement.
+     * \param integer_y Quantité parcourue verticalement, cumulée sur l'ensemble des « ticks » de défilement.
+     * \param mouse_x Position X de la souris au moment du défilement (en pixels, type float).
+     * \param mouse_y Position Y de la souris au moment du défilement (en pixels, type float).
+     * \param mouseID Identifiant de la souris (SDL_MouseID, ou SDL_TOUCH_MOUSEID pour les événements tactiles).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_mousewheelmoved)(RC2D_MouseWheelDirection direction, float x, float y, Sint32 integer_x, Sint32 integer_y, float mouse_x, float mouse_y, SDL_MouseID mouseID);
+
+    /**
+     * \brief Appelée lorsqu’une nouvelle souris est connectée au système.
+     *
+     * \param mouseID Identifiant de la souris ajoutée (SDL_MouseID).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_mouseadded)(SDL_MouseID mouseID);
+
+    /**
+     * \brief Appelée lorsqu’une souris est déconnectée du système.
+     *
+     * \param mouseID Identifiant de la souris supprimée (SDL_MouseID).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_mouseremoved)(SDL_MouseID mouseID);
+
+
+    // TODO: A refaire les callbacks pour les gamepads et joysticks
+    // -------------- Gamepad and Joystick Callbacks ------------- //
     /*void (*rc2d_gamepadaxis)(SDL_JoystickID joystick, Uint8 axis, float value);
     void (*rc2d_gamepadpressed)(SDL_JoystickID joystick, Uint8 button);
     void (*rc2d_gamepadreleased)(SDL_JoystickID joystick, Uint8 button);
@@ -335,26 +587,259 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_joystickadded)(Sint32 joystick);
     void (*rc2d_joystickremoved)(Sint32 joystick);*/
 
-    // Drag and Drop Callbacks
-    void (*rc2d_dropfile)(const char* pathFile);
-    void (*rc2d_droptext)(const char* pathFile);
-    void (*rc2d_dropbegin)(const char* pathFile);
-    void (*rc2d_dropcomplete)(const char* pathFile);
 
-    // Window Callbacks
-    // TODO: Rajouter : rc2d_windowpixelsizechanged et rc2d_windowdisplayscalechanged ..etc
-    void (*rc2d_windowresized)(int newWidth, int newHeight);
-    void (*rc2d_windowmoved)(int x, int y);
-    void (*rc2d_windowsizedchanged)(int newWidth, int newHeight);
+    // -------------- Drag and Drop Callbacks ------------- //
+    /**
+     * \brief Appelée lorsqu'une opération de drag-and-drop commence.
+     *
+     * Reçoit un `RC2D_DropEventInfo` avec `data` et `x`, `y` à NULL/0, indiquant
+     * le début d'une séquence de drag-and-drop.
+     *
+     * \param info Informations sur l'événement de début de drop.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * \see RC2D_DropEventInfo
+     */
+    void (*rc2d_dropbegin)(const RC2D_DropEventInfo *info);
+
+    /**
+     * \brief Appelée lorsqu'un fichier est déposé sur la fenêtre.
+     *
+     * Reçoit un `RC2D_DropEventInfo` avec `data` contenant le chemin du fichier,
+     * et `x`, `y` indiquant la position du drop.
+     *
+     * \param info Informations sur l'événement, incluant le chemin du fichier.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * \see RC2D_DropEventInfo
+     */
+    void (*rc2d_dropfile)(const RC2D_DropEventInfo *info);
+
+    /**
+     * \brief Appelée lorsqu'un texte est déposé sur la fenêtre.
+     *
+     * Reçoit un `RC2D_DropEventInfo` avec `data` contenant le texte déposé,
+     * et `x`, `y` indiquant la position du drop.
+     *
+     * \param info Informations sur l'événement, incluant le texte déposé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * \see RC2D_DropEventInfo
+     */
+    void (*rc2d_droptext)(const RC2D_DropEventInfo *info);
+
+    /**
+     * \brief Appelée lorsque l'opération de drag-and-drop est terminée.
+     *
+     * Reçoit un `RC2D_DropEventInfo` avec `data` et `x`, `y` à NULL/0, indiquant
+     * la fin de la séquence de drag-and-drop.
+     *
+     * \param info Informations sur l'événement de fin de drop.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * \see RC2D_DropEventInfo
+     */
+    void (*rc2d_dropcomplete)(const RC2D_DropEventInfo *info);
+
+    /**
+     * \brief Appelée lorsque la position du curseur change pendant un drag-over.
+     *
+     * Reçoit un `RC2D_DropEventInfo` avec `x`, `y` indiquant la position actuelle
+     * du curseur, et `data` à NULL.
+     *
+     * \param info Informations sur l'événement, incluant les coordonnées.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * \see RC2D_DropEventInfo
+     */
+    void (*rc2d_dropposition)(const RC2D_DropEventInfo *info);
+
+    
+    // -------------- Window Callbacks ------------- //
+    /**
+     * \brief Appelée lorsque la fenêtre devient visible.
+     *
+     * L'événement indique que la fenêtre, précédemment masquée, est maintenant affichée
+     * (par exemple, après un appel à SDL_ShowWindow ou une restauration).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowshown)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre est occluse (couverte ou non visible).
+     *
+     * L'événement indique que la fenêtre est entièrement ou partiellement masquée
+     * par une autre fenêtre, le bureau, ou un autre élément de l'interface.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowoccluded)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre a changé de moniteur.
+     * 
+     * Cela peut arriver lorsqu’un utilisateur glisse la fenêtre vers un autre écran.
+     * 
+     * \param displayIndex L'index du nouveau moniteur (commence à 0).
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowdisplaychanged)(int displayIndex);
+
+    /**
+     * \brief Appelée lorsque la fenêtre est redimensionnée.
+     * 
+     * Cette fonction est déclenchée lorsque l'utilisateur redimensionne la fenêtre de l'application.
+     * 
+     * \param width Nouvelle largeur de la fenêtre.
+     * \param height Nouvelle hauteur de la fenêtre.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowresized)(int width, int height);
+
+    /**
+     * \brief Appelée lorsque la fenêtre est exposée à nouveau à l’écran.
+     * 
+     * Cela signifie que la fenêtre a été dévoilée (ex: après avoir été recouverte ou restaurée).
+     * Le moteur doit alors redessiner immédiatement son contenu.
+     * 
+     * \note Cela ne signifie pas que la taille a changé, seulement que la fenêtre est à nouveau visible.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_windowexposed)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre a été déplacée sur l'écran.
+     *
+     * Cette fonction est déclenchée lorsque l'utilisateur déplace la fenêtre de l'application,
+     * par exemple en la faisant glisser à l'aide de la souris ou via un raccourci clavier.
+     *
+     * Elle fournit les nouvelles coordonnées de la fenêtre dans l'espace écran.
+     * Cela peut être utile pour ajuster certains comportements liés à la position de la fenêtre,
+     * comme repositionner des fenêtres secondaires, recalculer des offsets, etc.
+     *
+     * \param x Nouvelle position horizontale (coordonnée X) de la fenêtre.
+     * \param y Nouvelle position verticale (coordonnée Y) de la fenêtre.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowmoved)(int x, int y);
+        
+    /**
+     * \brief Appelée lorsque la fenêtre est minimisée.
+     *
+     * Cela signifie que la fenêtre a été réduite (icône dans la barre des tâches ou cachée).
+     * L'application peut choisir de mettre en pause certains traitements ou de réduire l'utilisation CPU/GPU.
+     *
+     * \note Aucun redimensionnement n’a lieu. La fenêtre est juste rendue invisible ou inactive.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_windowminimized)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre est maximisée.
+     *
+     * Cela signifie que la fenêtre a été agrandie pour occuper tout l’espace disponible sur l’écran.
+     * Cela peut être utile pour recalculer le layout, adapter les ressources ou déclencher un rendu.
+     *
+     * \note Contrairement au redimensionnement manuel, cela résulte d'une action de l'utilisateur ou du système.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_windowmaximized)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre est restaurée.
+     *
+     * Cette fonction est déclenchée lorsque la fenêtre revient à son état normal
+     * après avoir été minimisée ou maximisée.
+     *
+     * Cela peut être utile pour relancer des animations, reprendre un rendu actif,
+     * ou adapter les comportements de pause/reprise.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_windowrestored)(void);
-    void (*rc2d_mouseenteredwindow)(void);
-    void (*rc2d_mouseleavewindow)(void);
-    void (*rc2d_keyboardfocusgained)(void);
-    void (*rc2d_keyboardfocuslost)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre entre en mode plein écran.
+     * 
+     * Cette fonction est déclenchée lorsque l'utilisateur active le mode plein écran
+     * pour la fenêtre de l'application.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowenterfullscreen)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre quitte le mode plein écran.
+     * 
+     * Cette fonction est déclenchée lorsque l'utilisateur désactive le mode plein écran
+     * pour la fenêtre de l'application.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowleavefullscreen)(void);
+
+    /**
+     * \brief Appelée lorsque la souris entre dans la fenêtre.
+     *
+     * Cette fonction est déclenchée lorsqu'un curseur de souris entre dans la surface de la fenêtre.
+     * Cela peut être utile pour déclencher des effets visuels (highlight, surbrillance, etc.)
+     * ou pour gérer un comportement spécifique lorsque l'utilisateur pointe la fenêtre avec la souris.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowmouseenter)(void);
+
+    /**
+     * \brief Appelée lorsque la souris quitte la fenêtre.
+     *
+     * Cette fonction est déclenchée lorsqu'un curseur de souris sort de la surface de la fenêtre.
+     * Elle peut être utilisée pour annuler des effets visuels, masquer des survols ou réinitialiser des états UI.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowmouseleave)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre obtient le focus clavier.
+     *
+     * Cette fonction est déclenchée lorsque l'utilisateur sélectionne la fenêtre avec le clavier, 
+     * par exemple en cliquant dessus ou en utilisant un raccourci ALT+TAB.
+     * Cela permet à l'application de reprendre des interactions clavier ou de réactiver certains états.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowkeyboardfocus)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre perd le focus clavier.
+     *
+     * Cette fonction est déclenchée lorsque la fenêtre n'est plus la cible active des entrées clavier.
+     * Cela peut être utilisé pour suspendre les raccourcis clavier, désactiver la saisie, ou mettre le jeu en pause.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_windowkeyboardlost)(void);
+
+    /**
+     * \brief Appelée lorsque la fenêtre reçoit une requête de fermeture.
+     * 
+     * Cette fonction est déclenchée lorsque le gestionnaire de fenêtre (window manager)
+     * demande la fermeture de la fenêtre de l'application, généralement suite à un clic sur la croix de fermeture
+     * ou via ALT+F4 sur certains systèmes.
+     * 
+     * \note L'application peut choisir d'ignorer ou de gérer cette requête, par exemple pour afficher une boîte de confirmation.
+     * 
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_windowclosed)(void);
+
     void (*rc2d_windowtakefocus)(void);
     void (*rc2d_windowhittest)(void);
 
@@ -423,14 +908,65 @@ typedef struct RC2D_Callbacks {
      * Cette fonction permet de réagir à une rotation de l’écran (portrait, paysage, etc.),
      * utile sur mobile, tablette ou appareils à écran rotatif.
      * 
+     * \param monitorID Identifiant du moniteur concerné par le changement d’orientation.
      * \param orientation Nouvelle orientation de l’affichage.
      * 
      * \since Cette fonction est disponible depuis RC2D 1.0.0.
      * 
      * \see RC2D_DisplayOrientation
      */
-    void (*rc2d_displayorientationchanged)(RC2D_DisplayOrientation orientation);
+    void (*rc2d_monitororientationchanged)(SDL_DisplayID monitorID, RC2D_DisplayOrientation orientation);
 
+    /**
+     * \brief Appelée lorsqu'un nouveau moniteur est ajouté au système (ex. : connexion d'un écran externe).
+     *
+     * Utile pour mettre à jour la liste des moniteurs ou reconfigurer une disposition multi-écrans.
+     *
+     * \param info Identifiant du moniteur ajouté.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_monitoradded)(SDL_DisplayID monitorID);
+
+    /**
+     * \brief Appelée lorsqu'un moniteur est supprimé du système (ex. : déconnexion d'un écran).
+     *
+     * Utile pour ajuster le rendu ou déplacer les fenêtres vers les moniteurs restants.
+     *
+     * \param monitorID Identifiant du moniteur supprimé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_monitorremoved)(SDL_DisplayID monitorID);
+
+    /**
+     * \brief Appelée lorsqu'un moniteur change de position (ex. : réorganisation dans une configuration multi-écrans).
+     *
+     * Utile pour suivre la disposition des moniteurs.
+     *
+     * \param monitorID Identifiant du moniteur dont la position a changé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_monitormoved)(SDL_DisplayID monitorID);
+
+    /**
+     * \brief Appelée lorsque le mode de bureau d'un moniteur change (ex. : résolution, taux de rafraîchissement).
+     *
+     * \param monitorID Identifiant du moniteur dont le mode a changé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_monitordesktopmodechanged)(SDL_DisplayID monitorID);
+
+    /**
+     * \brief Appelée lorsque le mode actuel d'un moniteur change (ex. : passage à un nouveau mode d'affichage).
+     *
+     * \param monitorID Identifiant du moniteur dont le mode a changé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_monitorcurrentmodechanged)(SDL_DisplayID monitorID);
 
     // ------------- Locale Callbacks ------------- //
     /**
@@ -503,6 +1039,32 @@ typedef struct RC2D_Callbacks {
      * \param {RC2D_CameraEventInfo*} info - Informations sur l'appareil photo refusé.
      */
     void (*rc2d_cameradenied)(const RC2D_CameraEventInfo* info);
+
+
+    // ------------- Sensor Callbacks ------------- //
+    /**
+     * \brief Appelée lorsqu'un capteur (ex: accéléromètre, gyroscope) fournit de nouvelles données.
+     *
+     * \param info Informations sur la mise à jour du capteur.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     * \see RC2D_SensorEventInfo
+     */
+    void (*rc2d_sensorupdate)(const RC2D_SensorEventInfo *info);
+
+
+    // ------------- System Callbacks ------------- //
+    /**
+     * \brief Appelée lorsque le thème système de l'OS change (ex. : passage en mode clair ou sombre).
+     *
+     * \param theme Le thème système actuel :
+     *   - `SDL_SYSTEMTHEME_LIGHT` : Thème clair.
+     *   - `SDL_SYSTEMTHEME_DARK` : Thème sombre.
+     *   - `SDL_SYSTEMTHEME_UNKNOWN` : Thème indéterminé.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
+    void (*rc2d_systemthemechanged)(SDL_SystemTheme theme);
 } RC2D_EngineCallbacks;
 
 /**
