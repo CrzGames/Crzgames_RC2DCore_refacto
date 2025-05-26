@@ -10,7 +10,7 @@
 #include <SDL3/SDL_mutex.h>
 
 /**
- * IMPORTANT : 
+ * IMPORTANT: 
  * Module interne de la bibliothèque RC2D.
  * Pour ne pas exposer certaines fonctions, struct, enums et variables à l'utilisateur final.
  */
