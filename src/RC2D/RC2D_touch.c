@@ -132,8 +132,8 @@ void rc2d_touch_getPosition(SDL_FingerID fingerID, float* x, float* y)
     {
         if (touchState->touches[i].fingerID == fingerID) 
         {
-            *x = touchState->touches[i].x * rc2d_graphics_getWidth();
-            *y = touchState->touches[i].y * rc2d_graphics_getHeight();
+            *x = touchState->touches[i].x * rc2d_window_getWidth();
+            *y = touchState->touches[i].y * rc2d_window_getHeight();
             return;
         }
     }
