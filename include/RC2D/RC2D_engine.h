@@ -4,8 +4,8 @@
 #include <RC2D/RC2D_gpu.h>
 #include <RC2D/RC2D_window.h>
 #include <RC2D/RC2D_local.h>
-
-#include <SDL3/SDL_touch.h>
+#include <RC2D/RC2D_touch.h>
+#include <RC2D/RC2D_camera.h>
 
 /* Configuration pour les définitions de fonctions C, même lors de l'utilisation de C++ */
 #ifdef __cplusplus
@@ -503,8 +503,6 @@ typedef struct RC2D_Callbacks {
      * \param {RC2D_CameraEventInfo*} info - Informations sur l'appareil photo refusé.
      */
     void (*rc2d_cameradenied)(const RC2D_CameraEventInfo* info);
-
-
 } RC2D_EngineCallbacks;
 
 /**
