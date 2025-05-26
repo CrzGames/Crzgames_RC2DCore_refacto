@@ -402,10 +402,54 @@ typedef struct RC2D_DropEventInfo {
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_Callbacks {
-    // ------------- GameLoop Callbacks ------------- //
+    // -------------- Core Game Loop Callbacks ------------- //
+    /**
+     * \brief Appelée juste avant la fermeture de l'application.
+     *
+     * Cette fonction est invoquée en interne par le moteur RC2D immédiatement avant
+     * que l'application ne se termine, permettant de libérer les ressources allouées
+     * (ex. : mémoire, textures, fichiers ouverts). Elle est appelée une seule fois
+     * lors de l'arrêt du programme.
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_unload)(void);
+
+    /**
+     * \brief Appelée au démarrage de l'application, avant le début de la boucle de jeu.
+     *
+     * Cette fonction est invoquée une seule fois au tout début, avant que la boucle
+     * principale du jeu ne commence. Elle permet d'initialiser les ressources nécessaires
+     * (ex. : chargement des assets, configuration initiale de l'état du jeu).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_load)(void);
+
+    /**
+     * \brief Appelée à intervalles réguliers pour mettre à jour la logique du jeu.
+     *
+     * Cette fonction est invoquée à chaque itération de la boucle de jeu, à une fréquence
+     * synchronisée avec le taux de rafraîchissement du moniteur, mais limitée à un framerate
+     * maximum défini par le moteur. Le paramètre `dt` représente le temps écoulé (en secondes)
+     * depuis la dernière mise à jour, permettant des calculs indépendants du framerate.
+     *
+     * \param dt Temps écoulé depuis la dernière mise à jour (en secondes).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_update)(double dt);
+
+    /**
+     * \brief Appelée à intervalles réguliers pour rendre la frame de jeu.
+     *
+     * Cette fonction est invoquée immédiatement après `rc2d_update` à chaque itération
+     * de la boucle de jeu, à la même fréquence limitée par le framerate défini. Elle
+     * est responsable du rendu graphique de l'état actuel du jeu (ex. : dessin des
+     * sprites, mise à jour de l'écran).
+     *
+     * \since Cette fonction est disponible depuis RC2D 1.0.0.
+     */
     void (*rc2d_draw)(void);
 
 
@@ -840,9 +884,6 @@ typedef struct RC2D_Callbacks {
      */
     void (*rc2d_windowclosed)(void);
 
-    void (*rc2d_windowtakefocus)(void);
-    void (*rc2d_windowhittest)(void);
-
 
     // ------------- Touch Callbacks ------------- //
     /**
@@ -901,7 +942,7 @@ typedef struct RC2D_Callbacks {
     void (*rc2d_touchcanceled)(const RC2D_TouchEventInfo* info);
 
 
-    // -------------- Display Callbacks ------------- //
+    // -------------- Display/Monitor Callbacks ------------- //
     /**
      * \brief Appelée lorsqu’un changement d’orientation de l’affichage est détecté.
      * 
@@ -967,6 +1008,7 @@ typedef struct RC2D_Callbacks {
      * \since Cette fonction est disponible depuis RC2D 1.0.0.
      */
     void (*rc2d_monitorcurrentmodechanged)(SDL_DisplayID monitorID);
+
 
     // ------------- Locale Callbacks ------------- //
     /**
@@ -1148,7 +1190,11 @@ typedef struct RC2D_EngineConfig {
 /**
  * \brief Cette fonction DOIT être définie par l'utilisateur, si elle est absente, l'éditeur de liens renverra une erreur.
  *
- * \note Si vous souhaitez utiliser la configuration par défaut de RC2D, vous pouvez retourner NULL.
+ * Si vous souhaitez utiliser la configuration par défaut de RC2D, vous pouvez retourner NULL, mais
+ * vous n'aurais aucune callback d'événement, donc juste un écran noir avec RC2D qui tourne en boucle.
+ * 
+ * \note Utiliser plutôt `rc2d_engine_getDefaultConfig()` pour obtenir une configuration par défaut, puis
+ * personnaliser les champs nécessaires.
  *
  * \param {int} argc - Nombre d'arguments de la ligne de commande.
  * \param {char**} argv - Arguments de la ligne de commande.
