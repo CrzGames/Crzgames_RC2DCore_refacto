@@ -15,7 +15,6 @@ typedef struct Allocation {
 
 /* Liste chaînée des allocations */
 static Allocation* allocations = NULL;
-static int initialized = 0;
 
 /* Ajouter une allocation à la liste */
 static void add_allocation(void* ptr, size_t size, const char* file, int line, const char* func) 
@@ -141,18 +140,20 @@ char* rc2d_strndup_debug(const char* str, size_t n, const char* file, int line, 
 void rc2d_memory_report(void) 
 {
 #if RC2D_MEMORY_DEBUG_ENABLED
+    // Si aucune allocation n'a été faite, on affiche qu'il n'y a pas de fuite mémoire
     if (!allocations) 
     {
         RC2D_log(RC2D_LOG_INFO, "RC2D Memory: Aucune fuite mémoire détectée.");
         return;
     }
 
-    size_t total_leaked = 0;
-    int leak_count = 0;
-
+    // Affichage du rapport de fuites mémoire
     RC2D_log(RC2D_LOG_ERROR, "RC2D Memory - Rapport des fuites mémoire:");
     RC2D_log(RC2D_LOG_ERROR, "----------------------------------------");
 
+    // Parcourir la liste des allocations et afficher les informations
+    size_t total_leaked = 0;
+    int leak_count = 0;
     Allocation* current = allocations;
     while (current) 
     {
