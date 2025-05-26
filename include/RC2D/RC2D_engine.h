@@ -18,132 +18,6 @@ extern "C" {
 #endif
 
 /**
- * \brief Modes d'affichage pour le contenu du letterbox.
- * 
- * Définit comment les zones de letterbox (marges visibles autour du rendu principal)
- * doivent être remplies lorsque la résolution logique n'occupe pas toute la fenêtre.
- * 
- * \note Ces zones apparaissent notamment en cas de mise à l’échelle non proportionnelle
- * ou de ratio d’aspect incompatible (par ex. 16:9 dans une fenêtre 4:3).
- * Ce système permet d’améliorer l’esthétique du rendu sur tous les écrans.
- * 
- * \since Cette enum est disponible depuis RC2D 1.0.0.
- */
-typedef enum RC2D_LetterboxMode {
-    /**
-     * Aucune texture ni remplissage : les marges ne sont pas dessinées, donc noires.
-     * 
-     * Cela signifie que si le contenu ne remplit pas l'écran, les zones de letterbox
-     * seront noires par défaut.
-     */
-    RC2D_LETTERBOX_NONE,
-
-    /**
-     * Une seule texture est utilisée pour tous les bords.
-     * 
-     * Cela signifie que la même texture sera appliquée sur le haut, le bas, la gauche
-     * et la droite de l'écran, créant un effet uniforme.
-     */
-    RC2D_LETTERBOX_UNIFORM,
-
-    /**
-     * Chaque bord (haut, bas, gauche, droite) peut avoir sa propre texture.
-     * 
-     * Cela permet une personnalisation plus poussée, où chaque bord peut afficher
-     * une texture différente pour un effet visuel unique.
-     */
-    RC2D_LETTERBOX_PER_SIDE,
-
-    /**
-     * Une grande texture unique est affichée derrière toute la scène, 
-     * incluant les zones letterbox et le rendu principal.
-     * 
-     * Cela signifie que la texture remplira l'arrière-plan de l'écran, y compris les zones de letterbox,
-     * créant un effet d'immersion totale.
-     */
-    RC2D_LETTERBOX_BACKGROUND_FULL
-} RC2D_LetterboxMode;
-
-/**
- * \brief Textures de remplissage pour les marges du letterbox/pillarbox.
- * 
- * Cette structure permet de définir le comportement visuel des marges 
- * (haut, bas, gauche, droite) en cas de mise à l’échelle logique avec letterboxing.
- *
- * \since Cette structure est disponible depuis RC2D 1.0.0.
- */
-typedef struct RC2D_LetterboxTextures {
-    /**
-     * Mode d’affichage utilisé pour remplir les zones de letterbox.
-     * 
-     * - `RC2D_LETTERBOX_NONE` : pas de remplissage, marges noires.
-     * - `RC2D_LETTERBOX_UNIFORM` : une seule texture sur tous les bords.
-     * - `RC2D_LETTERBOX_PER_SIDE` : textures différentes pour chaque bord.
-     * - `RC2D_LETTERBOX_BACKGROUND_FULL` : texture géante en arrière-plan.
-     */
-    RC2D_LetterboxMode mode;
-
-    /**
-     * Texture unique utilisée sur tous les côtés (mode `RC2D_LETTERBOX_UNIFORM`).
-     */
-    RC2D_GPUTexture* uniform;
-
-    /**
-     * Texture spécifique pour chaque côtés (mode `RC2D_LETTERBOX_PER_SIDE`).
-     */
-    RC2D_GPUTexture* top;
-    RC2D_GPUTexture* bottom;
-    RC2D_GPUTexture* left;
-    RC2D_GPUTexture* right;
-
-    /**
-     * Texture géante utilisée en arrière-plan total (mode `RC2D_LETTERBOX_BACKGROUND_FULL`).
-     */
-    RC2D_GPUTexture* background;
-} RC2D_LetterboxTextures;
-
-/**
- * \brief Définit comment le contenu du jeu est affiché à l'écran.
- * 
- * \since Cette enum est disponible depuis RC2D 1.0.0.
- */
-typedef enum RC2D_PresentationMode {
-    /**
-     * Mode pixel art : mise à l’échelle entière (INTEGER_SCALE) + letterbox.
-     * Idéal pour les jeux rétro, garantissant des pixels nets et une esthétique pixelisée.
-     */
-    RC2D_PRESENTATION_PIXELART,
-
-    /**
-     * Mode classique : mise à l’échelle fluide + letterbox.
-     * Idéal pour les jeux modernes, s’adaptant à l’écran tout en préservant le ratio d’aspect.
-     */
-    RC2D_PRESENTATION_CLASSIC
-} RC2D_PresentationMode;
-
-/**
- * \brief Informations sur l'application.
- * 
- * \since Cette structure est disponible depuis RC2D 1.0.0.
- */
-typedef struct RC2D_AppInfo {
-    /**
-     * Nom de l'application.
-     */
-    const char* name;
-
-    /**
-     * Version de l'application.
-     */
-    const char* version;
-
-    /**
-     * Identifiant de l'application.
-     */
-    const char* identifier;
-} RC2D_AppInfo;
-
-/**
  * \brief Informations relatives à un événement de mise à jour du presse-papiers.
  * 
  * Cette structure contient les informations transmises à la callback `rc2d_clipboardupdated`
@@ -1108,6 +982,132 @@ typedef struct RC2D_Callbacks {
      */
     void (*rc2d_systemthemechanged)(SDL_SystemTheme theme);
 } RC2D_EngineCallbacks;
+
+/**
+ * \brief Modes d'affichage pour le contenu du letterbox.
+ * 
+ * Définit comment les zones de letterbox (marges visibles autour du rendu principal)
+ * doivent être remplies lorsque la résolution logique n'occupe pas toute la fenêtre.
+ * 
+ * \note Ces zones apparaissent notamment en cas de mise à l’échelle non proportionnelle
+ * ou de ratio d’aspect incompatible (par ex. 16:9 dans une fenêtre 4:3).
+ * Ce système permet d’améliorer l’esthétique du rendu sur tous les écrans.
+ * 
+ * \since Cette enum est disponible depuis RC2D 1.0.0.
+ */
+typedef enum RC2D_LetterboxMode {
+    /**
+     * Aucune texture ni remplissage : les marges ne sont pas dessinées, donc noires.
+     * 
+     * Cela signifie que si le contenu ne remplit pas l'écran, les zones de letterbox
+     * seront noires par défaut.
+     */
+    RC2D_LETTERBOX_NONE,
+
+    /**
+     * Une seule texture est utilisée pour tous les bords.
+     * 
+     * Cela signifie que la même texture sera appliquée sur le haut, le bas, la gauche
+     * et la droite de l'écran, créant un effet uniforme.
+     */
+    RC2D_LETTERBOX_UNIFORM,
+
+    /**
+     * Chaque bord (haut, bas, gauche, droite) peut avoir sa propre texture.
+     * 
+     * Cela permet une personnalisation plus poussée, où chaque bord peut afficher
+     * une texture différente pour un effet visuel unique.
+     */
+    RC2D_LETTERBOX_PER_SIDE,
+
+    /**
+     * Une grande texture unique est affichée derrière toute la scène, 
+     * incluant les zones letterbox et le rendu principal.
+     * 
+     * Cela signifie que la texture remplira l'arrière-plan de l'écran, y compris les zones de letterbox,
+     * créant un effet d'immersion totale.
+     */
+    RC2D_LETTERBOX_BACKGROUND_FULL
+} RC2D_LetterboxMode;
+
+/**
+ * \brief Textures de remplissage pour les marges du letterbox/pillarbox.
+ * 
+ * Cette structure permet de définir le comportement visuel des marges 
+ * (haut, bas, gauche, droite) en cas de mise à l’échelle logique avec letterboxing.
+ *
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_LetterboxTextures {
+    /**
+     * Mode d’affichage utilisé pour remplir les zones de letterbox.
+     * 
+     * - `RC2D_LETTERBOX_NONE` : pas de remplissage, marges noires.
+     * - `RC2D_LETTERBOX_UNIFORM` : une seule texture sur tous les bords.
+     * - `RC2D_LETTERBOX_PER_SIDE` : textures différentes pour chaque bord.
+     * - `RC2D_LETTERBOX_BACKGROUND_FULL` : texture géante en arrière-plan.
+     */
+    RC2D_LetterboxMode mode;
+
+    /**
+     * Texture unique utilisée sur tous les côtés (mode `RC2D_LETTERBOX_UNIFORM`).
+     */
+    RC2D_GPUTexture* uniform;
+
+    /**
+     * Texture spécifique pour chaque côtés (mode `RC2D_LETTERBOX_PER_SIDE`).
+     */
+    RC2D_GPUTexture* top;
+    RC2D_GPUTexture* bottom;
+    RC2D_GPUTexture* left;
+    RC2D_GPUTexture* right;
+
+    /**
+     * Texture géante utilisée en arrière-plan total (mode `RC2D_LETTERBOX_BACKGROUND_FULL`).
+     */
+    RC2D_GPUTexture* background;
+} RC2D_LetterboxTextures;
+
+/**
+ * \brief Définit comment le contenu du jeu est affiché à l'écran.
+ * 
+ * \since Cette enum est disponible depuis RC2D 1.0.0.
+ */
+typedef enum RC2D_PresentationMode {
+    /**
+     * Mode pixel art : mise à l’échelle entière (INTEGER_SCALE) + letterbox.
+     * Idéal pour les jeux rétro, garantissant des pixels nets et une esthétique pixelisée.
+     */
+    RC2D_PRESENTATION_PIXELART,
+
+    /**
+     * Mode classique : mise à l’échelle fluide + letterbox.
+     * Idéal pour les jeux modernes, s’adaptant à l’écran tout en préservant le ratio d’aspect.
+     */
+    RC2D_PRESENTATION_CLASSIC
+} RC2D_PresentationMode;
+
+/**
+ * \brief Informations sur l'application.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_AppInfo {
+    /**
+     * Nom de l'application.
+     */
+    const char* name;
+
+    /**
+     * Version de l'application.
+     */
+    const char* version;
+
+    /**
+     * Identifiant de l'application.
+     */
+    const char* identifier;
+} RC2D_AppInfo;
 
 /**
  * \brief Configuration de l'application RC2D.
