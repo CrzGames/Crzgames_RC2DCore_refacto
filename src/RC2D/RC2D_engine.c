@@ -1807,11 +1807,6 @@ void rc2d_engine_quit(void)
                 RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
                 rc2d_engine_state.gpu_graphics_shaders_cache[i].filename = NULL;
             }
-            if (rc2d_engine_state.gpu_graphics_shaders_cache[i].shader) 
-            {
-                SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_shaders_cache[i].shader);
-                rc2d_engine_state.gpu_graphics_shaders_cache[i].shader = NULL;
-            }
         }
         RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache);
         rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
@@ -1831,11 +1826,6 @@ void rc2d_engine_quit(void)
             {
                 RC2D_free(rc2d_engine_state.gpu_compute_shaders_cache[i].filename);
                 rc2d_engine_state.gpu_compute_shaders_cache[i].filename = NULL;
-            }
-            if (rc2d_engine_state.gpu_compute_shaders_cache[i].shader) 
-            {
-                SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_compute_shaders_cache[i].shader);
-                rc2d_engine_state.gpu_compute_shaders_cache[i].shader = NULL;
             }
         }
         RC2D_free(rc2d_engine_state.gpu_compute_shaders_cache);
@@ -1862,12 +1852,6 @@ void rc2d_engine_quit(void)
                 RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename);
                 rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename = NULL;
             }
-            if (rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline &&
-                rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline->pipeline) 
-            {
-                SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline->pipeline);
-                rc2d_engine_state.gpu_graphics_pipelines_cache[i].graphicsPipeline->pipeline = NULL;
-            }
         }
         RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache);
         rc2d_engine_state.gpu_graphics_pipelines_cache = NULL;
@@ -1876,24 +1860,6 @@ void rc2d_engine_quit(void)
         SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
         rc2d_engine_state.gpu_graphics_pipeline_mutex = NULL;
     }
-
-    /**
-     * IMPORTANT: 
-     * L'appelle de cette fonction doit être appeler avant : 
-     * - SDL_ReleaseWindowFromGPUDevice()
-     * - SDL_DestroyWindow()
-     * - SDL_DestroyGPUDevice()
-     * - SDL_Quit()
-     * 
-     * Affiche un rapport des fuites mémoire détectées.
-     * Cela est utile pour identifier les fuites de mémoire dans l'application.
-     * 
-     * Note : 
-     * - Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1.
-     * - La fermeture de la fenêtre est ralenti et ram, mais toute facon ce n'ai présent que en mode debug.
-     * - Il est recommandé de l'utiliser uniquement en mode développement pour éviter les ralentissements en production.
-     */
-    rc2d_memory_report();
 
     /* Annuler la revendication de la fenêtre */
     if (rc2d_engine_state.gpu_device && rc2d_engine_state.window) 
@@ -1917,6 +1883,16 @@ void rc2d_engine_quit(void)
 
     // Cleanup SDL3
 	rc2d_engine_cleanup_sdl();
+
+    /**
+     * Affiche un rapport des fuites mémoire détectées.
+     * Cela est utile pour identifier les fuites de mémoire dans l'application.
+     * 
+     * Note : 
+     * - Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1.
+     * - Il est recommandé de l'utiliser uniquement en mode développement pour éviter les ralentissements en production.
+     */
+    rc2d_memory_report();
 }
 
 void rc2d_engine_configure(const RC2D_EngineConfig* config)

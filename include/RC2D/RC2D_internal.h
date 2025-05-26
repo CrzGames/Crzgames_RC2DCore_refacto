@@ -64,11 +64,19 @@ typedef struct RC2D_ComputeShaderEntry {
 typedef struct RC2D_GraphicsShaderEntry {
     /**
      * Nom du fichier du shader (e.g., "test.vertex" ou "test.fragment").
+     * 
+     * IMPORTANT:
+     * \note Le pointeur doit être libéré en interne dans RC2D.
      */
-    char* filename;
+    const char* filename;
     
     /**
      * Pointeur vers le shader graphique chargé.
+     * 
+     * IMPORTANT:
+     * \note Ce pointeur pointe vers le shader graphique de l'utilisateur,
+     * il ne doit pas être libéré manuellement en interne, mais par l'utilisateur
+     * lorsqu'il n'est plus nécessaire, via : SDL_ReleaseGPUShader().
      */
     RC2D_GPUShader* shader;
 
@@ -92,16 +100,27 @@ typedef struct RC2D_GraphicsShaderEntry {
 typedef struct RC2D_GraphicsPipelineEntry {
     /**
      * Nom du fichier du shader de vertex (e.g., "test.vertex").
+     * 
+     * IMPORTANT:
+     * \note Le pointeur doit être libéré en interne dans RC2D.
      */
-    char* vertex_shader_filename;
+    const char* vertex_shader_filename;
 
     /**
      * Nom du fichier du shader de fragment (e.g., "test.fragment").
+     * 
+     * IMPORTANT:
+     * \note Le pointeur doit être libéré en interne dans RC2D.
      */
-    char* fragment_shader_filename;
+    const char* fragment_shader_filename;
 
     /**
      * Pointeur vers le pipeline graphique chargé.
+     * 
+     * IMPORTANT:
+     * \note Ce pointeur pointe vers le pipeline graphique de l'utilisateur,
+     * il ne doit pas être libéré manuellement en interne, mais par l'utilisateur
+     * lorsqu'il n'est plus nécessaire, via : SDL_ReleaseGPUGraphicsPipeline().
      */
     RC2D_GPUGraphicsPipeline* graphicsPipeline;
 } RC2D_GraphicsPipelineEntry;
