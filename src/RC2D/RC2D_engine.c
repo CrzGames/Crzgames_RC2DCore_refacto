@@ -94,6 +94,45 @@ static bool rc2d_engine_supported_gpu_backends(void)
 }
 
 /**
+ * \brief Convertit le mode de présentation SDL_GPU en chaîne de caractères.
+ *
+ * Cette fonction convertit un mode de présentation SDL_GPU en une chaîne de caractères lisible.
+ * 
+ * \param {SDL_GPUPresentMode} mode - Le mode de présentation à convertir.
+ * \return {const char*} - La chaîne de caractères représentant le mode de présentation.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+const char* rc2d_present_mode_to_string(SDL_GPUPresentMode mode) {
+    switch (mode) {
+        case SDL_GPU_PRESENTMODE_MAILBOX:   return "RC2D_GPU_PRESENTMODE_MAILBOX";
+        case SDL_GPU_PRESENTMODE_VSYNC:     return "RC2D_GPU_PRESENTMODE_VSYNC";
+        case SDL_GPU_PRESENTMODE_IMMEDIATE: return "RC2D_GPU_PRESENTMODE_IMMEDIATE";
+        default: return "RC2D_GPU_PRESENTMODE_UNKNOWN";
+    }
+}
+
+/**
+ * \brief Convertit la composition de swapchain SDL_GPU en chaîne de caractères.
+ *
+ * Cette fonction convertit une composition de swapchain SDL_GPU en une chaîne de caractères lisible.
+ * 
+ * \param {SDL_GPUSwapchainComposition} comp - La composition de swapchain à convertir.
+ * \return {const char*} - La chaîne de caractères représentant la composition de swapchain.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+const char* rc2d_composition_to_string(SDL_GPUSwapchainComposition comp) {
+    switch (comp) {
+        case SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084:      return "RC2D_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084";
+        case SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR:return "RC2D_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR";
+        case SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR:        return "RC2D_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR";
+        case SDL_GPU_SWAPCHAINCOMPOSITION_SDR:               return "RC2D_GPU_SWAPCHAINCOMPOSITION_SDR";
+        default: return "RC2D_GPU_SWAPCHAINCOMPOSITION_UNKNOWN";
+    }
+}
+
+/**
  * \brief Configure le swapchain GPU avec la meilleure combinaison de mode de présentation et de composition.
  *
  * Cette fonction tente de trouver et d'appliquer la meilleure combinaison supportée de mode de présentation
@@ -193,45 +232,6 @@ static bool rc2d_engine_configure_swapchain(void)
     }
 
     return true;
-}
-
-/**
- * \brief Convertit le mode de présentation SDL_GPU en chaîne de caractères.
- *
- * Cette fonction convertit un mode de présentation SDL_GPU en une chaîne de caractères lisible.
- * 
- * \param {SDL_GPUPresentMode} mode - Le mode de présentation à convertir.
- * \return {const char*} - La chaîne de caractères représentant le mode de présentation.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
-const char* rc2d_present_mode_to_string(SDL_GPUPresentMode mode) {
-    switch (mode) {
-        case SDL_GPU_PRESENTMODE_MAILBOX:   return "RC2D_GPU_PRESENTMODE_MAILBOX";
-        case SDL_GPU_PRESENTMODE_VSYNC:     return "RC2D_GPU_PRESENTMODE_VSYNC";
-        case SDL_GPU_PRESENTMODE_IMMEDIATE: return "RC2D_GPU_PRESENTMODE_IMMEDIATE";
-        default: return "RC2D_GPU_PRESENTMODE_UNKNOWN";
-    }
-}
-
-/**
- * \brief Convertit la composition de swapchain SDL_GPU en chaîne de caractères.
- *
- * Cette fonction convertit une composition de swapchain SDL_GPU en une chaîne de caractères lisible.
- * 
- * \param {SDL_GPUSwapchainComposition} comp - La composition de swapchain à convertir.
- * \return {const char*} - La chaîne de caractères représentant la composition de swapchain.
- *
- * \since Cette fonction est disponible depuis RC2D 1.0.0.
- */
-const char* rc2d_composition_to_string(SDL_GPUSwapchainComposition comp) {
-    switch (comp) {
-        case SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084:      return "RC2D_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084";
-        case SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR:return "RC2D_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR";
-        case SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR:        return "RC2D_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR";
-        case SDL_GPU_SWAPCHAINCOMPOSITION_SDR:               return "RC2D_GPU_SWAPCHAINCOMPOSITION_SDR";
-        default: return "RC2D_GPU_SWAPCHAINCOMPOSITION_UNKNOWN";
-    }
 }
 
 /**
@@ -1888,7 +1888,10 @@ void rc2d_engine_quit(void)
      * Affiche un rapport des fuites mémoire détectées.
      * Cela est utile pour identifier les fuites de mémoire dans l'application.
      * 
-     * Note : Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1. 
+     * Note : 
+     * - Ce rapport est affiché uniquement si RC2D_MEMORY_DEBUG_ENABLED est défini à 1.
+     * - La fermeture de la fenêtre est ralenti et ram, mais toute facon ce n'ai présent que en mode debug.
+     * - Il est recommandé de l'utiliser uniquement en mode développement pour éviter les ralentissements en production.
      */
     rc2d_memory_report();
 
