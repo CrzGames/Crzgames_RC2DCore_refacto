@@ -7,6 +7,7 @@
 
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_iostream.h>
+#include <SDL3/SDL_gpu.h>
 
 /**
  * Remarque : Les algorithmes pour encrypter/compresser sont utilisés de base via l'outil rrespacker

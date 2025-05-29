@@ -984,9 +984,9 @@ typedef struct RC2D_Callbacks {
 } RC2D_EngineCallbacks;
 
 /**
- * \brief Modes d'affichage pour le contenu du letterbox.
+ * \brief Modes d'affichage pour le contenu du letterbox/pillarbox.
  * 
- * Définit comment les zones de letterbox (marges visibles autour du rendu principal)
+ * Définit comment les zones de letterbox/pillarbox (marges visibles autour du rendu principal)
  * doivent être remplies lorsque la résolution logique n'occupe pas toute la fenêtre.
  * 
  * \note Ces zones apparaissent notamment en cas de mise à l’échelle non proportionnelle
@@ -1027,7 +1027,15 @@ typedef enum RC2D_LetterboxMode {
      * Cela signifie que la texture remplira l'arrière-plan de l'écran, y compris les zones de letterbox,
      * créant un effet d'immersion totale.
      */
-    RC2D_LETTERBOX_BACKGROUND_FULL
+    RC2D_LETTERBOX_BACKGROUND_FULL,
+
+    /**
+     * Un shader est appliqué aux zones de letterbox/pillarbox.
+     * 
+     * Cela permet de dessiner un effet visuel personnalisé (via un shader) dans les zones
+     * de letterbox/pillarbox, au lieu d'utiliser des textures.
+     */
+    RC2D_LETTERBOX_SHADER
 } RC2D_LetterboxMode;
 
 /**
@@ -1052,40 +1060,58 @@ typedef struct RC2D_LetterboxTextures {
     /**
      * Texture unique utilisée sur tous les côtés (mode `RC2D_LETTERBOX_UNIFORM`).
      */
-    RC2D_GPUTexture* uniform;
+    const char* uniform_filename;
 
     /**
      * Texture spécifique pour chaque côtés (mode `RC2D_LETTERBOX_PER_SIDE`).
      */
-    RC2D_GPUTexture* top;
-    RC2D_GPUTexture* bottom;
-    RC2D_GPUTexture* left;
-    RC2D_GPUTexture* right;
+    const char* top_filename;
+    const char* bottom_filename;
+    const char* left_filename;
+    const char* right_filename;
 
     /**
      * Texture géante utilisée en arrière-plan total (mode `RC2D_LETTERBOX_BACKGROUND_FULL`).
      */
-    RC2D_GPUTexture* background;
+    const char* background_filename;
+
+    /**
+     * Noms des fichiers de shader pour le mode `RC2D_LETTERBOX_SHADER`.
+     */
+    const char* shader_vertex_filename;
+    const char* shader_fragment_filename;
 } RC2D_LetterboxTextures;
 
 /**
  * \brief Définit comment le contenu du jeu est affiché à l'écran.
+ *
+ * Ce mode influence la manière dont la résolution logique est convertie en pixels physiques.
+ * Chaque mode a des implications sur l’apparence visuelle (mise à l’échelle, ratio, bandes noires, etc.).
  * 
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
-typedef enum RC2D_PresentationMode {
+typedef enum RC2D_LogicalPresentationMode {
     /**
-     * Mode pixel art : mise à l’échelle entière (INTEGER_SCALE) + letterbox.
-     * Idéal pour les jeux rétro, garantissant des pixels nets et une esthétique pixelisée.
+     * Mise à l’échelle entière (INTEGER_SCALE) avec ajout de bandes noires (letterbox/pillarbox) si nécessaire.
+     * 
+     * Chaque pixel logique est agrandi en un bloc de pixels physiques complet (ex. 2x, 3x, 4x).
+     * Aucun filtrage n’est appliqué, ce qui évite toute distorsion ou flou.
+     * 
+     * \note Idéal pour les jeux en pixel art, afin de préserver la netteté des sprites.
      */
-    RC2D_PRESENTATION_PIXELART,
+    RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE,
 
     /**
-     * Mode classique : mise à l’échelle fluide + letterbox.
-     * Idéal pour les jeux modernes, s’adaptant à l’écran tout en préservant le ratio d’aspect.
+     * Mise à l’échelle proportionnelle pour occuper au maximum l’espace disponible,
+     * en conservant le ratio d’aspect d’origine.
+     * 
+     * Si la résolution physique ne correspond pas exactement au ratio logique, des bandes noires
+     * (letterbox/pillarbox) sont ajoutées pour compenser.
+     * 
+     * \note Idéal pour les jeux modernes ou vectoriels, s’adaptant à tous les écrans sans distorsion.
      */
-    RC2D_PRESENTATION_CLASSIC
-} RC2D_PresentationMode;
+    RC2D_LOGICAL_PRESENTATION_LETTERBOX,
+} RC2D_LogicalPresentationMode;
 
 /**
  * \brief Informations sur l'application.
@@ -1121,48 +1147,58 @@ typedef struct RC2D_AppInfo {
 typedef struct RC2D_EngineConfig {
     /**
      * Callbacks utilisateur pour gérer les événements.
+     * 
      * Par défaut : NULL.
      */
     RC2D_EngineCallbacks* callbacks;
 
     /**
-     * Largeur initiale de la fenêtre (pixels). 
+     * Largeur initiale de la fenêtre (pixels).
+     * 
      * Par défaut : 800.
      */
     int windowWidth;
 
     /**
      * Hauteur initiale de la fenêtre (pixels). 
+     * 
      * Par défaut : 600.
      */
     int windowHeight;
 
     /**
-     * Largeur logique (par exemple, 1920 pour CLASSIC, 640 pour PIXELART). 
+     * Largeur logique (par exemple, 1920 pour CLASSIC, 640 pour PIXELART).
+     * 
      * Par défaut : 1920.
      */
     int logicalWidth;
 
     /**
      * Hauteur logique (par exemple, 1080 pour CLASSIC, 360 pour PIXELART). 
+     * 
      * Par défaut : 1080.
      */
     int logicalHeight;
 
     /**
-     * Mode de présentation (PIXELART ou CLASSIC).
-     * Par défaut : CLASSIC.
+     * Mode de présentation de RC2D_LogicalPresentationMode.
+     * 
+     * Par défaut : RC2D_LOGICAL_PRESENTATION_LETTERBOX.
      */
-    RC2D_PresentationMode presentationMode;
+    RC2D_LogicalPresentationMode logicalPresentationMode;
 
     /**
-     * Textures pour les bordures décoratives (letterbox/pillarbox).
+     * Textures pour les bordures décoratives (letterbox/pillarbox), pour les modes suivants :
+     * - RC2D_LOGICAL_PRESENTATION_LETTERBOX
+     * - RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE
+     * 
      * Par défaut : NULL.
      */
     RC2D_LetterboxTextures* letterboxTextures;
 
     /**
      * Informations sur l'application (nom, version, identifier).
+     * 
      * Par défaut :
      * - name : "RC2D Game"
      * - version : "1.0.0"
@@ -1172,12 +1208,14 @@ typedef struct RC2D_EngineConfig {
 
     /**
      * Nombre d'images autorisées en vol sur le GPU (1, 2 ou 3).
+     * 
      * Par défaut : RC2D_GPU_FRAMES_BALANCED (2).
      */
     RC2D_GPUFramesInFlight gpuFramesInFlight;
 
     /**
      * Options avancées pour la création du contexte GPU.
+     * 
      * Par défaut :
      * - debugMode : true
      * - verbose : true

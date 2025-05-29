@@ -213,8 +213,22 @@ typedef struct RC2D_EngineState {
 
     // RC2D : Letterbox / Pillarbox
     RC2D_LetterboxTextures letterbox_textures;
-    RC2D_Rect letterbox_areas[4];
+    RC2D_Rect letterbox_areas[4]; // [0]: gauche, [1]: droite, [2]: haut, [3]: bas
     int letterbox_count;
+
+    RC2D_GPUTexture* letterbox_uniform_texture;
+
+    RC2D_GPUTexture* letterbox_top_texture;
+    RC2D_GPUTexture* letterbox_bottom_texture;
+    RC2D_GPUTexture* letterbox_left_texture;
+    RC2D_GPUTexture* letterbox_right_texture;
+
+    RC2D_GPUTexture* letterbox_background_texture;
+
+    // Pour RC2D_LETTERBOX_SHADER
+    RC2D_GPUGraphicsPipeline letterbox_shader_pipeline;
+    RC2D_GPUShader* letterbox_vertex_shader;
+    RC2D_GPUShader* letterbox_fragment_shader;
 } RC2D_EngineState;
 
 /**
@@ -226,6 +240,50 @@ typedef struct RC2D_EngineState {
  * \since Cette variable est disponible depuis RC2D 1.0.0.
  */
 extern RC2D_EngineState rc2d_engine_state;
+
+/**
+ * \brief Charge une texture GPU à partir d'une chaîne filename.
+ *
+ * Si filename commence par "color:", crée une texture de couleur unie (ex: "color:255,0,0,255").
+ * Sinon, charge une image depuis le fichier spécifié.
+ *
+ * \param filename Le chemin du fichier ou une chaîne "color:R,G,B,A".
+ * \return Un pointeur vers la texture GPU créée, ou NULL en cas d'erreur.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+RC2D_GPUTexture rc2d_letterbox_loadTexture(SDL_GPUCommandBuffer *cmd, const char *filename);
+
+/**
+ * \brief Initialise les textures de letterbox pour le moteur RC2D.
+ *
+ * Cette fonction charge les textures de letterbox à partir des chemins spécifiés dans la configuration.
+ * Elle doit être appelée avant de dessiner la letterbox.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_letterbox_init(void);
+
+/**
+ * \brief Dessine la letterbox (ou pillarbox) sur l'écran.
+ *
+ * Cette fonction dessine les textures de letterbox chargées précédemment
+ * pour remplir les zones de letterbox autour du contenu principal.
+ * Elle doit être appelée après avoir initialisé les textures de letterbox.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_letterbox_draw(void);
+
+/**
+ * \brief Libère les ressources allouées pour la letterbox.
+ *
+ * Cette fonction libère les textures de letterbox et remet l'état de la letterbox à zéro.
+ * Elle doit être appelée avant de quitter l'application pour éviter les fuites de mémoire.
+ *
+ * \since Disponible depuis RC2D 1.0.0.
+ */
+void rc2d_letterbox_cleanup(void);
 
 /**
  * \brief Initialise le moteur RC2D.

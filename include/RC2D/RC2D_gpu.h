@@ -87,15 +87,11 @@ typedef struct RC2D_GPUInfo {
 } RC2D_GPUInfo;
 
 /**
- * @brief Structure pour une texture GPU.
+ * \brief Structure pour une texture GPU.
  * 
  * Contient une texture SDL3 GPU et ses dimensions.
- * Utilisée pour les sprites et les bordures décoratives (letterbox/pillarbox).
  * 
- * @typedef {struct} RC2D_GPUTexture
- * @property {SDL_GPUTexture} gpu_texture - Texture GPU.
- * @property {number} width - Largeur de la texture en pixels.
- * @property {number} height - Hauteur de la texture en pixels.
+ * \since Ce type est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_GPUTexture {
     SDL_GPUTexture* gpu_texture;

@@ -51,7 +51,7 @@ RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
         .windowHeight = 600,
         .logicalWidth = 1920,
         .logicalHeight = 1080,
-        .presentationMode = RC2D_PRESENTATION_CLASSIC,
+        .logicalPresentationMode = RC2D_LOGICAL_PRESENTATION_LETTERBOX,
         .letterboxTextures = &default_letterbox_textures,
         .appInfo = &default_app_info,
         .gpuFramesInFlight = RC2D_GPU_FRAMES_BALANCED,
@@ -294,9 +294,23 @@ static void rc2d_engine_stateInit(void) {
 
     // Paramètres de rendu
     rc2d_engine_state.render_scale = 1.0f;
+
+    // Letterbox / Pillarbox
     rc2d_engine_state.letterbox_textures.mode = RC2D_LETTERBOX_NONE;
-    // rc2d_engine_state.rc2d_letterbox_areas : est déjà zéro-initialisé
     rc2d_engine_state.letterbox_count = 0;
+
+    rc2d_engine_state.letterbox_uniform_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+    rc2d_engine_state.letterbox_top_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+    rc2d_engine_state.letterbox_bottom_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+    rc2d_engine_state.letterbox_left_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+    rc2d_engine_state.letterbox_right_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+    rc2d_engine_state.letterbox_background_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+
+    if (!rc2d_engine_state.letterbox_uniform_texture || !rc2d_engine_state.letterbox_top_texture ||
+        !rc2d_engine_state.letterbox_bottom_texture || !rc2d_engine_state.letterbox_left_texture ||
+        !rc2d_engine_state.letterbox_right_texture || !rc2d_engine_state.letterbox_background_texture) {
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Cannot continue with invalid letterbox texture allocations");
+    }
 }
 
 /**
@@ -775,7 +789,8 @@ static void rc2d_engine_calculate_renderscale_and_gpuviewport(void)
     float scale;
 
     // --- Mode Pixel Art ---
-    if (rc2d_engine_state.config->presentationMode == RC2D_PRESENTATION_PIXELART) {
+    if (rc2d_engine_state.config->logicalPresentationMode == RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE) 
+    {
         // Calcul de mise à l’échelle entière
         int int_scale = SDL_min(effective_width / rc2d_engine_state.config->logicalWidth, effective_height / rc2d_engine_state.config->logicalHeight);
 
@@ -787,8 +802,8 @@ static void rc2d_engine_calculate_renderscale_and_gpuviewport(void)
         viewport_width = rc2d_engine_state.config->logicalWidth * scale;
         viewport_height = rc2d_engine_state.config->logicalHeight * scale;
     }
-    // --- Mode Classique ---
-    else 
+    // --- Mode Letterbox ---
+    else if (rc2d_engine_state.config->logicalPresentationMode == RC2D_LOGICAL_PRESENTATION_LETTERBOX)
     {
         float logical_aspect = (float)rc2d_engine_state.config->logicalWidth / rc2d_engine_state.config->logicalHeight;
         float window_aspect = (float)effective_width / effective_height;
@@ -823,47 +838,49 @@ static void rc2d_engine_calculate_renderscale_and_gpuviewport(void)
     rc2d_engine_state.gpu_current_viewport->h = viewport_height;
     rc2d_engine_state.gpu_current_viewport->min_depth = 0.0f;
     rc2d_engine_state.gpu_current_viewport->max_depth = 1.0f;
-    SDL_SetGPUViewport(rc2d_engine_state.gpu_current_render_pass, rc2d_engine_state.gpu_current_viewport);
 
     // Applique l’échelle de rendu interne
     rc2d_engine_state.render_scale = scale * display_scale;
 
-    // Calcule les zones de letterbox si le viewport ne remplit pas la zone sûre
+    // Calcule les zones de letterbox/pillarbox si nécessaire
+    rc2d_engine_state.letterbox_count = 0;
+    SDL_memset(rc2d_engine_state.letterbox_areas, 0, sizeof(RC2D_Rect) * 4);
+
     if (viewport_width < safe_area.width || viewport_height < safe_area.height) 
     {
-        // Barres verticales noir (gauche/droite)
+        // Barres verticales (gauche/droite) - Letterbox
         if (viewport_x > safe_area.x) 
         {
             // Barre gauche
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = safe_area.x;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = safe_area.y;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = viewport_x - safe_area.x;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = safe_area.height;
+            rc2d_engine_state.letterbox_areas[0].x = safe_area.x;
+            rc2d_engine_state.letterbox_areas[0].y = safe_area.y;
+            rc2d_engine_state.letterbox_areas[0].width = viewport_x - safe_area.x;
+            rc2d_engine_state.letterbox_areas[0].height = safe_area.height;
             rc2d_engine_state.letterbox_count++;
 
             // Barre droite
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = viewport_x + viewport_width;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = safe_area.y;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = safe_area.x + safe_area.width - (viewport_x + viewport_width);
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = safe_area.height;
+            rc2d_engine_state.letterbox_areas[1].x = viewport_x + viewport_width;
+            rc2d_engine_state.letterbox_areas[1].y = safe_area.y;
+            rc2d_engine_state.letterbox_areas[1].width = safe_area.x + safe_area.width - (viewport_x + viewport_width);
+            rc2d_engine_state.letterbox_areas[1].height = safe_area.height;
             rc2d_engine_state.letterbox_count++;
         }
 
-        // Barres horizontales noir (haut/bas)
+        // Barres horizontales (haut/bas) - Pillarbox
         if (viewport_y > safe_area.y) 
         {
             // Barre haute
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = safe_area.x;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = safe_area.y;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = safe_area.width;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = viewport_y - safe_area.y;
+            rc2d_engine_state.letterbox_areas[2].x = safe_area.x;
+            rc2d_engine_state.letterbox_areas[2].y = safe_area.y;
+            rc2d_engine_state.letterbox_areas[2].width = safe_area.width;
+            rc2d_engine_state.letterbox_areas[2].height = viewport_y - safe_area.y;
             rc2d_engine_state.letterbox_count++;
 
             // Barre basse
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].x = safe_area.x;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].y = viewport_y + viewport_height;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].width = safe_area.width;
-            rc2d_engine_state.letterbox_areas[rc2d_engine_state.letterbox_count].height = safe_area.y + safe_area.height - (viewport_y + viewport_height);
+            rc2d_engine_state.letterbox_areas[3].x = safe_area.x;
+            rc2d_engine_state.letterbox_areas[3].y = viewport_y + viewport_height;
+            rc2d_engine_state.letterbox_areas[3].width = safe_area.width;
+            rc2d_engine_state.letterbox_areas[3].height = safe_area.y + safe_area.height - (viewport_y + viewport_height);
             rc2d_engine_state.letterbox_count++;
         }
     }
@@ -1906,6 +1923,16 @@ SDL_AppResult rc2d_engine_processevent(SDL_Event *event)
 static bool rc2d_engine(void)
 {
     /**
+     * IMPORTANT:
+     * 
+     * Appel de SDL_GetPath() explicitement, la raison : 
+     * 
+     * SDL met en cache le résultat de cet appel en interne, mais le premier appel à cette fonction 
+     * n'est pas nécessairement rapide, alors planifiez en conséquence.
+     */
+    SDL_GetBasePath();
+
+    /**
      * Doit être appelé avant tout code pour initialiser les asserts 
      * et les utiliser dès le début de l'application.
      */
@@ -2018,15 +2045,10 @@ static bool rc2d_engine(void)
         return false;
     }
 
-    /**
-     * IMPORTANT:
-     * 
-     * Appel de SDL_GetPath() explicitement, la raison : 
-     * 
-     * SDL met en cache le résultat de cet appel en interne, mais le premier appel à cette fonction 
-     * n'est pas nécessairement rapide, alors planifiez en conséquence.
-     */
-    SDL_GetBasePath();
+    rc2d_letterbox_init();
+
+    // vérifie le nombre de letterbox count
+    RC2D_log(RC2D_LOG_DEBUG, "Letterbox count: %d\n", rc2d_engine_state.letterbox_count);
 
     // Log pour indiquer que tout le moteur a été initialisé avec succès
     RC2D_log(RC2D_LOG_INFO, "RC2D Engine initialized successfully.\n");
@@ -2131,6 +2153,15 @@ void rc2d_engine_quit(void)
         SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
         rc2d_engine_state.gpu_graphics_pipeline_mutex = NULL;
     }
+
+    // Nettoyer les textures de letterbox
+    rc2d_letterbox_cleanup();
+    RC2D_free(rc2d_engine_state.letterbox_uniform_texture);
+    RC2D_free(rc2d_engine_state.letterbox_top_texture);
+    RC2D_free(rc2d_engine_state.letterbox_bottom_texture);
+    RC2D_free(rc2d_engine_state.letterbox_left_texture);
+    RC2D_free(rc2d_engine_state.letterbox_right_texture);
+    RC2D_free(rc2d_engine_state.letterbox_background_texture);
 
     /* Annuler la revendication de la fenêtre */
     if (rc2d_engine_state.gpu_device && rc2d_engine_state.window) 
@@ -2321,15 +2352,15 @@ void rc2d_engine_configure(const RC2D_EngineConfig* config)
      * 
      * Si le mode de présentation est valide, on l'utilise, sinon on utilise les valeurs par défaut.
      */
-    if (config->presentationMode == RC2D_PRESENTATION_PIXELART ||
-        config->presentationMode == RC2D_PRESENTATION_CLASSIC)
+    if (config->logicalPresentationMode == RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE ||
+        config->logicalPresentationMode == RC2D_LOGICAL_PRESENTATION_LETTERBOX)
     {
-        rc2d_engine_state.config->presentationMode = config->presentationMode;
+        rc2d_engine_state.config->logicalPresentationMode = config->logicalPresentationMode;
     }
     else
     {
         RC2D_log(RC2D_LOG_WARN, "Invalid presentation mode provided. Using default values.\n");
-        rc2d_engine_state.config->presentationMode = RC2D_PRESENTATION_CLASSIC;
+        rc2d_engine_state.config->logicalPresentationMode = RC2D_LOGICAL_PRESENTATION_LETTERBOX;
     }
 
     /**
@@ -2337,12 +2368,13 @@ void rc2d_engine_configure(const RC2D_EngineConfig* config)
      * 
      * Si le mode de rendu est valide, on l'utilise, sinon on utilise les valeurs par défaut.
      */
-    if (config->letterboxTextures != NULL)
+    if (config->letterboxTextures != NULL) 
     {
-        rc2d_engine_state.letterbox_textures = *(config->letterboxTextures);
-    }
-    else
+        rc2d_engine_state.letterbox_textures = *config->letterboxTextures;
+    } 
+    else 
     {
         RC2D_log(RC2D_LOG_WARN, "No letterbox textures provided. Default black bars will be used.\n");
+        rc2d_engine_state.letterbox_textures.mode = RC2D_LETTERBOX_NONE;
     }
 }
