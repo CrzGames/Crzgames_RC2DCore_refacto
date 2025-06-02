@@ -111,10 +111,15 @@ void rc2d_graphics_clear(void)
      */
     RC2D_assert_release(rc2d_engine_state.gpu_current_viewport != NULL, RC2D_LOG_CRITICAL, "No viewport set in rc2d_engine_state");
     SDL_SetGPUViewport(rc2d_engine_state.gpu_current_render_pass, rc2d_engine_state.gpu_current_viewport);
+
+    if (!rc2d_engine_state.skip_rendering) 
+    {
+        rc2d_cimgui_newFrame();
+    }
 }
 
 void rc2d_graphics_present(void)
-{
+{    
     /**
      * \brief Étape 1 : Terminer le render pass
      *
@@ -125,6 +130,23 @@ void rc2d_graphics_present(void)
     {
         SDL_EndGPURenderPass(rc2d_engine_state.gpu_current_render_pass);
         rc2d_engine_state.gpu_current_render_pass = NULL;
+    }
+
+    /**
+     * \brief Étape 2 : Rendu des letterboxes
+     *
+     * Les letterboxes sont rendues après la fin du render pass, car SDL_BlitGPUTexture
+     * ne peut pas être appelé à l'intérieur d'un render pass.
+     */
+    if (rc2d_engine_state.gpu_current_command_buffer && !rc2d_engine_state.skip_rendering)    
+    {
+        //rc2d_letterbox_draw();
+    }
+
+    
+    if (!rc2d_engine_state.skip_rendering) 
+    {
+        rc2d_cimgui_draw();
     }
 
     /**

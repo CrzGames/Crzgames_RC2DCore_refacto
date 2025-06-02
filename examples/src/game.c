@@ -3,6 +3,9 @@
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_internal.h>
 #include <RC2D/RC2D_memory.h>
+#include <RC2D/RC2D_imgui.h>
+
+#include <cimgui.h>
 
 static RC2D_GPUComputePipeline* computeShader;
 static RC2D_GPUShader* fragmentShader;
@@ -145,11 +148,10 @@ void rc2d_update(double dt)
 
 void rc2d_draw(void)
 {
-    // --------------------  SHADER COMPUTE -------------------
+    // -------------------- SHADER COMPUTE -------------------
+    // (Votre code compute shader inchangé)
 
-
-    // -------------------  SHADER GRAPHICS -------------------
-    // Passe de rendu graphique
+    // ------------------- SHADER GRAPHICS -------------------
     rc2d_gpu_bindGraphicsPipeline(&graphicsPipeline);
 
     UniformBlock ubo = {
@@ -172,4 +174,59 @@ void rc2d_draw(void)
         rc2d_engine_state.gpu_current_render_pass,
         3, 1, 0, 0
     );
+
+    // ------------------- IMGUI INTERFACE -------------------
+    static bool show_editor = true;
+    static float effect_value = 0.5f;
+    static char map_name[128] = "New Map";
+    static int current_tile_type = 0;
+    static int current_layer = 0;
+    static const char* tile_types[] = {"Grass", "Water", "Stone", "Sand"};
+    static const char* layers[] = {"Background", "Foreground", "Collision"};
+
+    rc2d_cimgui_setNextWindowPos(0.0f, 0.0f, RC2D_IMGUI_SET_CONDITION_ALWAYS);
+    if (rc2d_cimgui_begin("Map Editor", &show_editor, 
+        RC2D_IMGUI_WINDOW_FLAGS_NO_DOCKING)) 
+    {
+        // Champ de texte pour le nom de la map
+        if (rc2d_cimgui_input_text("Map Name", map_name, sizeof(map_name), RC2D_IMGUI_INPUT_TEXT_FLAGS_NONE)) {
+            RC2D_log(RC2D_LOG_INFO, "Map name changed to: %s", map_name);
+        }
+
+        // Combo box pour le type de tuile
+        if (rc2d_cimgui_combo("Tile Type", &current_tile_type, tile_types, 4, -1)) {
+            RC2D_log(RC2D_LOG_INFO, "Selected tile type: %s", tile_types[current_tile_type]);
+        }
+
+        // List box pour les couches
+        if (rc2d_cimgui_list_box("Layers", &current_layer, layers, 3, -1)) {
+            RC2D_log(RC2D_LOG_INFO, "Selected layer: %s", layers[current_layer]);
+        }
+
+        // Bouton pour ouvrir un popup contextuel
+        if (rc2d_cimgui_button("Open Context Menu", 0.0f, 0.0f)) {
+            rc2d_cimgui_open_popup("ContextMenu", RC2D_IMGUI_POPUP_FLAGS_NONE);
+        }
+
+        // Popup contextuel
+        if (rc2d_cimgui_begin_popup("ContextMenu", RC2D_IMGUI_WINDOW_FLAGS_NONE)) {
+            rc2d_cimgui_text("Context Menu");
+            if (rc2d_cimgui_button("Add Layer", 0.0f, 0.0f)) {
+                RC2D_log(RC2D_LOG_INFO, "Add Layer clicked");
+            }
+            if (rc2d_cimgui_button("Remove Layer", 0.0f, 0.0f)) {
+                RC2D_log(RC2D_LOG_INFO, "Remove Layer clicked");
+            }
+            rc2d_cimgui_end();
+        }
+
+        rc2d_cimgui_checkbox("Show Metrics", &show_editor);
+        rc2d_cimgui_sliderFloat("Effect Value", &effect_value, 0.0f, 1.0f, "%.3f", RC2D_IMGUI_SLIDER_FLAGS_CLAMP_ON_INPUT);
+
+        rc2d_cimgui_end();
+    }
+
+    if (show_editor) {
+        igShowMetricsWindow(&show_editor);
+    }
 }

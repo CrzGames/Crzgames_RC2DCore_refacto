@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.25.0)
 
 # Projet 
-project(rc2d LANGUAGES C)
+project(rc2d LANGUAGES C CXX)
 
 # Découper la version en parties
 #string(REPLACE "." ";" VERSION_LIST ${APP_VERSION})
@@ -29,6 +29,9 @@ option(RC2D_NET_MODULE_ENABLED "Enable RC2D_net module" ON)
 
 # Option pour activer le module RC2D_onnx (via ONNX Runtime)
 option(RC2D_ONNX_MODULE_ENABLED "Enable RC2D_onnx module" ON)
+
+# Option pour activer le module RC2D_onnx (via ONNX Runtime)
+option(RC2D_CIMGUI_MODULE_ENABLED "Enable RC2D_onnx module" ON)
 
 # Option pour le niveau d'assertion
 option(RC2D_ASSERT_LEVEL "Niveau des assertions (0=none, 1=release, 2=debug, 3=paranoid)" 3)
@@ -135,6 +138,29 @@ add_subdirectory(dependencies/SDL_image EXCLUDE_FROM_ALL)
 # Chemin vers les dépendances
 set(DEPENDENCIES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
 set(CRZGAMES_LIBRARIES "${DEPENDENCIES_PATH}/Crzgames_Libraries")
+
+# ----------- CONFIGURATION CIMGUI (unique) ------------
+# Assurer que cimgui va être build en STATIC et non en DLL
+set(IMGUI_STATIC ON CACHE BOOL "Build cimgui as static library" FORCE)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/dependencies/cimgui/backend_test/cmake/GenerateCimguiBindings.cmake)
+
+# Path des includes pour cimgui generation
+set(inclulist ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL/include)
+
+# Génère cimgui_with_backend (SDL3 + SDLGPU3) une seule fois
+GenerateCimguiBindings(cimgui_backend_sdl3gpu sdl3 sdlgpu3 inclulist)
+
+# Lier SDL3::SDL3 à cimgui_with_backend
+target_link_libraries(cimgui_backend_sdl3gpu PRIVATE SDL3::SDL3)
+
+# Juste link la target cimgui_with_backend existante
+function(rc2d_configure_cimgui target_name)
+  target_link_libraries(${target_name} PRIVATE 
+    SDL3::SDL3
+    cimgui_backend_sdl3gpu
+  )
+endfunction()
 
 function(rc2d_configure_onnxruntime target_name)
   if(RC2D_ONNX_MODULE_ENABLED)
@@ -654,6 +680,17 @@ function(rc2d_target_compile_definitions target_name)
   else()
     target_compile_definitions(${target_name} PRIVATE RC2D_MEMORY_DEBUG_ENABLED=0)
   endif()
+
+  if (RC2D_CIMGUI_MODULE_ENABLED)
+    target_compile_definitions(${target_name} PRIVATE 
+      RC2D_CIMGUI_MODULE_ENABLED=1
+      CIMGUI_DEFINE_ENUMS_AND_STRUCTS=1
+      CIMGUI_USE_SDL3=1
+      CIMGUI_USE_SDLGPU3=1
+    )
+  else()
+    target_compile_definitions(${target_name} PRIVATE RC2D_CIMGUI_MODULE_ENABLED=0)
+  endif()
 endfunction()
 
 # Sources du projet RC2D
@@ -693,6 +730,9 @@ rc2d_configure_openssl(${PROJECT_NAME})
 
 # Linker SDL3_shadercross selon la plateforme
 rc2d_configure_shadercross(${PROJECT_NAME})
+
+# Linker cimgui
+rc2d_configure_cimgui(${PROJECT_NAME})
 
 # Linker les dépendances natives selon la plateforme
 rc2d_force_link_linux(${PROJECT_NAME})
@@ -750,6 +790,9 @@ if(RC2D_BUILD_EXAMPLES)
 
   # Link onnxruntime si le module RC2D_onnx est activé
   rc2d_configure_onnxruntime(${RC2D_EXAMPLE_TARGET_NAME})
+
+  # Linker cimgui
+  rc2d_configure_cimgui(${RC2D_EXAMPLE_TARGET_NAME})
 
   # Link les dépendances communes à toutes les plateformes + on link la lib RC2D pour finir
   target_link_libraries(${RC2D_EXAMPLE_TARGET_NAME} PRIVATE
@@ -827,6 +870,9 @@ if(RC2D_BUILD_TESTS)
 
   # Link onnxruntime si le module RC2D_onnx est activé
   rc2d_configure_onnxruntime(rc2d_tests)
+
+  # Linker cimgui
+  rc2d_configure_cimgui(rc2d_tests)
 
   # Linker Criterion selon la plateforme
   if(APPLE)

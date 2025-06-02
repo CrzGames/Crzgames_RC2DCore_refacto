@@ -6,6 +6,7 @@
 #include <RC2D/RC2D_platform_defines.h>
 #include <RC2D/RC2D_memory.h>
 #include <RC2D/RC2D_config.h>
+#include <RC2D/RC2D_imgui.h>
 
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
@@ -2047,6 +2048,11 @@ static bool rc2d_engine(void)
 
     rc2d_letterbox_init();
 
+    if (!rc2d_cimgui_init())
+    {
+        return false;
+    }
+
     // vérifie le nombre de letterbox count
     RC2D_log(RC2D_LOG_DEBUG, "Letterbox count: %d\n", rc2d_engine_state.letterbox_count);
 
@@ -2070,7 +2076,10 @@ bool rc2d_engine_init(void)
 
 void rc2d_engine_quit(void)
 {
-	/**
+    // Attendre que le GPU soit inactif avant de libérer les ressources
+    SDL_WaitForGPUIdle(rc2d_gpu_getDevice());
+
+    /**
      * Détruire les ressources internes des modules de la lib RC2D.
      */
 	//rc2d_filesystem_quit();
@@ -2162,6 +2171,9 @@ void rc2d_engine_quit(void)
     RC2D_free(rc2d_engine_state.letterbox_left_texture);
     RC2D_free(rc2d_engine_state.letterbox_right_texture);
     RC2D_free(rc2d_engine_state.letterbox_background_texture);
+
+    // Nettoyer les ressources de CImGui
+    rc2d_cimgui_cleanup();
 
     /* Annuler la revendication de la fenêtre */
     if (rc2d_engine_state.gpu_device && rc2d_engine_state.window) 

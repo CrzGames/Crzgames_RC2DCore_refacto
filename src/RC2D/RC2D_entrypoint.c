@@ -17,6 +17,7 @@
 #include <RC2D/RC2D_logger.h>
 #include <RC2D/RC2D_graphics.h>
 #include <RC2D/RC2D_memory.h>
+#include <RC2D/RC2D_imgui.h>
 
 /**
  * SDL3 Callback: Initialisation
@@ -111,27 +112,30 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     /**
      * Ordre de la boucle principale de l'application :
-     * 
      * 1. Calculer le delta time pour la frame actuelle.
-     * 2. Appele les fonction interne de hot reload des shaders / pipeline graphics (si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est défini à 1).
+     * 2. Appeler les fonctions internes de hot reload des shaders / pipeline graphics.
      * 3. Appeler la fonction de mise à jour du jeu.
-     * 4. Effacer l'écran.
+     * 4. Effacer l'écran (démarrer le render pass).
      * 5. Appeler la fonction de dessin du jeu.
      * 6. Présenter le rendu à l'écran.
      * 7. Terminer le calcul du delta time pour la frame actuelle.
      */
     rc2d_engine_deltatime_start();
-#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+
+    #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline();
     rc2d_gpu_hotReloadComputeShader();
-#endif
+    #endif
+
     if (rc2d_engine_state.config != NULL && 
         rc2d_engine_state.config->callbacks != NULL && 
         rc2d_engine_state.config->callbacks->rc2d_update != NULL) 
     {
         rc2d_engine_state.config->callbacks->rc2d_update(rc2d_engine_state.delta_time);
     }
+
     rc2d_graphics_clear();
+
     if (!rc2d_engine_state.skip_rendering &&
         rc2d_engine_state.config != NULL && 
         rc2d_engine_state.config->callbacks != NULL && 
@@ -139,7 +143,9 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     {
         rc2d_engine_state.config->callbacks->rc2d_draw();
     }
+
     rc2d_graphics_present();
+
     rc2d_engine_deltatime_end();
 
     /**
@@ -155,6 +161,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
  */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) 
 {
+    rc2d_cimgui_processEvent(event);
     return rc2d_engine_processevent(event);
 }
 

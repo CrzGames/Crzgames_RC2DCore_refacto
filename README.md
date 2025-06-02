@@ -319,6 +319,7 @@ Apple Silicon :
   4. Ouvrir PowerShell en admin (pour eviter les erreurs de chemin long possible lors du setup des dependencies) :
    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
    git config --global core.longpaths true
+  5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
 
   
   # Linux :
@@ -332,6 +333,8 @@ Apple Silicon :
     sudo apt-get install -y build-essential &&
     brew install gcc
   5. Download and Install CMake >= 3.28 : brew install cmake
+  6. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
+  7. Télécharger et Installer patchelf (pour la dépendence SDL_shadercross), puis ajouté au PATH.
 
 
   # macOS :
@@ -339,6 +342,7 @@ Apple Silicon :
   2. Download and Install xCode >= 15.2.0
   3. Download and Install Command Line Tools : xcode-select --install
   4. Download and Install CMake >= 3.28 : brew install cmake
+  5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
 
 
   # Android (run in Windows) :
@@ -346,6 +350,7 @@ Apple Silicon :
   2. Add environment variable: ANDROID_HOME for path SDK Android (SDK Manager path)
   3. Download and Install CMake >= 3.28 : https://cmake.org/download/ and add PATH ENVIRONMENT.
   4. Download and Install Java JDK LTS (Oracle) == 17.0.10
+  5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
 
 
   # iOS (only macOS) :
@@ -355,6 +360,7 @@ Apple Silicon :
   4. Download and Install SDK iOS >= 17.0.0
   5. Download and Install brew : /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   6. Download and Install cmake : brew install cmake 
+  7. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
   ```
   
 4. Avant toute compilation, exécute le script suivant :
@@ -374,15 +380,14 @@ Ce script va :
 ```txt
 # Format: library=repository:tag ou library=repository:commit_sha
 
-SDL=https://github.com/libsdl-org/SDL.git:release-3.2.12
+SDL=https://github.com/libsdl-org/SDL.git:release-3.2.14
 SDL_image=https://github.com/libsdl-org/SDL_image.git:release-3.2.4
 SDL_ttf=https://github.com/libsdl-org/SDL_ttf.git:release-3.2.2
 #SDL_mixer=https://github.com/libsdl-org/SDL_mixer.git:release-3.2.0
-SDL_shadercross=https://github.com/libsdl-org/SDL_shadercross.git:378f742d3023f6be7d9278908d0e47bf33fac361
-Crzgames_LibCpp_Windows=https://github.com/CrzGames/Crzgames_LibCpp_Windows.git:16be49eb0b8ea63abc5b22558f660135e0948627
-Crzgames_LibCpp_Linux=https://github.com/CrzGames/Crzgames_LibCpp_Linux.git:393760fa85ee0c46ff5a5a3d894748ecafca4ff9
-Crzgames_LibCpp_Android=https://github.com/CrzGames/Crzgames_LibCpp_Android.git:688c153891bfd8eb8adc449f7886ee22711dc4c6
-#OpenSSL_Apple=https://github.com/krzyzanowskim/OpenSSL.git:3.3.3001
+Crzgames_Libraries=https://github.com/CrzGames/Crzgames_Libraries.git:8e5ab015e20c8c93c388d63f7b1a20e29369aaf4
+Crzgames_RCENet=https://github.com/CrzGames/Crzgames_RCENet.git:54612ae2790ae4d3a9a9262cbe86867d1c451e93
+cimgui=https://github.com/cimgui/cimgui.git:094a55523a40fdb309f48b971a583ef02aeb56ab
+luajit=https://luajit.org/git/luajit.git:f9140a622a0c44a99efb391cc1c2358bc8098ab7
 ```
 
 <br /><br /><br /><br />

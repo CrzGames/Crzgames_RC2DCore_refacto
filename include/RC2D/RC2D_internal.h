@@ -405,6 +405,57 @@ bool rc2d_onnx_init(void);
 void rc2d_onnx_cleanup(void);
 #endif
 
+/**
+ * \brief Initialise la bibliothèque cimgui avec le backend SDL3 GPU.
+ *
+ * Cette fonction configure le contexte ImGui, initialise les backends SDL3 et SDLGPU3,
+ * et applique un style par défaut.
+ *
+ * \return true si l'initialisation a réussi, false sinon.
+ *
+ * \since RC2D 1.0.0
+ */
+bool rc2d_cimgui_init(void);
+
+/**
+ * \brief Nettoie les ressources de cimgui.
+ *
+ * Cette fonction libère les backends SDL3 et SDLGPU3, puis détruit le contexte ImGui.
+ *
+ * \since RC2D 1.0.0
+ */
+void rc2d_cimgui_cleanup(void);
+
+/**
+ * \brief Prépare une nouvelle frame pour ImGui.
+ *
+ * Cette fonction doit être appelée au début de chaque frame avant tout rendu ImGui.
+ *
+ * \since RC2D 1.0.0
+ */
+void rc2d_cimgui_newFrame(void);
+
+/**
+ * \brief Rend les données ImGui sur le GPU.
+ *
+ * Cette fonction finalise le rendu ImGui et soumet les commandes de dessin au GPU.
+ *
+ * \since RC2D 1.0.0
+ */
+void rc2d_cimgui_draw(void);
+
+/**
+ * \brief Traite un événement SDL pour ImGui.
+ *
+ * Cette fonction passe les événements SDL à ImGui pour gérer les entrées utilisateur.
+ *
+ * \param event Pointeur vers l'événement SDL à traiter.
+ * \return true si ImGui a consommé l'événement, false sinon.
+ *
+ * \since RC2D 1.0.0
+ */
+bool rc2d_cimgui_processEvent(SDL_Event* event);
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 }

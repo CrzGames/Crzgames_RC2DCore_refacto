@@ -1042,7 +1042,8 @@ typedef enum RC2D_LetterboxMode {
  * \brief Textures de remplissage pour les marges du letterbox/pillarbox.
  * 
  * Cette structure permet de définir le comportement visuel des marges 
- * (haut, bas, gauche, droite) en cas de mise à l’échelle logique avec letterboxing.
+ * (haut, bas, gauche, droite) en cas de mise à l’échelle logique avec le mode 
+ * `RC2D_LOGICAL_PRESENTATION_LETTERBOX` ou `RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE`.
  *
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
