@@ -2046,8 +2046,6 @@ static bool rc2d_engine(void)
         return false;
     }
 
-    rc2d_letterbox_init();
-
     if (!rc2d_cimgui_init())
     {
         return false;
@@ -2164,7 +2162,6 @@ void rc2d_engine_quit(void)
     }
 
     // Nettoyer les textures de letterbox
-    rc2d_letterbox_cleanup();
     RC2D_free(rc2d_engine_state.letterbox_uniform_texture);
     RC2D_free(rc2d_engine_state.letterbox_top_texture);
     RC2D_free(rc2d_engine_state.letterbox_bottom_texture);

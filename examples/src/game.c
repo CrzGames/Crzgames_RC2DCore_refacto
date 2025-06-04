@@ -55,6 +55,8 @@ void rc2d_load(void)
 {
     RC2D_log(RC2D_LOG_INFO, "My game is loading...\n");
 
+    rc2d_window_setFullscreen(true, RC2D_FULLSCREEN_EXCLUSIVE, true);
+
     // Charger les shaders graphiques
     fragmentShader = rc2d_gpu_loadGraphicsShader("test.fragment");
     RC2D_assert_release(fragmentShader != NULL, RC2D_LOG_CRITICAL, "Failed to load fragment shader");
