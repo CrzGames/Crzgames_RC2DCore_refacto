@@ -9,6 +9,7 @@ set MSL_VERSION=3.2.0
 set COMPILE_SPIRV=false
 set COMPILE_DXIL=false
 set COMPILE_MSL=false
+set COMPILE_PSSL=false
 set COMPILE_JSON=true
 set HAS_ONLY_OPTION=false
 
@@ -22,6 +23,13 @@ if "%~1"=="" goto end_args
 if /i "%~1"=="--help" (
     call :print_help
     exit /b 0
+)
+
+if /i "%~1"=="--pssl" (
+    set COMPILE_PSSL=true
+    set HAS_ONLY_OPTION=true
+    shift
+    goto parse_args
 )
 
 if /i "%~1"=="--msl-version" (
@@ -75,11 +83,13 @@ if "%HAS_ONLY_OPTION%"=="true" (
     if not "%COMPILE_SPIRV%"=="true" set COMPILE_SPIRV=false
     if not "%COMPILE_DXIL%"=="true" set COMPILE_DXIL=false
     if not "%COMPILE_MSL%"=="true" set COMPILE_MSL=false
+    if not "%COMPILE_PSSL%"=="true" set COMPILE_PSSL=false
 ) else (
     :: Si aucune option --only-* n'a été utilisée, activer tous les formats par défaut
     set COMPILE_SPIRV=true
     set COMPILE_DXIL=true
     set COMPILE_MSL=true
+    set COMPILE_PSSL=true
 )
 
 :: ==================================================
@@ -138,6 +148,9 @@ if "%COMPILE_DXIL%"=="true" (
 if "%COMPILE_MSL%"=="true" (
     if not exist "%OUT_COMPILED_DIR%\msl" mkdir "%OUT_COMPILED_DIR%\msl"
 )
+if "%COMPILE_PSSL%"=="true" (
+    if not exist "%OUT_COMPILED_DIR%\pssl" mkdir "%OUT_COMPILED_DIR%\pssl"
+)
 if "%COMPILE_JSON%"=="true" (
     if not exist "%OUT_REFLECTION_DIR%" mkdir "%OUT_REFLECTION_DIR%"
 )
@@ -170,6 +183,11 @@ for %%f in (%SRC_DIR%\*.hlsl) do (
             call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\msl\%%~nf.msl" --msl-version %MSL_VERSION%
         )
 
+        REM Compilation des shaders HLSL vers PSSL (PlayStation Shader Language)
+        if "%COMPILE_PSSL%"=="true" (
+            call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_COMPILED_DIR%\pssl\%%~nf.hlsl" --pssl
+        )
+
         REM Compilation des fichiers JSON de réflexion des ressources shaders
         if "%COMPILE_JSON%"=="true" (
             call "%ABS_SHADERCROSS%" "%%f" -o "%OUT_REFLECTION_DIR%\%%~nf.json"
@@ -197,6 +215,7 @@ echo.
 if "%COMPILE_SPIRV%"=="true" call :print_green "SPIR-V (Shaders Vulkan) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\spirv"
 if "%COMPILE_MSL%"=="true" call :print_green "MSL (Shaders Metal) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\msl"
 if "%COMPILE_DXIL%"=="true" call :print_green "DXIL (Shaders Direct3D12) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\dxil"
+if "%COMPILE_PSSL%"=="true" call :print_green "PSSL (Shaders PlayStation) :" & call :print_cyan "%ABS_OUT_COMPILED_DIR%\pssl"
 if "%COMPILE_JSON%"=="true" call :print_green "JSON (Informations de reflexion sur les ressources shaders) :" & call :print_cyan "%ABS_OUT_REFLECTION_DIR%"
 
 endlocal
@@ -222,11 +241,12 @@ echo     --msl-version [version]   Specifie la version de MSL pour Metal
 echo     --only-spirv              Compiler uniquement pour SPIR-V (Vulkan)
 echo     --only-dxil               Compiler uniquement pour DXIL (Direct3D12)
 echo     --only-msl                Compiler uniquement pour MSL (Metal)
+echo     --only-pssl               Compiler uniquement pour PSSL (PlayStation Shader Language)
 echo     --no-json                 Desactiver la generation des fichiers JSON (reflexion des ressources shaders)
 echo     --help                    Afficher cette aide
 echo.
 echo Comportement par defaut :
-echo     Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal).
+echo     Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal), et PSSL (PlayStation Shader Language).
 echo     Genere les fichiers JSON : Les informations de reflexion automatique sur les ressources utiliser par un shader.
 echo     Version MSL par defaut : 3.2.0 (macOS 15.0+, iOS/iPadOS 18.0+).
 echo.
@@ -234,13 +254,14 @@ echo Exemples :
 echo     compile_shaders.bat --only-dxil
 echo     compile_shaders.bat --only-msl --msl-version 2.3.0 --no-json
 echo     compile_shaders.bat --only-spirv --only-msl
+echo     compile_shaders.bat --only-pssl
 echo     compile_shaders.bat
 echo.
 echo Requis :
 echo     SDL3_shadercross CLI (binaire shadercross) doit etre present dans le repertoire : ../tools.
 echo.
 echo Documentation :
-echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal).
+echo     Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL (Metal), et PSSL (PlayStation Shader Language).
 echo     Les fichiers JSON de reflexion des ressources shaders sont generes pour chaque shader source HLSL.
 echo.
 echo     Les shaders source HLSL doivent etre places dans le repertoire ../src.
@@ -251,6 +272,7 @@ echo     Repertoires de sortie :
 echo         ../compiled/spirv : shaders SPIR-V (Vulkan)
 echo         ../compiled/msl   : shaders MSL (Metal)
 echo         ../compiled/dxil  : shaders DXIL (Direct3D12)
+echo         ../compiled/pssl  : shaders PSSL (PlayStation Shader Language)
 echo         ../reflection     : fichiers JSON de reflexion des ressources shaders
 echo.
 echo     Le script verifie si le binaire shadercross est present dans ../tools.

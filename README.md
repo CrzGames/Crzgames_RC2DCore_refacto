@@ -320,7 +320,7 @@ Apple Silicon :
    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
    git config --global core.longpaths true
   5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
-
+  6. Run le scripts .bat via la console "Visual Studio Developer Command" (terminal Visual Studio), contrainte pour cimgui.
   
   # Linux :
   1. Requirements : glibc >= 3.25 (Ubuntu >= 22.04 OR Debian >= 12.0)

@@ -44,11 +44,12 @@ print_help() {
     echo "    --only-spirv              Compiler uniquement pour SPIR-V (Vulkan)"
     echo "    --only-dxil               Compiler uniquement pour DXIL (Direct3D12)"
     echo "    --only-msl                Compiler uniquement pour MSL et METALLIB (Metal)"
+    echo "    --only-pssl               Compiler uniquement pour PSSL (PlayStation Shading Language)"
     echo "    --no-json                 Désactiver la génération des fichiers JSON (réflexion des ressources shaders)"
     echo "    --help                    Afficher cette aide"
     echo
     echo "Comportement par défaut :"
-    echo "    Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL / METALLIB (Metal)."
+    echo "    Compile les shaders source HLSL en : SPIR-V (Vulkan), DXIL (Direct3D12), MSL / METALLIB (Metal), et PSSL (PlayStation Shading Language)."
     echo "    Génère les fichiers JSON : Les informations de réflexion automatique sur les ressources utilisées par un shader."
     echo "    Version MSL / METALLIB par défaut : 3.2.0 (macOS 15.0+, iOS/iPadOS 18.0+)."
     echo
@@ -56,13 +57,14 @@ print_help() {
     echo "    compile_shaders.sh --only-dxil"
     echo "    compile_shaders.sh --only-msl --msl-version 2.3.0 --no-json"
     echo "    compile_shaders.sh --only-spirv --only-msl"
+    echo "    compile_shaders.sh --only-pssl"
     echo "    compile_shaders.sh"
     echo
     echo "Requis :"
     echo "    SDL3_shadercross CLI (binaire shadercross) doit être présent dans le répertoire : ../tools."
     echo
     echo "Documentation :"
-    echo "    Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL / METALLIB (Metal)."
+    echo "    Ce script compile les shaders HLSL aux formats SPIR-V (Vulkan), DXIL (Direct3D12), MSL / METALLIB (Metal) et PSSL (PlayStation Shading Language)."
     echo "    Les fichiers JSON de réflexion des ressources shaders sont générés pour chaque shader source HLSL."
     echo
     echo "    Les shaders source HLSL doivent être placés dans le répertoire ../src."
@@ -74,6 +76,7 @@ print_help() {
     echo "        ../compiled/msl      : shaders MSL (Metal)"
     echo "        ../compiled/metallib : shaders METALLIB (Metal)"
     echo "        ../compiled/dxil     : shaders DXIL (Direct3D12)"
+    echo "        ../compiled/pssl     : shaders PSSL (PlayStation Shading Language)"
     echo "        ../reflection        : fichiers JSON de réflexion des ressources shaders"
     echo
     echo "    Le script vérifie si le binaire shadercross est présent dans ../tools."
@@ -93,6 +96,7 @@ MSL_VERSION="3.2.0"
 COMPILE_SPIRV=false
 COMPILE_DXIL=false
 COMPILE_MSL=false
+COMPILE_PSSL=false
 COMPILE_JSON=true
 HAS_ONLY_OPTION=false
 
@@ -131,6 +135,11 @@ parse_args() {
                 HAS_ONLY_OPTION=true
                 shift
                 ;;
+            --only-pssl)
+                COMPILE_PSSL=true
+                HAS_ONLY_OPTION=true
+                shift
+                ;;
             --no-json)
                 COMPILE_JSON=false
                 shift
@@ -152,11 +161,13 @@ if [ "$HAS_ONLY_OPTION" = true ]; then
     [ "$COMPILE_SPIRV" != true ] && COMPILE_SPIRV=false
     [ "$COMPILE_DXIL" != true ] && COMPILE_DXIL=false
     [ "$COMPILE_MSL" != true ] && COMPILE_MSL=false
+    [ "$COMPILE_PSSL" != true ] && COMPILE_PSSL=false
 else
     # Si aucune option --only-* n'a été utilisée, activer tous les formats par défaut
     COMPILE_SPIRV=true
     COMPILE_DXIL=true
     COMPILE_MSL=true
+    COMPILE_PSSL=true
 fi
 
 # ==================================================
@@ -217,6 +228,9 @@ if [ "$COMPILE_MSL" = true ]; then
         mkdir -p "$OUT_COMPILED_DIR/metallib/macos"
         mkdir -p "$OUT_COMPILED_DIR/metallib/ios"
     fi
+fi
+if [ "$COMPILE_PSSL" = true ]; then
+    mkdir -p "$OUT_COMPILED_DIR/pssl"
 fi
 if [ "$COMPILE_JSON" = true ]; then
     mkdir -p "$OUT_REFLECTION_DIR"
@@ -282,6 +296,11 @@ for f in "$SRC_DIR"/*.hlsl; do
                 fi
             fi
 
+            # Compilation des shaders HLSL vers PSSL (PlayStation Shading Language)
+            if [ "$COMPILE_PSSL" = true ]; then
+                "$ABS_SHADERCROSS" "$f" -o "$OUT_COMPILED_DIR/pssl/$filename.hlsl" --pssl
+            fi
+
             # Compilation des fichiers JSON de réflexion des ressources shaders
             if [ "$COMPILE_JSON" = true ]; then
                 "$ABS_SHADERCROSS" "$f" -o "$OUT_REFLECTION_DIR/$filename.json"
@@ -322,6 +341,10 @@ fi
 if [ "$COMPILE_DXIL" = true ]; then
     print_green "DXIL (Shaders Direct3D12) :"
     print_cyan "$ABS_OUT_COMPILED_DIR/dxil"
+fi
+if [ "$COMPILE_PSSL" = true ]; then
+    print_green "PSSL (Shaders PlayStation Shading Language) :"
+    print_cyan "$ABS_OUT_COMPILED_DIR/pssl"
 fi
 if [ "$COMPILE_JSON" = true ]; then
     print_green "JSON (Informations de réflexion sur les ressources shaders) :"

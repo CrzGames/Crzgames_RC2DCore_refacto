@@ -17,60 +17,22 @@ struct main0_out
 fragment main0_out main0(constant type_UniformBlock& UniformBlock [[buffer(0)]], float4 gl_FragCoord [[position]])
 {
     main0_out out = {};
-    float4 _63 = gl_FragCoord;
-    float2 _73 = ((gl_FragCoord.xy * 2.0) - UniformBlock.resolution) / float2(UniformBlock.resolution.y);
-    float2 _55 = _73;
-    float2 _56 = _73;
-    float3 _57 = float3(0.0);
-    float2 _75;
-    float3 _78;
-    _75 = _73;
-    _78 = float3(0.0);
-    float3 _50;
-    float3 _51;
-    float3 _52;
-    float3 _53;
-    float3 _54;
-    float _59;
-    float3 _60;
-    float _61;
-    float _58 = 0.0;
-    float _80 = 0.0;
-    for (; _80 < 4.0; )
+    float2 _52 = ((gl_FragCoord.xy * 2.0) - UniformBlock.resolution) / float2(UniformBlock.resolution.y);
+    float2 _54;
+    float3 _57;
+    _54 = _52;
+    _57 = float3(0.0);
+    for (float _59 = 0.0; _59 < 4.0; )
     {
-        float2 _84 = _75 * 1.5;
-        float2 _76 = fract(_84) - float2(0.5);
-        _55 = _76;
-        float _87 = length(_73);
-        float _90 = length(_76) * exp(-_87);
-        _59 = _90;
-        float _96 = (_87 + (_80 * 0.4000000059604644775390625)) + (UniformBlock.time * 0.4000000059604644775390625);
-        _61 = _96;
-        _50 = float3(0.5);
-        _51 = float3(0.5);
-        _52 = float3(1.0);
-        _53 = float3(0.263000011444091796875, 0.41600000858306884765625, 0.556999981403350830078125);
-        float3 _102 = float3(0.5) + (float3(0.5) * cos(((float3(1.0) * _96) + float3(0.263000011444091796875, 0.41600000858306884765625, 0.556999981403350830078125)) * 6.28318023681640625));
-        _54 = _102;
-        _60 = _102;
-        float _106 = sin((_90 * 8.0) + UniformBlock.time) * 0.125;
-        _59 = _106;
-        float _107 = abs(_106);
-        _59 = _107;
-        float _109 = powr(0.00999999977648258209228515625 / _107, 1.2000000476837158203125);
-        _59 = _109;
-        float3 _79 = _78 + (_102 * _109);
-        _57 = _79;
-        float _81 = _80 + 1.0;
-        _58 = _81;
-        _75 = _76;
-        _78 = _79;
-        _80 = _81;
+        float2 _63 = _54 * 1.5;
+        float2 _55 = fract(_63) - float2(0.5);
+        float _66 = length(_52);
+        _54 = _55;
+        _57 += ((float3(0.5) + (float3(0.5) * cos(((float3(1.0) * ((_66 + (_59 * 0.4000000059604644775390625)) + (UniformBlock.time * 0.4000000059604644775390625))) + float3(0.263000011444091796875, 0.41600000858306884765625, 0.556999981403350830078125)) * 6.28318023681640625))) * powr(0.00999999977648258209228515625 / abs(sin(((length(_55) * exp(-_66)) * 8.0) + UniformBlock.time) * 0.125), 1.2000000476837158203125));
+        _59 += 1.0;
         continue;
     }
-    float4 _114 = float4(_78, 1.0);
-    float4 _62 = _114;
-    out.out_var_SV_Target0 = _114;
+    out.out_var_SV_Target0 = float4(_57, 1.0);
     return out;
 }
 
