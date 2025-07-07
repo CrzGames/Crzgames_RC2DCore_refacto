@@ -308,21 +308,34 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
         return NULL;
     }
 
-    // Ajouter le shader graphics dans le cache
+    /**
+     * On lock le temps d'ajouter le shader graphique au cache des shaders graphiques,
+     * et pour éviter les accès concurrents.
+     * 
+     * On utilise un mutex pour protéger l'accès au cache des shaders graphiques.
+     */
     SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
 
+    // On réalloue le cache des shaders graphiques pour ajouter le nouveau shader graphique plus bas
     RC2D_GraphicsShaderEntry* newShaders = RC2D_realloc(
         rc2d_engine_state.gpu_graphics_shaders_cache,
         (rc2d_engine_state.gpu_graphics_shader_count + 1) * sizeof(RC2D_GraphicsShaderEntry)
     );
+
+    // Vérifier si la réallocation a réussi
     RC2D_assert_release(newShaders != NULL, RC2D_LOG_CRITICAL, "Failed to realloc shader cache");
 
+    // Mettre à jour le cache des shaders graphiques avec le nouveau shader graphique
     rc2d_engine_state.gpu_graphics_shaders_cache = newShaders;
     RC2D_GraphicsShaderEntry* entry = &rc2d_engine_state.gpu_graphics_shaders_cache[rc2d_engine_state.gpu_graphics_shader_count++];
     entry->filename = RC2D_strdup(filename);
     entry->shader = graphicsShader;
     entry->lastModified = rc2d_gpu_getFileModificationTime(fullPath);
 
+    /**
+     * On unlock le mutex après avoir ajouté le shader graphique au cache.
+     * Cela permet aux autres threads d'accéder au cache des shaders graphiques.
+     */
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
 #endif
 
@@ -648,13 +661,23 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
 void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 {
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
+    /**
+     * Vérifier si les mutex pour les shaders graphiques et pipelines graphiques sont initialisés
+     */
     if (!rc2d_engine_state.gpu_graphics_shader_mutex)
-        RC2D_log(RC2D_LOG_ERROR, "gpu_graphics_shader_mutex is NULL");
+    {
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "gpu_graphics_shader_mutex is NULL");
+    }
 
     if (!rc2d_engine_state.gpu_graphics_pipeline_mutex)
-        RC2D_log(RC2D_LOG_ERROR, "gpu_graphics_pipeline_mutex is NULL");
+    {
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "gpu_graphics_pipeline_mutex is NULL");
+    }
 
 
+    /**
+     * Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
+     */
     const char* basePath = SDL_GetBasePath();
     if (basePath == NULL) 
     {
@@ -662,20 +685,41 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
         return;
     }
 
+    /**
+     * On verrouille les mutex pour éviter les conflits d'accès concurrents
+     * lors de la mise à jour des shaders graphiques et des pipelines graphiques.
+     */
     SDL_LockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
     SDL_LockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
 
+    /**
+     * Parcourir tous les shaders graphiques dans le cache
+     * et vérifier s'ils ont été modifiés depuis leur dernière compilation.
+     */
     for (int i = 0; i < rc2d_engine_state.gpu_graphics_shader_count; i++) 
     {
+        // Récupérer le shader graphique à partir du cache
         RC2D_GraphicsShaderEntry* entry = &rc2d_engine_state.gpu_graphics_shaders_cache[i];
 
-        // Construire le chemin complet
+        /**
+         * Générer le chemin d'accès complet au fichier HLSL source
+         * 
+         * En utilisant le nom du fichier du shader graphique récupéré du cache,
+         * via `entry->filename`.
+         * 
+         * On utilise SDL_snprintf pour formater le chemin d'accès au fichier HLSL source.
+         */
         char fullPath[512];
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, entry->filename);
 
-        // Vérifier le timestamp
+        /**
+         * Vérifier si le fichier HLSL source a été modifié depuis la dernière compilation
+         * 
+         * On utilise `rc2d_gpu_getFileModificationTime` pour obtenir le temps de modification du fichier.
+         */
         SDL_Time currentModified = rc2d_gpu_getFileModificationTime(fullPath);
 
+        // Si le fichier HLSL source a été modifié depuis la dernière compilation
         if (currentModified > entry->lastModified) 
         {            
             // Déterminer le stage
@@ -709,7 +753,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 
             /**
              * Si le code HLSL n'a pas pu être chargé après plusieurs tentatives, log l'erreur
-             * et continue avec le prochain shader
+             * et continue avec le prochain shader graphique.
              */
             if (!codeHLSLSource) 
             {
@@ -782,10 +826,15 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 
             if (newShader) 
             {
-                // Soumettre le buffer de commandes actuel et obtenir une fence
+                /**
+                 * Soumettre le buffer de commandes actuel et attendre que le GPU ait fini de traiter
+                 * On utilise SDL_SubmitGPUCommandBufferAndAcquireFence pour soumettre le buffer de commandes
+                 * et acquérir une fence pour synchroniser l'attente.
+                 */
                 SDL_GPUFence* fence = NULL;
                 if (rc2d_engine_state.gpu_current_command_buffer) 
                 {
+                    // Soumettre le buffer de commandes actuel et acquérir une fence
                     fence = SDL_SubmitGPUCommandBufferAndAcquireFence(rc2d_engine_state.gpu_current_command_buffer);
                     if (!fence) 
                     {
@@ -794,13 +843,15 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                         continue;
                     }
 
-                    // Attendre que le GPU ait fini de traiter le buffer
+                    // Attendre que le GPU ait fini de traiter le buffer de commandes
                     if (!SDL_WaitForGPUFences(rc2d_gpu_getDevice(), true, &fence, 1))
                     {
                         RC2D_log(RC2D_LOG_ERROR, "Failed to wait for GPU fence: %s", SDL_GetError());
                         SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), newShader);
                         continue;
                     }
+
+                    // Libérer la fence après utilisation
                     SDL_ReleaseGPUFence(rc2d_gpu_getDevice(), fence);
                 }
 
@@ -819,24 +870,33 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                     SDL_ReleaseGPUShader(rc2d_gpu_getDevice(), entry->shader);
                 }
 
-                // Remplacer l'ancien shader par le nouveau dans le cache de RC2D
+                // Remplacer l'ancien shader graphique par le nouveau shader graphique, dans le cache de RC2D
                 entry->shader = newShader;
+
+                // Mettre à jour le timestamp de dernière modification, c'est le moment où le shader a été rechargé (donc le timestamp actuel)
                 entry->lastModified = currentModified;
 
                 // Log la réussite du rechargement du shader
                 RC2D_log(RC2D_LOG_INFO, "Successfully Shader %s reloaded in %.2f ms", entry->filename, compileTimeMs);
 
-                // Mettre à jour tous les pipelines qui utilisent ce shader
+                // Mettre à jour tous les pipelines graphiques qui utilisent ce shader
                 for (int j = 0; j < rc2d_engine_state.gpu_graphics_pipeline_count; j++) 
                 {
+                    // Récupérer le pipeline graphique à partir du cache
                     RC2D_GraphicsPipelineEntry* pipeline = &rc2d_engine_state.gpu_graphics_pipelines_cache[j];
 
+                    // Check si le pipeline graphique utilise le shader graphique actuel
                     if ((stage == SDL_GPU_SHADERSTAGE_VERTEX && SDL_strcmp(pipeline->vertex_shader_filename, entry->filename) == 0) ||
                         (stage == SDL_GPU_SHADERSTAGE_FRAGMENT && SDL_strcmp(pipeline->fragment_shader_filename, entry->filename) == 0)) 
                     {
+                        /**
+                         * Si le pipeline graphique utilise le shader graphique actuel, on détruit l'ancien pipeline graphique
+                         * et on le recrée avec le nouveau shader graphique.
+                         */
                         SDL_ReleaseGPUGraphicsPipeline(rc2d_gpu_getDevice(), pipeline->graphicsPipeline->pipeline);
                         pipeline->graphicsPipeline->pipeline = NULL;
 
+                        // Mettre à jour le shader graphique dans le pipeline graphique
                         if (stage == SDL_GPU_SHADERSTAGE_VERTEX) 
                         {
                             pipeline->graphicsPipeline->create_info.vertex_shader = newShader;
@@ -846,6 +906,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                             pipeline->graphicsPipeline->create_info.fragment_shader = newShader;
                         }
 
+                        // Recréer le pipeline graphique avec le nouveau shader graphique
                         bool ok = rc2d_gpu_createGraphicsPipeline(pipeline->graphicsPipeline, false);
                         if (!ok || pipeline->graphicsPipeline->pipeline == NULL) {
                             RC2D_log(RC2D_LOG_CRITICAL, "Failed to rebuild pipeline for shader: %s (resulting pipeline is NULL)", entry->filename);
@@ -859,11 +920,15 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
             } 
             else 
             {
+                // Log l'erreur si la compilation du shader graphique a échoué
                 RC2D_log(RC2D_LOG_ERROR, "Failed to reload shader: %s", entry->filename);
             }
         }
     }
 
+    /**
+     * Unlock les mutex pour permettre l'accès concurrent aux shaders graphiques et pipelines graphiques
+     */
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
 #endif
