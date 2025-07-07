@@ -10,7 +10,13 @@
 #include <SDL3_shadercross/SDL_shadercross.h>
 #endif
 
-static SDL_Time get_file_modification_time(const char* path) 
+/**
+ * Récupère le timestamp de la dernière modification d'un fichier.
+ * 
+ * @param {const char*} path - Le chemin du fichier dont on veut connaître la date de dernière modification.
+ * @returns {SDL_Time} - Le timestamp de la dernière modification du fichier, ou 0 en cas d'erreur.
+ */
+static SDL_Time rc2d_gpu_getFileModificationTime(const char* path) 
 {
     SDL_PathInfo info;
     if (SDL_GetPathInfo(path, &info)) 
@@ -78,7 +84,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
      */
     char fullPath[512];
 
-#if !RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders HLSL
+#if !RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders graphics en HLSL
     /**
      * entrypoint : Point d'entrée du shader (main pour SPIR-V, DXIL et main0 pour MSL).
      */
@@ -142,9 +148,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
     }
 
     /**
-     * Récupérer les informations de réflexion du shader (nombre de samplers, uniform buffers, etc.)
-     * En mode hors ligne, on utilise un fichier JSON généré par le compilateur de shaders.
-     * 
+     * En mode compilation hors ligne des shaders, on utilise un fichier JSON généré par le script de compilation des shaders.
      * On génère le chemin d'accès au fichier JSON de réflexion en fonction du nom du shader et de son stage.
      */
     char jsonPath[512];
@@ -152,18 +156,9 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
 
     /**
      * On ouvre le fichier JSON de réflexion pour récupérer les informations de réflexions sur le shader.
-     * On utilise SDL_OpenIO pour ouvrir le fichier JSON et SDL_ReadLineIO pour lire chaque ligne.
+     * On utilise SDL_LoadFile pour charger le fichier JSON de réflexion.
      * On utilise SDL_sscanf pour extraire les valeurs des champs : samplers, uniform_buffers, storage_buffers et storage_textures.
      * On ferme le fichier JSON après la lecture.
-     */
-    Uint32 numSamplers = 0;
-    Uint32 numUniformBuffers = 0;
-    Uint32 numStorageBuffers = 0;
-    Uint32 numStorageTextures = 0;
-
-    /**
-     * Charger le fichier JSON de réflexion
-     * On utilise SDL_LoadFile pour charger le fichier JSON de réflexion.
      * 
      * Exemple de contenu JSON attendu :
      * ```json
@@ -175,6 +170,10 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
      * }
      * ```
      */
+    Uint32 numSamplers = 0;
+    Uint32 numUniformBuffers = 0;
+    Uint32 numStorageBuffers = 0;
+    Uint32 numStorageTextures = 0;
     void* jsonContent = SDL_LoadFile(jsonPath, NULL);
     if (jsonContent) 
     {
@@ -219,18 +218,18 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
         .props = 0
     };
 
+    // Créer le shader graphique à partir du code compilé du shader
     SDL_GPUShader* graphicsShader = SDL_CreateGPUShader(rc2d_gpu_getDevice(), &info);
     RC2D_free(codeShaderCompiled);
-
     if (!graphicsShader) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU shader from file: %s", filename);
         return NULL;
     }
 
-#else // Compilation en ligne des shaders HLSL
+#else // Compilation en ligne des shaders graphics en HLSL
     /**
-     * On génère le chemin d'accès au fichier HLSL source en fonction du nom du shader et de son stage.
+     * On génère le chemin d'accès au fichier HLSL source en fonction du nom du shader et de son stage pour la compilation en ligne des shaders.
      * On utilise SDL_snprintf pour formater le chemin d'accès au fichier HLSL source.
      */
     SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, filename);
@@ -322,7 +321,7 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
     RC2D_GraphicsShaderEntry* entry = &rc2d_engine_state.gpu_graphics_shaders_cache[rc2d_engine_state.gpu_graphics_shader_count++];
     entry->filename = RC2D_strdup(filename);
     entry->shader = graphicsShader;
-    entry->lastModified = get_file_modification_time(fullPath);
+    entry->lastModified = rc2d_gpu_getFileModificationTime(fullPath);
 
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
 #endif
@@ -364,7 +363,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
      */
     char fullPath[512];
 
-#if !RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders HLSL
+#if !RC2D_GPU_SHADER_HOT_RELOAD_ENABLED // Compilation hors ligne des shaders compute en HLSL
     /**
      * entrypoint : Point d'entrée du shader (main pour SPIR-V, DXIL et main0 pour MSL).
      */
@@ -428,9 +427,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     }
 
     /**
-     * Récupérer les informations de réflexion du shader (nombre de samplers, uniform buffers, etc.)
-     * En mode hors ligne, on utilise un fichier JSON généré par le compilateur de shaders.
-     * 
+     * En mode hors ligne des shaders, on utilise un fichier JSON généré par le script de compilation des shaders.
      * On génère le chemin d'accès au fichier JSON de réflexion en fonction du nom du shader et de son stage.
      */
     char jsonPath[512];
@@ -438,23 +435,9 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
 
     /**
      * On ouvre le fichier JSON de réflexion pour récupérer les informations de réflexions sur le shader.
-     * On utilise SDL_OpenIO pour ouvrir le fichier JSON et SDL_ReadLineIO pour lire chaque ligne.
+     * On utilise SDL_LoadFile pour charger le fichier JSON de réflexion.
      * On utilise SDL_sscanf pour extraire les valeurs des champs : "samplers", "uniformBuffers", "readOnlyStorageBuffers", "readOnlyStorageTextures", "readwriteStorageTextures", "readwriteStorageBuffers", "threadCountX", "threadCountY" et "threadCountZ".
      * On ferme le fichier JSON après la lecture.
-     */
-    Uint32 numSamplers = 0;
-    Uint32 numReadonlyStorageTextures = 0;
-    Uint32 numReadonlyStorageBuffers = 0;
-    Uint32 numReadwriteStorageTextures = 0;
-    Uint32 numReadwriteStorageBuffers = 0;
-    Uint32 numUniformBuffers = 0;
-    Uint32 numThreadCountX = 0;
-    Uint32 numThreadCountY = 0;
-    Uint32 numThreadCountZ = 0;
-
-    /**
-     * Charger le fichier JSON de réflexion
-     * On utilise SDL_LoadFile pour charger le fichier JSON de réflexion.
      * 
      * Exemple de contenu JSON attendu :
      * ```json
@@ -471,6 +454,15 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
      * }
      * ```
      */
+    Uint32 numSamplers = 0;
+    Uint32 numReadonlyStorageTextures = 0;
+    Uint32 numReadonlyStorageBuffers = 0;
+    Uint32 numReadwriteStorageTextures = 0;
+    Uint32 numReadwriteStorageBuffers = 0;
+    Uint32 numUniformBuffers = 0;
+    Uint32 numThreadCountX = 0;
+    Uint32 numThreadCountY = 0;
+    Uint32 numThreadCountZ = 0;
     void* jsonContent = SDL_LoadFile(jsonPath, NULL);
     if (jsonContent) 
     {
@@ -539,21 +531,21 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
         .props = 0
     };
 
+    // Créer le shader de calcul à partir du code compilé du shader
     SDL_GPUComputePipeline* computePipelineShader = SDL_CreateGPUComputePipeline(
         rc2d_gpu_getDevice(),
         &info
     );
     RC2D_free(codeShaderCompiled);
-
     if (!computePipelineShader) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU compute shader from file: %s", filename);
         return NULL;
     }
 
-#else // Compilation en ligne des shaders HLSL
+#else // Compilation en ligne des shaders compute en HLSL
     /**
-     * On génère le chemin d'accès au fichier HLSL source en fonction du nom du shader et de son stage.
+     * On génère le chemin d'accès au fichier HLSL source en fonction du nom du shader et de son stage pour la compilation en ligne des shaders.
      * On utilise SDL_snprintf pour formater le chemin d'accès au fichier HLSL source.
      */
     SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, filename);
@@ -602,7 +594,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
         return NULL;
     }
 
-    // Préparer les informations SPIR-V pour la compilation du pipeline
+    // Préparer les informations SPIR-V pour la compilation du pipeline de calcul 
     SDL_ShaderCross_SPIRV_Info spirvInfo = {
         .bytecode = spirvBytecode,
         .bytecode_size = spirvSize,
@@ -644,7 +636,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     RC2D_ComputeShaderEntry* entry = &rc2d_engine_state.gpu_compute_shaders_cache[rc2d_engine_state.gpu_compute_shader_count++];
     entry->filename = RC2D_strdup(filename);
     entry->shader = computePipelineShader;
-    entry->lastModified = get_file_modification_time(fullPath);
+    entry->lastModified = rc2d_gpu_getFileModificationTime(fullPath);
 
     SDL_UnlockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
 #endif
@@ -682,7 +674,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, entry->filename);
 
         // Vérifier le timestamp
-        SDL_Time currentModified = get_file_modification_time(fullPath);
+        SDL_Time currentModified = rc2d_gpu_getFileModificationTime(fullPath);
 
         if (currentModified > entry->lastModified) 
         {            
@@ -908,7 +900,7 @@ void rc2d_gpu_hotReloadComputeShader(void)
         SDL_snprintf(fullPath, sizeof(fullPath), "%sshaders/src/%s.hlsl", basePath, entry->filename);
 
         // Vérifier le timestamp de dernière modification
-        SDL_Time currentModified = get_file_modification_time(fullPath);
+        SDL_Time currentModified = rc2d_gpu_getFileModificationTime(fullPath);
         if (currentModified <= entry->lastModified) 
         {
             // Pas de modification, passer au shader suivant
@@ -1115,7 +1107,7 @@ void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
     SDL_BindGPUGraphicsPipeline(rc2d_engine_state.gpu_current_render_pass, graphicsPipeline->pipeline);
 }
 
-// TODO: Disponible à partir de SDL 3.4.0 (pour la fonction : SDL_GetGPUDeviceProperties)
+// TODO: Disponible à partir de SDL 3.4.0 (pour la fonction : SDL_GetGPUShaderFormats)
 /*void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
 {
     // Vérification des paramètres d'entrée

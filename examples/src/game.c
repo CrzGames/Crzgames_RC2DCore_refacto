@@ -147,7 +147,6 @@ void rc2d_update(double dt)
 void rc2d_draw(void)
 {
     // -------------------- SHADER COMPUTE -------------------
-    // (Votre code compute shader inchangé)
 
     // ------------------- SHADER GRAPHICS -------------------
     rc2d_gpu_bindGraphicsPipeline(&graphicsPipeline);
