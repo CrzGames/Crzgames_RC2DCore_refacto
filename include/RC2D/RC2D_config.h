@@ -111,34 +111,6 @@ extern "C" {
 #define RC2D_MEMORY_DEBUG_ENABLED 0
 #endif
 
-/**
- * \brief Si RC2D_CIMGUI_ENABLED est défini à 1, le support de cimgui est activé.
- * 
- * Cela utilise la bibliothèque cimgui pour l'interface graphique utilisateur (GUI).
- * cimgui est une interface C pour Dear ImGui, une bibliothèque populaire pour créer des interfaces graphiques
- * dans les applications C/C++. Elle permet de créer des interfaces utilisateur interactives et personnalisables
- * avec un rendu immédiat.
- * 
- * \since Cette macro de préprocesseur est disponible depuis RC2D 1.0.0.
- */
-#ifndef RC2D_CIMGUI_MODULE_ENABLED
-#define RC2D_CIMGUI_MODULE_ENABLED 1
-#endif // RC2D_CIMGUI_MODULE_ENABLED
-
-/**
- * \brief Si RC2D_CIMGUI_SDL3_ENABLED est défini à 1, le support de cimgui avec SDL3 est activé.
- * 
- * Cela utilise la bibliothèque cimgui avec le backend SDL3 pour l'interface graphique utilisateur (GUI).
- * Ce backend permet d'utiliser cimgui avec SDL3 pour gérer les événements et le rendu graphique.
- * 
- * \since Cette macro de préprocesseur est disponible depuis RC2D 1.0.0.
- */
-#if RC2D_CIMGUI_MODULE_ENABLED
-#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS 1
-#define CIMGUI_USE_SDL3 1
-#define CIMGUI_USE_SDLGPU3 1
-#endif // RC2D_CIMGUI_MODULE_ENABLED
-
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus
 }

@@ -9,6 +9,56 @@ extern "C" {
 #endif
 
 /**
+ * \brief Mode de dessin pour les formes graphiques.
+ *
+ * Définit si une forme est dessinée en mode rempli ou en contour.
+ *
+ * \since Cette énumération est disponible depuis RC2D 1.0.0.
+ */
+typedef enum RC2D_DrawMode {
+    /**
+     * \brief Mode rempli : la forme est dessinée avec une couleur de remplissage.
+     */
+    RC2D_DRAWMODE_FILL,
+
+    /**
+     * \brief Mode contour : la forme est dessinée uniquement avec un contour.
+     */
+    RC2D_DRAWMODE_LINE
+} RC2D_DrawMode;
+
+/**
+ * \brief Structure représentant une couleur RGBA.
+ * 
+ * Cette structure est utilisée pour définir une couleur en termes de rouge, vert, bleu et alpha.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_Color {
+    /**
+     * \brief Composante rouge de la couleur.
+     */
+	Uint8 r;
+
+    /**
+     * \brief Composante verte de la couleur.
+     */
+	Uint8 g;
+
+    /**
+     * \brief Composante bleue de la couleur.
+     */
+	Uint8 b;
+
+    /**
+     * \brief Composante alpha de la couleur (opacité).
+     * 
+     * Une valeur de 0 signifie complètement transparent, tandis qu'une valeur de 255 signifie complètement opaque.
+     */
+	Uint8 a;
+} RC2D_Color;
+
+/**
  * \brief Contexte GPU utilisé par RC2D.
  *
  * Ce type wrappe SDL_GPUDevice, le contexte GPU principal fourni par SDL3.
@@ -418,6 +468,62 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool ad
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline);
+
+/**
+ * \brief Efface l'écran pour préparer le rendu d'une nouvelle frame.
+ *
+ * Cette fonction acquiert un command buffer, la texture de swapchain, et commence une passe de rendu.
+ * Elle doit être appelée avant toute opération de rendu dans une frame.
+ *
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_gpu_clear(void);
+
+/**
+ * \brief Présente le rendu à l'écran.
+ *
+ * Cette fonction termine la passe de rendu, soumet le command buffer au GPU, et présente la frame.
+ * Elle doit être appelée après toutes les opérations de rendu dans une frame.
+ *
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_gpu_present(void);
+
+/**
+ * \brief Définit la couleur globale utilisée pour les opérations de dessin.
+ *
+ * Cette fonction règle la couleur (R, G, B, A) utilisée pour dessiner les formes, comme les rectangles.
+ * Les valeurs sont des entiers non signés de 8 bits (0 à 255).
+ *
+ * \param color Couleur RGBA (composantes r, g, b, a entre 0 et 255).
+ *
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_gpu_setColor(RC2D_Color color);
+
+/**
+ * \brief Dessine un rectangle à l'écran.
+ *
+ * Cette fonction dessine un rectangle à la position (x, y) avec la largeur et la hauteur spécifiées.
+ * Le mode de dessin peut être RC2D_DRAWMODE_FILL (rempli) ou RC2D_DRAWMODE_LINE (contour).
+ *
+ * \param mode Mode de dessin (RC2D_DRAWMODE_FILL ou RC2D_DRAWMODE_LINE).
+ * \param x Position x en pixels logiques.
+ * \param y Position y en pixels logiques.
+ * \param width Largeur en pixels logiques.
+ * \param height Hauteur en pixels logiques.
+ *
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_gpu_rectangle(RC2D_DrawMode mode, float x, float y, float width, float height);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus

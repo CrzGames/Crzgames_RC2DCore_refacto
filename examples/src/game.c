@@ -1,11 +1,6 @@
 #include <mygame/game.h>
-
 #include <RC2D/RC2D.h>
 #include <RC2D/RC2D_internal.h>
-#include <RC2D/RC2D_memory.h>
-#include <RC2D/RC2D_imgui.h>
-
-#include <cimgui.h>
 
 static RC2D_GPUComputePipeline* computeShader;
 static RC2D_GPUShader* fragmentShader;
@@ -65,8 +60,8 @@ void rc2d_load(void)
     RC2D_assert_release(vertexShader != NULL, RC2D_LOG_CRITICAL, "Failed to load vertex shader");
 
     // Charger le compute shader
-    computeShader = rc2d_gpu_loadComputeShader("test.compute");
-    RC2D_assert_release(computeShader != NULL, RC2D_LOG_CRITICAL, "Failed to load compute shader");
+    /*computeShader = rc2d_gpu_loadComputeShader("test.compute");
+    RC2D_assert_release(computeShader != NULL, RC2D_LOG_CRITICAL, "Failed to load compute shader");*/
 
     SDL_GPUVertexInputState vertexInput = {
         .vertex_buffer_descriptions = NULL,

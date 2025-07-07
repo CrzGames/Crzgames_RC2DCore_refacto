@@ -2,7 +2,6 @@
 #define RC2D_COLLISION_H
 
 #include <RC2D/RC2D_math.h>
-#include <RC2D/RC2D_graphics.h>
 
 #include <stdbool.h> // Required for : bool
 
