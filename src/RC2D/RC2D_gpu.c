@@ -1115,6 +1115,7 @@ void rc2d_gpu_bindGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
     SDL_BindGPUGraphicsPipeline(rc2d_engine_state.gpu_current_render_pass, graphicsPipeline->pipeline);
 }
 
+// TODO: Disponible à partir de SDL 3.4.0 (pour la fonction : SDL_GetGPUDeviceProperties)
 /*void rc2d_gpu_getInfo(RC2D_GPUInfo* gpuInfo) 
 {
     // Vérification des paramètres d'entrée
