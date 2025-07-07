@@ -436,7 +436,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     /**
      * On ouvre le fichier JSON de réflexion pour récupérer les informations de réflexions sur le shader.
      * On utilise SDL_LoadFile pour charger le fichier JSON de réflexion.
-     * On utilise SDL_sscanf pour extraire les valeurs des champs : "samplers", "uniformBuffers", "readOnlyStorageBuffers", "readOnlyStorageTextures", "readwriteStorageTextures", "readwriteStorageBuffers", "threadCountX", "threadCountY" et "threadCountZ".
+     * On utilise SDL_sscanf pour extraire les valeurs des champs : "samplers", "readonly_storage_textures", "readonly_storage_buffers", "readwrite_storage_textures", "readwrite_storage_buffers", "uniform_buffers", "threadcount_x", "threadcount_y" et "threadcount_z".
      * On ferme le fichier JSON après la lecture.
      * 
      * Exemple de contenu JSON attendu :
