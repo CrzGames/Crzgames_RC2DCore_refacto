@@ -705,12 +705,10 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
     {
         RC2D_assert_release(false, RC2D_LOG_CRITICAL, "gpu_graphics_shader_mutex is NULL");
     }
-
     if (!rc2d_engine_state.gpu_graphics_pipeline_mutex)
     {
         RC2D_assert_release(false, RC2D_LOG_CRITICAL, "gpu_graphics_pipeline_mutex is NULL");
     }
-
 
     /**
      * Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
@@ -718,7 +716,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
     const char* basePath = SDL_GetBasePath();
     if (basePath == NULL) 
     {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to get base path for shader updates");
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "SDL_GetBasePath() failed, SDL_Error: %s", SDL_GetError());
         return;
     }
 
@@ -814,10 +812,10 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
             Uint64 t0 = SDL_GetPerformanceCounter();
 
             // Compiler HLSL vers SPIR-V
-            size_t spirvSize = 0;
-            void* spirvBytecode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlslInfo, &spirvSize);
+            size_t spirvByteCodeSize = 0;
+            void* spirvByteCode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlslInfo, &spirvByteCodeSize);
             RC2D_free(codeHLSLSource);
-            if (!spirvBytecode || spirvSize == 0)
+            if (!spirvByteCode || spirvByteCodeSize == 0)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to compile HLSL to SPIR-V during reload: %s", entry->filename);
                 continue;
@@ -825,19 +823,21 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 
             // Réfléchir les métadonnées
             SDL_ShaderCross_GraphicsShaderMetadata* metadata = SDL_ShaderCross_ReflectGraphicsSPIRV(
-                spirvBytecode, spirvSize, 0
+                spirvByteCode, 
+                spirvByteCodeSize, 
+                0
             );
             if (!metadata) 
             {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to reflect graphics shader metadata during reload: %s", entry->filename);
-                SDL_free(spirvBytecode);
+                SDL_free(spirvByteCode);
                 continue;
             }
 
             // Préparer les informations SPIR-V
             SDL_ShaderCross_SPIRV_Info spirvInfo = {
-                .bytecode = spirvBytecode,
-                .bytecode_size = spirvSize,
+                .bytecode = spirvByteCode,
+                .bytecode_size = spirvByteCodeSize,
                 .entrypoint = "main",
                 .shader_stage = (SDL_ShaderCross_ShaderStage)stage,
                 .enable_debug = true,
@@ -859,7 +859,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
 
             // Libérer les ressources
             SDL_free(metadata);
-            SDL_free(spirvBytecode);
+            SDL_free(spirvByteCode);
 
             if (newShader) 
             {
