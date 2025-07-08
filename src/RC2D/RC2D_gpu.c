@@ -1243,8 +1243,10 @@ void rc2d_gpu_hotReloadComputeShader(void)
                 SDL_ReleaseGPUComputePipeline(rc2d_gpu_getDevice(), entry->shader);
             }
 
-            // Mettre à jour l'entrée dans le cache
+            // Remplacer l'ancien compute shader par le nouveau compute shader, dans le cache de RC2D
             entry->shader = newShader;
+
+            // Mettre à jour le timestamp de dernière modification, c'est le moment où le shader a été rechargé (donc le timestamp actuel)
             entry->lastModified = currentModified;
 
             RC2D_log(RC2D_LOG_INFO, "Successfully reloaded compute shader %s in %.2f ms", entry->filename, compileTimeMs);
@@ -1255,7 +1257,10 @@ void rc2d_gpu_hotReloadComputeShader(void)
         }
     }
 
-    // Déverrouiller le mutex
+    /**
+     * Unlock le mutex pour permettre l'accès concurrent aux compute shaders
+     * après la mise à jour des shaders de calcul.
+     */
     SDL_UnlockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
 #endif
 }

@@ -57,9 +57,6 @@ void rc2d_load(void)
     vertexShader = rc2d_gpu_loadGraphicsShader("test.vertex");
     RC2D_assert_release(vertexShader != NULL, RC2D_LOG_CRITICAL, "Failed to load vertex shader");
 
-    /**
-     * FIXME: Fixer cela plante le programme quand on le charge, un soucis avec le compute shader ?
-     */
     // Charger le compute shader
     computeShader = rc2d_gpu_loadComputeShader("test.compute");
     RC2D_assert_release(computeShader != NULL, RC2D_LOG_CRITICAL, "Failed to load compute shader");
