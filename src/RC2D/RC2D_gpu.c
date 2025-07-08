@@ -873,6 +873,8 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                 RC2D_free(codeHLSLSource);
                 codeHLSLSource = NULL;
             }
+
+            // Vérifier si la compilation HLSL vers SPIR-V a réussi
             if (spirvByteCode == NULL || spirvByteCodeSize == 0)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to compile HLSL to SPIR-V during reload: %s", entry->filename);
@@ -885,6 +887,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                 spirvByteCodeSize, 
                 0
             );
+            // Vérifier si la réflexion des métadonnées a réussi
             if (!metadata) 
             {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to reflect graphics shader metadata during reload: %s", entry->filename);
@@ -1147,6 +1150,7 @@ void rc2d_gpu_hotReloadComputeShader(void)
         SDL_ShaderCross_ComputePipelineMetadata* metadata = SDL_ShaderCross_ReflectComputeSPIRV(
             spirvBytecode, spirvSize, 0
         );
+        // Vérifier si la réflexion des métadonnées a réussi
         if (!metadata) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Failed to reflect compute pipeline metadata during reload: %s", entry->filename);
