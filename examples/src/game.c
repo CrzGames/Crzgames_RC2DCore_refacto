@@ -61,8 +61,8 @@ void rc2d_load(void)
      * FIXME: Fixer cela plante le programme quand on le charge, un soucis avec le compute shader ?
      */
     // Charger le compute shader
-    /*computeShader = rc2d_gpu_loadComputeShader("test.compute");
-    RC2D_assert_release(computeShader != NULL, RC2D_LOG_CRITICAL, "Failed to load compute shader");*/
+    computeShader = rc2d_gpu_loadComputeShader("test.compute");
+    RC2D_assert_release(computeShader != NULL, RC2D_LOG_CRITICAL, "Failed to load compute shader");
 
     SDL_GPUVertexInputState vertexInput = {
         .vertex_buffer_descriptions = NULL,

@@ -208,7 +208,11 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
             SDL_sscanf(content, "%*[^\"readOnlyStorageTextures\"]\"readOnlyStorageTextures\"%*[: ]%u", &numStorageTextures);
     
         // Libérer le contenu JSON après la lecture
-        RC2D_free(jsonContent);
+        if (jsonContent) 
+        {
+            RC2D_free(jsonContent);
+            jsonContent = NULL;
+        }
     }
     else 
     {
@@ -231,7 +235,12 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
 
     // Créer le shader graphique à partir du code compilé du shader
     SDL_GPUShader* graphicsShader = SDL_CreateGPUShader(rc2d_gpu_getDevice(), &info);
-    RC2D_free(codeShaderCompiled);
+    if (codeShaderCompiled != NULL)
+    {
+        // Libérer le code du shader compilé après la création du shader
+        RC2D_free(codeShaderCompiled);
+        codeShaderCompiled = NULL;
+    }
     if (graphicsShader == NULL) 
     {
         // Si la création du shader graphique échoue, on log l'erreur et on retourne NULL
@@ -272,7 +281,12 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
     // Compiler HLSL vers SPIR-V
     size_t spirvByteCodeSize = 0;
     void* spirvByteCode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlslInfo, &spirvByteCodeSize);
-    RC2D_free(codeHLSLSource);
+    if (codeHLSLSource != NULL)
+    {
+        // Libérer le code HLSL source après la compilation
+        RC2D_free(codeHLSLSource);
+        codeHLSLSource = NULL;
+    }
     if (spirvByteCode == NULL || spirvByteCodeSize == 0)
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to compile HLSL to SPIR-V: %s", filename);
@@ -283,10 +297,14 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
     SDL_ShaderCross_GraphicsShaderMetadata* metadata = SDL_ShaderCross_ReflectGraphicsSPIRV(
         spirvByteCode, spirvByteCodeSize, 0
     );
-    if (!metadata) 
+    if (metadata == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to reflect graphics shader metadata: %s", filename);
-        SDL_free(spirvByteCode);
+        if (spirvByteCode) 
+        {
+            RC2D_free(spirvByteCode);
+            spirvByteCode = NULL;
+        }
         return NULL;
     }
 
@@ -309,12 +327,20 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
         0
     );
 
-    // Libérer les ressources allouées
-    SDL_free(metadata);
-    SDL_free(spirvByteCode);
+    // Libérer les ressources allouées pour les métadonnées et le code SPIR-V
+    if (metadata != NULL) 
+    {
+        RC2D_free(metadata);
+        metadata = NULL;
+    }
+    if (spirvByteCode != NULL) 
+    {
+        RC2D_free(spirvByteCode);
+        spirvByteCode = NULL;
+    }
 
     // Vérifier si la compilation du shader graphique a réussi
-    if (!graphicsShader) 
+    if (graphicsShader == NULL) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU graphics shader from SPIR-V: %s", filename);
         return NULL;
@@ -453,9 +479,9 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
      */
     size_t codeShaderCompiledSize = 0;
     void* codeShaderCompiled = SDL_LoadFile(fullPath, &codeShaderCompiledSize);
-    if (!codeShaderCompiled) 
+    if (codeShaderCompiled == NULL)
     {
-        RC2D_log(RC2D_LOG_ERROR, "Failed to load compiled shader: %s", fullPath);
+        RC2D_log(RC2D_LOG_ERROR, "Failed to load compiled shader: %s, SDL_Error: %s", fullPath, SDL_GetError());
         return NULL;
     }
 
@@ -539,7 +565,11 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
             SDL_sscanf(content, "%*[^\"threadCountZ\"]\"threadCountZ\"%*[: ]%u", &numThreadCountZ);
         
         // Libérer le contenu JSON après la lecture
-        RC2D_free(jsonContent);
+        if (jsonContent) 
+        {
+            RC2D_free(jsonContent);
+            jsonContent = NULL;
+        }
     }
     else 
     {
@@ -569,7 +599,12 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
         rc2d_gpu_getDevice(),
         &info
     );
-    RC2D_free(codeShaderCompiled);
+    if (codeShaderCompiled != NULL)
+    {
+        // Libérer le code du shader compilé après la création du shader
+        RC2D_free(codeShaderCompiled);
+        codeShaderCompiled = NULL;
+    }
     if (computePipelineShader == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU compute shader from file %s, error SDL_Error: %s", filename, SDL_GetError());
@@ -609,8 +644,16 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     // Compiler HLSL vers SPIR-V
     size_t spirvByteCodeSize = 0;
     void* spirvByteCode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlslInfo, &spirvByteCodeSize);
-    RC2D_free(codeHLSLSource); // Libérer le code source HLSL
-    if (!spirvByteCode || spirvByteCodeSize == 0)
+
+    // Libérer le code HLSL source après la compilation
+    if (codeHLSLSource != NULL)
+    {
+        RC2D_free(codeHLSLSource);
+        codeHLSLSource = NULL;
+    }
+
+    // Vérifier si la compilation HLSL vers SPIR-V a réussi
+    if (spirvByteCode == NULL || spirvByteCodeSize == 0)
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to compile HLSL to SPIR-V: %s", filename);
         return NULL;
@@ -619,13 +662,19 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
     // Réfléchir les métadonnées du pipeline de calcul
     SDL_ShaderCross_ComputePipelineMetadata* metadata = SDL_ShaderCross_ReflectComputeSPIRV(
         spirvByteCode, 
-        spirvByteCodeSize, 
+        spirvByteCodeSize,
         0
     );
-    if (!metadata) 
+    if (metadata == NULL) 
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to reflect compute pipeline metadata: %s", filename);
-        SDL_free(spirvByteCode);
+
+        // Si la réflexion échoue, on libère le code SPIR-V et on retourne NULL
+        if (spirvByteCode != NULL) 
+        {
+            RC2D_free(spirvByteCode);
+            spirvByteCode = NULL;
+        }
         return NULL;
     }
 
@@ -648,12 +697,15 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
         0
     );
 
-    // Libérer les ressources allouées
-    SDL_free(metadata);
-    SDL_free(spirvByteCode);
+    // Libérer les ressources allouées pour le code SPIR-V
+    if (spirvByteCode != NULL) 
+    {
+        RC2D_free(spirvByteCode);
+        spirvByteCode = NULL;
+    }
 
     // Vérifier si la compilation du pipeline de calcul a réussi
-    if (!computePipelineShader) 
+    if (computePipelineShader == NULL)
     {
         RC2D_log(RC2D_LOG_ERROR, "Failed to create GPU compute pipeline from SPIR-V: %s", filename);
         return NULL;
@@ -814,8 +866,14 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
             // Compiler HLSL vers SPIR-V
             size_t spirvByteCodeSize = 0;
             void* spirvByteCode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlslInfo, &spirvByteCodeSize);
-            RC2D_free(codeHLSLSource);
-            if (!spirvByteCode || spirvByteCodeSize == 0)
+
+            // Libérer le code HLSL source après la compilation
+            if (codeHLSLSource != NULL)
+            {
+                RC2D_free(codeHLSLSource);
+                codeHLSLSource = NULL;
+            }
+            if (spirvByteCode == NULL || spirvByteCodeSize == 0)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to compile HLSL to SPIR-V during reload: %s", entry->filename);
                 continue;
@@ -830,7 +888,11 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
             if (!metadata) 
             {
                 RC2D_log(RC2D_LOG_ERROR, "Failed to reflect graphics shader metadata during reload: %s", entry->filename);
-                SDL_free(spirvByteCode);
+                if (spirvByteCode) 
+                {
+                    RC2D_free(spirvByteCode);
+                    spirvByteCode = NULL;
+                }
                 continue;
             }
 
@@ -857,9 +919,17 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
             Uint64 t1 = SDL_GetPerformanceCounter();
             double compileTimeMs = (double)(t1 - t0) * 1000.0 / SDL_GetPerformanceFrequency();
 
-            // Libérer les ressources
-            SDL_free(metadata);
-            SDL_free(spirvByteCode);
+            // Libérer les ressources allouées pour les métadonnées et le code SPIR-V
+            if (metadata != NULL) 
+            {
+                RC2D_free(metadata);
+                metadata = NULL;
+            }
+            if (spirvByteCode != NULL) 
+            {
+                RC2D_free(spirvByteCode);
+                spirvByteCode = NULL;
+            }
 
             if (newShader) 
             {
@@ -1058,8 +1128,16 @@ void rc2d_gpu_hotReloadComputeShader(void)
         // Compiler HLSL vers SPIR-V
         size_t spirvSize = 0;
         void* spirvBytecode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlslInfo, &spirvSize);
-        RC2D_free(codeHLSLSource);
-        if (!spirvBytecode || spirvSize == 0)
+    
+        // Libérer le code HLSL source après la compilation
+        if (codeHLSLSource != NULL)
+        {
+            RC2D_free(codeHLSLSource);
+            codeHLSLSource = NULL;
+        }
+
+        // Vérifier si la compilation HLSL vers SPIR-V a réussi
+        if (spirvBytecode == NULL || spirvSize == 0)
         {
             RC2D_log(RC2D_LOG_ERROR, "Failed to compile HLSL to SPIR-V during reload: %s", entry->filename);
             continue;
@@ -1072,7 +1150,11 @@ void rc2d_gpu_hotReloadComputeShader(void)
         if (!metadata) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Failed to reflect compute pipeline metadata during reload: %s", entry->filename);
-            SDL_free(spirvBytecode);
+            if (spirvBytecode) 
+            {
+                RC2D_free(spirvBytecode);
+                spirvBytecode = NULL;
+            }
             continue;
         }
 
@@ -1099,9 +1181,17 @@ void rc2d_gpu_hotReloadComputeShader(void)
         Uint64 t1 = SDL_GetPerformanceCounter();
         double compileTimeMs = (double)(t1 - t0) * 1000.0 / SDL_GetPerformanceFrequency();
 
-        // Libérer les ressources
-        SDL_free(metadata);
-        SDL_free(spirvBytecode);
+        // Libérer les ressources allouées pour les métadonnées et le code SPIR-V
+        if (metadata != NULL) 
+        {
+            RC2D_free(metadata);
+            metadata = NULL;
+        }
+        if (spirvBytecode != NULL) 
+        {
+            RC2D_free(spirvBytecode);
+            spirvBytecode = NULL;
+        }
 
         if (newShader) 
         {
