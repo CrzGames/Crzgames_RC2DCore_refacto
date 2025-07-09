@@ -355,7 +355,11 @@ int rc2d_window_getDisplayCount(void)
     }
     
     // Libérer le tableau alloué par SDL_GetDisplays.
-    RC2D_free(displays);
+    if (displays != NULL) 
+    {
+        RC2D_free(displays);
+        displays = NULL;
+    }
 
     // Renvoie le nombre de moniteurs connectés
     return numDisplays;
