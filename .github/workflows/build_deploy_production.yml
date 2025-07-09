@@ -100,7 +100,7 @@ jobs:
 
       - name: Configure project with CMake - iOS (iphoneos/iphonesimulator)
         if: matrix.target == 'ios'
-        uses: threeal/cmake-action@v2.0.0
+        uses: threeal/cmake-action@v2.1.0
         with:
           build-dir: build-${{ matrix.target }}-${{ matrix.arch }}
           generator: ${{ matrix.generator }}
@@ -112,7 +112,7 @@ jobs:
 
       - name: Configure project with CMake - Windows x64
         if: matrix.platform == 'windows-latest' && matrix.arch == 'x64'
-        uses: threeal/cmake-action@v2.0.0
+        uses: threeal/cmake-action@v2.1.0
         with:
           build-dir: build-${{ matrix.target }}-${{ matrix.arch }}
           generator: ${{ matrix.generator }}
@@ -127,7 +127,7 @@ jobs:
 
       - name: Configure project with CMake - Windows x86
         if: matrix.platform == 'windows-latest' && matrix.arch == 'Win32'
-        uses: threeal/cmake-action@v2.0.0
+        uses: threeal/cmake-action@v2.1.0
         with:
           build-dir: build-${{ matrix.target }}-${{ matrix.arch }}
           generator: ${{ matrix.generator }}
@@ -142,7 +142,7 @@ jobs:
 
       - name: Configure project with CMake and Run build - Linux
         if: matrix.target == 'linux'
-        uses: threeal/cmake-action@v2.0.0
+        uses: threeal/cmake-action@v2.1.0
         with:
           run-build: true
           build-dir: build-${{ matrix.target }}-${{ matrix.arch }}
@@ -153,7 +153,7 @@ jobs:
 
       - name: Configure project with CMake - macOS
         if: matrix.target == 'macos'
-        uses: threeal/cmake-action@v2.0.0
+        uses: threeal/cmake-action@v2.1.0
         with:
           build-dir: build-${{ matrix.target }}-${{ matrix.arch }}
           generator: ${{ matrix.generator }}
