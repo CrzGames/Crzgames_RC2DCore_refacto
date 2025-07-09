@@ -188,7 +188,7 @@
 
 
   # macOS :
-  1. Requirements : MacOS X >= 15.0
+  1. Requirements : MacOS X >= 15.0.0
   2. Download and Install xCode >= 16.4.0
   3. Download and Install Command Line Tools : xcode-select --install
   4. Download and Install CMake >= 3.28 : brew install cmake
@@ -202,7 +202,7 @@
 
 
   # iOS (only macOS) :
-  1. Requirements : MacOS X >= 15.0
+  1. Requirements : MacOS X >= 15.0.0
   2. Download and Install Command Line Tools : xcode-select --install
   3. Download and Install xCode >= 16.4.0
   4. Download and Install SDK iOS >= 18.0.0
