@@ -157,7 +157,7 @@
 1. Cloner le projet, penser à clone le projet à la racine du disque dur C:/
    sinon il y a un gros risque pendant la compilation de certaines dépendences de se retrouver avec un probleme de chemin trop long :
   ```bash
-  git clone --recurse-submodules git@github.com:CrzGames/Crzgames_RC2DCore.git
+  git clone git@github.com:CrzGames/Crzgames_RC2DCore.git
   ```
 2. (Optional) Download and Install Node.js >= 18.0.0 (pour lancer la documentation, pour Vitepress).
 3. Steps by Platform :
@@ -169,48 +169,41 @@
   4. Ouvrir PowerShell en admin (pour eviter les erreurs de chemin long possible lors du setup des dependencies) :
    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
    git config --global core.longpaths true
-  5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
-  6. Run le scripts .bat via la console "Visual Studio Developer Command" (terminal Visual Studio), contrainte pour cimgui.
   
   # Linux :
   1. Requirements : glibc >= 3.25 (Ubuntu >= 22.04 OR Debian >= 12.0)
-  2. Run command (replace debian for name) : sudo usermod -aG sudo debian
-  3. Download and Install brew : /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  4. Après l'installation de homebrew il faut importer les variables d'environnement et installer les deux librairies : 
+  2. Download and Install brew : /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  3. Après l'installation de homebrew il faut importer les variables d'environnement et installer les deux librairies : 
     echo '# Set PATH, MANPATH, etc., for Homebrew.' >> /home/debian/.bashrc && 
     echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/debian/.bashrc && 
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" &&
     sudo apt-get install -y build-essential &&
     brew install gcc
   5. Download and Install CMake >= 3.28 : brew install cmake
-  6. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
-  7. Télécharger et Installer patchelf (pour la dépendence SDL_shadercross), puis ajouté au PATH.
+  6. Télécharger et Installer patchelf (pour la dépendence SDL_shadercross), puis ajouté au PATH.
 
 
   # macOS :
-  1. Requirements : MacOS X >= 14.0
-  2. Download and Install xCode >= 15.2.0
+  1. Requirements : MacOS X >= 15.0
+  2. Download and Install xCode >= 16.4.0
   3. Download and Install Command Line Tools : xcode-select --install
   4. Download and Install CMake >= 3.28 : brew install cmake
-  5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
 
 
   # Android (run in Windows) :
-  1. Download and Install : Android Studio 2023.1.1 or newer
+  1. Download and Install : Android Studio 2025.1.1 or newer
   2. Add environment variable: ANDROID_HOME for path SDK Android (SDK Manager path)
   3. Download and Install CMake >= 3.28 : https://cmake.org/download/ and add PATH ENVIRONMENT.
   4. Download and Install Java JDK LTS (Oracle) == 17.0.10
-  5. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
 
 
   # iOS (only macOS) :
-  1. Requirements : MacOS X >= 14.0
+  1. Requirements : MacOS X >= 15.0
   2. Download and Install Command Line Tools : xcode-select --install
-  3. Download and Install xCode >= 15.2.0
-  4. Download and Install SDK iOS >= 17.0.0
+  3. Download and Install xCode >= 16.4.0
+  4. Download and Install SDK iOS >= 18.0.0
   5. Download and Install brew : /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   6. Download and Install cmake : brew install cmake 
-  7. Télécharger et Installer LuaJIT (pour la dépendence cimgui), puis ajouté au PATH.
   ```
   
 4. Avant toute compilation, exécute le script suivant :
@@ -222,21 +215,8 @@ cmake -P cmake/setup_dependencies.cmake
 Ce script va :
 - Lire `dependencies.txt`
 - Cloner chaque dépôt dans `dependencies/`
-- Faire un `git reset --hard` au SHA/tag fourni
-- Initialiser les sous-modules si présents
-
-### 📄 Exemple de fichier : `dependencies.txt`
-
-```txt
-# Format: library=repository:tag ou library=repository:commit_sha
-
-SDL=https://github.com/libsdl-org/SDL.git:release-3.2.14
-SDL_image=https://github.com/libsdl-org/SDL_image.git:release-3.2.4
-SDL_ttf=https://github.com/libsdl-org/SDL_ttf.git:release-3.2.2
-#SDL_mixer=https://github.com/libsdl-org/SDL_mixer.git:release-3.2.0
-Crzgames_Libraries=https://github.com/CrzGames/Crzgames_Libraries.git:8e5ab015e20c8c93c388d63f7b1a20e29369aaf4
-Crzgames_RCENet=https://github.com/CrzGames/Crzgames_RCENet.git:54612ae2790ae4d3a9a9262cbe86867d1c451e93
-```
+- Faire un `git reset --hard` au commit_sha/tag fourni
+- Initialiser les sous-modules si présents dans les librairies cloner
 
 <br /><br /><br /><br />
 
@@ -253,9 +233,45 @@ cmake -P cmake/setup_dependencies.cmake
 
 
 ## 🔄 Cycle Development
-1. Open favorite IDE.
-2. Edit or add files in 'src' or 'include' folder
-  
+1. Par défault `RC2D_BUILD_EXAMPLES` est configurer à `ON` dans le `CMakelists.txt`, il faudra le remettre à `ON` si il à été désactiver.
+2. Générer le projet du jeu d'exemple (le projet situé dans examples/)
+```bash
+# Linux - x64
+chmod +x ./build-scripts/linux-x64.sh
+./build-scripts/linux-x64.sh
+
+# Linux - arm64
+chmod +x ./build-scripts/linux-arm64.sh
+./build-scripts/linux-arm64.sh
+
+# macOS - Apple Silicon arm64
+chmod +x ./build-scripts/macos-arm64.sh
+./build-scripts/macos-arm64.sh
+
+# Windows - x64
+.\build-scripts\windows-x64.bat
+
+# Windows - arm64
+.\build-scripts\windows-arm64.bat
+
+# Android (Unix)
+chmod +x ./build-scripts/android.sh
+./build-scripts/android.sh
+
+# Android (Windows)
+.\build-scripts\android.bat
+
+# iOS (run in macOS)
+chmod +x ./build-scripts/ios.sh
+./build-scripts/ios.sh
+```
+3. Il y a un dossier `build` à la racine qui est générer.
+```bash
+# Pour Windows x64 par exemple, un projet Visual Studio 2022 à été générer au path suivant :
+.\build\windows\x64
+```
+4. Ouvrir le projet générer dans votre IDE favoris.
+
 <br /><br /><br /><br />
 
 
@@ -272,50 +288,61 @@ cmake -P cmake/setup_dependencies.cmake
 <br /><br />
 
 ### ✋ Manual Distribution Process
-1. Generate librarie RC2DCore for Release and Debug, run command :
+1. Générer la librairie RC2D pour le mode Debug/Release.
 ```bash
-# Linux
-./build-scripts/generate-lib/linux.sh
+# Linux - x64
+chmod +x ./build-scripts/linux-x64.sh
+./build-scripts/linux-x64.sh
 
-# macOS
-./build-scripts/generate-lib/macos.sh
+# Linux - arm64
+chmod +x ./build-scripts/linux-arm64.sh
+./build-scripts/linux-arm64.sh
 
-# Windows
-sh .\build-scripts\generate-lib\windows.sh
+# macOS - Apple Silicon arm64
+chmod +x ./build-scripts/macos-arm64.sh
+./build-scripts/macos-arm64.sh
 
-# Android (run in Unix)
-./build-scripts/generate-lib/android.sh
+# Windows - x64
+.\build-scripts\windows-x64.bat
 
-# Android (run in Windows)
-sh .\build-scripts\generate-lib\android.sh
+# Windows - arm64
+.\build-scripts\windows-arm64.bat
+
+# Android (Unix)
+chmod +x ./build-scripts/android.sh
+./build-scripts/android.sh
+
+# Android (Windows)
+.\build-scripts\android.bat
 
 # iOS (run in macOS)
-./build-scripts/generate-lib/ios.sh
+chmod +x ./build-scripts/ios.sh
+./build-scripts/ios.sh
 ```
-2. Get librarie RC2DCore, steps for different systems :
+2. Récupérer la librairie RC2D compilé en static pour chaque plateformes :
 ```bash
 # Windows
 1. Go directory 'dist/lib/windows/'
 2. Go in directory 'Release' OR 'Debug'
-3. Get librarie RC2D : rc2d.lib
+3. Get librarie RC2D : rc2d_static.lib
 
 # Linux
 1. Go directory 'dist/lib/linux/'
 2. Go in directory 'Release' OR 'Debug'
-3. Get librarie RC2D : librc2d.a
+3. Get librarie RC2D : librc2d_static.a
 
 # macOS
 1. Go directory 'dist/lib/macos/'
 2. Go in directory 'Release' OR 'Debug'
-3. Get librarie RC2D : librc2d.a
+3. Get librarie RC2D : librc2d_static.a
 
 # Android
 1. Go directory 'dist/lib/android/'
 2. Go in directory 'Release' OR 'Debug'
-3. Get librarie RC2D : librc2d.so
+3. Get librarie RC2D : librc2d_static.so
 
 # iOS
-1. Go directory 'dist/lib/ios/arm64-arm64e/iphoneos/' for sdk iphoneos (arm64,arm64e) OR 'dist/lib/ios/x86_64-arm64/iphonesimulator/' for sdk iphonesimulator (x86_64,arm64)
+1. Go directory 'dist/lib/ios/'
 2. Go in directory 'Release' OR 'Debug'
-3. Next directory for get librarie RC2D : librc2d.a
+3. Get librarie RC2D : librc2d_static.a
 ```
