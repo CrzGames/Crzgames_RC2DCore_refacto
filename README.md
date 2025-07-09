@@ -142,6 +142,13 @@
   - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendences construite sur glibc 2.35)
   - ONNX Runtime nécessite C++20 (glibc 2.31+)
 
+### Steam Deck / Steam Linux
+- **Version minimale** : Steam Linux Runtime 3.0 (Sniper)
+- **Raison** :
+  - Steam recommande l'utilisation du runtime Sniper pour tous les nouveaux jeux compatibles Linux.
+  - Le Steam Deck est livré avec SteamOS 3.0+, basé sur Arch Linux, et embarque nativement le runtime Sniper.
+  - Toutes les dépendances système (glibc ≥ 2.35, Mesa Vulkan ≥ 22, etc.) sont fournies via le runtime, assurant un environnement stable et cohérent.
+
 <br /><br /><br /><br />
 
 
