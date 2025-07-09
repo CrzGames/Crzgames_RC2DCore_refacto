@@ -96,6 +96,13 @@
 ### **Windows (10+)**
 - Windows 10 et plus récent.
 
+### Steam Deck (Steam Linux Runtime 3.0+ - Sniper)
+- Steam Deck 1 (LCD / OLED) et plus récent.
+- Steam Deck sous SteamOS 3.0 ou supérieur.
+
+### Steam Linux (Steam Linux Runtime 3.0+ - Sniper)
+- Compatible avec toute distribution Linux x64 / arm64 supportant Steam et le runtime Sniper.
+
 <br /><br /><br /><br />
 
 
