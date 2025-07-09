@@ -77,7 +77,6 @@
 - iPad Pro (1/2/3/4/5/6ème génération, M4) et plus récent
 
 ### **macOS (macOS 15.0+)**
-Apple Silicon :
 - Tous les modèles macOS Apple Silicon (M1, M2, M3, M4) et plus récent
 
 ### **Android (Android 9.0+, API 28+)**
