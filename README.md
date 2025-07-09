@@ -154,12 +154,12 @@
 
 
 ## ⚙️ Setup Environment Development
-1. Cloner le projet ainsi que les submodules en recursive, penser à clone le projet à la racine du disque dur C:/
+1. Cloner le projet, penser à clone le projet à la racine du disque dur C:/
    sinon il y a un gros risque pendant la compilation de certaines dépendences de se retrouver avec un probleme de chemin trop long :
   ```bash
   git clone --recurse-submodules git@github.com:CrzGames/Crzgames_RC2DCore.git
   ```
-2. (Optional) Download and Install Node.js >= 18.0.0 to run website documentation for GameEngine
+2. (Optional) Download and Install Node.js >= 18.0.0 (pour lancer la documentation, pour Vitepress).
 3. Steps by Platform :
   ```bash  
   # Windows :
@@ -236,19 +236,15 @@ SDL_ttf=https://github.com/libsdl-org/SDL_ttf.git:release-3.2.2
 #SDL_mixer=https://github.com/libsdl-org/SDL_mixer.git:release-3.2.0
 Crzgames_Libraries=https://github.com/CrzGames/Crzgames_Libraries.git:8e5ab015e20c8c93c388d63f7b1a20e29369aaf4
 Crzgames_RCENet=https://github.com/CrzGames/Crzgames_RCENet.git:54612ae2790ae4d3a9a9262cbe86867d1c451e93
-cimgui=https://github.com/cimgui/cimgui.git:094a55523a40fdb309f48b971a583ef02aeb56ab
-luajit=https://luajit.org/git/luajit.git:f9140a622a0c44a99efb391cc1c2358bc8098ab7
 ```
 
 <br /><br /><br /><br />
 
 
 ## 🔄 Updating Dependencies
-
-Pour mettre à jour une dépendance :
-1. Modifiez la référence dans `dependencies.txt`
-2. Réexécutez le script :
-
+Pour mettre à jour une ou des dépendance :
+1. Modifiez le tag/commit_sha dans `dependencies.txt` de la librairie souhaiter.
+2. Exécutez le script à la racine du projet :
 ```bash
 cmake -P cmake/setup_dependencies.cmake
 ```
