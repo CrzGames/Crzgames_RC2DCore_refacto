@@ -190,7 +190,7 @@
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" &&
     sudo apt-get install -y build-essential &&
     brew install gcc
-  5. Download and Install CMake >= 3.28 : brew install cmake
+  5. Download and Install CMake >= 3.25 : brew install cmake
   6. Télécharger et Installer patchelf (pour la dépendence SDL_shadercross), puis ajouté au PATH.
 
 
@@ -198,13 +198,13 @@
   1. Requirements : MacOS X >= 15.0.0
   2. Download and Install xCode >= 16.4.0
   3. Download and Install Command Line Tools : xcode-select --install
-  4. Download and Install CMake >= 3.28 : brew install cmake
+  4. Download and Install CMake >= 3.25 : brew install cmake
 
 
   # Android (run in Windows) :
   1. Download and Install : Android Studio 2025.1.1 or newer
   2. Add environment variable: ANDROID_HOME for path SDK Android (SDK Manager path)
-  3. Download and Install CMake >= 3.28 : https://cmake.org/download/ and add PATH ENVIRONMENT.
+  3. Download and Install CMake >= 3.25 : https://cmake.org/download/ and add PATH ENVIRONMENT.
   4. Download and Install Java JDK LTS (Oracle) == 17.0.10
 
 
