@@ -189,6 +189,9 @@ typedef struct RC2D_OnnxTensor {
  *
  * \param model Pointeur vers la structure à remplir.
  * \return true en cas de succès, false sinon.
+ * 
+ * \warning La session allouée dans `model->session` doit être libérée par l'appelant 
+ * avec `rc2d_onnx_unloadModel` lorsque le modèle n'est plus nécessaire.
  *
  * \since Disponible depuis RC2D 1.0.0.
  */
@@ -216,6 +219,9 @@ void rc2d_onnx_unloadModel(RC2D_OnnxModel* model);
  *       (par exemple, [N, 3] pour N PNJ, où chaque PNJ a un état [x, y, santé]).
  *       Les buffers d'entrée et de sortie doivent être dimensionnés pour N * M éléments
  *       (par exemple, N * 3 floats pour [N, 3]).
+ * 
+ * \warning Pour les tenseurs de sortie de type STRING, les chaînes allouées dans outputs[i].data 
+ * doivent être libérées par l'appelant avec rc2d_onnx_freeTensors après utilisation.
  *
  * \since Disponible depuis RC2D 1.0.0.
  */

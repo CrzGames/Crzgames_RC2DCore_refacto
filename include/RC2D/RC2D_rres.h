@@ -118,14 +118,15 @@ typedef struct Wave {
  * \brief Charge des données brutes à partir d'un chunk RRES de type RRES_DATA_RAW.
  *
  * Cette fonction est utile pour charger des fichiers binaires embarqués (comme des shaders, des modèles, ou des données personnalisées).
- * Les données sont allouées dynamiquement et doivent être libérées avec RC2D_free.
  *
  * \param chunk Le chunk RRES contenant les données brutes (doit être de type RRES_DATA_RAW).
  * \param size Pointeur vers une variable qui recevra la taille des données chargées (en octets).
  * \return Un pointeur vers les données brutes allouées, ou NULL en cas d'erreur.
  *
- * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
+ * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
+ * 
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec `RC2D_free` lorsque les données ne sont plus nécessaires.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -142,8 +143,10 @@ void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size
  * \param chunk Le chunk RRES contenant les données textuelles (doit être de type RRES_DATA_TEXT).
  * \return Une chaîne de caractères allouée dynamiquement, ou NULL en cas d'erreur. La chaîne doit être libérée avec RC2D_free.
  *
- * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
+ * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
+ * 
+ * \warning La chaîne retournée doit être libérée par l'appelant avec `RC2D_free` lorsque le texte n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -160,11 +163,10 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk);
  * \param chunk Le chunk RRES contenant les données d'image (doit être de type RRES_DATA_IMAGE).
  * \return Une structure Image contenant la surface SDL et les métadonnées, ou une structure vide en cas d'erreur.
  *
- * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
+ * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
- *
- * \note Certains formats RRES (comme RRES_PIXELFORMAT_UNCOMP_R32) n'ont pas d'équivalent direct dans SDL3 et peuvent
- * entraîner un échec de chargement. Dans ce cas, une conversion manuelle peut être nécessaire.
+ * 
+ * \warning La texture `image.texture` doit être libérée par l'appelant avec `SDL_ReleaseGPUTexture` lorsque l'image n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread, mais le renderer doit être utilisé dans
  * un contexte thread-safe conformément aux règles de SDL3.
@@ -182,11 +184,10 @@ Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk);
  * \param chunk Le chunk RRES contenant les données audio (doit être de type RRES_DATA_WAVE).
  * \return Une structure Wave contenant les données audio et les métadonnées, ou une structure vide en cas d'erreur.
  *
- * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
+ * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
- *
- * \note La taille des données audio est calculée comme `frameCount * sampleSize * channels / 8`. Une erreur dans les
- * métadonnées peut entraîner une allocation incorrecte (voir problème GitHub #13 de rres).
+ * 
+ * \warning Les données brutes `wave.data` doivent être libérées par l'appelant avec `RC2D_free` lorsque l'audio n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -204,11 +205,11 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk);
  * \param ptsize La taille de la police en points.
  * \return Une structure Font contenant la police TTF et les données brutes, ou une structure vide en cas d'erreur.
  *
- * \warning Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
+ * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
  *
- * \note La police est chargée avec une taille par défaut de 30 points. Pour une taille différente, rechargez la police
- * manuellement avec TTF_OpenFontRW.
+ * \warning La police `font.font` doit être libérée par l'appelant avec `TTF_CloseFont` lorsque la police n'est plus nécessaire 
+ * et les données brutes `font.rawData` doivent être libérées par l'appelant avec `RC2D_free` lorsque la police n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -231,11 +232,11 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize);
  *         - 3 : Algorithme de compression non supporté.
  *         - 4 : Erreur lors de la décompression des données.
  *
- * \warning Le mot de passe doit être défini via rc2d_rres_setCipherPassword avant d'appeler cette fonction
+ * \note Le mot de passe doit être défini via rc2d_rres_setCipherPassword avant d'appeler cette fonction
  * pour les données chiffrées. Un mot de passe incorrect entraînera un code d'erreur 2.
- *
- * \note Les données chiffrées avec rrespacker incluent des métadonnées supplémentaires (comme le sel, le nonce, ou le MAC),
- * qui sont retirées du chunk après déchiffrement.
+ * 
+ * \warning Les champs `chunk->data.props` et `chunk->data.raw` alloués dynamiquement doivent 
+ * être libérés par l'appelant avec `RC2D_free` lorsque le chunk n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread, mais la gestion du mot de passe doit être
  * thread-safe si plusieurs threads y accèdent.

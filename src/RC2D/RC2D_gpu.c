@@ -1146,7 +1146,13 @@ void rc2d_gpu_hotReloadComputeShader(void)
             continue;
         }
 
-        // Réfléchir les métadonnées
+        /**
+         * Réfléchir les métadonnées
+         * 
+         * ATTENTION : La documentation de SDL_ShaderCross_ReflectComputeSPIRV, dis de libérer les ressources allouées
+         * pour les métadonnées, mais pour le compute shader, il n'y a pas de métadonnées à libérer, il est déjà
+         * libérer en interne par SDL_shadercross.
+         */
         SDL_ShaderCross_ComputePipelineMetadata* metadata = SDL_ShaderCross_ReflectComputeSPIRV(
             spirvBytecode, spirvSize, 0
         );
@@ -1388,7 +1394,7 @@ void rc2d_gpu_clear(void)
      * SDL nous fournit ce buffer via SDL_AcquireGPUCommandBuffer(), qui doit être appelé avant toute commande GPU.
      */
     rc2d_engine_state.gpu_current_command_buffer = SDL_AcquireGPUCommandBuffer(rc2d_gpu_getDevice());
-    RC2D_assert_release(rc2d_engine_state.gpu_current_command_buffer != NULL, RC2D_LOG_CRITICAL, "Failed to acquire GPU command buffer");
+    RC2D_assert_release(rc2d_engine_state.gpu_current_command_buffer != NULL, RC2D_LOG_CRITICAL, "Failed to acquire GPU command buffer, SDL_Error: %s", SDL_GetError());
 
     /**
      * \brief Étape 2 : Acquisition de la texture de swapchain
@@ -1421,7 +1427,7 @@ void rc2d_gpu_clear(void)
      */
     if (rc2d_engine_state.gpu_current_swapchain_texture == NULL)
     {
-        RC2D_log(RC2D_LOG_WARN, "Swapchain texture is NULL (window may be minimized). Skipping frame rendering.");
+        RC2D_log(RC2D_LOG_WARN, "Swapchain texture is NULL (window may be minimized). Skipping frame rendering. SDL_Error: %s", SDL_GetError());
         rc2d_engine_state.skip_rendering = true;
         // On soumet le command buffer même s'il n'y a pas de swapchain texture, pour éviter les fuites de mémoire.
         SDL_SubmitGPUCommandBuffer(rc2d_engine_state.gpu_current_command_buffer);

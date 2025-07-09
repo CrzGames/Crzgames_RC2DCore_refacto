@@ -229,6 +229,8 @@ int rc2d_window_getDisplayCount(void);
  * \param {int} displayID - L'ID du moniteur à récupérer.
  * \return {const char *} - Le nom du moniteur.
  * 
+ * \warning Le pointeur retourné est géré par SDL et ne doit pas être libéré par l'appelant.
+ * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
@@ -257,6 +259,8 @@ RC2D_DisplayOrientation rc2d_window_getDisplayOrientation(void);
  * \brief Récupère le titre de la fenêtre.
  *
  * \return {const char *} - Le titre de la fenêtre.
+ * 
+ * \warning Le pointeur retourné est géré par SDL et ne doit pas être libéré par l'appelant.
  * 
  * \threadsafety Cette fonction ne doit être appelée que sur le thread principal.
  * 
@@ -787,6 +791,8 @@ RC2D_DisplayID rc2d_window_getDisplayForWindow(void);
  * \brief Récupère le pointeur vers la fenêtre SDL associée à la fenêtre RC2D.
  *
  * \return {SDL_Window*} - Pointeur vers la fenêtre SDL associée à la fenêtre RC2D.
+ * 
+ * \warning Le pointeur retourné est géré par RC2D et ne doit pas être libéré par l'appelant.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 

@@ -103,11 +103,16 @@ typedef struct RC2D_CameraOptions {
  * \brief Récupère la liste des caméras connectées.
  *
  * \param count Pointeur pour stocker le nombre de caméras (peut être NULL).
- * \return Tableau d'ID de caméras terminé par 0, ou NULL en cas d'erreur. À libérer avec RC2D_free().
+ * \return Tableau d'ID de caméras terminé par 0, ou NULL en cas d'erreur.
+ * 
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_free()`.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ * 
+ * \see RC2D_free
+ * 
  */
 RC2D_CameraID *rc2d_camera_getDevices(int *count);
 
@@ -129,6 +134,8 @@ const char *rc2d_camera_getName(RC2D_CameraID instance_id);
  * \param instance_id ID de la caméra à ouvrir.
  * \param options Options de configuration (peut être NULL pour les valeurs par défaut).
  * \return Pointeur vers RC2D_Camera en cas de succès, ou NULL en cas d'erreur.
+ * 
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec `rc2d_camera_close()`.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -165,6 +172,8 @@ int rc2d_camera_getPermission(RC2D_Camera *camera);
  * \param camera Caméra ouverte.
  * \param timestamp_ns Pointeur pour stocker l'horodatage de l'image en nanosecondes (peut être NULL).
  * \return Surface SDL contenant l'image, ou NULL si aucune image n'est disponible ou en cas d'erreur.
+ * 
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec `rc2d_camera_releaseFrame()`.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *

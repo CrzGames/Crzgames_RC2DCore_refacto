@@ -33,9 +33,9 @@ typedef struct RC2D_Locale {
 /**
  * \brief Récupère la liste des locales préférées de l'utilisateur.
  *
- * \note Elle est allouée dynamiquement et doit être libérée avec `rc2d_local_freeLocales()` une fois inutilisée.
- *
  * \return Un tableau de `RC2D_Locale` contenant les locales préférées, ou NULL en cas d'erreur.
+ * 
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `rc2d_local_freeLocales()`.
  *
  * \threadsafety Cette fonction doit être appelée depuis le thread principal.
  *

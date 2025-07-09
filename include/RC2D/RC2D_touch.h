@@ -80,7 +80,9 @@ float rc2d_touch_getPressure(SDL_FingerID fingerID);
 /**
  * \brief Récupère la liste des identifiants des doigts actifs.
  * 
- * \return Tableau dynamique de SDL_FingerID (à libérer avec rc2d_touch_freeTouches).
+ * \return {SDL_FingerID*} Tableau dynamique d'identifiants de doigts actifs, ou NULL si aucun doigt n'est actif.
+ * 
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `rc2d_touch_freeTouches` lorsque les identifiants ne sont plus nécessaires.
  * 
  * \since Disponible depuis RC2D 1.0.0.
  */

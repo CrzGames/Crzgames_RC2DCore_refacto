@@ -291,9 +291,6 @@ typedef enum RC2D_HashFormat {
 
 /**
  * \brief Encode des données en utilisant le format spécifié.
- * 
- * \note Cette fonction alloue dynamiquement de la mémoire pour la structure RC2D_EncodedData retournée. 
- * L'appelant est responsable de libérer cette mémoire.
  *
  * \param {const unsigned char*} data - Pointeur vers les données à encoder.
  * \param {size_t} dataSize - Taille des données à encoder en octets.
@@ -301,7 +298,9 @@ typedef enum RC2D_HashFormat {
  * \param {RC2D_EncodeFormat} format - Format d'encodage à utiliser.
  * \return {RC2D_EncodedData*} - Pointeur vers un objet RC2D_EncodedData contenant les données encodées et les métadonnées, ou NULL en cas d'échec.
  * 
- * \threadsafety
+ * \warning La structure RC2D_EncodedData et son champ `data` doivent être libérés par l'appelant avec `RC2D_free`.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -312,13 +311,12 @@ RC2D_EncodedData* rc2d_data_encode(const unsigned char* data, const size_t dataS
 /**
  * \brief Décode des données en utilisant le format spécifié.
  * 
- * \note Cette fonction alloue dynamiquement de la mémoire pour les données décodées. 
- * L'appelant est responsable de libérer cette mémoire.
- * 
  * \param {const RC2D_EncodedData*} encodedData - Pointeur vers l'objet RC2D_EncodedData contenant les données encodées et les métadonnées nécessaires pour le décodage.
  * \return {unsigned char*} - Pointeur vers les données décodées, ou NULL en cas d'échec.
+ * 
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec `RC2D_free()`.
  *
- * \threadsafety
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -328,9 +326,6 @@ unsigned char* rc2d_data_decode(const RC2D_EncodedData* encodedData);
 
 /**
  * \brief Compresse des données en utilisant le format de compression spécifié.
- *
- * \note Il est de la responsabilité de l'appelant de libérer la mémoire allouée pour 
- * la structure RC2D_CompressedData retourné afin d'éviter les fuites de mémoire.
  * 
  * \param {const unsigned char*} data - Pointeur vers les données en clair à compresser.
  * \param {size_t} dataSize - Taille des données en clair en octets.
@@ -338,7 +333,9 @@ unsigned char* rc2d_data_decode(const RC2D_EncodedData* encodedData);
  * \param {RC2D_CompressFormat} format - Format de compression à utiliser, défini par l'énumération RC2D_CompressFormat.
  * \return {RC2D_CompressedData*} - Pointeur vers un nouvel objet RC2D_CompressedData contenant les données compressées et les métadonnées, ou NULL en cas de format non supporté ou d'échec de la compression.
  * 
- * \threadsafety
+ * \warning La structure RC2D_CompressedData et son champ `data` doivent être libérés par l'appelant avec `RC2D_free`.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -348,14 +345,13 @@ RC2D_CompressedData* rc2d_data_compress(const unsigned char* data, const size_t 
 
 /**
  * \brief Décompresse les données contenues dans une structure RC2D_CompressedData.
- *
- * \note Les données retournées sont allouées dynamiquement et doivent être libérées 
- * par l'appelant pour éviter les fuites de mémoire.
  * 
  * \param {RC2D_CompressedData*} compressedData - Pointeur vers l'objet RC2D_CompressedData contenant les données compressées et les métadonnées nécessaires pour la décompression.
  * \return {unsigned char*} - Pointeur vers les données décompressées en cas de succès, ou NULL en cas de format non supporté ou d'échec de la décompression.
  * 
- * \threadsafety
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_free`.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -372,9 +368,6 @@ unsigned char* rc2d_data_decompress(const RC2D_CompressedData* compressedData);
  * SHA224, SHA256, SHA384, SHA512, ainsi que les variantes SHA3. La sortie est convertie
  * en une chaîne hexadécimale représentant le hash. OpenSSL est utilisé pour le calcul du hash.
  * 
- * \note La fonction alloue dynamiquement de la mémoire pour la chaîne de caractères hexadécimale retournée.
- * L'appelant est responsable de libérer cette mémoire pour éviter les fuites.
- * 
  * \param data La chaîne de caractères à hasher. Doit être une chaîne C terminée par un null ('\0').
  * \param format L'identifiant du format de hashage, spécifié par l'énumération `RC2D_HashFormat`.
  * 
@@ -382,7 +375,9 @@ unsigned char* rc2d_data_decompress(const RC2D_CompressedData* compressedData);
  *         En cas d'échec (par exemple, allocation mémoire impossible, format de hashage non supporté,
  *         ou erreur dans le processus de hashage), la fonction retourne `NULL`.
  * 
- * \threadsafety
+ * \warning La chaîne retournée doit être libérée par l'appelant avec `RC2D_free()`.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
@@ -397,17 +392,17 @@ char* rc2d_data_hash(const char* data, const RC2D_HashFormat format);
  * pour permettre un futur test d'intégrité. Les données chiffrées, le sel, l'IV, et le HMAC sont ensuite combinés 
  * en une structure RC2D_EncryptedData qui contient également des métadonnées telles que la taille originale 
  * des données et le format de chiffrement utilisé.
- *
- * \note Doit être libéré par l'appelant via la fonction rc2d_data_freeSecurity.
  * 
  * \param {Uint8Array} data - Un pointeur vers les données non chiffrées à chiffrer.
  * \param {number} dataSize - La taille des données en octets.
  * \param {string} passphrase - Une passphrase utilisée pour générer la clé de chiffrement via une fonction de dérivation.
  * \param {RC2D_DataType} dataType - Le type de données fournies, influençant le traitement des données.
  * \param {RC2D_CipherFormat} format - Le format de chiffrement à utiliser, défini par l'énumération RC2D_CipherFormat.
- * \return {RC2D_EncryptedData*} Un pointeur vers un nouvel objet RC2D_EncryptedData contenant les données chiffrées, le HMAC, le sel, l'IV, et des métadonnées. Retourne NULL en cas d'échec.
+ * \return {RC2D_EncryptedData*} - Un pointeur vers un nouvel objet RC2D_EncryptedData contenant les données chiffrées, le HMAC, le sel, l'IV, et des métadonnées. Retourne NULL en cas d'échec.
  * 
- * \threadsafety
+ * \warning La structure RC2D_EncryptedData, son champ `data` et son champ `hmac` doivent être libérés par l'appelant avec `rc2d_data_freeSecurity`.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -423,13 +418,13 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, const size_t da
  * Si le test d'intégrité réussit, la fonction procède au déchiffrement des données à l'aide de la clé dérivée 
  * de la passphrase et du sel inclus dans l'objet RC2D_EncryptedData. Cette approche garantit que seules les données 
  * non altérées seront déchiffrées, renforçant la sécurité des données échangées.
- * 
- * \note La fonction alloue dynamiquement de la mémoire pour les données déchiffrées.
  *
  * \param {RC2D_EncryptedData*} encryptedData - Un pointeur vers une structure RC2D_EncryptedData contenant les données chiffrées.
- * \return {unsigned char*} Un pointeur vers les données déchiffrées en cas de succès, ou NULL en cas d'échec.
+ * \return {unsigned char*} - Un pointeur vers les données déchiffrées en cas de succès, ou NULL en cas d'échec.
  * 
- * \threadsafety
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_free`.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
@@ -445,7 +440,7 @@ unsigned char* rc2d_data_decrypt(const RC2D_EncryptedData* encryptedData);
  *
  * \param {RC2D_EncryptedData*} encryptedData - Pointeur vers la structure RC2D_EncryptedData à libérer.
  * 
- * \threadsafety
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 

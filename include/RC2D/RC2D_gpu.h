@@ -411,7 +411,7 @@ RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
  * 
  * \return {RC2D_GPUComputePipeline*} Pointeur vers le shader de calcul chargé, ou NULL en cas d'erreur.
  * 
- * \warning Le pointeur retourné doit être libéré avec SDL_ReleaseGPUComputePipeline lorsque le shader n'est plus nécessaire.
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec SDL_ReleaseGPUComputePipeline lorsque le shader n'est plus nécessaire.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -429,7 +429,7 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename);
  * 
  * \return {SDL_GPUShader*} Pointeur vers le shader chargé, ou NULL en cas d'erreur.
  * 
- * \warning Le pointeur retourné doit être libéré avec SDL_ReleaseGPUShader lorsque le shader n'est plus nécessaire.
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec SDL_ReleaseGPUShader lorsque le shader n'est plus nécessaire.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -445,7 +445,8 @@ SDL_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename);
  * 
  * \return {bool} True si la création du pipeline a réussi, false sinon.
  * 
- * \warning Le pointeur retourné doit être libéré avec SDL_ReleaseGPUGraphicsPipeline lorsque le pipeline n'est plus nécessaire.
+ * \warning Le champ pipeline de la structure RC2D_GPUGraphicsPipeline doit être libéré par l'appelant avec 
+ * SDL_ReleaseGPUGraphicsPipeline lorsque le pipeline n'est plus nécessaire.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 

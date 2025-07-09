@@ -343,8 +343,10 @@ void rc2d_window_setSize(const int width, const int height)
 
 int rc2d_window_getDisplayCount(void) 
 {
-    // Utilise SDL_GetDisplays pour obtenir le nombre de moniteurs connectés
+    // Variable pour stocker le nombre de moniteurs connectés
     int numDisplays = 0;
+
+    // Utilise SDL_GetDisplays pour obtenir le nombre de moniteurs connectés
     SDL_DisplayID *displays = SDL_GetDisplays(&numDisplays);
     if (displays == NULL)
     {
@@ -352,6 +354,9 @@ int rc2d_window_getDisplayCount(void)
         return 0;
     }
     
+    // Libérer le tableau alloué par SDL_GetDisplays.
+    RC2D_free(displays);
+
     // Renvoie le nombre de moniteurs connectés
     return numDisplays;
 }
