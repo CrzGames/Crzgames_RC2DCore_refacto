@@ -63,7 +63,7 @@
 
 ## 📱 Appareils compatibles par plateforme
 
-### **iOS / iPadOS (iOS/iPadOS 18.0+)**
+### **iOS / iPadOS (18.0+)**
 
 #### iPhones:
 - iPhone XR / XS / XS Max
@@ -76,22 +76,22 @@
 - iPad Air (3/4/5ème génération, M2, M3) et plus récent
 - iPad Pro (1/2/3/4/5/6ème génération, M4) et plus récent
 
-### **macOS (macOS 15.0+)**
-- Tous les modèles macOS Apple Silicon (M1, M2, M3, M4) et plus récent
+### **macOS (15.0+)**
+- Tous les modèles macOS Apple Silicon (M1, M2, M3, M4) et plus récent.
 
-### **Android (Android 9.0+, API 28+)**
-- Samsung Galaxy S9+ (2018) et plus récent
-- Google Pixel 3 et plus récent
-- OnePlus 6T et plus récent
-- Galaxy Tab S4 (2018) et plus récent
+### **Android (9.0+)**
+- Samsung Galaxy S9+ (2018) et plus récent.
+- Google Pixel 3 et plus récent.
+- OnePlus 6T et plus récent.
+- Galaxy Tab S4 (2018) et plus récent.
 
 ### **Linux (glibc 2.35+)**
-- Ubuntu 22.04+
-- Debian 12+
-- Fedora 36+
-- Linux Mint 21+
-- elementary OS 7+
-- CentOS/RHEL 10+
+- Ubuntu 22.04 et plus récent.
+- Debian 12 et plus récent.
+- Fedora 36 et plus récent.
+- Linux Mint 21 et plus récent.
+- elementary OS 7 et plus récent.
+- CentOS/RHEL 10 et plus récent.
 
 ### **Windows (10+)**
 - Windows 10 et plus récent.
