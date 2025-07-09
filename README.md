@@ -152,6 +152,7 @@
 | **AES**                | Implémentation légère d’AES-128 pour le chiffrement/déchiffrement, utilisée par la librairie `rres` | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |
 | **LZ4**                | Compression/décompression ultra-rapide, utilisée par la librairie `rres` et le module `RC2D_data` | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |
 | **Monocypher**         | 	Librairie de cryptographie moderne (hashs, signatures, échange de clés), utilisée par la librairie `rres` | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |
+| **cglm**               | Une bibliothèque mathématique 2D|3D hautement optimisée, cglm offre des fonctions mathématiques rapides et ergonomiques pour faciliter la programmation graphique. | `Obligatoire`                |
 | **SDL3**               | Moteur principal, gestion entrée/sortie, rendu GPU           | `Obligatoire`                |
 | **SDL3_image**         | Chargement des images                                        | `Obligatoire`                |
 | **SDL3_ttf**           | Rendu de polices TrueType                                    | `Obligatoire`                |
