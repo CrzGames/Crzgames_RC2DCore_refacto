@@ -14,31 +14,31 @@
 
 ```
 📦 Crzgames_RC2DCore
-├── 📁 .github
-├── 📁 android-project
-├── 📁 build-scripts
-├── 📁 cmake
-│   └── 📄 setup_dependencies.cmake
-├── 📁 dependencies (git ignored)
-│   ├── 📁 Crzgames_Libraries
-│   ├── 📁 Crzgames_RCENet
-│   ├── 📁 SDL
-│   ├── 📁 SDL_image
-│   ├── 📁 SDL_ttf
-│   ├── 📁 SDL_mixer
-│   ├── 📁 SDL_shadercross
-├── 📁 docs
-├── 📁 example
-├── 📁 include
-├── 📁 src
-├── 📁 tests
-├── 📄 .gitignore
-├── 📄 CHANGELOG.md
-├── 📄 CMakeLists.txt
-├── 📄 dependencies.txt
-├── 📄 README.md
-├── 📄 release-please-config.json
-├── 📄 version.txt
+├── 📁 .github                        # Configuration GitHub (workflows CI/CD, templates de issues/PRs, etc.)
+├── 📁 android-project                # Projet Android contenant les fichiers nécessaires pour packager RC2D sous forme de .aar
+├── 📁 build-scripts                  # Scripts de build personnalisés (.sh / .bat), puis les scripts utilise le CMakelists.txt
+├── 📁 cmake                          
+│   └── 📄 setup_dependencies.cmake   # Script CMake chargé de lire `dependencies.txt` et cloner/configurer les dépendances dans `/dependencies`
+├── 📁 dependencies (git ignored)     # Répertoire local contenant les dépendances clonées (ignoré par Git pour ne pas polluer le repo)
+│   ├── 📁 Crzgames_Libraries         # Librairies précompilées (OpenSSL, ONNX Runtime et SDL_shadercross) propres à Crzgames
+│   ├── 📁 Crzgames_RCENet            # Librairie réseau RCENet (wrapper autour d’ENet)
+│   ├── 📁 SDL                        # SDL3 (dépendance principale du moteur)
+│   ├── 📁 SDL_image                  # Extension SDL3 pour le support des images (PNG, JPEG, etc.)
+│   ├── 📁 SDL_ttf                    # Extension SDL3 pour le rendu de polices TrueType
+│   ├── 📁 SDL_mixer                  # Extension SDL3 pour la gestion audio avancée
+├── 📁 docs                           # Documentation du moteur (ex: pages Markdown, auto-générées ou manuelles)
+├── 📁 example                        # Exemples d’utilisation du moteur RC2D (projets de démo, test de fonctionnalités)
+├── 📁 include                        # En-têtes publics exposés aux utilisateurs de la lib (API du moteur)
+├── 📁 src                            # Code source interne de la bibliothèque RC2D (implémentations .c)
+├── 📁 tests                          # Tests unitaires (ex: avec Criterion) pour vérifier les modules du moteur
+├── 📄 .gitignore                     # Fichiers/dossiers à ignorer par Git (ex: /dependencies, artefacts, builds temporaires)
+├── 📄 CHANGELOG.md                  # Historique des versions avec les modifications apportées à chaque release
+├── 📄 CMakeLists.txt                # Point d’entrée de la configuration CMake (build multiplateforme)
+├── 📄 dependencies.txt              # Fichier listant les dépendances à cloner (format : nom=repo:version)
+├── 📄 README.md                     # Page d’accueil du dépôt (description, installation, exemples d’usage)
+├── 📄 release-please-config.json    # Configuration pour `release-please` (outil Google de génération automatique de releases)
+├── 📄 version.txt                   # Contient la version actuelle du moteur (utilisé dans le build ou les releases)
+
 ```
 
 <br /><br /><br /><br />
