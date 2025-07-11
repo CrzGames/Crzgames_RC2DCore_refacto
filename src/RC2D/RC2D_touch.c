@@ -98,8 +98,7 @@ void rc2d_touch_updateState(SDL_TouchID deviceID, SDL_FingerID fingerID, int eve
             } 
             else 
             {
-                RC2D_free(touchState->touches);
-                touchState->touches = NULL;
+                RC2D_safe_free(touchState->touches);
             }
         }
     }
@@ -107,18 +106,11 @@ void rc2d_touch_updateState(SDL_TouchID deviceID, SDL_FingerID fingerID, int eve
 
 void rc2d_touch_freeTouchState(void)
 {
-    if (touchState)
-    {
-        // Libération du tableau des touches si alloué
-        if (touchState->touches) 
-        {
-            RC2D_free(touchState->touches);
-        }
+    // Libération du tableau des touches si alloué
+    RC2D_safe_free(touchState->touches);
 
-        // Libération de la structure principale
-        RC2D_free(touchState);
-        touchState = NULL;
-    }
+    // Libération de la structure principale
+    RC2D_safe_free(touchState);
 }
 
 void rc2d_touch_getPosition(SDL_FingerID fingerID, float* x, float* y)
@@ -179,5 +171,5 @@ SDL_FingerID* rc2d_touch_getTouches(void)
 
 void rc2d_touch_freeTouches(SDL_FingerID* touches)
 {
-    if (touches) RC2D_free(touches);
+    RC2D_safe_free(touches);
 }

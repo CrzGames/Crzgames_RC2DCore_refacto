@@ -114,7 +114,8 @@ void rc2d_camera_close(RC2D_Camera *camera)
     }
 
     SDL_CloseCamera(camera->sdl_camera);
-    RC2D_free(camera);
+    RC2D_safe_free(camera);
+    RC2D_safe_free(camera->sdl_camera);
 }
 
 int rc2d_camera_getPermission(RC2D_Camera *camera) 

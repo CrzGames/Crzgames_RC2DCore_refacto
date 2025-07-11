@@ -36,7 +36,7 @@ typedef struct Image {
  * pour permettre une gestion manuelle si nécessaire.
  *
  * \note Les données brutes (`rawData`) sont allouées dynamiquement et doivent être libérées
- * via  RC2D_free lorsque la police n'est plus utilisée. La police TTF doit être libérée
+ * via  RC2D_safe_free lorsque la police n'est plus utilisée. La police TTF doit être libérée
  * via  TTF_CloseFont.
  *
  * \since Cette structure est disponible depuis RC2D 1.0.0.
@@ -54,7 +54,7 @@ typedef struct Font {
      * \brief Données brutes de la police (par exemple, fichier TTF ou OTF).
      *
      * Ces données sont conservées en mémoire pour permettre une gestion manuelle ou
-     * un rechargement si nécessaire. Elles doivent être libérées avec  RC2D_free
+     * un rechargement si nécessaire. Elles doivent être libérées avec  RC2D_safe_free
      * lorsque la police n'est plus utilisée.
      */
     unsigned char* rawData;
@@ -69,7 +69,7 @@ typedef struct Font {
  * \note Le champ `sound` (Mix_Chunk) est désactivé dans cette version, car SDL3_mixer n'est pas inclus
  * par défaut. Si SDL3_mixer est activé, décommentez l'inclusion correspondante et le champ `sound`.
  *
- * \warning Les données brutes (`data`) doivent être libérées avec  RC2D_free lorsque l'audio
+ * \warning Les données brutes (`data`) doivent être libérées avec  RC2D_safe_free lorsque l'audio
  * n'est plus utilisé. Si `sound` est utilisé (avec SDL3_mixer), il doit être libéré avec  Mix_FreeChunk.
  *
  * \since Cette structure est disponible depuis RC2D 1.0.0.
@@ -101,7 +101,7 @@ typedef struct Wave {
     /**
      * \brief Données audio PCM brutes.
      *
-     * Ces données doivent être libérées avec  RC2D_free lorsque l'audio n'est plus utilisé.
+     * Ces données doivent être libérées avec  RC2D_safe_free lorsque l'audio n'est plus utilisé.
      */
     void *data;
 
@@ -126,7 +126,7 @@ typedef struct Wave {
  * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
  * 
- * \warning Le pointeur retourné doit être libéré par l'appelant avec `RC2D_free` lorsque les données ne sont plus nécessaires.
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec `RC2D_safe_free` lorsque les données ne sont plus nécessaires.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -141,12 +141,12 @@ void *rc2d_rres_loadDataRawFromChunk(rresResourceChunk chunk, unsigned int *size
  * pour charger des scripts, des dialogues, ou des fichiers de configuration textuels.
  *
  * \param chunk Le chunk RRES contenant les données textuelles (doit être de type RRES_DATA_TEXT).
- * \return Une chaîne de caractères allouée dynamiquement, ou NULL en cas d'erreur. La chaîne doit être libérée avec RC2D_free.
+ * \return Une chaîne de caractères allouée dynamiquement, ou NULL en cas d'erreur. La chaîne doit être libérée avec RC2D_safe_free.
  *
  * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
  * 
- * \warning La chaîne retournée doit être libérée par l'appelant avec `RC2D_free` lorsque le texte n'est plus nécessaire.
+ * \warning La chaîne retournée doit être libérée par l'appelant avec `RC2D_safe_free` lorsque le texte n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -187,7 +187,7 @@ Image rc2d_rres_loadImageFromChunk(rresResourceChunk chunk);
  * \note Les données doivent être non compressées et non chiffrées. Si elles sont compressées ou chiffrées,
  * appelez d'abord rc2d_rres_unpackResourceChunk.
  * 
- * \warning Les données brutes `wave.data` doivent être libérées par l'appelant avec `RC2D_free` lorsque l'audio n'est plus nécessaire.
+ * \warning Les données brutes `wave.data` doivent être libérées par l'appelant avec `RC2D_safe_free` lorsque l'audio n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -209,7 +209,7 @@ Wave rc2d_rres_loadWaveFromChunk(rresResourceChunk chunk);
  * appelez d'abord rc2d_rres_unpackResourceChunk.
  *
  * \warning La police `font.font` doit être libérée par l'appelant avec `TTF_CloseFont` lorsque la police n'est plus nécessaire 
- * et les données brutes `font.rawData` doivent être libérées par l'appelant avec `RC2D_free` lorsque la police n'est plus nécessaire.
+ * et les données brutes `font.rawData` doivent être libérées par l'appelant avec `RC2D_safe_free` lorsque la police n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
@@ -236,7 +236,7 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize);
  * pour les données chiffrées. Un mot de passe incorrect entraînera un code d'erreur 2.
  * 
  * \warning Les champs `chunk->data.props` et `chunk->data.raw` alloués dynamiquement doivent 
- * être libérés par l'appelant avec `RC2D_free` lorsque le chunk n'est plus nécessaire.
+ * être libérés par l'appelant avec `RC2D_safe_free` lorsque le chunk n'est plus nécessaire.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread, mais la gestion du mot de passe doit être
  * thread-safe si plusieurs threads y accèdent.

@@ -119,7 +119,7 @@ bool rc2d_messagebox_show(const RC2D_MessageBoxOptions *options, int *button_id)
     if (!SDL_ShowMessageBox(&sdl_data, &result_button_id)) 
     {
         RC2D_log(RC2D_LOG_ERROR, "echec de SDL_ShowMessageBox : %s", SDL_GetError());
-        RC2D_free(sdl_buttons);
+        RC2D_safe_free(sdl_buttons);
         return false;
     }
 
@@ -130,6 +130,6 @@ bool rc2d_messagebox_show(const RC2D_MessageBoxOptions *options, int *button_id)
     }
 
     // Nettoie les boutons alloués
-    RC2D_free(sdl_buttons);
+    RC2D_safe_free(sdl_buttons);
     return true;
 }

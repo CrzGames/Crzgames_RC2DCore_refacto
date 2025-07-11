@@ -324,7 +324,7 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
     if (!input_names) 
     {
         RC2D_log(RC2D_LOG_CRITICAL, "Failed to allocate input_names");
-        RC2D_free(input_values);
+        RC2D_safe_free(input_values);
         ort->ReleaseMemoryInfo(memory_info);
         return false;
     }
@@ -352,8 +352,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
             for (size_t j = 0; j <= i; ++j) {
                 if (input_names[j]) allocator->Free(allocator, (void*)input_names[j]);
             }
-            RC2D_free(input_values);
-            RC2D_free(input_names);
+            RC2D_safe_free(input_values);
+            RC2D_safe_free(input_names);
             ort->ReleaseMemoryInfo(memory_info);
             return false;
         }
@@ -365,8 +365,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 for (size_t j = 0; j <= i; ++j) {
                     if (input_names[j]) allocator->Free(allocator, (void*)input_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -376,8 +376,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 for (size_t j = 0; j <= i; ++j) {
                     if (input_names[j]) allocator->Free(allocator, (void*)input_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -398,8 +398,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                     if (input_values[j]) ort->ReleaseValue(input_values[j]);
                     if (input_names[j]) allocator->Free(allocator, (void*)input_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -424,8 +424,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                     if (input_values[j]) ort->ReleaseValue(input_values[j]);
                     if (input_names[j]) allocator->Free(allocator, (void*)input_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -451,8 +451,8 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
             if (input_values[i]) ort->ReleaseValue(input_values[i]);
             if (input_names[i]) allocator->Free(allocator, (void*)input_names[i]);
         }
-        RC2D_free(input_values);
-        RC2D_free(input_names);
+        RC2D_safe_free(input_values);
+        RC2D_safe_free(input_names);
         ort->ReleaseMemoryInfo(memory_info);
         return false;
     }
@@ -465,9 +465,9 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
             if (input_values[i]) ort->ReleaseValue(input_values[i]);
             if (input_names[i]) allocator->Free(allocator, (void*)input_names[i]);
         }
-        RC2D_free(input_values);
-        RC2D_free(input_names);
-        RC2D_free(output_values);
+        RC2D_safe_free(input_values);
+        RC2D_safe_free(input_names);
+        RC2D_safe_free(output_values);
         ort->ReleaseMemoryInfo(memory_info);
         return false;
     }
@@ -516,10 +516,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 for (size_t j = 0; j <= i; ++j) {
                     if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
-                RC2D_free(output_values);
-                RC2D_free(output_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
+                RC2D_safe_free(output_values);
+                RC2D_safe_free(output_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -536,10 +536,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 for (size_t j = 0; j <= i; ++j) {
                     if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
-                RC2D_free(output_values);
-                RC2D_free(output_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
+                RC2D_safe_free(output_values);
+                RC2D_safe_free(output_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -561,10 +561,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                     if (output_values[j]) ort->ReleaseValue(output_values[j]);
                     if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
-                RC2D_free(output_values);
-                RC2D_free(output_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
+                RC2D_safe_free(output_values);
+                RC2D_safe_free(output_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -592,10 +592,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                     if (output_values[j]) ort->ReleaseValue(output_values[j]);
                     if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
                 }
-                RC2D_free(input_values);
-                RC2D_free(input_names);
-                RC2D_free(output_values);
-                RC2D_free(output_names);
+                RC2D_safe_free(input_values);
+                RC2D_safe_free(input_names);
+                RC2D_safe_free(output_values);
+                RC2D_safe_free(output_names);
                 ort->ReleaseMemoryInfo(memory_info);
                 return false;
             }
@@ -616,10 +616,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 if (output_values[j]) ort->ReleaseValue(output_values[j]);
                 if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
             }
-            RC2D_free(input_values);
-            RC2D_free(input_names);
-            RC2D_free(output_values);
-            RC2D_free(output_names);
+            RC2D_safe_free(input_values);
+            RC2D_safe_free(input_names);
+            RC2D_safe_free(output_values);
+            RC2D_safe_free(output_names);
             ort->ReleaseMemoryInfo(memory_info);
             return false;
         }
@@ -637,10 +637,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 if (output_values[j]) ort->ReleaseValue(output_values[j]);
                 if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
             }
-            RC2D_free(input_values);
-            RC2D_free(input_names);
-            RC2D_free(output_values);
-            RC2D_free(output_names);
+            RC2D_safe_free(input_values);
+            RC2D_safe_free(input_names);
+            RC2D_safe_free(output_values);
+            RC2D_safe_free(output_names);
             ort->ReleaseMemoryInfo(memory_info);
             return false;
         }
@@ -660,10 +660,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 if (output_values[j]) ort->ReleaseValue(output_values[j]);
                 if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
             }
-            RC2D_free(input_values);
-            RC2D_free(input_names);
-            RC2D_free(output_values);
-            RC2D_free(output_names);
+            RC2D_safe_free(input_values);
+            RC2D_safe_free(input_names);
+            RC2D_safe_free(output_values);
+            RC2D_safe_free(output_names);
             ort->ReleaseMemoryInfo(memory_info);
             return false;
         }
@@ -681,10 +681,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
                 if (output_values[j]) ort->ReleaseValue(output_values[j]);
                 if (output_names[j]) allocator->Free(allocator, (void*)output_names[j]);
             }
-            RC2D_free(input_values);
-            RC2D_free(input_names);
-            RC2D_free(output_values);
-            RC2D_free(output_names);
+            RC2D_safe_free(input_values);
+            RC2D_safe_free(input_names);
+            RC2D_safe_free(output_values);
+            RC2D_safe_free(output_names);
             ort->ReleaseMemoryInfo(memory_info);
             return false;
         }
@@ -719,10 +719,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
             if (output_values[i]) ort->ReleaseValue(output_values[i]);
             if (output_names[i]) allocator->Free(allocator, (void*)output_names[i]);
         }
-        RC2D_free(input_values);
-        RC2D_free(input_names);
-        RC2D_free(output_values);
-        RC2D_free(output_names);
+        RC2D_safe_free(input_values);
+        RC2D_safe_free(input_names);
+        RC2D_safe_free(output_values);
+        RC2D_safe_free(output_names);
         ort->ReleaseMemoryInfo(memory_info);
         return false;
     }
@@ -792,10 +792,10 @@ bool rc2d_onnx_run(RC2D_OnnxModel* model, RC2D_OnnxTensor* inputs, RC2D_OnnxTens
         ort->ReleaseValue(output_values[i]);
         allocator->Free(allocator, (void*)output_names[i]);
     }
-    RC2D_free(input_values);
-    RC2D_free(input_names);
-    RC2D_free(output_values);
-    RC2D_free(output_names);
+    RC2D_safe_free(input_values);
+    RC2D_safe_free(input_names);
+    RC2D_safe_free(output_values);
+    RC2D_safe_free(output_names);
     ort->ReleaseMemoryInfo(memory_info);
 
     // Succès
@@ -820,7 +820,7 @@ void rc2d_onnx_freeTensors(RC2D_OnnxTensor* tensors, size_t count)
             for (size_t j = 0; j < element_count; ++j)
             {
                 if (strings[j]) {
-                    RC2D_free(strings[j]);
+                    RC2D_safe_free(strings[j]);
                     strings[j] = NULL;
                 }
             }

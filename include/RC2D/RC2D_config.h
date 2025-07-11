@@ -82,7 +82,7 @@ extern "C" {
  * \brief Si RC2D_MEMORY_DEBUG_ENABLED est défini à 1, le suivi des allocations mémoire est activé.
  *
  * Lorsque cette option est activée, toutes les allocations dynamiques effectuées via `RC2D_malloc`,
- * `RC2D_calloc`, `RC2D_realloc`, `RC2D_free`, `RC2D_strdup`, ou `RC2D_strndup` sont enregistrées
+ * `RC2D_calloc`, `RC2D_realloc`, `RC2D_safe_free`, `RC2D_strdup`, ou `RC2D_strndup` sont enregistrées
  * avec des métadonnées supplémentaires, telles que le fichier source, la ligne, et la fonction appelante.
  *
  * Cela permet de générer un rapport complet des fuites mémoire (pointeurs non libérés) à la fin de l'exécution
@@ -95,7 +95,7 @@ extern "C" {
  *
  * Pour utiliser cette fonctionnalité :
  * - Remplacez les appels aux fonctions SDL standard (`SDL_malloc`, `SDL_free`, etc.) ou C standard par leurs équivalents
- *   RC2D (`RC2D_malloc`, `RC2D_free`, etc.).
+ *   RC2D (`RC2D_malloc`, `RC2D_safe_free`, etc.).
  * - Activez la macro en définissant `RC2D_MEMORY_DEBUG_ENABLED` à 1 dans votre configuration.
  * - À la fin de l'exécution du programme, un rapport des fuites mémoire est automatiquement affiché
  *   (via un appel à `rc2d_memory_report()` enregistré avec `atexit`), ou vous pouvez appeler manuellement

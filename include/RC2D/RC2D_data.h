@@ -298,7 +298,7 @@ typedef enum RC2D_HashFormat {
  * \param {RC2D_EncodeFormat} format - Format d'encodage à utiliser.
  * \return {RC2D_EncodedData*} - Pointeur vers un objet RC2D_EncodedData contenant les données encodées et les métadonnées, ou NULL en cas d'échec.
  * 
- * \warning La structure RC2D_EncodedData et son champ `data` doivent être libérés par l'appelant avec `RC2D_free`.
+ * \warning La structure RC2D_EncodedData et son champ `data` doivent être libérés par l'appelant avec `RC2D_safe_free`.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -314,7 +314,7 @@ RC2D_EncodedData* rc2d_data_encode(const unsigned char* data, const size_t dataS
  * \param {const RC2D_EncodedData*} encodedData - Pointeur vers l'objet RC2D_EncodedData contenant les données encodées et les métadonnées nécessaires pour le décodage.
  * \return {unsigned char*} - Pointeur vers les données décodées, ou NULL en cas d'échec.
  * 
- * \warning Le pointeur retourné doit être libéré par l'appelant avec `RC2D_free()`.
+ * \warning Le pointeur retourné doit être libéré par l'appelant avec `RC2D_safe_free()`.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -333,7 +333,7 @@ unsigned char* rc2d_data_decode(const RC2D_EncodedData* encodedData);
  * \param {RC2D_CompressFormat} format - Format de compression à utiliser, défini par l'énumération RC2D_CompressFormat.
  * \return {RC2D_CompressedData*} - Pointeur vers un nouvel objet RC2D_CompressedData contenant les données compressées et les métadonnées, ou NULL en cas de format non supporté ou d'échec de la compression.
  * 
- * \warning La structure RC2D_CompressedData et son champ `data` doivent être libérés par l'appelant avec `RC2D_free`.
+ * \warning La structure RC2D_CompressedData et son champ `data` doivent être libérés par l'appelant avec `RC2D_safe_free`.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -349,7 +349,7 @@ RC2D_CompressedData* rc2d_data_compress(const unsigned char* data, const size_t 
  * \param {RC2D_CompressedData*} compressedData - Pointeur vers l'objet RC2D_CompressedData contenant les données compressées et les métadonnées nécessaires pour la décompression.
  * \return {unsigned char*} - Pointeur vers les données décompressées en cas de succès, ou NULL en cas de format non supporté ou d'échec de la décompression.
  * 
- * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_free`.
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_safe_free`.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -375,7 +375,7 @@ unsigned char* rc2d_data_decompress(const RC2D_CompressedData* compressedData);
  *         En cas d'échec (par exemple, allocation mémoire impossible, format de hashage non supporté,
  *         ou erreur dans le processus de hashage), la fonction retourne `NULL`.
  * 
- * \warning La chaîne retournée doit être libérée par l'appelant avec `RC2D_free()`.
+ * \warning La chaîne retournée doit être libérée par l'appelant avec `RC2D_safe_free()`.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -422,7 +422,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, const size_t da
  * \param {RC2D_EncryptedData*} encryptedData - Un pointeur vers une structure RC2D_EncryptedData contenant les données chiffrées.
  * \return {unsigned char*} - Un pointeur vers les données déchiffrées en cas de succès, ou NULL en cas d'échec.
  * 
- * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_free`.
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_safe_free`.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 

@@ -2098,11 +2098,11 @@ void rc2d_engine_quit(void)
         {
             if (rc2d_engine_state.gpu_graphics_shaders_cache[i].filename) 
             {
-                RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
+                RC2D_safe_free(rc2d_engine_state.gpu_graphics_shaders_cache[i].filename);
                 rc2d_engine_state.gpu_graphics_shaders_cache[i].filename = NULL;
             }
         }
-        RC2D_free(rc2d_engine_state.gpu_graphics_shaders_cache);
+        RC2D_safe_free(rc2d_engine_state.gpu_graphics_shaders_cache);
         rc2d_engine_state.gpu_graphics_shaders_cache = NULL;
         rc2d_engine_state.gpu_graphics_shader_count = 0;
         SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
@@ -2118,11 +2118,11 @@ void rc2d_engine_quit(void)
         {
             if (rc2d_engine_state.gpu_compute_shaders_cache[i].filename) 
             {
-                RC2D_free(rc2d_engine_state.gpu_compute_shaders_cache[i].filename);
+                RC2D_safe_free(rc2d_engine_state.gpu_compute_shaders_cache[i].filename);
                 rc2d_engine_state.gpu_compute_shaders_cache[i].filename = NULL;
             }
         }
-        RC2D_free(rc2d_engine_state.gpu_compute_shaders_cache);
+        RC2D_safe_free(rc2d_engine_state.gpu_compute_shaders_cache);
         rc2d_engine_state.gpu_compute_shaders_cache = NULL;
         rc2d_engine_state.gpu_compute_shader_count = 0;
         SDL_UnlockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
@@ -2138,16 +2138,16 @@ void rc2d_engine_quit(void)
         {
             if (rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename) 
             {
-                RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename);
+                RC2D_safe_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename);
                 rc2d_engine_state.gpu_graphics_pipelines_cache[i].vertex_shader_filename = NULL;
             }
             if (rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename) 
             {
-                RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename);
+                RC2D_safe_free(rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename);
                 rc2d_engine_state.gpu_graphics_pipelines_cache[i].fragment_shader_filename = NULL;
             }
         }
-        RC2D_free(rc2d_engine_state.gpu_graphics_pipelines_cache);
+        RC2D_safe_free(rc2d_engine_state.gpu_graphics_pipelines_cache);
         rc2d_engine_state.gpu_graphics_pipelines_cache = NULL;
         rc2d_engine_state.gpu_graphics_pipeline_count = 0;
         SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
@@ -2156,12 +2156,12 @@ void rc2d_engine_quit(void)
     }
 
     // Nettoyer les textures de letterbox
-    RC2D_free(rc2d_engine_state.letterbox_uniform_texture);
-    RC2D_free(rc2d_engine_state.letterbox_top_texture);
-    RC2D_free(rc2d_engine_state.letterbox_bottom_texture);
-    RC2D_free(rc2d_engine_state.letterbox_left_texture);
-    RC2D_free(rc2d_engine_state.letterbox_right_texture);
-    RC2D_free(rc2d_engine_state.letterbox_background_texture);
+    RC2D_safe_free(rc2d_engine_state.letterbox_uniform_texture);
+    RC2D_safe_free(rc2d_engine_state.letterbox_top_texture);
+    RC2D_safe_free(rc2d_engine_state.letterbox_bottom_texture);
+    RC2D_safe_free(rc2d_engine_state.letterbox_left_texture);
+    RC2D_safe_free(rc2d_engine_state.letterbox_right_texture);
+    RC2D_safe_free(rc2d_engine_state.letterbox_background_texture);
 
     /* Annuler la revendication de la fenêtre */
     if (rc2d_engine_state.gpu_device && rc2d_engine_state.window) 

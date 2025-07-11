@@ -105,13 +105,13 @@ typedef struct RC2D_CameraOptions {
  * \param count Pointeur pour stocker le nombre de caméras (peut être NULL).
  * \return Tableau d'ID de caméras terminé par 0, ou NULL en cas d'erreur.
  * 
- * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_free()`.
+ * \warning Le tableau retourné doit être libéré par l'appelant avec `RC2D_safe_free()`.
  *
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  *
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  * 
- * \see RC2D_free
+ * \see RC2D_safe_free
  * 
  */
 RC2D_CameraID *rc2d_camera_getDevices(int *count);

@@ -158,7 +158,7 @@ static unsigned int *ComputeMD5(const unsigned char *data, int size)
         hash[3] += d;
     }
 
-    RC2D_free(msg);
+    RC2D_safe_free(msg);
 
     return hash;
 }
@@ -261,7 +261,7 @@ char *rc2d_rres_loadDataTextFromChunk(rresResourceChunk chunk)
             if (SDL_ReadIO(rw, text, chunk.data.props[0]) != chunk.data.props[0])
             {
                 RC2D_log(RC2D_LOG_ERROR, "Échec de la lecture des données textuelles: %s", SDL_GetError());
-                RC2D_free(text);
+                RC2D_safe_free(text);
                 SDL_CloseIO(rw);
                 return NULL;
             }
@@ -538,7 +538,7 @@ void freeWave(Wave *wave)
     // Libérer les données audio brutes
     if (wave->data != NULL)
     {
-        RC2D_free(wave->data);
+        RC2D_safe_free(wave->data);
         wave->data = NULL;
     }
 }
@@ -598,7 +598,7 @@ void freeFont(Font *font)
     // Libérer la mémoire pour rawData
     if (font->rawData != NULL)
     {
-        RC2D_free(font->rawData);
+        RC2D_safe_free(font->rawData);
         font->rawData = NULL;
     }
 }
@@ -626,7 +626,7 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize)
             if (!rw)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Échec de la création de SDL_IOStream: %s", SDL_GetError());
-                RC2D_free(font.rawData);
+                RC2D_safe_free(font.rawData);
                 return font;
             }
 
@@ -635,7 +635,7 @@ Font rc2d_rres_loadFontFromChunk(rresResourceChunk chunk, float ptsize)
             if (!font.font)
             {
                 RC2D_log(RC2D_LOG_ERROR, "Erreur de chargement de la police: %s\n", TTF_GetError());
-                RC2D_free(font.rawData);
+                RC2D_safe_free(font.rawData);
             }
 
             return font;
@@ -710,7 +710,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Wipe key generation secrets, they are no longer needed
             crypto_wipe(salt, 16);
-            RC2D_free(workArea);
+            RC2D_safe_free(workArea);
 
             // Required variables for decryption and message authentication
             unsigned int md5[4] = { 0 };                // Message Authentication Code generated on encryption
@@ -783,7 +783,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             // Wipe key generation secrets, they are no longer needed
             crypto_wipe(salt, 16);
-            RC2D_free(workArea);
+            RC2D_safe_free(workArea);
 
             // Required variables for decryption and message authentication
             uint8_t nonce[24] = { 0 };                  // nonce used on encryption, unique to processed file
@@ -887,9 +887,9 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
         // Move chunk->data.raw pointer (chunk->data.propCount*sizeof(int)) positions
         void *raw = RC2D_calloc(chunk->info.baseSize - 20, 1);
         if (raw != NULL) SDL_memcpy(raw, ((unsigned char *)unpackedData) + 20, chunk->info.baseSize - 20);
-        RC2D_free(chunk->data.raw);
+        RC2D_safe_free(chunk->data.raw);
         chunk->data.raw = raw;
-        RC2D_free(unpackedData);
+        RC2D_safe_free(unpackedData);
     }
 
     return result;

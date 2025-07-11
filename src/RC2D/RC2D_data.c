@@ -90,7 +90,7 @@ static RC2D_EncodedData* hex_encode(const unsigned char* data, size_t sizeData, 
     RC2D_EncodedData* encodedData = RC2D_malloc(sizeof(RC2D_EncodedData));
     if (encodedData == NULL) 
     {
-        RC2D_free(hex); // Assurez-vous de libérer hex si l'allocation de encodedData échoue
+        RC2D_safe_free(hex); // Assurez-vous de libérer hex si l'allocation de encodedData échoue
         return NULL;
     }
 
@@ -221,7 +221,7 @@ static RC2D_EncodedData* base64_encode(const unsigned char* data, size_t sizeDat
     RC2D_EncodedData* encodedData = RC2D_malloc(sizeof(RC2D_EncodedData));
     if (!encodedData) 
     {
-        RC2D_free(cipher);
+        RC2D_safe_free(cipher);
         return NULL;
     }
 
@@ -314,20 +314,17 @@ RC2D_EncodedData* rc2d_data_encode(const unsigned char* data, size_t dataSize, R
             encodedData = hex_encode(data, dataSize, dataType);
             break;
         default:
-            RC2D_free(encodedData);
-            encodedData = NULL;
+            RC2D_safe_free(encodedData);
+            RC2D_safe_free(encodedData->data);
+            RC2D_log(RC2D_LOG_ERROR, "Format d'encodage non supporté dans rc2d_data_encode().\n");
             return NULL; // Unsupported format
     }
 
     // Vérifier si l'encodage a échoué
     if (!encodedData || !encodedData->data) 
     {
-        if (encodedData) 
-        {
-            RC2D_free(encodedData);
-            encodedData = NULL;
-        }
-        
+        RC2D_safe_free(encodedData);
+        RC2D_safe_free(encodedData->data);
         return NULL; // Encoding failed
     }
 
@@ -398,7 +395,7 @@ static RC2D_CompressedData* compress_lz4(const unsigned char* data, size_t dataS
     if (compressedDataSize <= 0) 
     {
         // Échec de la compression
-        RC2D_free(compressedBuffer);
+        RC2D_safe_free(compressedBuffer);
         return NULL;
     }
 
@@ -406,7 +403,7 @@ static RC2D_CompressedData* compress_lz4(const unsigned char* data, size_t dataS
     RC2D_CompressedData* compressedData = (RC2D_CompressedData*)RC2D_malloc(sizeof(RC2D_CompressedData));
     if (!compressedData) 
     {
-        RC2D_free(compressedBuffer);
+        RC2D_safe_free(compressedBuffer);
         return NULL;
     }
 
@@ -448,7 +445,7 @@ static unsigned char* decompress_lz4(const RC2D_CompressedData* compressedData)
     if (!decompressedData) 
     {
         // Échec de l'allocation mémoire
-        RC2D_free(decompressedData); // Assurez-vous de libérer la mémoire si l'allocation échoue
+        RC2D_safe_free(decompressedData); // Assurez-vous de libérer la mémoire si l'allocation échoue
         return NULL;
     }
 
@@ -457,7 +454,7 @@ static unsigned char* decompress_lz4(const RC2D_CompressedData* compressedData)
     if (decompressedSize < 0) 
     {
         // Échec de la décompression
-        RC2D_free(decompressedData);
+        RC2D_safe_free(decompressedData);
         return NULL;
     }
 
@@ -615,30 +612,29 @@ static void secure_zeroize(void* v, size_t n)
     while (n--) *p++ = 0;
 }
 
-void rc2d_data_freeSecurity(RC2D_EncryptedData* encryptedData) 
+void rc2d_data_freeSecurity(RC2D_EncryptedData* encryptedData)
 {
-    if (encryptedData != NULL) 
+    // Zéroise les données chiffrées
+    if (encryptedData->data != NULL) 
     {
-        // Zéroise et libère les données chiffrées
-        if (encryptedData->data != NULL) 
-        {
-            secure_zeroize(encryptedData->data, encryptedData->encryptedSize);
-            RC2D_free(encryptedData->data);
-            encryptedData->data = NULL;
-        }
-
-        // Zéroise et libère le champ HMAC
-        if (encryptedData->hmac != NULL) 
-        {
-            secure_zeroize(encryptedData->hmac, encryptedData->hmacSize);
-            RC2D_free(encryptedData->hmac);
-            encryptedData->hmac = NULL;
-        }
-        
-        // Libère la structure elle-même
-        RC2D_free(encryptedData);
-        encryptedData = NULL;
+        secure_zeroize(encryptedData->data, encryptedData->encryptedSize);
     }
+
+    // Libère la mémoire allouée pour les données chiffrées
+    RC2D_safe_free(encryptedData->data);
+
+
+    // Zéroise la clé de chiffrement
+    if (encryptedData->hmac != NULL) 
+    {
+        secure_zeroize(encryptedData->hmac, encryptedData->hmacSize);
+    }
+
+    // Libère la mémoire allouée pour le HMAC
+    RC2D_safe_free(encryptedData->hmac);
+    
+    // Libère la structure elle-même
+    RC2D_safe_free(encryptedData);
 }
 
 /**
@@ -882,7 +878,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         if (ciphertext_len < 0) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec du chiffrement dans rc2d_data_encrypt().\n");
-            RC2D_free(ciphertext);
+            RC2D_safe_free(ciphertext);
             return NULL; // Échec du chiffrement
         }
 
@@ -892,7 +888,7 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         if (!encryptedData) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour les données chiffrées dans rc2d_data_encrypt().\n");
-            RC2D_free(ciphertext);
+            RC2D_safe_free(ciphertext);
             return NULL;
         }
 
@@ -902,14 +898,14 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         SDL_memcpy(encryptedData + sizeof(salt) + sizeof(iv), ciphertext, ciphertext_len);
         
         // Libération du ciphertext intermédiaire
-        RC2D_free(ciphertext);
+        RC2D_safe_free(ciphertext);
 
         // Création de la structure RC2D_EncryptedData
         RC2D_EncryptedData* encryptedDataStruct = RC2D_malloc(sizeof(RC2D_EncryptedData));
         if (!encryptedDataStruct) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour la structure RC2D_EncryptedData dans rc2d_data_encrypt().\n");
-            RC2D_free(encryptedData);
+            RC2D_safe_free(encryptedData);
             return NULL;
         }
 
@@ -920,8 +916,8 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de la génération de HMAC dans rc2d_data_encrypt().\n");
             // Gérer l'échec de la génération de HMAC
-            RC2D_free(encryptedDataStruct);
-            RC2D_free(encryptedData);
+            RC2D_safe_free(encryptedDataStruct);
+            RC2D_safe_free(encryptedData);
             return NULL;
         }
 
@@ -931,8 +927,8 @@ RC2D_EncryptedData* rc2d_data_encrypt(const unsigned char* data, size_t dataSize
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec de l'allocation mémoire pour le HMAC dans rc2d_data_encrypt().\n");
             // Gérer l'échec de l'allocation mémoire pour HMAC
-            RC2D_free(encryptedDataStruct);
-            RC2D_free(encryptedData);
+            RC2D_safe_free(encryptedDataStruct);
+            RC2D_safe_free(encryptedData);
             return NULL;
         }
         SDL_memcpy(encryptedDataStruct->hmac, hmac, hmac_len);
@@ -1011,7 +1007,7 @@ unsigned char* rc2d_data_decrypt(const RC2D_EncryptedData* encryptedData)
         if (plaintext_len < 0) 
         {
             RC2D_log(RC2D_LOG_ERROR, "Échec du déchiffrement dans rc2d_data_decrypt().\n");
-            RC2D_free(plaintext);
+            RC2D_safe_free(plaintext);
             return NULL; // Échec du déchiffrement
         }
 

@@ -174,7 +174,7 @@ static RC2D_Point deCasteljau(RC2D_Point* points, int count, double t)
     }
 
     RC2D_Point result = tempPoints[0];
-    RC2D_free(tempPoints);
+    RC2D_safe_free(tempPoints);
 
     return result;
 }
@@ -353,11 +353,7 @@ RC2D_RandomGenerator* rc2d_math_newRandomGeneratorDefault(void)
 
 void rc2d_math_freeRandomGenerator(RC2D_RandomGenerator* randomGenerator) 
 {
-    if (randomGenerator != NULL) 
-    {
-        RC2D_free(randomGenerator); // Libérer la mémoire allouée pour le randomGenerator
-        randomGenerator = NULL; // Eviter les pointeurs fantomes
-    }
+    RC2D_safe_free(randomGenerator);
 }
 
 double rc2d_math_randomReal(RC2D_RandomGenerator *rng) 
@@ -557,19 +553,11 @@ RC2D_BezierCurve* rc2d_math_newBezierCurve(int count, const RC2D_Point* points)
 
 void rc2d_math_freeBezierCurve(RC2D_BezierCurve* curve) 
 {
-    if (curve != NULL) 
-    {
-        // Libérer le tableau de points
-        if (curve->points != NULL) 
-        {
-            RC2D_free(curve->points);
-            curve->points = NULL;
-        }
+    // Libérer le tableau de points
+    RC2D_safe_free(curve->points);
 
-        // Libérer la courbe elle-même
-        RC2D_free(curve);
-        curve = NULL;
-    }
+    // Libérer la courbe elle-même
+    RC2D_safe_free(curve);
 }
 
 void rc2d_math_translateBezierCurve(RC2D_BezierCurve* curve, double dx, double dy) 
@@ -675,7 +663,7 @@ void rc2d_math_removeControlPointBezierCurve(RC2D_BezierCurve* curve, int index)
     }
     
     // Libérer l'ancien tableau de points de contrôle et mettre à jour la courbe
-    RC2D_free(curve->points);
+    RC2D_safe_free(curve->points);
 
     curve->points = newPoints;
     curve->count -= 1;
@@ -725,7 +713,7 @@ void rc2d_math_insertControlPointBezierCurve(RC2D_BezierCurve* curve, double x, 
     }
     
     // Libérer l'ancien tableau de points et mettre à jour la courbe
-    RC2D_free(curve->points);
+    RC2D_safe_free(curve->points);
 
     curve->points = newPoints;
     curve->count += 1; // Augmenter le nombre de points de contrôle
@@ -771,8 +759,8 @@ RC2D_BezierCurve* rc2d_math_subdivideBezierCurve(RC2D_BezierCurve* curve, double
 	// Création de la nouvelle courbe avec les points du segment
 	RC2D_BezierCurve* segmentCurve = rc2d_math_newBezierCurve(count, newPointsStart);
 
-	RC2D_free(newPointsStart);
-	RC2D_free(newPointsEnd);
+	RC2D_safe_free(newPointsStart);
+	RC2D_safe_free(newPointsEnd);
 
 	return segmentCurve;
 }

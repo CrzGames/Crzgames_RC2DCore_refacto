@@ -95,11 +95,7 @@ void rc2d_system_setClipboardText(const char* text)
 
 void rc2d_system_freeClipboardText(char* text)
 {
-    if (text != NULL)
-    {
-        RC2D_free(text);
-        text = NULL;
-    }
+    RC2D_safe_free(text);
 }
 
 int rc2d_system_getNumLogicalCPUCores(void)

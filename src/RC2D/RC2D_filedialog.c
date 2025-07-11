@@ -18,7 +18,7 @@ static void rc2d_filedialog_internal_callback(void *userdata, const char *const 
     if (!callback_data || !callback_data->callback) 
     {
         RC2D_log(RC2D_LOG_WARN, "données ou callback NULL");
-        RC2D_free(callback_data);
+        RC2D_safe_free(callback_data);
         return;
     }
 
@@ -26,7 +26,7 @@ static void rc2d_filedialog_internal_callback(void *userdata, const char *const 
     callback_data->callback(callback_data->userdata, filelist, filter);
 
     // Nettoie les données du callback
-    RC2D_free(callback_data);
+    RC2D_safe_free(callback_data);
 }
 
 // Fonction générique pour ouvrir un dialogue de fichier
@@ -52,7 +52,7 @@ static void rc2d_filedialog_show(RC2D_FileDialogType type, RC2D_FileDialogCallba
     SDL_PropertiesID props = SDL_CreateProperties();
     if (!props) {
         RC2D_log(RC2D_LOG_ERROR, "echec de SDL_CreateProperties : %s", SDL_GetError());
-        RC2D_free(callback_data);
+        RC2D_safe_free(callback_data);
         return;
     }
 
@@ -68,7 +68,7 @@ static void rc2d_filedialog_show(RC2D_FileDialogType type, RC2D_FileDialogCallba
             {
                 RC2D_log(RC2D_LOG_ERROR, "rc2d_filedialog_show : échec d'allocation des filtres");
                 SDL_DestroyProperties(props);
-                RC2D_free(callback_data);
+                RC2D_safe_free(callback_data);
                 return;
             }
 
@@ -119,7 +119,7 @@ static void rc2d_filedialog_show(RC2D_FileDialogType type, RC2D_FileDialogCallba
         default:
             RC2D_log(RC2D_LOG_ERROR, "type de dialogue invalide");
             SDL_DestroyProperties(props);
-            RC2D_free(callback_data);
+            RC2D_safe_free(callback_data);
             return;
     }
 

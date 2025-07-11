@@ -28,6 +28,7 @@ extern "C" {
 #define RC2D_calloc(nmemb, size) rc2d_calloc_debug(nmemb, size, SDL_FILE, SDL_LINE, SDL_FUNCTION)
 #define RC2D_realloc(ptr, size) rc2d_realloc_debug(ptr, size, SDL_FILE, SDL_LINE, SDL_FUNCTION)
 #define RC2D_free(ptr) rc2d_free_debug(ptr, SDL_FILE, SDL_LINE, SDL_FUNCTION)
+#define RC2D_safe_free(ptr) do { if ((ptr) != NULL) { RC2D_free(ptr); (ptr) = NULL; } } while(0)
 #define RC2D_strdup(str) rc2d_strdup_debug(str, SDL_FILE, SDL_LINE, SDL_FUNCTION)
 #define RC2D_strndup(str, n) rc2d_strndup_debug(str, n, SDL_FILE, SDL_LINE, SDL_FUNCTION)
 
@@ -154,6 +155,7 @@ char* rc2d_strndup_debug(const char* str, size_t n, const char* file, int line, 
 #define RC2D_calloc(nmemb, size) SDL_calloc(nmemb, size)
 #define RC2D_realloc(ptr, size) SDL_realloc(ptr, size)
 #define RC2D_free(ptr) SDL_free(ptr)
+#define RC2D_safe_free(ptr) do { if ((ptr) != NULL) { RC2D_free(ptr); (ptr) = NULL; } } while(0)
 #define RC2D_strdup(str) SDL_strdup(str)
 #define RC2D_strndup(str, n) SDL_strndup(str, n)
 #endif

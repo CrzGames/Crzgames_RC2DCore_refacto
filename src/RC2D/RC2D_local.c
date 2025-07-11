@@ -22,7 +22,7 @@ RC2D_Locale *rc2d_local_getPreferredLocales(void)
     if (!result) 
     {
         RC2D_log(RC2D_LOG_ERROR, "rc2d_local_getPreferredLocales : Échec d'allocation mémoire.");
-        RC2D_free(sdl_locales);
+        RC2D_safe_free(sdl_locales);
         return NULL;
     }
 
@@ -34,7 +34,7 @@ RC2D_Locale *rc2d_local_getPreferredLocales(void)
     }
 
     // Libère le tableau d'origine de SDL
-    RC2D_free(sdl_locales);
+    RC2D_safe_free(sdl_locales);
 
     // Retourne le tableau de locales RC2D
     return result;
@@ -42,8 +42,5 @@ RC2D_Locale *rc2d_local_getPreferredLocales(void)
 
 void rc2d_local_freeLocales(RC2D_Locale *locales)
 {
-    if (locales != NULL) 
-    {
-        RC2D_free(locales);
-    }
+    RC2D_safe_free(locales);
 }
