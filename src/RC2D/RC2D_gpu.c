@@ -1222,24 +1222,24 @@ void rc2d_gpu_hotReloadComputeShader(void)
 bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
 {
     // Vérification des paramètres d'entrée
-    RC2D_assert_release(pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
+    RC2D_assert_release(graphicsPipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
 
     // Créer props pour le nom de débogage si nécessaire
     SDL_PropertiesID props = 0;
-    if (pipeline->debug_name != NULL)
+    if (graphicsPipeline->debug_name != NULL)
     {
         props = SDL_CreateProperties();
-        SDL_SetStringProperty(props, SDL_PROP_GPU_GRAPHICSPIPELINE_CREATE_NAME_STRING, pipeline->debug_name);
+        SDL_SetStringProperty(props, SDL_PROP_GPU_GRAPHICSPIPELINE_CREATE_NAME_STRING, graphicsPipeline->debug_name);
     }
 
     // Copie la structure pour injection, en modifiant uniquement props
-    SDL_GPUGraphicsPipelineCreateInfo info = pipeline->create_info;
+    SDL_GPUGraphicsPipelineCreateInfo info = graphicsPipeline->create_info;
     info.props = props;
 
     // Créer le pipeline graphique
-    pipeline->pipeline = SDL_CreateGPUGraphicsPipeline(rc2d_gpu_getDevice(), &info);
+    graphicsPipeline->pipeline = SDL_CreateGPUGraphicsPipeline(rc2d_gpu_getDevice(), &info);
     SDL_DestroyProperties(props);
-    if (pipeline->pipeline == NULL) 
+    if (graphicsPipeline->pipeline == NULL) 
     {
         // Si la création du pipeline échoue, on log l'erreur
         RC2D_log(RC2D_LOG_ERROR, "Failed to create graphics pipeline: %s", SDL_GetError());
@@ -1268,9 +1268,9 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
 
     // Si on ajoute le pipeline graphique au cache, on crée une nouvelle entrée
     RC2D_GraphicsPipelineEntry* entry = &rc2d_engine_state.gpu_graphics_pipelines_cache[rc2d_engine_state.gpu_graphics_pipeline_count++];
-    entry->graphicsPipeline = pipeline;
-    entry->vertex_shader_filename = RC2D_strdup(pipeline->vertex_shader_filename);
-    entry->fragment_shader_filename = RC2D_strdup(pipeline->fragment_shader_filename);
+    entry->graphicsPipeline = graphicsPipeline;
+    entry->vertex_shader_filename = RC2D_strdup(graphicsPipeline->vertex_shader_filename);
+    entry->fragment_shader_filename = RC2D_strdup(graphicsPipeline->fragment_shader_filename);
 
     /**
      * On unlock le mutex après avoir ajouté le pipeline graphique au cache.

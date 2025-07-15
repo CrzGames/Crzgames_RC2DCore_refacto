@@ -160,6 +160,7 @@ typedef struct RC2D_EngineState {
     SDL_GPUTexture* gpu_current_swapchain_texture;
     SDL_GPURenderPass* gpu_current_render_pass;
     SDL_GPUViewport* gpu_current_viewport;
+    SDL_GPUSampleCount gpu_current_sample_count_supported; // Le meilleur niveau de MSAA supporté par le GPU (sois 8x, 4x, 2x ou 1x)
 
     /**
      * Mise en cache des shaders graphiques

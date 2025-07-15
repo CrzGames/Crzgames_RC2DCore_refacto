@@ -606,6 +606,100 @@ static bool rc2d_engine_create_window(void)
 }
 
 /**
+ * \brief Convertit une valeur SDL_GPUSampleCount en une chaîne lisible.
+ *
+ * \param sample_count La valeur SDL_GPUSampleCount à convertir.
+ * \return Une chaîne statique décrivant le niveau de MSAA, ou "Unknown" si la valeur est invalide.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static const char* rc2d_engine_sampleCountToString(SDL_GPUSampleCount sample_count)
+{
+    switch (sample_count)
+    {
+        case SDL_GPU_SAMPLECOUNT_1:
+            return "No MSAA (1x)";
+        case SDL_GPU_SAMPLECOUNT_2:
+            return "MSAA 2x";
+        case SDL_GPU_SAMPLECOUNT_4:
+            return "MSAA 4x";
+        case SDL_GPU_SAMPLECOUNT_8:
+            return "MSAA 8x";
+        default:
+            return "Unknown";
+    }
+}
+
+/**
+ * \brief Configure le niveau de MSAA (Multi-Sample Anti-Aliasing) pour le rendu graphique.
+ * 
+ * Cette fonction vérifie les niveaux de MSAA supportés par le GPU et configure le moteur RC2D
+ * pour utiliser le niveau de MSAA le plus élevé disponible. Si aucun niveau de MSAA n'est supporté,
+ * elle utilise SAMPLECOUNT_1 (pas de MSAA).
+ * 
+ * \return true si la configuration du MSAA a réussi, false sinon.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+static bool rc2d_engine_configureMSAA(void)
+{
+    // Si c'est un jeu en pixel art, on n'utilise pas de MSAA
+    if (rc2d_engine_state.config->logicalPresentationMode == RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE)
+    {
+        RC2D_log(RC2D_LOG_INFO, "MSAA désactivé pour les jeux en pixel art.");
+        rc2d_engine_state.gpu_current_sample_count_supported = SDL_GPU_SAMPLECOUNT_1;
+        return true;
+    }
+
+    // Récupérer le format de swapchain pour vérifier la compatibilité avec le MSAA
+    SDL_GPUTextureFormat swapchain_format = SDL_GetGPUSwapchainTextureFormat(rc2d_gpu_getDevice(), rc2d_window_getWindow());
+    if (swapchain_format == SDL_GPU_TEXTUREFORMAT_INVALID)
+    {
+        RC2D_log(RC2D_LOG_CRITICAL, "Echec de la recuperation du format de swapchain : %s", SDL_GetError());
+        return false;
+    }
+
+    // Ordre décroissant de qualité pour le MSAA
+    SDL_GPUSampleCount sample_counts[] = {
+        SDL_GPU_SAMPLECOUNT_8,  // MSAA 8x : meilleure qualité
+        SDL_GPU_SAMPLECOUNT_4,  // MSAA 4x : bon compromis
+        SDL_GPU_SAMPLECOUNT_2,  // MSAA 2x : qualité modérée
+        SDL_GPU_SAMPLECOUNT_1   // Pas de MSAA : toujours supporté
+    };
+
+    bool msaa_supported = false;
+    SDL_GPUSampleCount selected_sample_count = SDL_GPU_SAMPLECOUNT_1; // Fallback par défaut
+
+    // On parcourt les niveaux de MSAA supportés par le GPU
+    for (int i = 0; i < SDL_arraysize(sample_counts); ++i)
+    {
+        SDL_GPUSampleCount sample_count = sample_counts[i];
+        if (SDL_GPUTextureSupportsSampleCount(rc2d_engine_state.gpu_device, swapchain_format, sample_count))
+        {
+            selected_sample_count = sample_count;
+            msaa_supported = true;
+            RC2D_log(RC2D_LOG_INFO, "%s supporter par rapport au format de la swapchain", rc2d_engine_sampleCountToString(sample_count));
+            break; // Arrêter dès qu'un niveau supporté est trouvé
+        }
+        else
+        {
+            RC2D_log(RC2D_LOG_DEBUG, "%s non supporter par rapport au format de la swapchain", rc2d_engine_sampleCountToString(sample_count));
+        }
+    }
+
+    // Si aucun niveau de MSAA n'est supporté, on utilise SAMPLECOUNT_1 donc pas de MSAA
+    if (!msaa_supported)
+    {
+        RC2D_log(RC2D_LOG_INFO, "Aucun niveau de MSAA supporter, utilisation de SAMPLECOUNT_1 donc pas de MSAA.");
+    }
+
+    // On set le niveau de MSAA sélectionné dans l'état du moteur
+    rc2d_engine_state.gpu_current_sample_count_supported = selected_sample_count;
+
+    return true;
+}
+
+/**
  * \brief Initialise le dispositif GPU pour le rendu graphique dans RC2D.
  * 
  * Cette fonction configure et crée le dispositif GPU SDL3, vérifie les formats de shaders supportés,
@@ -650,6 +744,26 @@ static bool rc2d_engine_create_gpu(void)
             // Ne pas setter la propriété pour laisser SDL choisir automatiquement
             break;
     }
+
+    /**
+     * Désactiver certaines fonctionnalités GPU qui ne sont pas nécessaires et permet surtout pour la plateforme Android
+     * d'être d'avantage compatible.
+     * 
+     * - SDL_PROP_GPU_DEVICE_CREATE_VULKAN_SHADERCLIPDISTANCE_BOOLEAN : désactive le support de clip distance pour Vulkan.
+     * 
+     * - SDL_PROP_GPU_DEVICE_CREATE_VULKAN_DEPTHCLAMP_BOOLEAN : Si elle est désactivée, la propriété
+     *   enable_depth_clip dans SDL_GPURasterizerState doit toujours être définie sur « true ».
+     * 
+     * - SDL_PROP_GPU_DEVICE_CREATE_VULKAN_DRAWINDIRECTFIRST_BOOLEAN : Si elle est désactivée, l'argument
+     *   first_instance de SDL_GPUIndirectDrawCommand doit être défini sur « 0 ».
+     * 
+     * - SDL_PROP_GPU_DEVICE_CREATE_VULKAN_SAMPLERANISOTROPY_BOOLEAN : Si elle est désactivée, la propriété 
+     *   enable_anisotropy de SDL_GPUSamplerCreateInfo doit être définie sur « false ». 
+     */
+    /*SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VULKAN_SHADERCLIPDISTANCE_BOOLEAN, false);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VULKAN_DEPTHCLAMP_BOOLEAN, false);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VULKAN_DRAWINDIRECTFIRST_BOOLEAN, false);
+    SDL_SetBooleanProperty(gpu_props, SDL_PROP_GPU_DEVICE_CREATE_VULKAN_SAMPLERANISOTROPY_BOOLEAN, false);*/
 
     /**
      * Propriétés concernant le GPU :
@@ -742,12 +856,18 @@ static bool rc2d_engine_create_gpu(void)
      */
     if (!SDL_SetGPUAllowedFramesInFlight(rc2d_engine_state.gpu_device, (Uint32)rc2d_engine_state.config->gpuFramesInFlight)) 
     {
-        RC2D_log(RC2D_LOG_CRITICAL, "Failed to set GPU frames in flight: %s", SDL_GetError());
+        RC2D_log(RC2D_LOG_CRITICAL, "Echec de la configuration des frames en vol pour le GPU : %s", SDL_GetError());
         return false;
     }
     else
     {
-        RC2D_log(RC2D_LOG_INFO, "GPU frames in flight set to %d", rc2d_engine_state.config->gpuFramesInFlight);
+        RC2D_log(RC2D_LOG_INFO, "Frames en vol configurees avec succes : %d", rc2d_engine_state.config->gpuFramesInFlight);
+    }
+
+    // Configurer le MSAA (Multi-Sample Anti-Aliasing)
+    if (!rc2d_engine_configureMSAA()) 
+    {
+        return false;
     }
 
     return true;
