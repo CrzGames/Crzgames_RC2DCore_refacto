@@ -1182,6 +1182,17 @@ typedef struct RC2D_EngineConfig {
     int logicalHeight;
 
     /**
+     * \brief Si le rendu doit être effectué en mode pixel art (true) ou en mode classique (false).
+     * 
+     * Si c'est true, il y a des choses qui sont différentes :
+     * - MSAA est désactivé (anti-aliasing).
+     * - Le filtrage des textures est désactivé (les textures sont affichées en mode nearest neighbor).
+     * 
+     * Par défaut : false (mode classique).
+     */
+    bool pixelartMode;
+
+    /**
      * Mode de présentation de RC2D_LogicalPresentationMode.
      * 
      * Par défaut : RC2D_LOGICAL_PRESENTATION_LETTERBOX.

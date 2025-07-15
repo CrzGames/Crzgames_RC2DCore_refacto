@@ -52,6 +52,7 @@ RC2D_EngineConfig* rc2d_engine_getDefaultConfig(void)
         .logicalWidth = 1920,
         .logicalHeight = 1080,
         .logicalPresentationMode = RC2D_LOGICAL_PRESENTATION_LETTERBOX,
+        .pixelartMode = false,
         .letterboxTextures = &default_letterbox_textures,
         .appInfo = &default_app_info,
         .gpuFramesInFlight = RC2D_GPU_FRAMES_BALANCED,
@@ -644,7 +645,7 @@ static const char* rc2d_engine_sampleCountToString(SDL_GPUSampleCount sample_cou
 static bool rc2d_engine_configureMSAA(void)
 {
     // Si c'est un jeu en pixel art, on n'utilise pas de MSAA
-    if (rc2d_engine_state.config->logicalPresentationMode == RC2D_LOGICAL_PRESENTATION_INTEGER_SCALE)
+    if (rc2d_engine_state.config->pixelartMode)
     {
         RC2D_log(RC2D_LOG_INFO, "MSAA désactivé pour les jeux en pixel art.");
         rc2d_engine_state.gpu_current_sample_count_supported = SDL_GPU_SAMPLECOUNT_1;

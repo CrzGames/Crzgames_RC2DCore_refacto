@@ -37,6 +37,7 @@ const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
     config->callbacks->rc2d_load = rc2d_load;
     config->callbacks->rc2d_unload = rc2d_unload;
     config->logicalPresentationMode = RC2D_LOGICAL_PRESENTATION_LETTERBOX;
+    config->pixelartMode = false;
     
     RC2D_assert_release(config != NULL, RC2D_LOG_CRITICAL, "RC2D_EngineConfig config is NULL. Cannot setup the engine.");
 
