@@ -338,32 +338,13 @@ typedef struct SDL_GPUShader RC2D_GPUShader;
 typedef struct SDL_GPUComputePipeline RC2D_GPUComputePipeline;
 
 /**
- * \brief Pipeline graphique utilisé par RC2D.
- * 
- * Ce type est un wrapper autour de SDL_GPUGraphicsPipeline, utilisé pour les pipelines graphiques (vertex/fragment shaders).
- * 
- * \since Ce type est disponible depuis RC2D 1.0.0.
- */
-typedef struct SDL_GPUGraphicsPipeline RC2D_GPUGraphicsPipelineHandle; 
-
-/**
- * \brief Informations de création pour un pipeline graphique.
- * 
- * Cette structure contient les informations nécessaires pour créer un pipeline graphique,
- * telles que les shaders, l'état d'entrée des vertex, le type de primitive, etc.
- * 
- * \since Cette structure est disponible depuis RC2D 1.0.0.
- */
-typedef struct SDL_GPUGraphicsPipelineCreateInfo RC2D_GPUGraphicsPipelineCreateInfo;
-
-/**
  * \brief Structure pour un pipeline graphique utilisé par RC2D.
  * 
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_GPUGraphicsPipeline {
-    RC2D_GPUGraphicsPipelineHandle* pipeline;
-    RC2D_GPUGraphicsPipelineCreateInfo create_info;
+    SDL_GPUGraphicsPipeline* pipeline;
+    SDL_GPUGraphicsPipelineCreateInfo create_info;
     const char* debug_name;
     char* vertex_shader_filename;
     char* fragment_shader_filename;
@@ -408,7 +389,6 @@ RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
  * partir du fichier source HLSL. Sinon, cela charge le fichier binaire déjà précompilé.
  * 
  * \param {const char*} filename - Nom du fichier shader à charger.
- * 
  * \return {RC2D_GPUComputePipeline*} Pointeur vers le shader de calcul chargé, ou NULL en cas d'erreur.
  * 
  * \warning Le pointeur retourné doit être libéré par l'appelant avec SDL_ReleaseGPUComputePipeline lorsque le shader n'est plus nécessaire.
@@ -425,9 +405,8 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename);
  * Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est défini à 1, cela compile le shader à la volée à
  * partir du fichier source HLSL. Sinon, cela charge le fichier binaire déjà précompilé.
  * 
- * \param {const char*} filename - Nom du fichier shader à charger.
- * 
- * \return {SDL_GPUShader*} Pointeur vers le shader chargé, ou NULL en cas d'erreur.
+ * \param {const char*} filename - Nom du fichier shader à charger (sans l'extension .hlsl).
+ * \return {RC2D_GPUShader*} Pointeur vers le shader chargé, ou NULL en cas d'erreur.
  * 
  * \warning Le pointeur retourné doit être libéré par l'appelant avec SDL_ReleaseGPUShader lorsque le shader n'est plus nécessaire.
  * 
@@ -435,14 +414,12 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename);
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-SDL_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename);
+RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename);
 
 /**
  * \brief Crée un pipeline graphique à partir des informations fournies.
  * 
- * \param {RC2D_GPUGraphicsPipeline*} pipeline - Pointeur vers la structure de pipeline à créer.
- * \param {bool} addToCache - Indique si le pipeline doit être ajouté au cache pour le hot-reload.
- * 
+ * \param {RC2D_GPUGraphicsPipeline*} graphicsPipeline - Pointeur vers la structure de pipeline à créer.
  * \return {bool} True si la création du pipeline a réussi, false sinon.
  * 
  * \warning Le champ pipeline de la structure RC2D_GPUGraphicsPipeline doit être libéré par l'appelant avec 
@@ -452,17 +429,12 @@ SDL_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename);
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache);
+bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline);
 
 /**
- * \brief Charge un shader de calcul à partir d'un fichier source HLSL ou d'un fichier binaire précompilé.
+ * \brief Lie un pipeline graphique pour le rendu.
  * 
- * Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est défini à 1, cela compile le shader à la volée à
- * partir du fichier source HLSL. Sinon, cela charge le fichier binaire déjà précompilé.
- * 
- * \param {const char*} filename - Nom du fichier shader à charger.
- * 
- * \return {SDL_GPUShader*} Pointeur vers le shader chargé, ou NULL en cas d'erreur.
+ * \param {RC2D_GPUGraphicsPipeline*} graphicsPipeline - Pointeur vers le pipeline graphique à lier.
  * 
  * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
  * 
@@ -514,17 +486,17 @@ void rc2d_gpu_setColor(RC2D_Color color);
  * Cette fonction dessine un rectangle à la position (x, y) avec la largeur et la hauteur spécifiées.
  * Le mode de dessin peut être RC2D_DRAWMODE_FILL (rempli) ou RC2D_DRAWMODE_LINE (contour).
  *
- * \param mode Mode de dessin (RC2D_DRAWMODE_FILL ou RC2D_DRAWMODE_LINE).
- * \param x Position x en pixels logiques.
- * \param y Position y en pixels logiques.
- * \param width Largeur en pixels logiques.
- * \param height Hauteur en pixels logiques.
+ * \param {RC2D_DrawMode} mode - Mode de dessin (rempli ou contour).
+ * \param {float} x - Position X du coin supérieur gauche du rectangle.
+ * \param {float} y - Position Y du coin supérieur gauche du rectangle.
+ * \param {float} width - Largeur du rectangle.
+ * \param {float} height - Hauteur du rectangle.
  *
  * \threadsafety Cette fonction doit être appelée depuis le thread principal.
  * 
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
-void rc2d_gpu_rectangle(RC2D_DrawMode mode, float x, float y, float width, float height);
+void rc2d_gpu_drawRectangle(RC2D_DrawMode mode, float x, float y, float width, float height);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus

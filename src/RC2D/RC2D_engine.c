@@ -939,10 +939,6 @@ static void rc2d_engine_update_fps_based_on_monitor(void)
     if (!SDL_SetHintWithPriority(SDL_HINT_MAIN_CALLBACK_RATE, fps_str, SDL_HINT_OVERRIDE)) 
     {
         RC2D_log(RC2D_LOG_WARN, "Failed to set SDL_HINT_MAIN_CALLBACK_RATE to %s Hz with OVERRIDE priority: %s", fps_str, SDL_GetError());
-    } 
-    else
-    {
-        RC2D_log(RC2D_LOG_INFO, "Game loop FPS set to %s Hz", fps_str);
     }
 }
 
@@ -2045,6 +2041,11 @@ static bool rc2d_engine(void)
         return false;
     }
 
+    if (!rc2d_gpu_initRectangle())
+    {
+        return false;
+    }
+
     // vérifie le nombre de letterbox count
     RC2D_log(RC2D_LOG_DEBUG, "Letterbox count: %d\n", rc2d_engine_state.letterbox_count);
 
@@ -2154,6 +2155,9 @@ void rc2d_engine_quit(void)
         SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
         rc2d_engine_state.gpu_graphics_pipeline_mutex = NULL;
     }
+
+    // Libérer les ressources GPU des rectangles de RC2D
+    rc2d_gpu_releaseRectangle();
 
     // Nettoyer les textures de letterbox
     RC2D_safe_free(rc2d_engine_state.letterbox_uniform_texture);

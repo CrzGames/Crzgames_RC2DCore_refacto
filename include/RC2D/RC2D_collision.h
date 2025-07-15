@@ -31,7 +31,7 @@ extern "C" {
 bool rc2d_collision_pointInAABB(const RC2D_Point point, const RC2D_AABB box);
 
 /**
- * @brief Vérifie si un point est à l'intérieur d'un cercle.
+ * \brief Vérifie si un point est à l'intérieur d'un cercle.
  *
  * Cette fonction détermine si un point donné se trouve à l'intérieur d'un cercle défini
  * par la structure RC2D_Circle. Le test est basé sur la distance euclidienne entre le point

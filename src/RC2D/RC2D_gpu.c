@@ -11,6 +11,25 @@
 #endif
 
 /**
+ * Variables globales pour les pipelines graphiques utilisés pour le remplissage et le contour des rectangles
+ * Ces pipelines définissent comment le GPU doit traiter les données pour dessiner les rectangles
+ */
+static RC2D_GPUGraphicsPipeline* rect_fill_pipeline = NULL;
+static RC2D_GPUGraphicsPipeline* rect_line_pipeline = NULL;
+
+/**
+ * Variables globales pour les tampons de vertices utilisés pour le remplissage et le contour des rectangles
+ * Ces tampons stockent les coordonnées des sommets du rectangle unitaire 
+ * qui sera étiré et positionné via les uniforms
+ */
+static SDL_GPUBuffer* rect_fill_buffer = NULL;
+static SDL_GPUBuffer* rect_line_buffer = NULL;
+
+// Variable globale pour stocker la couleur actuelle utilisée pour le dessin des formes
+// Cette couleur sera convertie en SDL_FColor et poussée comme uniform dans le shader de fragment lors du dessin
+static RC2D_Color current_color = {255, 255, 255, 255};  // Par défaut, blanc opaque (255, 255, 255, 255)
+
+/**
  * Récupère le timestamp de la dernière modification d'un fichier.
  * 
  * @param {const char*} path - Le chemin du fichier dont on veut connaître la date de dernière modification.
@@ -39,7 +58,6 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
      */
     RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Graphics Shader filename is NULL");
 
-#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     /**
      * Locker le mutex pour éviter les accès concurrents au cache des shaders graphiques
      */
@@ -65,7 +83,6 @@ RC2D_GPUShader* rc2d_gpu_loadGraphicsShader(const char* filename)
      * Cela permet aux autres threads d'accéder au cache des shaders graphiques.
      */
     SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_shader_mutex);
-#endif
 
     // Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
     const char* basePath = SDL_GetBasePath();
@@ -370,7 +387,6 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
      */
     RC2D_assert_release(filename != NULL, RC2D_LOG_CRITICAL, "Compute Shader filename is NULL");
 
-#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
     /**
      * Locker le mutex pour éviter les accès concurrents au cache des shaders de calcul
      */
@@ -393,7 +409,6 @@ RC2D_GPUComputePipeline* rc2d_gpu_loadComputeShader(const char* filename)
      * On unlock le mutex après avoir vérifié le cache des shaders de calcul.
      */
     SDL_UnlockMutex(rc2d_engine_state.gpu_compute_shader_mutex);
-#endif
 
     // Récupérer le chemin de base de l'application (où est exécuté l'exécutable)
     const char* basePath = SDL_GetBasePath();
@@ -966,7 +981,7 @@ void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void)
                         }
 
                         // Recréer le pipeline graphique avec le nouveau shader graphique
-                        bool ok = rc2d_gpu_createGraphicsPipeline(pipeline->graphicsPipeline, false);
+                        bool ok = rc2d_gpu_createGraphicsPipeline(pipeline->graphicsPipeline);
                         if (!ok || pipeline->graphicsPipeline->pipeline == NULL) {
                             RC2D_log(RC2D_LOG_CRITICAL, "Failed to rebuild pipeline for shader: %s (resulting pipeline is NULL)", entry->filename);
                             continue;
@@ -1204,21 +1219,21 @@ void rc2d_gpu_hotReloadComputeShader(void)
 #endif
 }
 
-bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool addToCache)
+bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* graphicsPipeline)
 {
     // Vérification des paramètres d'entrée
     RC2D_assert_release(pipeline != NULL, RC2D_LOG_CRITICAL, "pipeline is NULL");
 
     // Créer props pour le nom de débogage si nécessaire
     SDL_PropertiesID props = 0;
-    if (pipeline->debug_name) 
+    if (pipeline->debug_name != NULL)
     {
         props = SDL_CreateProperties();
         SDL_SetStringProperty(props, SDL_PROP_GPU_GRAPHICSPIPELINE_CREATE_NAME_STRING, pipeline->debug_name);
     }
 
     // Copie la structure pour injection, en modifiant uniquement props
-    RC2D_GPUGraphicsPipelineCreateInfo info = pipeline->create_info;
+    SDL_GPUGraphicsPipelineCreateInfo info = pipeline->create_info;
     info.props = props;
 
     // Créer le pipeline graphique
@@ -1231,27 +1246,37 @@ bool rc2d_gpu_createGraphicsPipeline(RC2D_GPUGraphicsPipeline* pipeline, bool ad
         return false;
     }
 
-#if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
-    if (addToCache)
-    {
-        // Ajouter dans le cache des pipelines
-        SDL_LockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
+    /**
+     * On lock le mutex pour éviter les accès concurrents
+     * lors de l'ajout du pipeline graphique au cache.
+     */
+    SDL_LockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
 
-        RC2D_GraphicsPipelineEntry* newPipelines = RC2D_realloc(
-            rc2d_engine_state.gpu_graphics_pipelines_cache,
-            (rc2d_engine_state.gpu_graphics_pipeline_count + 1) * sizeof(RC2D_GraphicsPipelineEntry)
-        );
-        RC2D_assert_release(newPipelines != NULL, RC2D_LOG_CRITICAL, "Failed to realloc pipeline cache");
-        rc2d_engine_state.gpu_graphics_pipelines_cache = newPipelines;
+    /**
+     * ON réalloue le cache des pipelines graphiques pour ajouter le nouveau pipeline graphique.
+     */
+    RC2D_GraphicsPipelineEntry* newPipelines = RC2D_realloc(
+        rc2d_engine_state.gpu_graphics_pipelines_cache,
+        (rc2d_engine_state.gpu_graphics_pipeline_count + 1) * sizeof(RC2D_GraphicsPipelineEntry)
+    );
 
-        RC2D_GraphicsPipelineEntry* entry = &rc2d_engine_state.gpu_graphics_pipelines_cache[rc2d_engine_state.gpu_graphics_pipeline_count++];
-        entry->graphicsPipeline = pipeline;
-        entry->vertex_shader_filename = RC2D_strdup(pipeline->vertex_shader_filename);
-        entry->fragment_shader_filename = RC2D_strdup(pipeline->fragment_shader_filename);
+    // Vérifier si la réallocation a réussi
+    RC2D_assert_release(newPipelines != NULL, RC2D_LOG_CRITICAL, "Failed to realloc pipeline cache");
 
-        SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
-    }
-#endif
+    // Mettre à jour le cache des pipelines graphiques avec le nouveau pipeline graphique
+    rc2d_engine_state.gpu_graphics_pipelines_cache = newPipelines;
+
+    // Si on ajoute le pipeline graphique au cache, on crée une nouvelle entrée
+    RC2D_GraphicsPipelineEntry* entry = &rc2d_engine_state.gpu_graphics_pipelines_cache[rc2d_engine_state.gpu_graphics_pipeline_count++];
+    entry->graphicsPipeline = pipeline;
+    entry->vertex_shader_filename = RC2D_strdup(pipeline->vertex_shader_filename);
+    entry->fragment_shader_filename = RC2D_strdup(pipeline->fragment_shader_filename);
+
+    /**
+     * On unlock le mutex après avoir ajouté le pipeline graphique au cache.
+     * Cela permet aux autres threads d'accéder au cache des pipelines graphiques.
+     */
+    SDL_UnlockMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
 
     return true;
 }
@@ -1485,4 +1510,49 @@ void rc2d_gpu_present(void)
     rc2d_engine_state.gpu_current_swapchain_texture = NULL;
     rc2d_engine_state.gpu_current_command_buffer = NULL;
     rc2d_engine_state.gpu_current_render_pass = NULL;
+}
+
+/**
+ * Fonction pour définir la couleur actuelle utilisée pour le dessin des formes
+ * Cette fonction met à jour la variable globale current_color qui sera utilisée lors du dessin
+ * La couleur est stockée en Uint8 (0-255) et sera convertie en float (0.0-1.0) lors du push uniform
+ */
+void rc2d_gpu_setColor(RC2D_Color color) 
+{
+    current_color = color;
+}
+
+/**
+ * Fonction d'initialisation des ressources nécessaires pour le dessin des rectangles
+ * Cette fonction est appelée une seule fois après la création du dispositif GPU dans le moteur RC2D
+ * Elle prépare les tampons de vertices statiques pour un rectangle unitaire (unit quad)
+ * et crée les pipelines graphiques pour le mode remplissage (fill) et contour (line)
+ * La fonction retourne true si l'initialisation réussit, false en cas d'échec (par exemple, échec de création d'un tampon ou d'un pipeline)
+ * En cas d'échec, un message d'erreur est loggué pour aider au débogage
+ */
+bool rc2d_gpu_initRectangle(void) 
+{
+
+
+    // Retourne true pour indiquer que l'initialisation des ressources pour les rectangles a réussi
+    return true;
+}
+
+/**
+ * Fonction principale pour dessiner un rectangle
+ * Elle calcule les uniforms nécessaires, pousse les données vers les shaders,
+ * lie le pipeline et le tampon appropriés en fonction du mode, et émet l'appel de dessin
+ * Le rectangle est positionné et dimensionné via les uniforms pour éviter de recréer des tampons dynamiquement
+ * Cela optimise les performances en réutilisant des ressources statiques
+ */
+void rc2d_gpu_drawRectangle(RC2D_DrawMode mode, float x, float y, float width, float height) 
+{
+   
+}
+
+// Fonction de nettoyage des ressources pour les rectangles
+// Cette fonction est appelée lors de la fermeture du moteur pour libérer la mémoire GPU allouée
+// Elle libère les pipelines et les tampons de vertices pour éviter les fuites de mémoire
+void rc2d_gpu_releaseRectangle(void) {
+
 }

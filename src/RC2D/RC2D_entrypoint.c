@@ -93,7 +93,11 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
 /**
  * SDL3 Callback: Boucle principale de l'application
  * 
- * Cette fonction s'exécute une fois par image dans la boucle principale de l'application.
+ * Cette fonction s'exécute une fois par image dans la boucle principale de l'application,
+ * à interval régulier via SDL_HINT_MAIN_CALLBACK_RATE, si la plateforme le supporte.
+ * 
+ * Sinon, si ce n'ai pas le cas, on limite la fréquence d'appel de cette fonction
+ * à 60 FPS (16.67 ms par image) pour éviter de surcharger le CPU.
  */
 SDL_AppResult SDL_AppIterate(void *appstate) 
 {
@@ -113,7 +117,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
      * 1. Calculer le delta time pour la frame actuelle.
      * 2. Appeler les fonctions internes de hot reload des shaders / pipeline graphics.
      * 3. Appeler la fonction de mise à jour du jeu.
-     * 4. Effacer l'écran (démarrer le render pass).
+     * 4. Effacer l'écran (créer le commandBuffer courant, aquire la swapchain, etc.).
      * 5. Appeler la fonction de dessin du jeu.
      * 6. Présenter le rendu à l'écran.
      * 7. Terminer le calcul du delta time pour la frame actuelle.

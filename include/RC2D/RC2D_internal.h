@@ -338,6 +338,8 @@ void rc2d_timer_init(void);
 
 void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void);
 void rc2d_gpu_hotReloadComputeShader(void);
+bool rc2d_gpu_initRectangle(void);
+void rc2d_gpu_releaseRectangle(void);
 
 #if RC2D_ONNX_MODULE_ENABLED
 /**
