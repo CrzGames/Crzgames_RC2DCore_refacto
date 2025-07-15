@@ -697,7 +697,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
-            inputs.pass_size = (uint32_t)SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
+            inputs.pass_size = 16; // Password length
             inputs.salt = salt; // Salt for the password
             inputs.salt_size = 16;
 
@@ -770,7 +770,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
 
             crypto_argon2_inputs inputs;
             inputs.pass = (const uint8_t *)rc2d_rres_getCipherPassword(); // User password
-            inputs.pass_size = (uint32_t)SDL_strlen(rc2d_rres_getCipherPassword()); // Password length
+            inputs.pass_size = 16; // Password length
             inputs.salt = salt; // Salt for the password
             inputs.salt_size = 16;
 
@@ -795,7 +795,7 @@ int rc2d_rres_unpackResourceChunk(rresResourceChunk *chunk)
             SDL_memcpy(mac, ((unsigned char *)chunk->data.raw) + (chunk->info.packedSize - 16), 16);
 
             // Message decryption requires key, nonce and MAC
-            int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, (const unsigned char *)chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
+            int decryptResult = crypto_aead_unlock(decryptedData, mac, key, nonce, NULL, 0, chunk->data.raw, (chunk->info.packedSize - 16 - 24 - 16));
 
             // Wipe secrets if they are no longer needed
             crypto_wipe(nonce, 24);
