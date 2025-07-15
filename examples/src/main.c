@@ -1,9 +1,21 @@
 #include <mygame/game.h>
 #include <RC2D/RC2D.h>
 
+/**
+ * \brief Fonction de configuration du moteur RC2D.
+ * 
+ * Cette fonction est appelée au démarrage de l'application pour configurer le moteur RC2D.
+ * Elle initialise les paramètres par défaut et peut être modifiée par l'utilisateur pour personnaliser le
+ * comportement du moteur.
+ * 
+ * \param {int} argc - Nombre d'arguments de la ligne de commande.
+ * \param {char**} argv - Tableau des arguments de la ligne de commande.
+ * \return {const RC2D_EngineConfig*} Pointeur vers la configuration du moteur RC2D.
+ * 
+ * \warning L'implementation de cette fonction doit être définie par l'utilisateur, puisqu'elle est appelée par le moteur RC2D.
+ */
 const RC2D_EngineConfig* rc2d_engine_setup(int argc, char* argv[])
 {
-    // Configuration de l'application
     RC2D_EngineConfig* config = rc2d_engine_getDefaultConfig();
 #ifdef NDEBUG // Release mode
     rc2d_logger_set_priority(RC2D_LOG_CRITICAL);
