@@ -287,6 +287,15 @@ static void rc2d_engine_stateInit(void) {
         return;
     }
 
+    // Initialiser le cache des textures GPU
+    rc2d_engine_state.gpu_image_cache_count = 0;
+    rc2d_engine_state.gpu_image_cache = NULL;
+    rc2d_engine_state.gpu_image_cache_mutex = SDL_CreateMutex();
+    if (!rc2d_engine_state.gpu_image_cache_mutex) {
+        RC2D_assert_release(false, RC2D_LOG_CRITICAL, "Erreur lors de la création du mutex pour le cache d'images : %s", SDL_GetError());
+        return;
+    }
+
     // État d'exécution de la boucle de jeu
     rc2d_engine_state.fps = 60;
     rc2d_engine_state.delta_time = 0.0;
@@ -300,12 +309,12 @@ static void rc2d_engine_stateInit(void) {
     rc2d_engine_state.letterbox_textures.mode = RC2D_LETTERBOX_NONE;
     rc2d_engine_state.letterbox_count = 0;
 
-    rc2d_engine_state.letterbox_uniform_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
-    rc2d_engine_state.letterbox_top_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
-    rc2d_engine_state.letterbox_bottom_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
-    rc2d_engine_state.letterbox_left_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
-    rc2d_engine_state.letterbox_right_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
-    rc2d_engine_state.letterbox_background_texture = RC2D_calloc(1, sizeof(RC2D_GPUTexture));
+    rc2d_engine_state.letterbox_uniform_texture = RC2D_calloc(1, sizeof(RC2D_Image));
+    rc2d_engine_state.letterbox_top_texture = RC2D_calloc(1, sizeof(RC2D_Image));
+    rc2d_engine_state.letterbox_bottom_texture = RC2D_calloc(1, sizeof(RC2D_Image));
+    rc2d_engine_state.letterbox_left_texture = RC2D_calloc(1, sizeof(RC2D_Image));
+    rc2d_engine_state.letterbox_right_texture = RC2D_calloc(1, sizeof(RC2D_Image));
+    rc2d_engine_state.letterbox_background_texture = RC2D_calloc(1, sizeof(RC2D_Image));
 
     if (!rc2d_engine_state.letterbox_uniform_texture || !rc2d_engine_state.letterbox_top_texture ||
         !rc2d_engine_state.letterbox_bottom_texture || !rc2d_engine_state.letterbox_left_texture ||
@@ -2162,11 +2171,6 @@ static bool rc2d_engine(void)
         return false;
     }
 
-    if (!rc2d_gpu_initRectangle())
-    {
-        return false;
-    }
-
     // vérifie le nombre de letterbox count
     RC2D_log(RC2D_LOG_DEBUG, "Letterbox count: %d\n", rc2d_engine_state.letterbox_count);
 
@@ -2276,9 +2280,6 @@ void rc2d_engine_quit(void)
         SDL_DestroyMutex(rc2d_engine_state.gpu_graphics_pipeline_mutex);
         rc2d_engine_state.gpu_graphics_pipeline_mutex = NULL;
     }
-
-    // Libérer les ressources GPU des rectangles de RC2D
-    rc2d_gpu_releaseRectangle();
 
     // Nettoyer les textures de letterbox
     RC2D_safe_free(rc2d_engine_state.letterbox_uniform_texture);

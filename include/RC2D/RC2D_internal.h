@@ -125,6 +125,13 @@ typedef struct RC2D_GraphicsPipelineEntry {
     RC2D_GPUGraphicsPipeline* graphicsPipeline;
 } RC2D_GraphicsPipelineEntry;
 
+// Structure pour le cache des images
+typedef struct RC2D_ImageEntry {
+    RC2D_Image* image;
+    char* filename;           // Nom du fichier pour le cache
+    SDL_Time last_modified;   // Timestamp pour le hot-reload
+} RC2D_ImageEntry;
+
 /**
  * \brief Structure regroupant l'état global du moteur RC2D.
  *
@@ -161,6 +168,7 @@ typedef struct RC2D_EngineState {
     SDL_GPURenderPass* gpu_current_render_pass;
     SDL_GPUViewport* gpu_current_viewport;
     SDL_GPUSampleCount gpu_current_sample_count_supported; // Le meilleur niveau de MSAA supporté par le GPU (sois 8x, 4x, 2x ou 1x)
+    SDL_GPUTexture* gpu_current_resolve_texture; // Texture de résolution pour le multisampling (si applicable via MSAA)
 
     /**
      * Mise en cache des shaders graphiques
@@ -199,6 +207,18 @@ typedef struct RC2D_EngineState {
     SDL_Mutex* gpu_compute_shader_mutex;
 
     /**
+     * Mise en cache des textures GPU
+     * 
+     * Cette structure contient :
+     * - Tableau dynamique des textures GPU chargées
+     * - Nombre de textures GPU chargées
+     * - Mutex pour protéger l'accès aux textures GPU chargées
+     */
+    RC2D_ImageEntry* gpu_image_cache;
+    Uint32 gpu_image_cache_count;
+    SDL_Mutex* gpu_image_cache_mutex;
+
+    /**
      * Pour indiquer si le rendu doit être sauté
      */
     bool skip_rendering;
@@ -217,14 +237,14 @@ typedef struct RC2D_EngineState {
     RC2D_Rect letterbox_areas[4]; // [0]: gauche, [1]: droite, [2]: haut, [3]: bas
     int letterbox_count;
 
-    RC2D_GPUTexture* letterbox_uniform_texture;
+    RC2D_Image* letterbox_uniform_texture;
 
-    RC2D_GPUTexture* letterbox_top_texture;
-    RC2D_GPUTexture* letterbox_bottom_texture;
-    RC2D_GPUTexture* letterbox_left_texture;
-    RC2D_GPUTexture* letterbox_right_texture;
+    RC2D_Image* letterbox_top_texture;
+    RC2D_Image* letterbox_bottom_texture;
+    RC2D_Image* letterbox_left_texture;
+    RC2D_Image* letterbox_right_texture;
 
-    RC2D_GPUTexture* letterbox_background_texture;
+    RC2D_Image* letterbox_background_texture;
 
     // Pour RC2D_LETTERBOX_SHADER
     RC2D_GPUGraphicsPipeline letterbox_shader_pipeline;
@@ -338,9 +358,7 @@ void rc2d_assert_init(void);
 void rc2d_timer_init(void);
 
 void rc2d_gpu_hotReloadGraphicsShadersAndGraphicsPipeline(void);
-void rc2d_gpu_hotReloadComputeShader(void);
-bool rc2d_gpu_initRectangle(void);
-void rc2d_gpu_releaseRectangle(void);
+void rc2d_gpu_hotReloadComputeShader(void);;
 
 #if RC2D_ONNX_MODULE_ENABLED
 /**

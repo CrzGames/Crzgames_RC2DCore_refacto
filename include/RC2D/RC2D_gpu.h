@@ -9,6 +9,36 @@ extern "C" {
 #endif
 
 /**
+ * \brief Structure représentant une image 2D.
+ * 
+ * Cette structure est utilisée pour stocker les informations d'une image,
+ * y compris la texture GPU associée, le sampler, et ses dimensions.
+ * 
+ * \since Cette structure est disponible depuis RC2D 1.0.0.
+ */
+typedef struct RC2D_Image {
+    /**
+     * \brief Texture GPU associée à l'image.
+     */
+    SDL_GPUTexture* texture;
+
+    /**
+     * \brief Sampler associé à l'image.
+     */
+    SDL_GPUSampler* sampler;
+
+    /**
+     * \brief Largeur de l'image.
+     */
+    Uint32 width;
+
+    /**
+     * \brief Hauteur de l'image.
+     */
+    Uint32 height;
+} RC2D_Image;
+
+/**
  * \brief Mode de dessin pour les formes graphiques.
  *
  * Définit si une forme est dessinée en mode rempli ou en contour.
@@ -68,7 +98,12 @@ typedef struct RC2D_Color {
 typedef struct SDL_GPUDevice RC2D_GPUDevice;
 
 /**
- * @brief Informations sur le GPU utilisé par l'application.
+ * \brief Informations sur le GPU utilisé par l'application.
+ * 
+ * Cette structure contient des métadonnées sur le GPU, telles que le nom du périphérique, 
+ * le nom du pilote et la version du pilote.
+ * 
+ * \since Ce type est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_GPUInfo {
     /**
@@ -135,19 +170,6 @@ typedef struct RC2D_GPUInfo {
      */
     const char* gpu_device_driver_info;
 } RC2D_GPUInfo;
-
-/**
- * \brief Structure pour une texture GPU.
- * 
- * Contient une texture SDL3 GPU et ses dimensions.
- * 
- * \since Ce type est disponible depuis RC2D 1.0.0.
- */
-typedef struct RC2D_GPUTexture {
-    SDL_GPUTexture* gpu_texture;
-    int width;
-    int height;
-} RC2D_GPUTexture;
 
 /**
  * \brief Nombre maximal d’images autorisées en vol sur le GPU.
@@ -296,27 +318,58 @@ typedef struct RC2D_GPUAdvancedOptions {
  * \brief Formats de shaders supportés par le GPU.
  *
  * Utilisé pour indiquer quels formats de shaders sont disponibles selon le backend.
- *
- * Formats de shaders supportés :
- * - RC2D_GPU_SHADERFORMAT_SPIRV : SPIR-V (Vulkan)
- * - RC2D_GPU_SHADERFORMAT_DXBC : DXBC (Direct3D 11)
- * - RC2D_GPU_SHADERFORMAT_DXIL : DXIL (Direct3D 12)
- * - RC2D_GPU_SHADERFORMAT_MSL : MSL (Metal)
- * - RC2D_GPU_SHADERFORMAT_METALLIB : MetalLib (Metal)
- * - RC2D_GPU_SHADERFORMAT_PRIVATE : Private (Propriétaire)
  * 
  * \note Peut être combiné avec un bitmask.
  *
- * \since Disponible depuis RC2D 1.0.0.
+ * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
 typedef enum RC2D_GPUShaderFormat {
-    RC2D_GPU_SHADERFORMAT_NONE       = 0,
-    RC2D_GPU_SHADERFORMAT_PRIVATE    = 1 << 0,
-    RC2D_GPU_SHADERFORMAT_SPIRV      = 1 << 1,
-    RC2D_GPU_SHADERFORMAT_DXBC       = 1 << 2,
-    RC2D_GPU_SHADERFORMAT_DXIL       = 1 << 3,
-    RC2D_GPU_SHADERFORMAT_MSL        = 1 << 4,
-    RC2D_GPU_SHADERFORMAT_METALLIB   = 1 << 5
+    /**
+     * Aucun format de shader n'est supporté.
+     */
+    RC2D_GPU_SHADERFORMAT_NONE = 0,
+
+    /**
+     * Pour les formats de shaders privés (NDA).
+     * 
+     * Utilisé pour les backends propriétaires ou expérimentaux.
+     */
+    RC2D_GPU_SHADERFORMAT_PRIVATE = 1 << 0,
+
+    /**
+     * SPIR-V (Vulkan) est supporté.
+     * 
+     * Utilisé pour les shaders Vulkan.
+     */
+    RC2D_GPU_SHADERFORMAT_SPIRV = 1 << 1,
+
+    /**
+     * DXBC (Direct3D11) est supporté.
+     * 
+     * Utilisé pour les shaders Direct3D11.
+     */
+    RC2D_GPU_SHADERFORMAT_DXBC = 1 << 2,
+
+    /**
+     * DXIL (Direct3D12) est supporté.
+     * 
+     * Utilisé pour les shaders Direct3D12.
+     */
+    RC2D_GPU_SHADERFORMAT_DXIL = 1 << 3,
+
+    /**
+     * MSL (Metal) est supporté.
+     * 
+     * Utilisé pour les shaders Metal sur macOS, iOS et tvOS.
+     */
+    RC2D_GPU_SHADERFORMAT_MSL = 1 << 4,
+
+    /**
+     * MetalLib (Metal) est supporté.
+     * 
+     * Utilisé pour les shaders Metal précompilés sur macOS, iOS et tvOS.
+     */
+    RC2D_GPU_SHADERFORMAT_METALLIB = 1 << 5
 } RC2D_GPUShaderFormat;
 
 /**
@@ -343,11 +396,36 @@ typedef struct SDL_GPUComputePipeline RC2D_GPUComputePipeline;
  * \since Cette structure est disponible depuis RC2D 1.0.0.
  */
 typedef struct RC2D_GPUGraphicsPipeline {
+    /**
+     * Pointeur vers le pipeline graphique SDL.
+     * 
+     * \warning Ce pointeur doit être libéré par l'utilisateur avec SDL_ReleaseGPUGraphicsPipeline
+     * lorsque le pipeline n'est plus nécessaire.
+     */
     SDL_GPUGraphicsPipeline* pipeline;
+
+    /**
+     * Informations de création du pipeline graphique.
+     */
     SDL_GPUGraphicsPipelineCreateInfo create_info;
+
+    /**
+     * Nom de débogage du pipeline graphique.
+     * 
+     * \note Ce nom est utilisé pour le débogage et peut être affiché dans les outils de développement,
+     * comme RenderDoc..etc
+     */
     const char* debug_name;
-    char* vertex_shader_filename;
-    char* fragment_shader_filename;
+
+    /**
+     * Nom du fichier de shader de vertex.
+s    */
+    const char* vertex_shader_filename;
+
+    /**
+     * Nom du fichier de shader de fragment.s
+     */
+    const char* fragment_shader_filename;
 } RC2D_GPUGraphicsPipeline;
 
 /**
@@ -378,7 +456,7 @@ RC2D_GPUDevice* rc2d_gpu_getDevice(void);
  *
  * \return {RC2D_GPUShaderFormat} Bitmask RC2D_GPUShaderFormat contenant les formats supportés.
  *
- * \since Disponible depuis RC2D 1.0.0.
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 RC2D_GPUShaderFormat rc2d_gpu_getSupportedShaderFormats(void);
 
@@ -497,6 +575,37 @@ void rc2d_gpu_setColor(RC2D_Color color);
  * \since Cette fonction est disponible depuis RC2D 1.0.0.
  */
 void rc2d_gpu_drawRectangle(RC2D_DrawMode mode, float x, float y, float width, float height);
+
+/**
+ * \brief Crée une nouvelle image à partir d'un fichier.
+ *
+ * Charge une image depuis un fichier et crée une texture GPU associée.
+ * 
+ * \param {const char*} filename - Chemin du fichier image à charger.
+ * \return {RC2D_Image*} - Pointeur vers la nouvelle image créée, ou NULL en cas d'erreur.
+ * 
+ * \threadsafety Cette fonction peut être appelée depuis n'importe quel thread.
+ * 
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+RC2D_Image* rc2d_gpu_newImage(const char* filename);
+
+/**
+ * \brief Dessine une image à l'écran à la position spécifiée.
+ *
+ * Cette fonction dessine une image à la position (x, y) dans l'espace viewport (pixels, top-left (0,0)).
+ * Elle utilise un pipeline graphique avec shaders HLSL pour dessiner un quad texturé dans le render pass actif,
+ * évitant la création d'un nouveau render pass. Le rendu est effectué sur la swapchain texture.
+ *
+ * \param image Pointeur vers l'image RC2D à dessiner.
+ * \param x Position X du coin supérieur gauche dans l'espace viewport (pixels).
+ * \param y Position Y du coin supérieur gauche dans l'espace viewport (pixels).
+ *
+ * \threadsafety Cette fonction doit être appelée depuis le thread principal.
+ *
+ * \since Cette fonction est disponible depuis RC2D 1.0.0.
+ */
+void rc2d_gpu_drawImage(RC2D_Image* image, float x, float y);
 
 /* Termine les définitions de fonctions C lors de l'utilisation de C++ */
 #ifdef __cplusplus

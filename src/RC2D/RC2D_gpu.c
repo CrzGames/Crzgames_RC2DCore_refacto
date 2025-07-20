@@ -6,28 +6,20 @@
 
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_filesystem.h>
+
 #if RC2D_GPU_SHADER_HOT_RELOAD_ENABLED
 #include <SDL3_shadercross/SDL_shadercross.h>
 #endif
 
-/**
- * Variables globales pour les pipelines graphiques utilisés pour le remplissage et le contour des rectangles
- * Ces pipelines définissent comment le GPU doit traiter les données pour dessiner les rectangles
- */
-static RC2D_GPUGraphicsPipeline* rect_fill_pipeline = NULL;
-static RC2D_GPUGraphicsPipeline* rect_line_pipeline = NULL;
+#include <SDL3_image/SDL_image.h>
 
 /**
- * Variables globales pour les tampons de vertices utilisés pour le remplissage et le contour des rectangles
- * Ces tampons stockent les coordonnées des sommets du rectangle unitaire 
- * qui sera étiré et positionné via les uniforms
+ * Variable globale pour stocker la couleur actuelle utilisée pour le dessin des formes
+ * Cette couleur sera convertie en SDL_FColor et poussée comme uniform dans le shader de fragment lors du dessin
+ * 
+ * \default La couleur par défaut est blanche opaque (255, 255, 255, 255).
  */
-static SDL_GPUBuffer* rect_fill_buffer = NULL;
-static SDL_GPUBuffer* rect_line_buffer = NULL;
-
-// Variable globale pour stocker la couleur actuelle utilisée pour le dessin des formes
-// Cette couleur sera convertie en SDL_FColor et poussée comme uniform dans le shader de fragment lors du dessin
-static RC2D_Color current_color = {255, 255, 255, 255};  // Par défaut, blanc opaque (255, 255, 255, 255)
+static RC2D_Color current_color = {255, 255, 255, 255};
 
 /**
  * Récupère le timestamp de la dernière modification d'un fichier.
@@ -1428,14 +1420,47 @@ void rc2d_gpu_clear(void)
     colorTargetInfo.layer_or_depth_plane = 0;
     colorTargetInfo.clear_color = (SDL_FColor){ 0.0f, 0.0f, 0.0f, 1.0f };
     colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
-    colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+    colorTargetInfo.store_op = rc2d_engine_state.gpu_current_sample_count_supported > SDL_GPU_SAMPLECOUNT_1 ? SDL_GPU_STOREOP_RESOLVE : SDL_GPU_STOREOP_STORE; // Résolution si multisampling
     colorTargetInfo.resolve_texture = NULL;
     colorTargetInfo.resolve_mip_level = 0;
     colorTargetInfo.resolve_layer = 0;
     colorTargetInfo.cycle = true;
-    colorTargetInfo.cycle_resolve_texture = false;
+    colorTargetInfo.cycle_resolve_texture = rc2d_engine_state.gpu_current_sample_count_supported > SDL_GPU_SAMPLECOUNT_1;
     colorTargetInfo.padding1 = 0;
     colorTargetInfo.padding2 = 0;
+
+    // Créer une texture de résolution si multisampling
+    if (rc2d_engine_state.gpu_current_sample_count_supported > SDL_GPU_SAMPLECOUNT_1)
+    {
+        SDL_GPUTextureCreateInfo resolve_texture_info = {
+            .type = SDL_GPU_TEXTURETYPE_2D,
+            .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+            .usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET,
+            .width = swapchainTextureWidth,
+            .height = swapchainTextureHeight,
+            .layer_count_or_depth = 1,
+            .num_levels = 1,
+            .sample_count = SDL_GPU_SAMPLECOUNT_1, // La texture de résolution n'est pas multisample
+        };
+        rc2d_engine_state.gpu_current_resolve_texture = SDL_CreateGPUTexture(rc2d_engine_state.gpu_device, &resolve_texture_info);
+
+        /**
+         * Si la création de la texture de résolution échoue, on log l'erreur
+         * et on continue sans utiliser de texture de résolution.
+         * 
+         * Si cela marche, on l'assigne à colorTargetInfo.resolve_texture.
+         */
+        if (!rc2d_engine_state.gpu_current_resolve_texture) 
+        {
+            RC2D_log(RC2D_LOG_ERROR, "Failed to create resolve texture: %s", SDL_GetError());
+            colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+            colorTargetInfo.cycle_resolve_texture = false;
+        }
+        else 
+        {
+            colorTargetInfo.resolve_texture = rc2d_engine_state.gpu_current_resolve_texture;
+        }
+    }
 
     /**
      * \brief Étape 5 : Début d’un Render Pass
@@ -1501,6 +1526,15 @@ void rc2d_gpu_present(void)
     }
 
     /**
+     * Libérer la texture de résolution si elle a été créée.
+     */
+    if (rc2d_engine_state.gpu_current_resolve_texture)
+    {
+        SDL_ReleaseGPUTexture(rc2d_engine_state.gpu_device, rc2d_engine_state.gpu_current_resolve_texture);
+        rc2d_engine_state.gpu_current_resolve_texture = NULL;
+    }
+
+    /**
      * \brief Étape 4 : Nettoyage de la swapchain texture, command buffer courant et render pass courant
      *
      * Ces pointeurs sont remis à NULL pour indiquer qu’ils ne sont plus valides.
@@ -1520,39 +1554,4 @@ void rc2d_gpu_present(void)
 void rc2d_gpu_setColor(RC2D_Color color) 
 {
     current_color = color;
-}
-
-/**
- * Fonction d'initialisation des ressources nécessaires pour le dessin des rectangles
- * Cette fonction est appelée une seule fois après la création du dispositif GPU dans le moteur RC2D
- * Elle prépare les tampons de vertices statiques pour un rectangle unitaire (unit quad)
- * et crée les pipelines graphiques pour le mode remplissage (fill) et contour (line)
- * La fonction retourne true si l'initialisation réussit, false en cas d'échec (par exemple, échec de création d'un tampon ou d'un pipeline)
- * En cas d'échec, un message d'erreur est loggué pour aider au débogage
- */
-bool rc2d_gpu_initRectangle(void) 
-{
-
-
-    // Retourne true pour indiquer que l'initialisation des ressources pour les rectangles a réussi
-    return true;
-}
-
-/**
- * Fonction principale pour dessiner un rectangle
- * Elle calcule les uniforms nécessaires, pousse les données vers les shaders,
- * lie le pipeline et le tampon appropriés en fonction du mode, et émet l'appel de dessin
- * Le rectangle est positionné et dimensionné via les uniforms pour éviter de recréer des tampons dynamiquement
- * Cela optimise les performances en réutilisant des ressources statiques
- */
-void rc2d_gpu_drawRectangle(RC2D_DrawMode mode, float x, float y, float width, float height) 
-{
-   
-}
-
-// Fonction de nettoyage des ressources pour les rectangles
-// Cette fonction est appelée lors de la fermeture du moteur pour libérer la mémoire GPU allouée
-// Elle libère les pipelines et les tampons de vertices pour éviter les fuites de mémoire
-void rc2d_gpu_releaseRectangle(void) {
-
 }
