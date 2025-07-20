@@ -57,7 +57,7 @@
 | **Steam Deck** | x64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
-| **Playstation** | x64 | Playstation5+ |  |
+| **Playstation** | x64 | Playstation 5+ |  |
 
 <br /><br /><br /><br />
 
@@ -98,8 +98,7 @@
 - Windows 10 et plus récent.
 
 ### Steam Deck (Steam Linux Runtime 3.0+ - Sniper)
-- Steam Deck 1 (LCD / OLED) et plus récent.
-- Steam Deck sous SteamOS 3.0 ou supérieur.
+- Steam Deck 1 (LCD / OLED, sous SteamOS 3.0 ou supérieur) et plus récent.
 
 ### Steam Linux (Steam Linux Runtime 3.0+ - Sniper)
 - Compatible avec toute distribution Linux x64 / arm64 supportant Steam et le runtime Sniper.
