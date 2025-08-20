@@ -140,7 +140,7 @@ typedef struct RC2D_CompressedData {
 } RC2D_CompressedData;
 
 /**
- * \since Enum des formats de chiffrement pris en charge.
+ * \brief Enum des formats de chiffrement pris en charge.
  * 
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
@@ -229,7 +229,7 @@ typedef struct RC2D_EncryptedData {
 } RC2D_EncryptedData;
 
 /**
- * \since Enum des formats de hachage pris en charge.
+ * \brief Enum des formats de hachage pris en charge.
  * 
  * \since Cette enum est disponible depuis RC2D 1.0.0.
  */
