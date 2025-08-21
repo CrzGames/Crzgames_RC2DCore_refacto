@@ -71,7 +71,7 @@ jobs:
 
       - name: Setup Java JDK LTS - Android
         if: matrix.target == 'android'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17.0.10'
           distribution: 'oracle'
