@@ -305,7 +305,7 @@ jobs:
         working-directory: ./docs
 
       - name: Deploy files website static for docs API RC2D
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.O2SWITCH_FTP_HOST }}
           username: ${{ secrets.O2SWITCH_FTP_USERNAME }}
